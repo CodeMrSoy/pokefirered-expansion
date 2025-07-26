@@ -30,6 +30,8 @@
 #include "quest_log.h"
 #include "region_map.h"
 #include "script.h"
+#include "script_pokemon_util.h"
+#include "field_message_box.h"
 #include "strings.h"
 #include "task.h"
 #include "teachy_tv.h"
@@ -75,6 +77,8 @@ static void UseFameCheckerFromBag(void);
 static void Task_UseFameCheckerFromField(u8 taskId);
 static void ItemUseOnFieldCB_WailmerPailBerry(u8);
 static void ItemUseOnFieldCB_WailmerPailSudowoodo(u8);
+static void ItemUseOnFieldCB_PokeCocaine(u8 taskId);
+static void Task_ReturnToBagFromField(u8 taskId);
 static bool8 TryToWaterSudowoodo(void);
 
 
@@ -1191,6 +1195,29 @@ void ItemUse_SetQuestLogEvent(u8 eventId, struct Pokemon *pokemon, u16 itemId, u
         data->species = 0xFFFF;
     SetQuestLogEvent(eventId, (void *)data);
     Free(data);
+}
+
+extern void HealPlayerParty(void);
+extern const u8 gText_PokeCocaineUsed[];
+
+static void ItemUseOnFieldCB_PokeCocaine(u8 taskId)
+{
+    HealPlayerParty();
+    DisplayItemMessageOnField(taskId, FONT_NORMAL, gText_PokeCocaineUsed, Task_ReturnToBagFromField);
+}
+
+static void Task_ReturnToBagFromField(u8 taskId)
+{
+    ClearDialogWindowAndFrame(0, TRUE);
+    DestroyTask(taskId);
+    UnfreezeObjectEvents();
+    UnlockPlayerFieldControls();
+}
+
+void ItemUseOutOfBattle_PokeCocaine(u8 taskId)
+{
+    sItemUseOnFieldCB = ItemUseOnFieldCB_PokeCocaine;
+    SetUpItemUseOnFieldCallback(taskId);
 }
 
 #undef tUsingRegisteredKeyItem

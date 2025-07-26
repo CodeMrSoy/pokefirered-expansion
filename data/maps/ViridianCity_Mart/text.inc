@@ -11,9 +11,14 @@ ViridianCity_Mart_Text_ReceivedOaksParcelFromClerk::
     .string "{PLAYER} received OAK'S PARCEL\n"
     .string "from the POKéMON MART clerk.$"
 
+ViridianCity_Mart_Text_ReceivedPokeCocaineFromClerk::
+    .string "{PLAYER} received Poké Cocaine\n"
+    .string "from the POKéMON MART clerk.$"
+
 ViridianCity_Mart_Text_SayHiToOakForMe::
-    .string "Okay, thanks! Please say hi to\n"
-    .string "PROF. OAK for me, too.$"
+    .string "Oak ordered this too.\p"
+    .string "Please give it to him\n"
+    .string "and PLEASE don't open it!$"
 
 ViridianCity_Mart_Text_ShopDoesGoodBusinessInAntidotes::
     .string "This shop does good business in\n"
