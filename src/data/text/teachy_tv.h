@@ -5,7 +5,7 @@ const u8 gTeachyTvString_CatchPkmn[] = _("I want to catch POKéMON.");
 const u8 gTeachyTvString_AboutTMs[] = _("Teach me about TMs.");
 const u8 gTeachyTvString_RegisterItem[] = _("How do I register an item?");
 const u8 gTeachyTvString_Cancel[] = _("CANCEL");
-const u8 gText_PokeCocaineUsed[] = _("Your party feels... maybe too good?");
+const u8 gText_PokeCocaineUsed[] = _("Your party feels... maybe too good?\p");
 const u8 gTeachyTvText_PokedudeSaysHello[] = _(
     "Hey, all you TRAINERS out there!\n"
     "HELLO, TRAINERS!\p"
