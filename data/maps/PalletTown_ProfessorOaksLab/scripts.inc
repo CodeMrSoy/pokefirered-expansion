@@ -467,6 +467,8 @@ PalletTown_ProfessorOaksLab_Movement_RivalApproachForBattleBulbasaurRight::
 PalletTown_ProfessorOaksLab_EventScript_EndRivalBattle::
 	special HealPlayerParty
 	msgbox PalletTown_ProfessorOaksLab_Text_RivalGoToughenMyMon
+	giveitem_msg PalletTown_ProfessorOaksLab_Text_ReceivedLevelCapCandy, ITEM_LEVEL_CAP_CANDY, 830
+	msgbox PalletTown_ProfessorOaksLab_Text_RivalGiveCandy
 	closemessage
 	playbgm MUS_RIVAL_EXIT, 0
 	call_if_eq VAR_TEMP_2, 1, PalletTown_ProfessorOaksLab_EventScript_RivalExitAfterBattleLeft

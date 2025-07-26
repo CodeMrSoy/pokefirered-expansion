@@ -6,6 +6,7 @@
 #include "berry_pouch.h"
 #include "berry_powder.h"
 #include "bike.h"
+#include "caps.h"
 #include "coins.h"
 #include "event_data.h"
 #include "field_effect.h"
@@ -27,6 +28,8 @@
 #include "metatile_behavior.h"
 #include "overworld.h"
 #include "party_menu.h"
+#include "pokemon.h"
+#include "pokemon_summary_screen.h"
 #include "quest_log.h"
 #include "region_map.h"
 #include "script.h"
@@ -39,7 +42,7 @@
 #include "vs_seeker.h"
 #include "constants/sound.h"
 #include "constants/items.h"
-#include "constants/item_effects.h"
+#include "constants/item_effects.h" 
 #include "constants/maps.h"
 #include "constants/moves.h"
 #include "constants/songs.h"
@@ -1218,6 +1221,12 @@ void ItemUseOutOfBattle_PokeCocaine(u8 taskId)
 {
     sItemUseOnFieldCB = ItemUseOnFieldCB_PokeCocaine;
     SetUpItemUseOnFieldCallback(taskId);
+}
+
+void ItemUseOutOfBattle_LevelCapCandy(u8 taskId)
+{
+    gItemUseCB = ItemUseCB_LevelCapCandy;
+    DoSetUpItemUseCallback(taskId);
 }
 
 #undef tUsingRegisteredKeyItem

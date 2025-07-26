@@ -1930,6 +1930,21 @@ const struct Item gItemsInfo[] =
         .iconPalette = gItemIconPalette_RareCandy,
     },
 
+    [ITEM_LEVEL_CAP_CANDY] =
+    {
+        .name = _("Cap Candy"),
+        .price = 0,
+        .description = COMPOUND_STRING(
+        "Levels up a Pokémon\n "
+        "only to the cap."),
+        .importance = 1,
+        .pocket = POCKET_KEY_ITEMS,
+        .type = ITEM_USE_PARTY_MENU,
+        .fieldUseFunc = ItemUseOutOfBattle_LevelCapCandy,
+        .iconPic = gItemIcon_RareCandy,
+        .iconPalette = gItemIconPalette_RareCandy,
+    },
+
     [ITEM_EXP_CANDY_XS] =
     {
         .name = _("Exp. Candy XS"),

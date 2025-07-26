@@ -51,6 +51,9 @@ void Task_ItemUse_CloseMessageBoxAndReturnToField_VsSeeker(u8);
 void ItemUse_SetQuestLogEvent(u8, struct Pokemon *, u16, u16);
 void FieldCB_UseItemOnField(void);
 void ItemUseOutOfBattle_PokeCocaine(u8 taskId);
+void ItemUseOutOfBattle_LevelCapCandy(u8 taskId);
+static const u8 gText_LevelCapCandyNoEffect[] = _("It won't have any effect.");
+static const u8 gText_LevelCapCandyUsed[] = _("{STR_VAR_1} grew to level {STR_VAR_2}!");
 
 enum {
     BALL_THROW_UNABLE_TWO_MONS,

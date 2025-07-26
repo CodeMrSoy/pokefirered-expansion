@@ -47,6 +47,10 @@ PalletTown_ProfessorOaksLab_Text_RivalGoToughenMyMon::
     .string "{PLAYER}! Gramps!\n"
     .string "Smell you later!$"
 
+PalletTown_ProfessorOaksLab_Text_RivalGiveCandy::
+    .string "Have a piece of candy loser.\n"
+    .string "Bye bitch!$"
+
 PalletTown_ProfessorOaksLab_Text_RivalGramps::
     .string "{RIVAL}: Gramps!$"
 
@@ -185,6 +189,9 @@ PalletTown_ProfessorOaksLab_Text_OakCatchMonsForDataTakeThese::
 
 PalletTown_ProfessorOaksLab_Text_ReceivedFivePokeBalls::
     .string "{PLAYER} received five POKé BALLS.$"
+
+PalletTown_ProfessorOaksLab_Text_ReceivedLevelCapCandy::
+    .string "{PLAYER} received the Cap Candy.$"
 
 PalletTown_ProfessorOaksLab_Text_OakExplainCatching::
     .string "When a wild POKéMON appears,\n"

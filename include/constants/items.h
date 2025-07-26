@@ -137,6 +137,7 @@
 
 // Candy
 #define ITEM_RARE_CANDY 102
+#define ITEM_LEVEL_CAP_CANDY 830
 #define ITEM_EXP_CANDY_XS 103
 #define ITEM_EXP_CANDY_S 104
 #define ITEM_EXP_CANDY_M 105
@@ -1004,7 +1005,7 @@
 // HOPO BERRY
 // LEGEND PLATE
 
-#define ITEMS_COUNT 830
+#define ITEMS_COUNT 831
 #define ITEM_FIELD_ARROW ITEMS_COUNT
 
 // A special item id associated with "Cancel"/"Exit" etc. in a list of items or decorations
