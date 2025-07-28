@@ -415,8 +415,6 @@ static void CB2_UseEvolutionStone(void);
 static bool8 MonCanEvolve(void);
 static u8 CanTeachMove(struct Pokemon *mon, u16 move);
 static void TryItemHoldFormChange(struct Pokemon *mon);
-void ItemUseCB_LevelCapCandy(u8 taskId, TaskFunc func);
-static void ItemUseCB_LevelCapCandyStep(u8 taskId, TaskFunc func);
 
 static void ShowMoveSelectWindow(u8 slot);
 static void Task_HandleRestoreWhichMoveInput(u8 taskId);
@@ -5677,72 +5675,6 @@ static void Task_TryLearningNextMoveAfterText(u8 taskId)
         Task_TryLearningNextMove(taskId);
 }
 
-void ItemUseCB_LevelCapCandy(u8 taskId, TaskFunc func)
-{
-    struct Pokemon *mon = &gPlayerParty[gPartyMenu.slotId];
-    u8 currentLevel = GetMonData(mon, MON_DATA_LEVEL);
-    u8 levelCap = GetCurrentLevelCap();
-
-    if (currentLevel >= levelCap)
-    {
-        DisplayPartyMenuMessage(gText_WontHaveEffect, TRUE);
-        ScheduleBgCopyTilemapToVram(2);
-        gTasks[taskId].func = func;
-        return;
-    }
-
-    sInitialLevel = currentLevel;
-    sFinalLevel = levelCap;
-
-    GetMonLevelUpWindowStats(mon, sLevelUpStatsBefore);
-    Task_DoUseItemAnim(taskId);
-    gItemUseCB = ItemUseCB_LevelCapCandyStep;
-}
-
-static void ItemUseCB_LevelCapCandyStep(u8 taskId, TaskFunc func)
-{
-    struct Pokemon *mon = &gPlayerParty[gPartyMenu.slotId];
-    u8 holdEffectParam = GetItemHoldEffectParam(gSpecialVar_ItemId);
-    u8 i;
-
-    for (i = 0; i < NUM_STATS; i++) {
-        sPartyMenuInternal->data[i] = sLevelUpStatsBefore[i];
-        sPartyMenuInternal->data[NUM_STATS + i] = sLevelUpStatsAfter[i];
-    }
-
-    gPartyMenuUseExitCallback = TRUE;
-    ItemUse_SetQuestLogEvent(QL_EVENT_USED_ITEM, mon, gSpecialVar_ItemId, 0xFFFF);
-    UpdateMonDisplayInfoAfterRareCandy(gPartyMenu.slotId, mon);
-    GetMonNickname(mon, gStringVar1);
-    if (sFinalLevel > sInitialLevel)
-    {
-        PlayFanfareByFanfareNum(FANFARE_LEVEL_UP);
-        if (holdEffectParam == 0)
-        {
-            ConvertIntToDecimalStringN(gStringVar2, sFinalLevel, STR_CONV_MODE_LEFT_ALIGN, 3);
-            StringExpandPlaceholders(gStringVar4, gText_PkmnElevatedToLvVar2);
-        }
-        else 
-        {
-            ConvertIntToDecimalStringN(gStringVar2, sExpCandyExperienceTable[holdEffectParam - 1], STR_CONV_MODE_LEFT_ALIGN, 6);
-            ConvertIntToDecimalStringN(gStringVar3, sFinalLevel, STR_CONV_MODE_LEFT_ALIGN, 3);
-            StringExpandPlaceholders(gStringVar4, gText_PkmnGainedExpAndElevatedToLvVar3);
-        }
-        DisplayPartyMenuMessage(gStringVar4, TRUE);
-        ScheduleBgCopyTilemapToVram(2);
-        gTasks[taskId].func = Task_DisplayLevelUpStatsPg1;
-    }
-    else
-    {
-            PlaySE(SE_USE_ITEM);
-            ConvertIntToDecimalStringN(gStringVar2, sExpCandyExperienceTable[holdEffectParam - 1], STR_CONV_MODE_LEFT_ALIGN, 6);
-            StringExpandPlaceholders(gStringVar4, gText_PkmnGainedExp);
-            DisplayPartyMenuMessage(gStringVar4, FALSE);
-            ScheduleBgCopyTilemapToVram(2);
-            gTasks[taskId].func = Task_ClosePartyMenuAfterText;
-    }
-}
-
 void ItemUseCB_RareCandy(u8 taskId, TaskFunc func)
 {
     struct Pokemon *mon = &gPlayerParty[gPartyMenu.slotId];
@@ -5942,7 +5874,7 @@ static void Task_TryLearnNewMoves(u8 taskId)
 static void Task_TryLearningNextMove(u8 taskId)
 {
     u16 result;
-    
+
     for (; sInitialLevel <= sFinalLevel; sInitialLevel++)
     {
         SetMonData(&gPlayerParty[gPartyMenu.slotId], MON_DATA_LEVEL, &sInitialLevel);

@@ -1934,13 +1934,15 @@ const struct Item gItemsInfo[] =
     {
         .name = _("Cap Candy"),
         .price = 0,
+        .holdEffectParam = EXP_99999,
         .description = COMPOUND_STRING(
-        "Levels up a Pokémon\n "
-        "only to the cap."),
+        "Levels up a Pokémon\n"
+        "but only to the level cap."),
         .importance = 1,
         .pocket = POCKET_KEY_ITEMS,
         .type = ITEM_USE_PARTY_MENU,
-        .fieldUseFunc = ItemUseOutOfBattle_LevelCapCandy,
+        .fieldUseFunc = ItemUseOutOfBattle_RareCandy,
+        .effect = gItemEffect_RareCandy,
         .iconPic = gItemIcon_RareCandy,
         .iconPalette = gItemIconPalette_RareCandy,
     },

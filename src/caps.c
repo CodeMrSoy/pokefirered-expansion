@@ -5,6 +5,7 @@
 #include "pokemon.h"
 
 
+
 u32 GetCurrentLevelCap(void)
 {
     static const u32 sLevelCapFlagMap[][2] =

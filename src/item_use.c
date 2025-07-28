@@ -1223,10 +1223,4 @@ void ItemUseOutOfBattle_PokeCocaine(u8 taskId)
     SetUpItemUseOnFieldCallback(taskId);
 }
 
-void ItemUseOutOfBattle_LevelCapCandy(u8 taskId)
-{
-    gItemUseCB = ItemUseCB_LevelCapCandy;
-    DoSetUpItemUseCallback(taskId);
-}
-
 #undef tUsingRegisteredKeyItem
