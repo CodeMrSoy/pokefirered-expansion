@@ -44,6 +44,8 @@ enum MainMenuWindow
 #define tMGErrorMsgState data[9]
 #define tMGErrorType     data[10]
 
+bool8 gRandomizerEnabled = FALSE;
+static bool8 sHasToggledRandomizer = FALSE;
 static bool32 MainMenuGpuInit(u8 a0);
 static void Task_SetWin0BldRegsAndCheckSaveFile(u8 taskId);
 static void Task_MainMenuCheckBattery(u8);
@@ -411,6 +413,19 @@ static void Task_PrintMainMenuText(u8 taskId)
     default:
         FillWindowPixelBuffer(MAIN_MENU_WINDOW_NEWGAME_ONLY, PIXEL_FILL(10));
         AddTextPrinterParameterized3(MAIN_MENU_WINDOW_NEWGAME_ONLY, FONT_NORMAL, 2, 2, sTextColor1, -1, gText_NewGame);
+        if (gRandomizerEnabled)
+        {
+            AddTextPrinterParameterized3(MAIN_MENU_WINDOW_NEWGAME_ONLY, FONT_NORMAL, 150, 2, sTextColor1, -1, gText_RandomizerOn);
+
+            u8 seedString[32];
+            u32 seed = gSaveBlock1Ptr->randomizerSeed;
+            ConvertIntToDecimalStringN(seedString, seed, STR_CONV_MODE_LEFT_ALIGN, 10);
+            AddTextPrinterParameterized3(MAIN_MENU_WINDOW_NEWGAME_ONLY, FONT_NORMAL, 150, 4, sTextColor1, -1, seedString);
+        }
+        else
+        {
+            AddTextPrinterParameterized3(MAIN_MENU_WINDOW_NEWGAME_ONLY, FONT_NORMAL, 150, 2, sTextColor1, -1, gText_RandomizerOff);
+        }
         MainMenu_DrawWindow(&sWindowTemplate[MAIN_MENU_WINDOW_NEWGAME_ONLY]);
         PutWindowTilemap(MAIN_MENU_WINDOW_NEWGAME_ONLY);
         CopyWindowToVram(MAIN_MENU_WINDOW_NEWGAME_ONLY, COPYWIN_FULL);
@@ -420,6 +435,19 @@ static void Task_PrintMainMenuText(u8 taskId)
         FillWindowPixelBuffer(MAIN_MENU_WINDOW_NEWGAME, PIXEL_FILL(10));
         AddTextPrinterParameterized3(MAIN_MENU_WINDOW_CONTINUE, FONT_NORMAL, 2, 2, sTextColor1, -1, gText_Continue);
         AddTextPrinterParameterized3(MAIN_MENU_WINDOW_NEWGAME, FONT_NORMAL, 2, 2, sTextColor1, -1, gText_NewGame);
+        if (gRandomizerEnabled)
+        {
+            AddTextPrinterParameterized3(MAIN_MENU_WINDOW_CONTINUE, FONT_NORMAL, 150, 2, sTextColor1, -1, gText_RandomizerOn);
+
+            u8 seedString[32];
+            u32 seed = gSaveBlock1Ptr->randomizerSeed;
+            ConvertIntToDecimalStringN(seedString, seed, STR_CONV_MODE_LEFT_ALIGN, 10);
+            AddTextPrinterParameterized3(MAIN_MENU_WINDOW_CONTINUE, FONT_NORMAL, 150, 4, sTextColor1, -1, seedString);
+        }
+        else
+        {
+            AddTextPrinterParameterized3(MAIN_MENU_WINDOW_CONTINUE, FONT_NORMAL, 150, 2, sTextColor1, -1, gText_RandomizerOff);
+        }
         PrintContinueStats();
         MainMenu_DrawWindow(&sWindowTemplate[MAIN_MENU_WINDOW_CONTINUE]);
         MainMenu_DrawWindow(&sWindowTemplate[MAIN_MENU_WINDOW_NEWGAME]);
@@ -652,6 +680,25 @@ static bool8 HandleMenuInput(u8 taskId)
     {
         gTasks[taskId].tCursorPos++;
         return TRUE;
+    }
+    else if ((JOY_HELD(L_BUTTON) && JOY_HELD(R_BUTTON)) && !sHasToggledRandomizer)
+    {
+        gRandomizerEnabled ^= TRUE; // Toggles between TRUE/FALSE
+        sHasToggledRandomizer = TRUE;
+        PlaySE(SE_SELECT); // Optional sound effect for feedback
+        AddTextPrinterParameterized3(MAIN_MENU_WINDOW_NEWGAME_ONLY, FONT_NORMAL, 150, 2, sTextColor1, -1, gText_RandomizerOn);
+        AddTextPrinterParameterized3(MAIN_MENU_WINDOW_CONTINUE, FONT_NORMAL, 150, 2, sTextColor1, -1, gText_RandomizerOn);
+        u8 seedString[32];
+            u32 seed = gSaveBlock1Ptr->randomizerSeed;
+            ConvertIntToDecimalStringN(seedString, seed, STR_CONV_MODE_LEFT_ALIGN, 10);
+            AddTextPrinterParameterized3(MAIN_MENU_WINDOW_NEWGAME_ONLY, FONT_NORMAL, 150, 4, sTextColor1, -1, seedString);
+            AddTextPrinterParameterized3(MAIN_MENU_WINDOW_CONTINUE, FONT_NORMAL, 150, 4, sTextColor1, -1, seedString);
+    }
+    else if (!(JOY_HELD(L_BUTTON) && JOY_HELD(R_BUTTON)))
+    {
+        sHasToggledRandomizer = FALSE; // Reset toggle lock when buttons released
+        AddTextPrinterParameterized3(MAIN_MENU_WINDOW_NEWGAME_ONLY, FONT_NORMAL, 150, 2, sTextColor1, -1, gText_RandomizerOff);
+        AddTextPrinterParameterized3(MAIN_MENU_WINDOW_CONTINUE, FONT_NORMAL, 150, 2, sTextColor1, -1, gText_RandomizerOff);
     }
 
     return FALSE;

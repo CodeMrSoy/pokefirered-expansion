@@ -21,6 +21,8 @@
 #include "constants/items.h"
 #include "config/save.h"
 
+extern bool8 gRandomizerEnabled;
+
 // Prevent cross-jump optimization.
 #define BLOCK_CROSS_JUMP asm("");
 
@@ -908,7 +910,8 @@ struct SaveBlock1
     /*0x3D34*/ u32 towerChallengeId;
     /*0x3D38*/ struct TrainerTower trainerTower[NUM_TOWER_CHALLENGE_TYPES];
 #endif //FREE_TRAINER_HILL
-    /*0x3D24*/ u8 unusedSB1[0x1C];
+    /*0x3D24*/ u32 randomizerSeed;
+    /*0x3D28*/ bool8 randomizerActive;
 }; // size: 0x3D68
 
 struct MapPosition
