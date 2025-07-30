@@ -160,17 +160,6 @@ void NewGameInitData(void)
     ResetTrainerTowerResults();
     ResetItemFlags();
     ResetDexNav();
-
-    if (gRandomizerEnabled)
-    {
-        // Generate and store a new randomizer seed
-        gSaveBlock1Ptr->randomizerSeed = (Random() << 16) | Random();
-        gSaveBlock1Ptr->randomizerActive = TRUE;
-    }
-    else
-    {
-        gSaveBlock1Ptr->randomizerActive = FALSE;
-    }
 }
 
 static void ResetMiniGamesResults(void)

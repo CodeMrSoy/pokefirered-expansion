@@ -6,6 +6,7 @@
 #include "help_system.h"
 #include "pokedex.h"
 #include "menu.h"
+#include "random.h"
 #include "rtc.h"
 #include "link.h"
 #include "oak_speech.h"
@@ -420,7 +421,7 @@ static void Task_PrintMainMenuText(u8 taskId)
             u8 seedString[32];
             u32 seed = gSaveBlock1Ptr->randomizerSeed;
             ConvertIntToDecimalStringN(seedString, seed, STR_CONV_MODE_LEFT_ALIGN, 10);
-            AddTextPrinterParameterized3(MAIN_MENU_WINDOW_NEWGAME_ONLY, FONT_NORMAL, 150, 4, sTextColor1, -1, seedString);
+            AddTextPrinterParameterized3(MAIN_MENU_WINDOW_NEWGAME_ONLY, FONT_NORMAL, 150, 15, sTextColor1, -1, seedString);
         }
         else
         {
@@ -442,7 +443,7 @@ static void Task_PrintMainMenuText(u8 taskId)
             u8 seedString[32];
             u32 seed = gSaveBlock1Ptr->randomizerSeed;
             ConvertIntToDecimalStringN(seedString, seed, STR_CONV_MODE_LEFT_ALIGN, 10);
-            AddTextPrinterParameterized3(MAIN_MENU_WINDOW_CONTINUE, FONT_NORMAL, 150, 4, sTextColor1, -1, seedString);
+            AddTextPrinterParameterized3(MAIN_MENU_WINDOW_CONTINUE, FONT_NORMAL, 150, 15, sTextColor1, -1, seedString);
         }
         else
         {
@@ -681,24 +682,20 @@ static bool8 HandleMenuInput(u8 taskId)
         gTasks[taskId].tCursorPos++;
         return TRUE;
     }
-    else if ((JOY_HELD(L_BUTTON) && JOY_HELD(R_BUTTON)) && !sHasToggledRandomizer)
+    if ((JOY_HELD(L_BUTTON) && JOY_HELD(R_BUTTON)) && !sHasToggledRandomizer)
     {
-        gRandomizerEnabled ^= TRUE; // Toggles between TRUE/FALSE
+        gRandomizerEnabled ^= TRUE; // Toggle
         sHasToggledRandomizer = TRUE;
-        PlaySE(SE_SELECT); // Optional sound effect for feedback
-        AddTextPrinterParameterized3(MAIN_MENU_WINDOW_NEWGAME_ONLY, FONT_NORMAL, 150, 2, sTextColor1, -1, gText_RandomizerOn);
-        AddTextPrinterParameterized3(MAIN_MENU_WINDOW_CONTINUE, FONT_NORMAL, 150, 2, sTextColor1, -1, gText_RandomizerOn);
-        u8 seedString[32];
-            u32 seed = gSaveBlock1Ptr->randomizerSeed;
-            ConvertIntToDecimalStringN(seedString, seed, STR_CONV_MODE_LEFT_ALIGN, 10);
-            AddTextPrinterParameterized3(MAIN_MENU_WINDOW_NEWGAME_ONLY, FONT_NORMAL, 150, 4, sTextColor1, -1, seedString);
-            AddTextPrinterParameterized3(MAIN_MENU_WINDOW_CONTINUE, FONT_NORMAL, 150, 4, sTextColor1, -1, seedString);
+        PlaySE(SE_SELECT);
+        if (gRandomizerEnabled && gSaveBlock1Ptr->randomizerSeed == 0)
+        gSaveBlock1Ptr->randomizerSeed = (Random() << 16) | Random();
+
+        Task_PrintMainMenuText(taskId); // 🔁 Refresh display
     }
     else if (!(JOY_HELD(L_BUTTON) && JOY_HELD(R_BUTTON)))
     {
-        sHasToggledRandomizer = FALSE; // Reset toggle lock when buttons released
-        AddTextPrinterParameterized3(MAIN_MENU_WINDOW_NEWGAME_ONLY, FONT_NORMAL, 150, 2, sTextColor1, -1, gText_RandomizerOff);
-        AddTextPrinterParameterized3(MAIN_MENU_WINDOW_CONTINUE, FONT_NORMAL, 150, 2, sTextColor1, -1, gText_RandomizerOff);
+        sHasToggledRandomizer = FALSE;
+        gSaveBlock1Ptr->randomizerSeed = 0;
     }
 
     return FALSE;
