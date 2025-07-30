@@ -1577,5 +1577,6 @@ extern const u8 gText_CannotSendMonToBoxHM[];
 // Randomizer mode on or off
 extern const u8 gText_RandomizerOn[];
 extern const u8 gText_RandomizerOff[];
+extern const u8 gText_SeedOff[];
 
 #endif //GUARD_STRINGS_H

@@ -1381,3 +1381,4 @@ const u8 gText_CannotSendMonToBoxHM[] = _("Cannot send that mon to the box,\nbec
 
 const u8 gText_RandomizerOn[] = _("R.M ON");
 const u8 gText_RandomizerOff[] = _("R.M OFF");
+const u8 gText_SeedOff[] = _("0000000");

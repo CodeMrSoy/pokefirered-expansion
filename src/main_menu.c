@@ -58,6 +58,7 @@ static void Task_WaitFadeAndPrintMainMenuText(u8 taskId);
 static void Task_PrintMainMenuText(u8 taskId);
 static void Task_WaitDma3AndFadeIn(u8 taskId);
 static void Task_UpdateVisualSelection(u8 taskId);
+static void PrintRandomizerInfo(u8 windowId, u32 seed);
 static void Task_HandleMenuInput(u8 taskId);
 static void Task_ExecuteMainMenuSelection(u8 taskId);
 static void Task_MysteryGiftError(u8 taskId);
@@ -393,6 +394,14 @@ static void Task_WaitFadeAndPrintMainMenuText(u8 taskId)
     }
 }
 
+static void PrintRandomizerInfo(u8 windowId, u32 seed)
+{
+    AddTextPrinterParameterized3(windowId, FONT_NORMAL, 150, 2, sTextColor1, -1, gText_RandomizerOn);
+    u8 seedString[32] = {0};
+    ConvertIntToDecimalStringN(seedString, seed, STR_CONV_MODE_LEFT_ALIGN, 10);
+    AddTextPrinterParameterized3(windowId, FONT_NORMAL, 150, 15, sTextColor1, -1, seedString);
+}
+
 static void Task_PrintMainMenuText(u8 taskId)
 {
     u16 pal;
@@ -415,17 +424,11 @@ static void Task_PrintMainMenuText(u8 taskId)
         FillWindowPixelBuffer(MAIN_MENU_WINDOW_NEWGAME_ONLY, PIXEL_FILL(10));
         AddTextPrinterParameterized3(MAIN_MENU_WINDOW_NEWGAME_ONLY, FONT_NORMAL, 2, 2, sTextColor1, -1, gText_NewGame);
         if (gRandomizerEnabled)
-        {
-            AddTextPrinterParameterized3(MAIN_MENU_WINDOW_NEWGAME_ONLY, FONT_NORMAL, 150, 2, sTextColor1, -1, gText_RandomizerOn);
-
-            u8 seedString[32];
-            u32 seed = gSaveBlock1Ptr->randomizerSeed;
-            ConvertIntToDecimalStringN(seedString, seed, STR_CONV_MODE_LEFT_ALIGN, 10);
-            AddTextPrinterParameterized3(MAIN_MENU_WINDOW_NEWGAME_ONLY, FONT_NORMAL, 150, 15, sTextColor1, -1, seedString);
-        }
+            PrintRandomizerInfo(MAIN_MENU_WINDOW_NEWGAME_ONLY, gSaveBlock1Ptr->randomizerSeed);
         else
         {
             AddTextPrinterParameterized3(MAIN_MENU_WINDOW_NEWGAME_ONLY, FONT_NORMAL, 150, 2, sTextColor1, -1, gText_RandomizerOff);
+            AddTextPrinterParameterized3(MAIN_MENU_WINDOW_NEWGAME_ONLY, FONT_NORMAL, 150, 15, sTextColor1, -1, gText_SeedOff);
         }
         MainMenu_DrawWindow(&sWindowTemplate[MAIN_MENU_WINDOW_NEWGAME_ONLY]);
         PutWindowTilemap(MAIN_MENU_WINDOW_NEWGAME_ONLY);
@@ -437,17 +440,11 @@ static void Task_PrintMainMenuText(u8 taskId)
         AddTextPrinterParameterized3(MAIN_MENU_WINDOW_CONTINUE, FONT_NORMAL, 2, 2, sTextColor1, -1, gText_Continue);
         AddTextPrinterParameterized3(MAIN_MENU_WINDOW_NEWGAME, FONT_NORMAL, 2, 2, sTextColor1, -1, gText_NewGame);
         if (gRandomizerEnabled)
-        {
-            AddTextPrinterParameterized3(MAIN_MENU_WINDOW_CONTINUE, FONT_NORMAL, 150, 2, sTextColor1, -1, gText_RandomizerOn);
-
-            u8 seedString[32];
-            u32 seed = gSaveBlock1Ptr->randomizerSeed;
-            ConvertIntToDecimalStringN(seedString, seed, STR_CONV_MODE_LEFT_ALIGN, 10);
-            AddTextPrinterParameterized3(MAIN_MENU_WINDOW_CONTINUE, FONT_NORMAL, 150, 15, sTextColor1, -1, seedString);
-        }
+            PrintRandomizerInfo(MAIN_MENU_WINDOW_CONTINUE, gSaveBlock1Ptr->randomizerSeed);
         else
         {
             AddTextPrinterParameterized3(MAIN_MENU_WINDOW_CONTINUE, FONT_NORMAL, 150, 2, sTextColor1, -1, gText_RandomizerOff);
+            AddTextPrinterParameterized3(MAIN_MENU_WINDOW_CONTINUE, FONT_NORMAL, 150, 15, sTextColor1, -1, gText_SeedOff);
         }
         PrintContinueStats();
         MainMenu_DrawWindow(&sWindowTemplate[MAIN_MENU_WINDOW_CONTINUE]);
