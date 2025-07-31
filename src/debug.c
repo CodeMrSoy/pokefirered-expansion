@@ -3313,7 +3313,7 @@ static void DebugAction_Give_Pokemon_SelectNature(u8 taskId)
         gTasks[taskId].tInput = 0;
         gTasks[taskId].tDigit = 0;
 
-        u32 abilityId = GetAbilityBySpecies(sDebugMonData->species, 0);
+        u32 abilityId = GetAbilityBySpecies(sDebugMonData->species, 0, cantRandomize);
         Debug_Display_Ability(abilityId, gTasks[taskId].tDigit, gTasks[taskId].tSubWindowId);
 
         gTasks[taskId].func = DebugAction_Give_Pokemon_SelectAbility;
@@ -3348,11 +3348,11 @@ static void DebugAction_Give_Pokemon_SelectAbility(u8 taskId)
                 gTasks[taskId].tInput = 0;
         }
 
-        while (GetAbilityBySpecies(sDebugMonData->species, gTasks[taskId].tInput - i) == ABILITY_NONE && gTasks[taskId].tInput - i < NUM_ABILITY_SLOTS)
+        while (GetAbilityBySpecies(sDebugMonData->species, gTasks[taskId].tInput - i, cantRandomize) == ABILITY_NONE && gTasks[taskId].tInput - i < NUM_ABILITY_SLOTS)
         {
             i++;
         }
-        u32 abilityId = GetAbilityBySpecies(sDebugMonData->species, gTasks[taskId].tInput - i);
+        u32 abilityId = GetAbilityBySpecies(sDebugMonData->species, gTasks[taskId].tInput - i, cantRandomize);
         Debug_Display_Ability(abilityId, gTasks[taskId].tDigit, gTasks[taskId].tSubWindowId);
     }
 
@@ -3744,11 +3744,11 @@ static void DebugAction_Give_Pokemon_ComplexCreateMon(u8 taskId) //https://githu
     }
 
     //Ability
-    if (abilityNum == 0xFF || GetAbilityBySpecies(species, abilityNum) == ABILITY_NONE)
+    if (abilityNum == 0xFF || GetAbilityBySpecies(species, abilityNum, cantRandomize) == ABILITY_NONE)
     {
         do {
             abilityNum = Random() % NUM_ABILITY_SLOTS;  // includes hidden abilities
-        } while (GetAbilityBySpecies(species, abilityNum) == ABILITY_NONE);
+        } while (GetAbilityBySpecies(species, abilityNum, cantRandomize) == ABILITY_NONE);
     }
 
     SetMonData(&mon, MON_DATA_ABILITY_NUM, &abilityNum);

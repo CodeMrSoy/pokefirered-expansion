@@ -1440,7 +1440,7 @@ s32 AI_DecideKnownAbilityForTurn(u32 battlerId)
 
     for (i = 0; i < NUM_ABILITY_SLOTS; i++)
     {
-        indexAbility = GetSpeciesAbility(gBattleMons[battlerId].species, i);
+        indexAbility = GetSpeciesAbilityWithRandomizerCheck(gBattleMons[battlerId].species, i, gBattleMons[battlerId].cantRandomizeAbility);
         if (indexAbility != ABILITY_NONE)
         {
             abilityAiRatings[numValidAbilities] = gAbilitiesInfo[indexAbility].aiRating;

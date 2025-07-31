@@ -3782,6 +3782,15 @@ u32 GetSpeciesAbility(u16 species, u8 slot)
     return gSpeciesInfo[SanitizeSpeciesId(species)].abilities[slot];
 }
 
+u32 GetSpeciesAbilityWithRandomizerCheck(u16 species, u8 slot, bool8 cantRandomize)
+{
+#if RANDOMIZER_AVAILABLE == TRUE
+    if (!cantRandomize && RandomizerFeatureEnabled(RANDOMIZE_ABILITIES))
+        return RandomizeAbility(species, slot, gSpeciesInfo[SanitizeSpeciesId(species)].abilities[slot]);
+#endif
+    return gSpeciesInfo[SanitizeSpeciesId(species)].abilities[slot];
+}
+
 u32 GetSpeciesBaseHP(u16 species)
 {
     return gSpeciesInfo[SanitizeSpeciesId(species)].baseHP;

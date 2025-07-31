@@ -5,6 +5,7 @@
 #include "event_data.h"
 #include "fieldmap.h"
 #include "random.h"
+#include "randomizer.h"
 #include "roamer.h"
 #include "field_player_avatar.h"
 #include "battle_setup.h"
@@ -487,7 +488,19 @@ static bool8 TryGenerateWildMon(const struct WildPokemonInfo * wildMonInfo, u8 a
     if (flags & WILD_CHECK_KEEN_EYE && !IsAbilityAllowingEncounter(level))
         return FALSE;
 
-    CreateWildMon(wildMonInfo->wildPokemon[wildMonIndex].species, level, wildMonIndex);
+    u16 species = wildMonInfo->wildPokemon[wildMonIndex].species;
+
+    if (gSaveBlock1Ptr->randomizerSeed != 0)
+    {
+        species = GetRandomisedSpecies(
+            gSaveBlock1Ptr->randomizerSeed,
+            gSaveBlock1Ptr->location.mapGroup,
+            gSaveBlock1Ptr->location.mapNum,
+            wildMonIndex
+        );
+    }
+
+    CreateWildMon(species, level, wildMonIndex);
     return TRUE;
 }
 
@@ -498,6 +511,16 @@ static u16 GenerateFishingEncounter(const struct WildPokemonInfo * wildMonInfo, 
     u8 level = ChooseWildMonLevel(wildMonInfo->wildPokemon, wildMonIndex, WILD_AREA_FISHING);
 
     UpdateChainFishingStreak();
+    if (gSaveBlock1Ptr->randomizerSeed != 0)
+    {
+        wildMonSpecies = GetRandomisedSpecies(
+            gSaveBlock1Ptr->randomizerSeed,
+            gSaveBlock1Ptr->location.mapGroup,
+            gSaveBlock1Ptr->location.mapNum,
+            wildMonIndex
+        );
+    }
+
     CreateWildMon(wildMonSpecies, level, wildMonIndex);
     return wildMonSpecies;
 }

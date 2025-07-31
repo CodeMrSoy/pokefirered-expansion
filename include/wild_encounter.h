@@ -4,7 +4,7 @@
 #include "global.h"
 #include "rtc.h"
 
-enum WildPokemonArea
+enum WildPokemonArea//may need to change for RANDOMIZER
 {
     WILD_AREA_LAND,
     WILD_AREA_WATER,

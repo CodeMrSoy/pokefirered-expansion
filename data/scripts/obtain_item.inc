@@ -111,6 +111,9 @@ Std_FindItem::
 	lock
 	faceplayer
 	waitse
+	#if RANDOMIZER_AVAILABLE == TRUE
+	callnative FindItemRandomize_NativeCall
+	#endif
 	copyvar VAR_0x8006, VAR_0x8000
 	copyvar VAR_0x8004, VAR_0x8000
 	copyvar VAR_0x8005, VAR_0x8001
@@ -157,6 +160,9 @@ EventScript_HiddenItemScript::
 	lockall
 	textcolor NPC_TEXT_COLOR_NEUTRAL
 	waitse
+	#if RANDOMIZER_AVAILABLE == TRUE
+	callnative FindHiddenItemRandomize_NativeCall
+	#endif
 	goto_if_eq VAR_0x8005, 0, EventScript_TryPickUpHiddenCoins
 	call EventScript_TryPickUpHiddenItem
 	goto_if_eq VAR_0x8007, TRUE, EventScript_PickedUpHiddenItem
