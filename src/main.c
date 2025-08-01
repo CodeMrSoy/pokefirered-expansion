@@ -13,6 +13,7 @@
 #include "play_time.h"
 #include "quest_log.h"
 #include "random.h"
+#include "randomizer.h"
 #include "save_failed_screen.h"
 #include "dma3.h"
 #include "gba/flash_internal.h"

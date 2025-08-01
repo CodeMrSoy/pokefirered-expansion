@@ -13775,7 +13775,7 @@ static void Cmd_healpartystatus(void)
                 ability = GetBattlerAbility(partner);
             else
             {
-                ability = GetAbilityBySpecies(species, abilityNum, cantRandomize);
+                ability = GetAbilityBySpecies(species, abilityNum, FALSE);
                 #if TESTING
                 if (gTestRunnerEnabled)
                 {
@@ -18041,7 +18041,7 @@ static void UpdatePokeFlutePartyStatus(struct Pokemon* party, u8 position)
         if (species != SPECIES_NONE
             && species != SPECIES_EGG
             && status & AILMENT_FNT
-            && GetAbilityBySpecies(species, abilityNum, cantRandomizeAbility) != ABILITY_SOUNDPROOF)
+            && GetAbilityBySpecies(species, abilityNum, FALSE) != ABILITY_SOUNDPROOF)
             monToCheck |= (1 << i);
     }
     if (monToCheck)

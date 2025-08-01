@@ -40,6 +40,7 @@
 #include "quest_log.h"
 #include "quest_log_objects.h"
 #include "random.h"
+#include "randomizer.h"
 #include "renewable_hidden_items.h"
 #include "roamer.h"
 #include "rtc.h"
@@ -1870,6 +1871,9 @@ void CB2_ContinueSavedGame(void)
     ResetSafariZoneFlag_();
     LoadSaveblockMapHeader();
     LoadSaveblockObjEventScripts();
+    #if (RANDOMIZER_AVAILABLE == TRUE) && (RANDOMIZER_DYNAMIC_SPECIES == TRUE)
+        PreloadRandomizationTables();
+    #endif
     UnfreezeObjectEvents();
     DoTimeBasedEvents();
     Overworld_ResetStateOnContinue();

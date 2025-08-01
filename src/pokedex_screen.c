@@ -10,6 +10,7 @@
 #include "strings.h"
 #include "menu.h"
 #include "pokedex_screen.h"
+#include "randomizer.h"
 #include "data.h"
 #include "pokedex.h"
 #include "trainer_pokemon_sprites.h"

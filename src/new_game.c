@@ -1,6 +1,7 @@
 #include "global.h"
 #include "gflib.h"
 #include "random.h"
+#include "randomizer.h"
 #include "overworld.h"
 #include "constants/maps.h"
 #include "load_save.h"
@@ -160,6 +161,9 @@ void NewGameInitData(void)
     ResetTrainerTowerResults();
     ResetItemFlags();
     ResetDexNav();
+    #if (RANDOMIZER_AVAILABLE == TRUE) && (RANDOMIZER_DYNAMIC_SPECIES == TRUE)
+        PreloadRandomizationTables();
+    #endif
 }
 
 static void ResetMiniGamesResults(void)

@@ -684,15 +684,21 @@ static bool8 HandleMenuInput(u8 taskId)
         gRandomizerEnabled ^= TRUE; // Toggle
         sHasToggledRandomizer = TRUE;
         PlaySE(SE_SELECT);
+
         if (gRandomizerEnabled && gSaveBlock1Ptr->randomizerSeed == 0)
-        gSaveBlock1Ptr->randomizerSeed = (Random() << 16) | Random();
+            gSaveBlock1Ptr->randomizerSeed = (Random() << 16) | Random();
+        else if (!gRandomizerEnabled)
+            gSaveBlock1Ptr->randomizerSeed = 0;
 
         Task_PrintMainMenuText(taskId); // 🔁 Refresh display
+        MgbaPrintf(MGBA_LOG_DEBUG, "Randomizer: %s, Seed: 0x%08X",
+           gRandomizerEnabled ? "ENABLED" : "DISABLED",
+           gSaveBlock1Ptr->randomizerSeed);
     }
     else if (!(JOY_HELD(L_BUTTON) && JOY_HELD(R_BUTTON)))
     {
         sHasToggledRandomizer = FALSE;
-        gSaveBlock1Ptr->randomizerSeed = 0;
+        
     }
 
     return FALSE;

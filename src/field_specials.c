@@ -1574,6 +1574,12 @@ static u16 GetStarterSpeciesById(u16 idx)
 {
     if (idx >= NELEMS(sStarterSpecies))
         idx = 0;
+    
+    #if RANDOMIZER_AVAILABLE == TRUE
+    if (gRandomizerEnabled && gSaveBlock1Ptr->randomizerSeed != 0)
+        return RandomizeStarterAndGiftMon(idx, sStarterSpecies);
+    #endif
+    
     return sStarterSpecies[idx];
 }
 
