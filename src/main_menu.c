@@ -7,6 +7,7 @@
 #include "pokedex.h"
 #include "menu.h"
 #include "random.h"
+#include "randomizer.h"
 #include "rtc.h"
 #include "link.h"
 #include "oak_speech.h"
@@ -424,7 +425,7 @@ static void Task_PrintMainMenuText(u8 taskId)
         FillWindowPixelBuffer(MAIN_MENU_WINDOW_NEWGAME_ONLY, PIXEL_FILL(10));
         AddTextPrinterParameterized3(MAIN_MENU_WINDOW_NEWGAME_ONLY, FONT_NORMAL, 2, 2, sTextColor1, -1, gText_NewGame);
         if (gRandomizerEnabled)
-            PrintRandomizerInfo(MAIN_MENU_WINDOW_NEWGAME_ONLY, gSaveBlock1Ptr->randomizerSeed);
+            PrintRandomizerInfo(MAIN_MENU_WINDOW_NEWGAME_ONLY, GetRandomizerSeed());
         else
         {
             AddTextPrinterParameterized3(MAIN_MENU_WINDOW_NEWGAME_ONLY, FONT_NORMAL, 150, 2, sTextColor1, -1, gText_RandomizerOff);
@@ -440,7 +441,7 @@ static void Task_PrintMainMenuText(u8 taskId)
         AddTextPrinterParameterized3(MAIN_MENU_WINDOW_CONTINUE, FONT_NORMAL, 2, 2, sTextColor1, -1, gText_Continue);
         AddTextPrinterParameterized3(MAIN_MENU_WINDOW_NEWGAME, FONT_NORMAL, 2, 2, sTextColor1, -1, gText_NewGame);
         if (gRandomizerEnabled)
-            PrintRandomizerInfo(MAIN_MENU_WINDOW_CONTINUE, gSaveBlock1Ptr->randomizerSeed);
+            PrintRandomizerInfo(MAIN_MENU_WINDOW_CONTINUE, GetRandomizerSeed());
         else
         {
             AddTextPrinterParameterized3(MAIN_MENU_WINDOW_CONTINUE, FONT_NORMAL, 150, 2, sTextColor1, -1, gText_RandomizerOff);
@@ -555,6 +556,7 @@ static void Task_ExecuteMainMenuSelection(u8 taskId)
         {
         default:
         case MAIN_MENU_NEWGAME:
+            gCachedRandomizerSeed = gSaveBlock2Ptr->randomizerSeed;
             gExitStairsMovementDisabled = FALSE;
             FreeAllWindowBuffers();
             DestroyTask(taskId);
@@ -685,15 +687,21 @@ static bool8 HandleMenuInput(u8 taskId)
         sHasToggledRandomizer = TRUE;
         PlaySE(SE_SELECT);
 
-        if (gRandomizerEnabled && gSaveBlock1Ptr->randomizerSeed == 0)
-            gSaveBlock1Ptr->randomizerSeed = (Random() << 16) | Random();
-        else if (!gRandomizerEnabled)
-            gSaveBlock1Ptr->randomizerSeed = 0;
+        if (gRandomizerEnabled && gSaveBlock2Ptr->randomizerSeed == 0)
+            gSaveBlock2Ptr->randomizerSeed = (Random() << 16) | Random();
 
-        Task_PrintMainMenuText(taskId); // 🔁 Refresh display
+        /*
+        * Mirror the current randomizer seed outside of the saveblock.  This
+        * allows the seed to survive SaveBlock2 clears during New Game
+        * initialization.  Without this assignment, calls to
+        * GetRandomizerSeed() before the seed is restored would return 0.
+        */
+        gCachedRandomizerSeed = gSaveBlock2Ptr->randomizerSeed;
+
+        Task_PrintMainMenuText(taskId);
         MgbaPrintf(MGBA_LOG_DEBUG, "Randomizer: %s, Seed: 0x%08X",
-           gRandomizerEnabled ? "ENABLED" : "DISABLED",
-           gSaveBlock1Ptr->randomizerSeed);
+               gRandomizerEnabled ? "ENABLED" : "DISABLED",
+               GetRandomizerSeed());
     }
     else if (!(JOY_HELD(L_BUTTON) && JOY_HELD(R_BUTTON)))
     {

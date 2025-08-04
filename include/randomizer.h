@@ -15,10 +15,13 @@
 
 #define RANDOMIZER_STREAM 17
 #define STARTER_AND_GIFT_MON_COUNT 11 // Raise this number accordingly to [gStarterAndGiftMonTable]
-#define EGG_MON_COUNT 2 // Raise this number accordingly to [gEggMonTable]
+#define EGG_MON_COUNT 1 // Raise this number accordingly to [gEggMonTable]
 
 extern const u16 gStarterAndGiftMonTable[];
 extern const u16 gEggMonTable[];
+
+extern u32 gCachedRandomizerSeed;
+
 
 enum RandomizerFeature
 {

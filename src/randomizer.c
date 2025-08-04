@@ -14,25 +14,29 @@
 #include "data/randomizer/ability_whitelist.h"
 #include "constants/abilities.h"
 
+u32 gCachedRandomizerSeed = 0;
+
+
 // Add the mons you wish to be randomized when given as starter/gift mon to this list
 const u16 gStarterAndGiftMonTable[STARTER_AND_GIFT_MON_COUNT] =
 {
-    SPECIES_CYNDAQUIL,
-    SPECIES_TOTODILE,
-    SPECIES_CHIKORITA,
-    SPECIES_TREECKO,
-    SPECIES_TORCHIC,
-    SPECIES_MUDKIP,
-    SPECIES_BELDUM,
-    SPECIES_CASTFORM_NORMAL,
-    SPECIES_LILEEP,
-    SPECIES_ANORITH,
+    SPECIES_BULBASAUR,
+    SPECIES_CHARMANDER,
+    SPECIES_SQUIRTLE,
+    SPECIES_MAGIKARP,
+    SPECIES_EEVEE,
+    SPECIES_HITMONLEE,
+    SPECIES_HITMONCHAN,
+    SPECIES_LAPRAS,
+    SPECIES_OMANYTE,
+    SPECIES_KABUTO,
+    SPECIES_AERODACTYL,
 };
 
 // Add the mons you wish to be randomized when given as egg mon to this list
 const u16 gEggMonTable[EGG_MON_COUNT] =
 {
-    SPECIES_WYNAUT, 
+    SPECIES_TOGEPI, 
 };
 
 // This is a list of baby Pokémon that should not cause their evolution
@@ -87,6 +91,7 @@ bool32 RandomizerFeatureEnabled(enum RandomizerFeature feature)
                 return FlagGet(RANDOMIZER_FLAG_FIXED_MON);
             #endif
         case RANDOMIZE_STARTER_AND_GIFT_MON:
+        MgbaPrintf(MGBA_LOG_DEBUG, "Randomizer check: seed=%08X, flag=%d", GetRandomizerSeed(), RANDOMIZER_FLAG_STARTER_AND_GIFT_MON);
             #ifdef FORCE_RANDOMIZE_STARTER_AND_GIFT_MON
                 return FORCE_RANDOMIZE_STARTER_AND_GIFT_MON;
             #else
@@ -105,17 +110,15 @@ bool32 RandomizerFeatureEnabled(enum RandomizerFeature feature)
 
 u32 GetRandomizerSeed(void)
 {
-    if (!gRandomizerEnabled || gSaveBlock1Ptr->randomizerSeed == 0)
-        return 0;
-
-    return gSaveBlock1Ptr->randomizerSeed;
+    /* return cached seed when saveblock is cleared or uninitialised */
+    if (gSaveBlock2Ptr == NULL || gSaveBlock2Ptr->randomizerSeed == 0)
+        return gCachedRandomizerSeed;
+    return gSaveBlock2Ptr->randomizerSeed;
 }
 
-// Sets the seed that will be used for the randomizer if doing so is possible.
-bool32 SetRandomizerSeed(u32 newSeed)
+bool8 RandomizerEnabled(void)
 {
-    gSaveBlock1Ptr->randomizerSeed = newSeed;
-    return TRUE;
+    return GetRandomizerSeed() != 0;
 }
 
 static bool32 IsSpeciesPermitted(u16 species)
@@ -659,8 +662,8 @@ static u16 RandomizeMonFromSeed(struct Sfc32State *state, enum RandomizerSpecies
     if (mode >= MAX_MON_MODE)
         mode = MON_RANDOM;
 
+    MgbaPrintf(MGBA_LOG_DEBUG, "RWEnc: Seed %08X Species %d", GetRandomizerSeed(), species);
     return RandomizeMonTableLookup(state, mode, species);
-    MgbaPrintf(MGBA_LOG_DEBUG, "RWEnc: Seed %08X Species %d", gSaveBlock1Ptr->randomizerSeed, species);
 
 }
 
@@ -794,7 +797,7 @@ u16 RandomizeMon(enum RandomizerReason reason, enum RandomizerSpeciesMode mode, 
 
     resultSpecies = RandomizeMonFromSeed(&state, mode, species);
     speciesMode = gSpeciesInfo[resultSpecies].randomizerMode;
-MgbaPrintf(MGBA_LOG_DEBUG, "RWEnc: Seed %08X Species %d", gSaveBlock1Ptr->randomizerSeed, species);
+MgbaPrintf(MGBA_LOG_DEBUG, "RWEnc: Seed %08X Species %d", GetRandomizerSeed(), species);
     switch (speciesMode)
     {
         case MON_RANDOMIZER_RANDOM_FORM:
@@ -809,7 +812,7 @@ MgbaPrintf(MGBA_LOG_DEBUG, "RWEnc: Seed %08X Species %d", gSaveBlock1Ptr->random
 
 u16 RandomizeWildEncounter(u16 species, u8 mapNum, u8 mapGroup, enum WildPokemonArea area, u8 slot)
 {
-    MgbaPrintf(MGBA_LOG_DEBUG, "RWEnc: Seed %08X Species %d", gSaveBlock1Ptr->randomizerSeed, species);
+    MgbaPrintf(MGBA_LOG_DEBUG, "RWEnc: Seed 0x%08X Species %d", GetRandomizerSeed(), species);
 
     if (RandomizerFeatureEnabled(RANDOMIZE_WILD_MON))
     {
@@ -823,7 +826,6 @@ u16 RandomizeWildEncounter(u16 species, u8 mapNum, u8 mapGroup, enum WildPokemon
         seed |= slot;
 
         return RandomizeMon(RANDOMIZER_REASON_WILD_ENCOUNTER, GetRandomizerOption(RANDOMIZER_OPTION_SPECIES_MODE), seed, species);
-        MgbaPrintf(MGBA_LOG_DEBUG, "RWEnc: %d -> %d", species, result);
     }
     
     return species;
@@ -897,28 +899,52 @@ EWRAM_DATA static u16 sRandomizedMons[STARTER_AND_GIFT_MON_COUNT] = {0};
 
 u16 RandomizeStarterAndGiftMon(u16 originalSlot, const u16* originalStarterAndGiftMons)
 {
+    /* Randomize the Pokémon given as a starter or gift … */
+
+    MgbaPrintf(MGBA_LOG_DEBUG, "StarterRand: Called for slot %d", originalSlot);
+
+    // Prevent out-of-range access
+    if (originalSlot >= STARTER_AND_GIFT_MON_COUNT)
+    {
+        MgbaPrintf(MGBA_LOG_DEBUG,
+                   "StarterRand: Slot %d out of range (max %d), returning original",
+                   originalSlot, STARTER_AND_GIFT_MON_COUNT - 1);
+        return originalStarterAndGiftMons[originalSlot];
+    }
+
     if (RandomizerFeatureEnabled(RANDOMIZE_STARTER_AND_GIFT_MON))
     {
-        if (sLastMonRandomizerSeed != GetRandomizerSeed() || sRandomizedMons[0] == SPECIES_NONE)
-        {
-            // The randomized starter table is stale or uninitialized. Fix that!
+        MgbaPrintf(MGBA_LOG_DEBUG, "StarterRand: Feature enabled");
 
-            // Hash the starter list so that which starters there are influences the seed.
+        // Rebuild the list if the seed changed or it's uninitialised
+        if (sLastMonRandomizerSeed != GetRandomizerSeed()
+            || sRandomizedMons[0] == SPECIES_NONE)
+        {
             u32 starterHash = 5381;
-            u32 i;
-            for (i = 0; i < STARTER_AND_GIFT_MON_COUNT; i++)
+            for (u32 i = 0; i < STARTER_AND_GIFT_MON_COUNT; i++)
             {
                 u16 originalStarter = originalStarterAndGiftMons[i];
                 starterHash = ((starterHash << 5) + starterHash) ^ (u8)originalStarter;
                 starterHash = ((starterHash << 5) + starterHash) ^ (u8)(originalStarter >> 8);
             }
 
-            GetUniqueMonList(RANDOMIZER_REASON_STARTER_AND_GIFT_MON, GetRandomizerOption(RANDOMIZER_OPTION_SPECIES_MODE),
-                starterHash, 0, STARTER_AND_GIFT_MON_COUNT, originalStarterAndGiftMons, sRandomizedMons);
+            GetUniqueMonList(RANDOMIZER_REASON_STARTER_AND_GIFT_MON,
+                              GetRandomizerOption(RANDOMIZER_OPTION_SPECIES_MODE),
+                              starterHash, 0,
+                              STARTER_AND_GIFT_MON_COUNT,
+                              originalStarterAndGiftMons,
+                              sRandomizedMons);
+
+            // Cache the seed used to build the table
+            sLastMonRandomizerSeed = GetRandomizerSeed();
         }
+
+        MgbaPrintf(MGBA_LOG_DEBUG, "StarterRand: Returning %d",
+                   sRandomizedMons[originalSlot]);
         return sRandomizedMons[originalSlot];
     }
 
+    // Randomizer disabled; return original starter
     return originalStarterAndGiftMons[originalSlot];
 }
 
@@ -927,24 +953,37 @@ EWRAM_DATA static u16 sRandomizedEggMons[EGG_MON_COUNT] = {0};
 
 u16 RandomizeEggMon(u16 originalSlot, const u16* originalEggMons)
 {
+    /* Validate the slot index */
+    if (originalSlot >= EGG_MON_COUNT)
+    {
+        MgbaPrintf(MGBA_LOG_DEBUG,
+                   "EggRand: Slot %d out of range (max %d), returning original",
+                   originalSlot, EGG_MON_COUNT - 1);
+        return originalEggMons[originalSlot];
+    }
+
     if (RandomizerFeatureEnabled(RANDOMIZE_EGG_MON))
     {
-        if (sLastEggMonRandomizerSeed != GetRandomizerSeed() || sRandomizedEggMons[0] == SPECIES_NONE)
+        if (sLastEggMonRandomizerSeed != GetRandomizerSeed()
+            || sRandomizedEggMons[0] == SPECIES_NONE)
         {
-            // The randomized egg table is stale or uninitialized. Fix that!
-
-            // Hash the egg list so that which eggs there are influences the seed.
             u32 eggHash = 5381;
-            u32 i;
-            for (i = 0; i < EGG_MON_COUNT; i++)
+            for (u32 i = 0; i < EGG_MON_COUNT; i++)
             {
                 u16 originalEgg = originalEggMons[i];
                 eggHash = ((eggHash << 5) + eggHash) ^ (u8)originalEgg;
                 eggHash = ((eggHash << 5) + eggHash) ^ (u8)(originalEgg >> 8);
             }
 
-            GetUniqueMonList(RANDOMIZER_REASON_EGG, GetRandomizerOption(RANDOMIZER_OPTION_SPECIES_MODE),
-                eggHash, 0, EGG_MON_COUNT, originalEggMons, sRandomizedEggMons);
+            GetUniqueMonList(RANDOMIZER_REASON_EGG,
+                              GetRandomizerOption(RANDOMIZER_OPTION_SPECIES_MODE),
+                              eggHash, 0,
+                              EGG_MON_COUNT,
+                              originalEggMons,
+                              sRandomizedEggMons);
+
+            // Cache the seed used for this table
+            sLastEggMonRandomizerSeed = GetRandomizerSeed();
         }
         return sRandomizedEggMons[originalSlot];
     }

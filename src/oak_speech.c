@@ -13,6 +13,7 @@
 #include "palette.h"
 #include "pokeball.h"
 #include "random.h"
+#include "randomizer.h"
 #include "scanline_effect.h"
 #include "sound.h"
 #include "string_util.h"
@@ -709,6 +710,7 @@ void StartNewGameScene(void)
 #define tTextboxWindowId            data[14]
 #define tDelta                      data[15]
 
+
 static void Task_NewGameScene(u8 taskId)
 {
     switch (gMain.state)
@@ -725,6 +727,9 @@ static void Task_NewGameScene(u8 taskId)
         FreeAllSpritePalettes();
         ResetTempTileDataBuffers();
         SetHelpContext(HELPCONTEXT_NEW_GAME);
+        gCachedRandomizerSeed = gSaveBlock2Ptr->randomizerSeed;
+        if(gCachedRandomizerSeed != 0)
+        gRandomizerEnabled = TRUE;
         break;
     case 1:
         sOakSpeechResources = AllocZeroed(sizeof(*sOakSpeechResources));

@@ -1576,10 +1576,11 @@ static u16 GetStarterSpeciesById(u16 idx)
         idx = 0;
     
     #if RANDOMIZER_AVAILABLE == TRUE
-    if (gRandomizerEnabled && gSaveBlock1Ptr->randomizerSeed != 0)
+    if (gRandomizerEnabled && GetRandomizerSeed() != 0)
         return RandomizeStarterAndGiftMon(idx, sStarterSpecies);
     #endif
     
+    MgbaPrintf(MGBA_LOG_DEBUG, "Starter: Requesting slot %d", idx);
     return sStarterSpecies[idx];
 }
 

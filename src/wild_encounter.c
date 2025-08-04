@@ -496,7 +496,7 @@ static bool8 TryGenerateWildMon(const struct WildPokemonInfo * wildMonInfo, enum
     if (flags & WILD_CHECK_KEEN_EYE && !IsAbilityAllowingEncounter(level))
         return FALSE;
 
-    if (gSaveBlock1Ptr->randomizerSeed != 0)
+    if (GetRandomizerSeed() != 0)
     {
         species = RandomizeWildEncounter(
             species,
@@ -517,7 +517,7 @@ static u16 GenerateFishingEncounter(const struct WildPokemonInfo * wildMonInfo, 
     u8 level = ChooseWildMonLevel(wildMonInfo->wildPokemon, wildMonIndex, WILD_AREA_FISHING);
 
     UpdateChainFishingStreak();
-   if (gSaveBlock1Ptr->randomizerSeed != 0)
+   if (GetRandomizerSeed() != 0)
     {
         wildMonSpecies = RandomizeWildEncounter(
             wildMonSpecies,
