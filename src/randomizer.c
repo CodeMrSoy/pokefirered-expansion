@@ -14,6 +14,7 @@
 #include "data/randomizer/ability_whitelist.h"
 #include "constants/abilities.h"
 
+bool8 gRandomizerEnabled = FALSE;
 u32 gCachedRandomizerSeed = 0;
 
 
@@ -797,7 +798,7 @@ u16 RandomizeMon(enum RandomizerReason reason, enum RandomizerSpeciesMode mode, 
 
     resultSpecies = RandomizeMonFromSeed(&state, mode, species);
     speciesMode = gSpeciesInfo[resultSpecies].randomizerMode;
-MgbaPrintf(MGBA_LOG_DEBUG, "RWEnc: Seed %08X Species %d", GetRandomizerSeed(), species);
+    MgbaPrintf(MGBA_LOG_DEBUG, "RWEnc: Seed %08X Species %d", GetRandomizerSeed(), species);
     switch (speciesMode)
     {
         case MON_RANDOMIZER_RANDOM_FORM:
@@ -812,8 +813,6 @@ MgbaPrintf(MGBA_LOG_DEBUG, "RWEnc: Seed %08X Species %d", GetRandomizerSeed(), s
 
 u16 RandomizeWildEncounter(u16 species, u8 mapNum, u8 mapGroup, enum WildPokemonArea area, u8 slot)
 {
-    MgbaPrintf(MGBA_LOG_DEBUG, "RWEnc: Seed 0x%08X Species %d", GetRandomizerSeed(), species);
-
     if (RandomizerFeatureEnabled(RANDOMIZE_WILD_MON))
     {
         // Randomization is done based on the map number, the WildArea, and the encounter slot.
@@ -828,6 +827,7 @@ u16 RandomizeWildEncounter(u16 species, u8 mapNum, u8 mapGroup, enum WildPokemon
         return RandomizeMon(RANDOMIZER_REASON_WILD_ENCOUNTER, GetRandomizerOption(RANDOMIZER_OPTION_SPECIES_MODE), seed, species);
     }
     
+    MgbaPrintf(MGBA_LOG_DEBUG, "RWEnc: Seed 0x%08X Species %d", GetRandomizerSeed(), species);
     return species;
 }
 

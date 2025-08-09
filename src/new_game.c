@@ -161,9 +161,12 @@ void NewGameInitData(void)
     ResetTrainerTowerResults();
     ResetItemFlags();
     ResetDexNav();
+    gCachedRandomizerSeed = gSaveBlock2Ptr->randomizerSeed;
+    MgbaPrintf(MGBA_LOG_DEBUG, "NewGameInit: Cached Seed = 0x%08X", gCachedRandomizerSeed);
     #if (RANDOMIZER_AVAILABLE == TRUE) && (RANDOMIZER_DYNAMIC_SPECIES == TRUE)
         PreloadRandomizationTables();
     #endif
+    MgbaPrintf(MGBA_LOG_DEBUG, "Starter preload[0] = %d", gStarterAndGiftMonTable[0]);
 }
 
 static void ResetMiniGamesResults(void)

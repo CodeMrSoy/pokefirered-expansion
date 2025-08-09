@@ -21,7 +21,6 @@
 #include "constants/items.h"
 #include "config/save.h"
 
-extern bool8 gRandomizerEnabled;
 
 // Prevent cross-jump optimization.
 #define BLOCK_CROSS_JUMP asm("");

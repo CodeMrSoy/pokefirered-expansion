@@ -46,7 +46,6 @@ enum MainMenuWindow
 #define tMGErrorMsgState data[9]
 #define tMGErrorType     data[10]
 
-bool8 gRandomizerEnabled = FALSE;
 static bool8 sHasToggledRandomizer = FALSE;
 static bool32 MainMenuGpuInit(u8 a0);
 static void Task_SetWin0BldRegsAndCheckSaveFile(u8 taskId);

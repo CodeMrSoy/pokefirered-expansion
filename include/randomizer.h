@@ -21,7 +21,7 @@ extern const u16 gStarterAndGiftMonTable[];
 extern const u16 gEggMonTable[];
 
 extern u32 gCachedRandomizerSeed;
-
+extern bool8 gRandomizerEnabled;
 
 enum RandomizerFeature
 {

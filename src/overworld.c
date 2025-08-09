@@ -1705,14 +1705,14 @@ void CB2_NewGame(void)
     FieldClearVBlankHBlankCallbacks();
     StopMapMusic();
     ResetSafariZoneFlag_();
-
-    NewGameInitData();
-
+    
     // Restore seed and update toggle
     gSaveBlock2Ptr->randomizerSeed = gCachedRandomizerSeed;
     if(gSaveBlock2Ptr->randomizerSeed != 0)
         gRandomizerEnabled = TRUE;
     MgbaPrintf(MGBA_LOG_DEBUG, "Seed restored: 0x%08X", GetRandomizerSeed());
+
+    NewGameInitData();
 
     ResetInitialPlayerAvatarState();
     PlayTimeCounter_Start();
