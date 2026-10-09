@@ -1051,9 +1051,12 @@ u16 RandomizeStarterAndGiftMon(u16 originalSlot, const u16* originalStarterAndGi
 
 u16 GetRandomizedStarterSpecies(u16 starterSlot)
 {
+    // Use the same table and slot order as showmonpic and givemonrandom.
+    static const u8 giftSlots[] = {0, 2, 1};
+
     if (starterSlot >= ARRAY_COUNT(sPlayerStarterSpecies))
         starterSlot = 0;
-    return RandomizeStarterAndGiftMon(starterSlot, sPlayerStarterSpecies, ARRAY_COUNT(sPlayerStarterSpecies));
+    return RandomizeStarterAndGiftMon(giftSlots[starterSlot], gStarterAndGiftMonTable, STARTER_AND_GIFT_MON_COUNT);
 }
 
 static u16 GetSpeciesBaseStatTotal(u16 species)
@@ -1209,24 +1212,27 @@ static u8 GetRivalEncounterStage(u16 trainerId)
     return 0xFF;
 }
 
-static bool8 IsRivalSecondOccurrence(u8 role, u16 trainerId)
+static bool8 HasRivalReachedSecondOccurrence(u8 role, u16 trainerId)
 {
     u8 stage = GetRivalEncounterStage(trainerId);
+
+    if (stage == 0xFF)
+        return FALSE;
 
     switch (role)
     {
     case RIVAL_ROLE_STARTER:
-        return stage == 1;
+        return stage >= 1;
     case RIVAL_ROLE_BIRD:
     case RIVAL_ROLE_PSYCHIC:
     case RIVAL_ROLE_RAT:
-        return stage == ((role == RIVAL_ROLE_BIRD) ? 2 : (role == RIVAL_ROLE_PSYCHIC ? 3 : 3));
+        return stage >= (role == RIVAL_ROLE_BIRD ? 2 : 3);
     case RIVAL_ROLE_RHYHORN:
-        return stage == 7;
+        return stage >= 7;
     case RIVAL_ROLE_GROWLITHE:
     case RIVAL_ROLE_EXEGGCUTE:
     case RIVAL_ROLE_GYARADOS:
-        return stage == 5;
+        return stage >= 5;
     default:
         return FALSE;
     }
@@ -1294,7 +1300,7 @@ u16 GetRivalTrainerSpecies(u16 originalSpecies, u8 level, u16 playerStarterSlot,
         species = sRivalRosterSpecies[role];
     }
 
-    return GetRivalSpeciesAtLevel(species, level, IsRivalSecondOccurrence(role, trainerId), role);
+    return GetRivalSpeciesAtLevel(species, level, HasRivalReachedSecondOccurrence(role, trainerId), role);
 }
 
 EWRAM_DATA static u32 sLastEggMonRandomizerSeed = 0;

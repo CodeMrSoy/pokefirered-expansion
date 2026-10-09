@@ -11,6 +11,7 @@
 #include "rtc.h"
 #include "link.h"
 #include "oak_speech.h"
+#include "option_menu.h"
 #include "overworld.h"
 #include "quest_log.h"
 #include "mystery_gift_menu.h"
@@ -37,6 +38,8 @@ enum MainMenuWindow
     MAIN_MENU_WINDOW_RANDOMIZER_ONLY,
     MAIN_MENU_WINDOW_RANDOMIZER,
     MAIN_MENU_WINDOW_MYSTERYGIFT,
+    MAIN_MENU_WINDOW_OPTIONS_ONLY,
+    MAIN_MENU_WINDOW_OPTIONS,
     MAIN_MENU_WINDOW_ERROR,
     MAIN_MENU_WINDOW_COUNT
 };
@@ -95,14 +98,14 @@ static const struct WindowTemplate sWindowTemplate[] = {
         .tilemapLeft = 3,
         .tilemapTop = 1,
         .width = 24,
-        .height = 8,
+        .height = 6,
         .paletteNum = 15,
         .baseBlock = 0x001
     }, 
     [MAIN_MENU_WINDOW_NEWGAME] = {
         .bg = 0,
         .tilemapLeft = 3,
-        .tilemapTop = 10,
+        .tilemapTop = 8,
         .width = 24,
         .height = 2,
         .paletteNum = 15,
@@ -120,21 +123,23 @@ static const struct WindowTemplate sWindowTemplate[] = {
     [MAIN_MENU_WINDOW_RANDOMIZER] = {
         .bg = 0,
         .tilemapLeft = 3,
-        .tilemapTop = 13,
+        .tilemapTop = 11,
         .width = 24,
         .height = 2,
         .paletteNum = 15,
-        .baseBlock = 0x0f1
+        .baseBlock = 0x151
     },
     [MAIN_MENU_WINDOW_MYSTERYGIFT] = {
         .bg = 0,
         .tilemapLeft = 3,
-        .tilemapTop = 16,
+        .tilemapTop = 17,
         .width = 24,
         .height = 2,
         .paletteNum = 15,
-        .baseBlock = 0x121
+        .baseBlock = 0x1b1
     }, 
+    [MAIN_MENU_WINDOW_OPTIONS_ONLY] = {0, 3, 7, 24, 2, 15, 0x181},
+    [MAIN_MENU_WINDOW_OPTIONS] = {0, 3, 14, 24, 2, 15, 0x181},
     [MAIN_MENU_WINDOW_ERROR] = {
         .bg = 0,
         .tilemapLeft = 3,
@@ -163,7 +168,10 @@ static const struct BgTemplate sBgTemplate[] = {
     }
 };
 
-static const u8 sMenuCursorYMax[] = { 1, 2, 3 };
+static const u8 sMenuCursorYMax[] = { 2, 3, 4 };
+static u8 sOptionsMenuType;
+static void CB2_ReturnFromMainMenuOptions(void);
+static const u8 sOptionsLabel[] = _("OPTIONS");
 
 static void CB2_MainMenu(void)
 {
@@ -508,6 +516,15 @@ static void Task_PrintMainMenuText(u8 taskId)
         CopyWindowToVram(MAIN_MENU_WINDOW_MYSTERYGIFT, COPYWIN_FULL);
         break;
     }
+    {
+        u8 window = gTasks[taskId].tMenuType == MAIN_MENU_NEWGAME
+            ? MAIN_MENU_WINDOW_OPTIONS_ONLY : MAIN_MENU_WINDOW_OPTIONS;
+        FillWindowPixelBuffer(window, PIXEL_FILL(10));
+        AddTextPrinterParameterized3(window, FONT_NORMAL, 2, 2, sTextColor1, -1, sOptionsLabel);
+        MainMenu_DrawWindow(&sWindowTemplate[window]);
+        PutWindowTilemap(window);
+        CopyWindowToVram(window, COPYWIN_FULL);
+    }
     gTasks[taskId].func = Task_WaitDma3AndFadeIn;
 }
 
@@ -541,6 +558,15 @@ static void Task_ExecuteMainMenuSelection(u8 taskId)
     s32 menuAction;
     if (!gPaletteFade.active)
     {
+        if (gTasks[taskId].tCursorPos == (gTasks[taskId].tMenuType == MAIN_MENU_NEWGAME ? 2 : 3))
+        {
+            sOptionsMenuType = gTasks[taskId].tMenuType;
+            gMain.savedCallback = CB2_ReturnFromMainMenuOptions;
+            FreeAllWindowBuffers();
+            DestroyTask(taskId);
+            SetMainCallback2(CB2_InitOptionMenu);
+            return;
+        }
         switch (gTasks[taskId].tMenuType)
         {
         default:
@@ -575,7 +601,7 @@ static void Task_ExecuteMainMenuSelection(u8 taskId)
             case 2:
                 menuAction = MAIN_MENU_CONTINUE;
                 break;
-            case 3:
+            case 4:
                 if (!IsWirelessAdapterConnected())
                 {
                     SetStdFrame0OnBg(0);
@@ -663,69 +689,25 @@ static void Task_ReturnToTileScreen(u8 taskId)
     }
 }
 
+static void CB2_ReturnFromMainMenuOptions(void)
+{
+    u8 taskId;
+    MainMenuGpuInit(1);
+    taskId = FindTaskIdByFunc(Task_SetWin0BldRegsAndCheckSaveFile);
+    gTasks[taskId].tMenuType = sOptionsMenuType;
+    gTasks[taskId].tCursorPos = sOptionsMenuType == MAIN_MENU_NEWGAME ? 2 : 3;
+    LoadUserFrameToBg(0);
+    gTasks[taskId].func = Task_PrintMainMenuText;
+    gMain.savedCallback = NULL;
+}
+
 static void MoveWindowByMenuTypeAndCursorPos(u8 menuType, u8 cursorPos)
 {
-    u16 win0vTop, win0vBot;
+    static const u8 noSaveWindows[] = {MAIN_MENU_WINDOW_NEWGAME_ONLY, MAIN_MENU_WINDOW_RANDOMIZER_ONLY, MAIN_MENU_WINDOW_OPTIONS_ONLY};
+    static const u8 saveWindows[] = {MAIN_MENU_WINDOW_CONTINUE, MAIN_MENU_WINDOW_NEWGAME, MAIN_MENU_WINDOW_RANDOMIZER, MAIN_MENU_WINDOW_OPTIONS, MAIN_MENU_WINDOW_MYSTERYGIFT};
+    const struct WindowTemplate *window = &sWindowTemplate[menuType == MAIN_MENU_NEWGAME ? noSaveWindows[cursorPos] : saveWindows[cursorPos]];
     SetGpuReg(REG_OFFSET_WIN0H, WIN_RANGE(18, 222));
-    switch (menuType)
-    {
-    default:
-    case MAIN_MENU_NEWGAME:
-        switch (cursorPos)
-        {
-        default:
-        case 0: // NEW GAME
-            win0vTop = 0x00 << 8;
-            win0vBot = 0x20;
-            break;
-        case 1: // RANDOMIZER
-            win0vTop = 0x20 << 8;
-            win0vBot = 0x40;
-            break;
-        }
-        break;
-    case MAIN_MENU_CONTINUE:
-        switch (cursorPos)
-        {
-        default:
-        case 0: // CONTINUE
-            win0vTop = 0x00 << 8;
-            win0vBot = 0x50;
-            break;
-        case 1: // NEW GAME
-            win0vTop = 0x50 << 8;
-            win0vBot = 0x70;
-            break;
-        case 2: // RANDOMIZER
-            win0vTop = 0x70 << 8;
-            win0vBot = 0x90;
-            break;
-        }
-        break;
-    case MAIN_MENU_MYSTERYGIFT:
-        switch (cursorPos)
-        {
-        default:
-        case 0: // CONTINUE
-            win0vTop = 0x00 << 8;
-            win0vBot = 0x50;
-            break;
-        case 1: // NEW GAME
-            win0vTop = 0x50 << 8;
-            win0vBot = 0x70;
-            break;
-        case 2: // RANDOMIZER
-            win0vTop = 0x70 << 8;
-            win0vBot = 0x90;
-            break;
-        case 3: // MYSTERY GIFT
-            win0vTop = 0x90 << 8;
-            win0vBot = 0xA0;
-            break;
-        }
-        break;
-    }
-    SetGpuReg(REG_OFFSET_WIN0V, (win0vTop + (2 << 8)) | (win0vBot - 2));
+    SetGpuReg(REG_OFFSET_WIN0V, WIN_RANGE(window->tilemapTop * 8 - 6, (window->tilemapTop + window->height) * 8 + 6));
 }
 
 static bool8 HandleMenuInput(u8 taskId)
@@ -737,7 +719,16 @@ static bool8 HandleMenuInput(u8 taskId)
         RandomizerSetEnabled(!gRandomizerEnabled);
         PlaySE(SE_SELECT);
         Task_PrintMainMenuText(taskId);
-        gTasks[taskId].func = Task_WaitDma3AndFadeIn;
+        {
+        u8 window = gTasks[taskId].tMenuType == MAIN_MENU_NEWGAME
+            ? MAIN_MENU_WINDOW_OPTIONS_ONLY : MAIN_MENU_WINDOW_OPTIONS;
+        FillWindowPixelBuffer(window, PIXEL_FILL(10));
+        AddTextPrinterParameterized3(window, FONT_NORMAL, 2, 2, sTextColor1, -1, sOptionsLabel);
+        MainMenu_DrawWindow(&sWindowTemplate[window]);
+        PutWindowTilemap(window);
+        CopyWindowToVram(window, COPYWIN_FULL);
+    }
+    gTasks[taskId].func = Task_WaitDma3AndFadeIn;
     }
     else if (JOY_NEW(A_BUTTON))
     {
@@ -791,12 +782,12 @@ static void PrintPlayerName(void)
     s32 i;
     u8 name[PLAYER_NAME_LENGTH + 1];
     u8 *ptr;
-    AddTextPrinterParameterized3(MAIN_MENU_WINDOW_CONTINUE, FONT_NORMAL, 2, 10, sTextColor2, -1, gText_Player);
+    AddTextPrinterParameterized3(MAIN_MENU_WINDOW_CONTINUE, FONT_NORMAL, 2, 18, sTextColor2, -1, gText_Player);
     ptr = name;
     for (i = 0; i < PLAYER_NAME_LENGTH; i++)
         *ptr++ = gSaveBlock2Ptr->playerName[i];
     *ptr = EOS;
-    AddTextPrinterParameterized3(MAIN_MENU_WINDOW_CONTINUE, FONT_NORMAL, 62, 10, sTextColor2, -1, name);
+    AddTextPrinterParameterized3(MAIN_MENU_WINDOW_CONTINUE, FONT_NORMAL, 62, 18, sTextColor2, -1, name);
 }
 
 static void PrintPlayTime(void)
@@ -804,11 +795,11 @@ static void PrintPlayTime(void)
     u8 strbuf[30];
     u8 *ptr;
 
-    AddTextPrinterParameterized3(MAIN_MENU_WINDOW_CONTINUE, FONT_NORMAL, 2, 24, sTextColor2, -1, gText_Time);
+    AddTextPrinterParameterized3(MAIN_MENU_WINDOW_CONTINUE, FONT_NORMAL, 2, 32, sTextColor2, -1, gText_Time);
     ptr = ConvertIntToDecimalStringN(strbuf, gSaveBlock2Ptr->playTimeHours, STR_CONV_MODE_LEFT_ALIGN, 3);
     *ptr++ = CHAR_COLON;
     ConvertIntToDecimalStringN(ptr, gSaveBlock2Ptr->playTimeMinutes, STR_CONV_MODE_LEADING_ZEROS, 2);
-    AddTextPrinterParameterized3(MAIN_MENU_WINDOW_CONTINUE, FONT_NORMAL, 62, 24, sTextColor2, -1, strbuf);
+    AddTextPrinterParameterized3(MAIN_MENU_WINDOW_CONTINUE, FONT_NORMAL, 62, 32, sTextColor2, -1, strbuf);
 }
 
 static void PrintDexCount(void)
@@ -822,10 +813,10 @@ static void PrintDexCount(void)
             dexcount = GetNationalPokedexCount(FLAG_GET_CAUGHT);
         else
             dexcount = GetKantoPokedexCount(FLAG_GET_CAUGHT);
-        AddTextPrinterParameterized3(MAIN_MENU_WINDOW_CONTINUE, FONT_NORMAL, 2, 38, sTextColor2, -1, gText_Pokedex);
+        AddTextPrinterParameterized3(MAIN_MENU_WINDOW_CONTINUE, FONT_NORMAL, 110, 18, sTextColor2, -1, gText_Pokedex);
         ptr = ConvertIntToDecimalStringN(strbuf, dexcount, STR_CONV_MODE_LEFT_ALIGN, 4);
         StringAppend(ptr, gTextJPDummy_Hiki);
-        AddTextPrinterParameterized3(MAIN_MENU_WINDOW_CONTINUE, FONT_NORMAL, 62, 38, sTextColor2, -1, strbuf);
+        AddTextPrinterParameterized3(MAIN_MENU_WINDOW_CONTINUE, FONT_NORMAL, 166, 18, sTextColor2, -1, strbuf);
     }
 }
 
@@ -840,22 +831,22 @@ static void PrintBadgeCount(void)
         if (FlagGet(flagId))
             nbadges++;
     }
-    AddTextPrinterParameterized3(MAIN_MENU_WINDOW_CONTINUE, FONT_NORMAL, 2, 52, sTextColor2, -1, gText_Badges);
+    AddTextPrinterParameterized3(MAIN_MENU_WINDOW_CONTINUE, FONT_NORMAL, 110, 32, sTextColor2, -1, gText_Badges);
     ptr = ConvertIntToDecimalStringN(strbuf, nbadges, STR_CONV_MODE_LEADING_ZEROS, 1);
     StringAppend(ptr, gTextJPDummy_Ko);
-    AddTextPrinterParameterized3(MAIN_MENU_WINDOW_CONTINUE, FONT_NORMAL, 62, 52, sTextColor2, -1, strbuf);
+    AddTextPrinterParameterized3(MAIN_MENU_WINDOW_CONTINUE, FONT_NORMAL, 172, 32, sTextColor2, -1, strbuf);
 }
 
 static void LoadUserFrameToBg(u8 bgId)
 {
-    LoadBgTiles(bgId, GetWindowFrameTilesPal(gSaveBlock2Ptr->optionsWindowFrameType)->tiles, 0x120, 0x1B1);
+    LoadBgTiles(bgId, GetWindowFrameTilesPal(gSaveBlock2Ptr->optionsWindowFrameType)->tiles, 0x120, 0x1E1);
     LoadPalette(GetWindowFrameTilesPal(gSaveBlock2Ptr->optionsWindowFrameType)->pal, BG_PLTT_ID(2), PLTT_SIZE_4BPP);
     MainMenu_EraseWindow(&sWindowTemplate[MAIN_MENU_WINDOW_ERROR]);
 }
 
 static void SetStdFrame0OnBg(u8 bgId)
 {
-    LoadStdWindowGfx(MAIN_MENU_WINDOW_NEWGAME_ONLY, 0x1B1, BG_PLTT_ID(2));
+    LoadStdWindowGfx(MAIN_MENU_WINDOW_NEWGAME_ONLY, 0x1E1, BG_PLTT_ID(2));
     MainMenu_EraseWindow(&sWindowTemplate[MAIN_MENU_WINDOW_ERROR]);
 }
 
@@ -863,7 +854,7 @@ static void MainMenu_DrawWindow(const struct WindowTemplate * windowTemplate)
 {
     FillBgTilemapBufferRect(
         windowTemplate->bg, 
-        0x1B1, 
+        0x1E1,
         windowTemplate->tilemapLeft - 1, 
         windowTemplate->tilemapTop - 1,
         1,
@@ -872,7 +863,7 @@ static void MainMenu_DrawWindow(const struct WindowTemplate * windowTemplate)
     );
     FillBgTilemapBufferRect(
         windowTemplate->bg, 
-        0x1B2, 
+        0x1E2,
         windowTemplate->tilemapLeft, 
         windowTemplate->tilemapTop - 1, 
         windowTemplate->width, 
@@ -881,7 +872,7 @@ static void MainMenu_DrawWindow(const struct WindowTemplate * windowTemplate)
     );
     FillBgTilemapBufferRect(
         windowTemplate->bg, 
-        0x1B3, 
+        0x1E3,
         windowTemplate->tilemapLeft + 
         windowTemplate->width, 
         windowTemplate->tilemapTop - 1,
@@ -891,7 +882,7 @@ static void MainMenu_DrawWindow(const struct WindowTemplate * windowTemplate)
     );
     FillBgTilemapBufferRect(
         windowTemplate->bg, 
-        0x1B4, 
+        0x1E4,
         windowTemplate->tilemapLeft - 1, 
         windowTemplate->tilemapTop,
         1, 
@@ -900,7 +891,7 @@ static void MainMenu_DrawWindow(const struct WindowTemplate * windowTemplate)
     );
     FillBgTilemapBufferRect(
         windowTemplate->bg, 
-        0x1B6, 
+        0x1E6,
         windowTemplate->tilemapLeft + 
         windowTemplate->width, 
         windowTemplate->tilemapTop,
@@ -910,7 +901,7 @@ static void MainMenu_DrawWindow(const struct WindowTemplate * windowTemplate)
     );
     FillBgTilemapBufferRect(
         windowTemplate->bg, 
-        0x1B7, 
+        0x1E7,
         windowTemplate->tilemapLeft - 1, 
         windowTemplate->tilemapTop + 
         windowTemplate->height,
@@ -920,7 +911,7 @@ static void MainMenu_DrawWindow(const struct WindowTemplate * windowTemplate)
     );
     FillBgTilemapBufferRect(
         windowTemplate->bg, 
-        0x1B8, 
+        0x1E8,
         windowTemplate->tilemapLeft, 
         windowTemplate->tilemapTop + 
         windowTemplate->height, 
@@ -930,7 +921,7 @@ static void MainMenu_DrawWindow(const struct WindowTemplate * windowTemplate)
     );
     FillBgTilemapBufferRect(
         windowTemplate->bg, 
-        0x1B9, 
+        0x1E9,
         windowTemplate->tilemapLeft + 
         windowTemplate->width, 
         windowTemplate->tilemapTop + 

@@ -2701,3 +2701,17 @@ void TrySkyBattle(void)
     }
     gSpecialVar_Result = FALSE;
 }
+
+// Called before Oak's starter confirmation; leave the original species variable
+// intact so showmonpic and givemonrandom each randomize it exactly once.
+void BufferOakStarterChoice(void)
+{
+    gSpecialVar_Result = FALSE;
+#if RANDOMIZER_AVAILABLE == TRUE
+    if (RandomizerFeatureEnabled(RANDOMIZE_STARTER_AND_GIFT_MON))
+    {
+        StringCopy(gStringVar1, GetSpeciesName(GetRandomizedStarterSpecies(VarGet(VAR_TEMP_1))));
+        gSpecialVar_Result = TRUE;
+    }
+#endif
+}
