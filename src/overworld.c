@@ -1713,6 +1713,7 @@ void CB2_NewGame(void)
     MgbaPrintf(MGBA_LOG_DEBUG, "Seed restored: 0x%08X", GetRandomizerSeed());
 
     NewGameInitData();
+    RandomizerApplyFeatureFlags();
 
     ResetInitialPlayerAvatarState();
     PlayTimeCounter_Start();
@@ -1875,9 +1876,9 @@ static void FieldCB_ShowMapNameOnContinue(void)
 void CB2_ContinueSavedGame(void)
 {
     #if RANDOMIZER_AVAILABLE == TRUE
-    gSaveBlock2Ptr->randomizerSeed = gCachedRandomizerSeed;
-    if(gSaveBlock2Ptr->randomizerSeed != 0)
-        gRandomizerEnabled = TRUE;
+    gCachedRandomizerSeed = gSaveBlock2Ptr->randomizerSeed;
+    gRandomizerEnabled = gCachedRandomizerSeed != 0;
+    RandomizerApplyFeatureFlags();
     MgbaPrintf(MGBA_LOG_DEBUG, "Continue Game: Seed restored 0x%08X", GetRandomizerSeed());
     #endif
     FieldClearVBlankHBlankCallbacks();

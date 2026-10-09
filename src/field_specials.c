@@ -24,6 +24,7 @@
 #include "event_object_movement.h"
 #include "item.h"
 #include "random.h"
+#include "randomizer.h"
 #include "mail.h"
 #include "help_system.h"
 #include "pokemon_storage_system.h"
@@ -1564,24 +1565,18 @@ void ForcePlayerToStartSurfing(void)
     SetPlayerAvatarTransitionFlags(PLAYER_AVATAR_FLAG_SURFING);
 }
 
-static const u16 sStarterSpecies[] = {
-    SPECIES_BULBASAUR,
-    SPECIES_SQUIRTLE,
-    SPECIES_CHARMANDER
-};
-
 static u16 GetStarterSpeciesById(u16 idx)
 {
-    if (idx >= NELEMS(sStarterSpecies))
+    if (idx >= 3)
         idx = 0;
     
     #if RANDOMIZER_AVAILABLE == TRUE
     if (gRandomizerEnabled && GetRandomizerSeed() != 0)
-        return RandomizeStarterAndGiftMon(idx, sStarterSpecies);
+        return GetRandomizedStarterSpecies(idx);
     #endif
     
     MgbaPrintf(MGBA_LOG_DEBUG, "Starter: Requesting slot %d", idx);
-    return sStarterSpecies[idx];
+    return (u16[]){SPECIES_BULBASAUR, SPECIES_SQUIRTLE, SPECIES_CHARMANDER}[idx];
 }
 
 u16 GetStarterSpecies(void)

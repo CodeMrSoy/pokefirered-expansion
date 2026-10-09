@@ -11,11 +11,73 @@
 #include "data.h"
 #include "data/randomizer/special_form_tables.h"
 #include "constants/abilities.h"
+#include "constants/opponents.h"
 #include "data/randomizer/ability_whitelist.h"
 #include "constants/abilities.h"
 
 bool8 gRandomizerEnabled = FALSE;
 u32 gCachedRandomizerSeed = 0;
+
+void RandomizerApplyFeatureFlags(void)
+{
+    // A brand-new title-screen session may not have SaveBlock1 mapped yet.
+    // NewGameInitData calls this again after the save blocks are initialized.
+    if (gSaveBlock1Ptr == NULL)
+        return;
+
+    #ifndef FORCE_RANDOMIZE_WILD_MON
+        if (gRandomizerEnabled) FlagSet(RANDOMIZER_FLAG_WILD_MON);
+        else FlagClear(RANDOMIZER_FLAG_WILD_MON);
+    #endif
+    #ifndef FORCE_RANDOMIZE_FIELD_ITEMS
+        if (gRandomizerEnabled) FlagSet(RANDOMIZER_FLAG_FIELD_ITEMS);
+        else FlagClear(RANDOMIZER_FLAG_FIELD_ITEMS);
+    #endif
+    #ifndef FORCE_RANDOMIZE_TRAINER_MON
+        if (gRandomizerEnabled) FlagSet(RANDOMIZER_FLAG_TRAINER_MON);
+        else FlagClear(RANDOMIZER_FLAG_TRAINER_MON);
+    #endif
+    #ifndef FORCE_RANDOMIZE_FIXED_MON
+        if (gRandomizerEnabled) FlagSet(RANDOMIZER_FLAG_FIXED_MON);
+        else FlagClear(RANDOMIZER_FLAG_FIXED_MON);
+    #endif
+    #ifndef FORCE_RANDOMIZE_STARTER_AND_GIFT_MON
+        if (gRandomizerEnabled) FlagSet(RANDOMIZER_FLAG_STARTER_AND_GIFT_MON);
+        else FlagClear(RANDOMIZER_FLAG_STARTER_AND_GIFT_MON);
+    #endif
+    #ifndef FORCE_RANDOMIZE_EGG_MON
+        if (gRandomizerEnabled) FlagSet(RANDOMIZER_FLAG_EGG_MON);
+        else FlagClear(RANDOMIZER_FLAG_EGG_MON);
+    #endif
+    #ifndef FORCE_RANDOMIZE_ABILITIES
+        if (gRandomizerEnabled) FlagSet(RANDOMIZER_FLAG_ABILITIES);
+        else FlagClear(RANDOMIZER_FLAG_ABILITIES);
+    #endif
+}
+
+void RandomizerSetEnabled(bool8 enabled)
+{
+    gRandomizerEnabled = enabled;
+    if (enabled)
+    {
+        if (gCachedRandomizerSeed == 0)
+        {
+            if (gSaveBlock2Ptr != NULL && gSaveBlock2Ptr->randomizerSeed != 0)
+                gCachedRandomizerSeed = gSaveBlock2Ptr->randomizerSeed;
+            else
+                gCachedRandomizerSeed = GenerateSeedForRandomizer();
+        }
+        if (gSaveBlock2Ptr != NULL)
+            gSaveBlock2Ptr->randomizerSeed = gCachedRandomizerSeed;
+    }
+    else
+    {
+        gCachedRandomizerSeed = 0;
+        if (gSaveBlock2Ptr != NULL)
+            gSaveBlock2Ptr->randomizerSeed = 0;
+    }
+    RandomizerApplyFeatureFlags();
+}
 
 
 // Add the mons you wish to be randomized when given as starter/gift mon to this list
@@ -39,6 +101,31 @@ const u16 gEggMonTable[EGG_MON_COUNT] =
 {
     SPECIES_TOGEPI, 
 };
+
+static const u16 sPlayerStarterSpecies[] =
+{
+    SPECIES_BULBASAUR,
+    SPECIES_SQUIRTLE,
+    SPECIES_CHARMANDER,
+};
+
+// These are the stable roster roles used by the rival's parties throughout
+// the game.  The actual species assigned to each role is generated once from
+// the randomizer seed and reused in every later rival battle.
+static const u16 sRivalRosterOriginalSpecies[] =
+{
+    SPECIES_BULBASAUR, // starter
+    SPECIES_PIDGEY,    // Pidgey line
+    SPECIES_ABRA,      // Abra line
+    SPECIES_RATTATA,   // Rattata line
+    SPECIES_RHYHORN,   // Rhyhorn line
+    SPECIES_GROWLITHE, // Growlithe line
+    SPECIES_EXEGGCUTE, // Exeggcute line
+    SPECIES_GYARADOS,  // Gyarados line
+};
+
+EWRAM_DATA static u32 sLastRivalRosterSeed = 0;
+EWRAM_DATA static u16 sRivalRosterSpecies[ARRAY_COUNT(sRivalRosterOriginalSpecies)] = {0};
 
 // This is a list of baby Pokémon that should not cause their evolution
 // to count as an evolved pokemon.
@@ -65,6 +152,9 @@ static const u16 sPreevolutionBabyMons[] =
 
 bool32 RandomizerFeatureEnabled(enum RandomizerFeature feature)
 {
+    if (!gRandomizerEnabled || GetRandomizerSeed() == 0)
+        return FALSE;
+
     switch(feature)
     {
         case RANDOMIZE_WILD_MON:
@@ -92,11 +182,16 @@ bool32 RandomizerFeatureEnabled(enum RandomizerFeature feature)
                 return FlagGet(RANDOMIZER_FLAG_FIXED_MON);
             #endif
         case RANDOMIZE_STARTER_AND_GIFT_MON:
-        MgbaPrintf(MGBA_LOG_DEBUG, "Randomizer check: seed=%08X, flag=%d", GetRandomizerSeed(), RANDOMIZER_FLAG_STARTER_AND_GIFT_MON);
             #ifdef FORCE_RANDOMIZE_STARTER_AND_GIFT_MON
                 return FORCE_RANDOMIZE_STARTER_AND_GIFT_MON;
             #else
                 return FlagGet(RANDOMIZER_FLAG_STARTER_AND_GIFT_MON);
+            #endif
+        case RANDOMIZE_EGG_MON:
+            #ifdef FORCE_RANDOMIZE_EGG_MON
+                return FORCE_RANDOMIZE_EGG_MON;
+            #else
+                return FlagGet(RANDOMIZER_FLAG_EGG_MON);
             #endif
         case RANDOMIZE_ABILITIES:
             #ifdef FORCE_RANDOMIZE_ABILITIES
@@ -895,48 +990,54 @@ u16 RandomizeFixedEncounterMon(u16 species, u8 mapNum, u8 mapGroup, u8 localId)
 }
 
 EWRAM_DATA static u32 sLastMonRandomizerSeed = 0;
+EWRAM_DATA static u32 sLastMonRandomizerHash = 0;
+EWRAM_DATA static u8 sLastMonRandomizerCount = 0;
 EWRAM_DATA static u16 sRandomizedMons[STARTER_AND_GIFT_MON_COUNT] = {0};
 
-u16 RandomizeStarterAndGiftMon(u16 originalSlot, const u16* originalStarterAndGiftMons)
+u16 RandomizeStarterAndGiftMon(u16 originalSlot, const u16* originalStarterAndGiftMons, u8 count)
 {
     /* Randomize the Pokémon given as a starter or gift … */
 
     MgbaPrintf(MGBA_LOG_DEBUG, "StarterRand: Called for slot %d", originalSlot);
 
     // Prevent out-of-range access
-    if (originalSlot >= STARTER_AND_GIFT_MON_COUNT)
+    if (count == 0 || originalSlot >= count || count > STARTER_AND_GIFT_MON_COUNT)
     {
         MgbaPrintf(MGBA_LOG_DEBUG,
                    "StarterRand: Slot %d out of range (max %d), returning original",
-                   originalSlot, STARTER_AND_GIFT_MON_COUNT - 1);
-        return originalStarterAndGiftMons[originalSlot];
+                   originalSlot, count - 1);
+        return SPECIES_NONE;
     }
 
     if (RandomizerFeatureEnabled(RANDOMIZE_STARTER_AND_GIFT_MON))
     {
         MgbaPrintf(MGBA_LOG_DEBUG, "StarterRand: Feature enabled");
 
-        // Rebuild the list if the seed changed or it's uninitialised
+        u32 starterHash = 5381;
+        for (u32 i = 0; i < count; i++)
+        {
+            u16 originalStarter = originalStarterAndGiftMons[i];
+            starterHash = ((starterHash << 5) + starterHash) ^ (u8)originalStarter;
+            starterHash = ((starterHash << 5) + starterHash) ^ (u8)(originalStarter >> 8);
+        }
+
+        // Rebuild the list if the seed, source pool, or pool size changed.
         if (sLastMonRandomizerSeed != GetRandomizerSeed()
+            || sLastMonRandomizerHash != starterHash
+            || sLastMonRandomizerCount != count
             || sRandomizedMons[0] == SPECIES_NONE)
         {
-            u32 starterHash = 5381;
-            for (u32 i = 0; i < STARTER_AND_GIFT_MON_COUNT; i++)
-            {
-                u16 originalStarter = originalStarterAndGiftMons[i];
-                starterHash = ((starterHash << 5) + starterHash) ^ (u8)originalStarter;
-                starterHash = ((starterHash << 5) + starterHash) ^ (u8)(originalStarter >> 8);
-            }
-
             GetUniqueMonList(RANDOMIZER_REASON_STARTER_AND_GIFT_MON,
-                              GetRandomizerOption(RANDOMIZER_OPTION_SPECIES_MODE),
+                              MON_RANDOM,
                               starterHash, 0,
-                              STARTER_AND_GIFT_MON_COUNT,
+                              count,
                               originalStarterAndGiftMons,
                               sRandomizedMons);
 
             // Cache the seed used to build the table
             sLastMonRandomizerSeed = GetRandomizerSeed();
+            sLastMonRandomizerHash = starterHash;
+            sLastMonRandomizerCount = count;
         }
 
         MgbaPrintf(MGBA_LOG_DEBUG, "StarterRand: Returning %d",
@@ -946,6 +1047,254 @@ u16 RandomizeStarterAndGiftMon(u16 originalSlot, const u16* originalStarterAndGi
 
     // Randomizer disabled; return original starter
     return originalStarterAndGiftMons[originalSlot];
+}
+
+u16 GetRandomizedStarterSpecies(u16 starterSlot)
+{
+    if (starterSlot >= ARRAY_COUNT(sPlayerStarterSpecies))
+        starterSlot = 0;
+    return RandomizeStarterAndGiftMon(starterSlot, sPlayerStarterSpecies, ARRAY_COUNT(sPlayerStarterSpecies));
+}
+
+static u16 GetSpeciesBaseStatTotal(u16 species)
+{
+    const struct SpeciesInfo *info = &gSpeciesInfo[species];
+    return info->baseHP + info->baseAttack + info->baseDefense
+        + info->baseSpeed + info->baseSpAttack + info->baseSpDefense;
+}
+
+u16 GetRivalStarterSlot(u16 playerStarterSlot)
+{
+    u16 bestSpecies;
+    u16 bestSlot;
+    u16 candidateSpecies;
+    u16 candidateSlot;
+
+    if (playerStarterSlot >= ARRAY_COUNT(sPlayerStarterSpecies))
+        playerStarterSlot = 0;
+
+    // Preserve the original game when the starter randomizer is off.
+    if (!RandomizerFeatureEnabled(RANDOMIZE_STARTER_AND_GIFT_MON))
+        return (playerStarterSlot == 0) ? 2 : (playerStarterSlot == 1 ? 0 : 1);
+
+    bestSpecies = SPECIES_NONE;
+    bestSlot = 0;
+    for (candidateSlot = 0; candidateSlot < ARRAY_COUNT(sPlayerStarterSpecies); candidateSlot++)
+    {
+        if (candidateSlot == playerStarterSlot)
+            continue;
+
+        candidateSpecies = GetRandomizedStarterSpecies(candidateSlot);
+        if (bestSpecies == SPECIES_NONE
+            || GetSpeciesBaseStatTotal(candidateSpecies) > GetSpeciesBaseStatTotal(bestSpecies))
+        {
+            bestSpecies = candidateSpecies;
+            bestSlot = candidateSlot;
+        }
+    }
+
+    return bestSlot;
+}
+
+u16 GetRivalStarterSpecies(u16 playerStarterSlot)
+{
+    if (!RandomizerFeatureEnabled(RANDOMIZE_STARTER_AND_GIFT_MON))
+    {
+        static const u16 sOriginalRivalSpecies[] =
+        {
+            SPECIES_CHARMANDER,
+            SPECIES_BULBASAUR,
+            SPECIES_SQUIRTLE,
+        };
+        if (playerStarterSlot >= ARRAY_COUNT(sOriginalRivalSpecies))
+            playerStarterSlot = 0;
+        return sOriginalRivalSpecies[playerStarterSlot];
+    }
+    return GetRandomizedStarterSpecies(GetRivalStarterSlot(playerStarterSlot));
+}
+
+enum
+{
+    RIVAL_ROLE_STARTER,
+    RIVAL_ROLE_BIRD,
+    RIVAL_ROLE_PSYCHIC,
+    RIVAL_ROLE_RAT,
+    RIVAL_ROLE_RHYHORN,
+    RIVAL_ROLE_GROWLITHE,
+    RIVAL_ROLE_EXEGGCUTE,
+    RIVAL_ROLE_GYARADOS,
+    RIVAL_ROLE_INVALID = 0xFF,
+};
+
+static u8 GetRivalRosterRole(u16 species)
+{
+    switch (species)
+    {
+    case SPECIES_BULBASAUR:
+    case SPECIES_IVYSAUR:
+    case SPECIES_VENUSAUR:
+    case SPECIES_SQUIRTLE:
+    case SPECIES_WARTORTLE:
+    case SPECIES_BLASTOISE:
+    case SPECIES_CHARMANDER:
+    case SPECIES_CHARMELEON:
+    case SPECIES_CHARIZARD:
+        return RIVAL_ROLE_STARTER;
+    case SPECIES_PIDGEY:
+    case SPECIES_PIDGEOTTO:
+    case SPECIES_PIDGEOT:
+        return RIVAL_ROLE_BIRD;
+    case SPECIES_ABRA:
+    case SPECIES_KADABRA:
+    case SPECIES_ALAKAZAM:
+        return RIVAL_ROLE_PSYCHIC;
+    case SPECIES_RATTATA:
+    case SPECIES_RATICATE:
+        return RIVAL_ROLE_RAT;
+    case SPECIES_RHYHORN:
+    case SPECIES_RHYDON:
+        return RIVAL_ROLE_RHYHORN;
+    case SPECIES_GROWLITHE:
+    case SPECIES_ARCANINE:
+        return RIVAL_ROLE_GROWLITHE;
+    case SPECIES_EXEGGCUTE:
+    case SPECIES_EXEGGUTOR:
+        return RIVAL_ROLE_EXEGGCUTE;
+    case SPECIES_GYARADOS:
+        return RIVAL_ROLE_GYARADOS;
+    default:
+        return RIVAL_ROLE_INVALID;
+    }
+}
+
+static u16 GetRivalNonLevelEvolution(u16 species, u8 role)
+{
+    const struct Evolution *evolutions = GetSpeciesEvolutions(species);
+    u16 candidates[8];
+    u8 count = 0;
+    u8 i;
+    struct Sfc32State state;
+
+    for (i = 0; evolutions[i].method != EVOLUTIONS_END && count < ARRAY_COUNT(candidates); i++)
+    {
+        if (evolutions[i].method == EVO_ITEM || evolutions[i].method == EVO_TRADE)
+            candidates[count++] = evolutions[i].targetSpecies;
+    }
+
+    if (count == 0)
+        return SPECIES_NONE;
+
+    state = RandomizerRandSeed(RANDOMIZER_REASON_TRAINER_PARTY, 0x45564F00 | role, species);
+    return candidates[RandomizerNextRange(&state, count)];
+}
+
+static u8 GetRivalEncounterStage(u16 trainerId)
+{
+    if (trainerId >= TRAINER_RIVAL_OAKS_LAB_SQUIRTLE && trainerId <= TRAINER_RIVAL_OAKS_LAB_CHARMANDER)
+        return 0;
+    if (trainerId >= TRAINER_RIVAL_ROUTE22_EARLY_SQUIRTLE && trainerId <= TRAINER_RIVAL_ROUTE22_EARLY_CHARMANDER)
+        return 1;
+    if (trainerId >= TRAINER_RIVAL_CERULEAN_SQUIRTLE && trainerId <= TRAINER_RIVAL_CERULEAN_CHARMANDER)
+        return 2;
+    if (trainerId >= TRAINER_RIVAL_SS_ANNE_SQUIRTLE && trainerId <= TRAINER_RIVAL_SS_ANNE_CHARMANDER)
+        return 3;
+    if (trainerId >= TRAINER_RIVAL_POKEMON_TOWER_SQUIRTLE && trainerId <= TRAINER_RIVAL_POKEMON_TOWER_CHARMANDER)
+        return 4;
+    if (trainerId >= TRAINER_RIVAL_SILPH_SQUIRTLE && trainerId <= TRAINER_RIVAL_SILPH_CHARMANDER)
+        return 5;
+    if (trainerId >= TRAINER_RIVAL_ROUTE22_LATE_SQUIRTLE && trainerId <= TRAINER_RIVAL_ROUTE22_LATE_CHARMANDER)
+        return 6;
+    if (trainerId >= TRAINER_CHAMPION_FIRST_SQUIRTLE && trainerId <= TRAINER_CHAMPION_FIRST_CHARMANDER)
+        return 7;
+    return 0xFF;
+}
+
+static bool8 IsRivalSecondOccurrence(u8 role, u16 trainerId)
+{
+    u8 stage = GetRivalEncounterStage(trainerId);
+
+    switch (role)
+    {
+    case RIVAL_ROLE_STARTER:
+        return stage == 1;
+    case RIVAL_ROLE_BIRD:
+    case RIVAL_ROLE_PSYCHIC:
+    case RIVAL_ROLE_RAT:
+        return stage == ((role == RIVAL_ROLE_BIRD) ? 2 : (role == RIVAL_ROLE_PSYCHIC ? 3 : 3));
+    case RIVAL_ROLE_RHYHORN:
+        return stage == 7;
+    case RIVAL_ROLE_GROWLITHE:
+    case RIVAL_ROLE_EXEGGCUTE:
+    case RIVAL_ROLE_GYARADOS:
+        return stage == 5;
+    default:
+        return FALSE;
+    }
+}
+
+static u16 GetRivalSpeciesAtLevel(u16 species, u8 level, bool8 forceNonLevelEvolution, u8 role)
+{
+    struct Pokemon mon;
+    u16 evolvedSpecies;
+    u8 evolutionCount = 0;
+
+    // Reuse the game's evolution rules for level-based evolutions. Trainer
+    // Pokémon do not have an inventory or a trade partner, so item/trade
+    // evolutions are applied separately when this roster role appears again.
+    CreateMon(&mon, species, level, 0, TRUE, 0, OT_ID_RANDOM_NO_SHINY, 0);
+    while (evolutionCount++ < 10)
+    {
+        evolvedSpecies = GetEvolutionTargetSpecies(&mon, EVO_MODE_NORMAL, ITEM_NONE, NULL, NULL, CHECK_EVO);
+        if (evolvedSpecies == SPECIES_NONE || evolvedSpecies == species)
+            break;
+        species = evolvedSpecies;
+        CreateMon(&mon, species, level, 0, TRUE, 0, OT_ID_RANDOM_NO_SHINY, 0);
+    }
+    if (forceNonLevelEvolution)
+    {
+        evolvedSpecies = GetRivalNonLevelEvolution(species, role);
+        if (evolvedSpecies != SPECIES_NONE)
+            species = evolvedSpecies;
+    }
+
+    return species;
+}
+
+u16 GetRivalTrainerSpecies(u16 originalSpecies, u8 level, u16 playerStarterSlot, u16 trainerId)
+{
+    u8 role;
+    u16 species;
+
+    if (!RandomizerFeatureEnabled(RANDOMIZE_TRAINER_MON))
+        return originalSpecies;
+
+    role = GetRivalRosterRole(originalSpecies);
+    if (role == RIVAL_ROLE_INVALID)
+        return originalSpecies;
+
+    if (role == RIVAL_ROLE_STARTER)
+    {
+        if (!RandomizerFeatureEnabled(RANDOMIZE_STARTER_AND_GIFT_MON))
+            return originalSpecies;
+        species = GetRivalStarterSpecies(playerStarterSlot);
+    }
+    else
+    {
+        if (sLastRivalRosterSeed != GetRandomizerSeed() || sRivalRosterSpecies[1] == SPECIES_NONE)
+        {
+            GetUniqueMonList(RANDOMIZER_REASON_TRAINER_PARTY,
+                             MON_RANDOM,
+                             0x5249564C, // "RIVL"
+                             0,
+                             ARRAY_COUNT(sRivalRosterOriginalSpecies),
+                             sRivalRosterOriginalSpecies,
+                             sRivalRosterSpecies);
+            sLastRivalRosterSeed = GetRandomizerSeed();
+        }
+        species = sRivalRosterSpecies[role];
+    }
+
+    return GetRivalSpeciesAtLevel(species, level, IsRivalSecondOccurrence(role, trainerId), role);
 }
 
 EWRAM_DATA static u32 sLastEggMonRandomizerSeed = 0;

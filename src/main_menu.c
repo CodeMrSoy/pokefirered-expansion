@@ -34,6 +34,8 @@ enum MainMenuWindow
     MAIN_MENU_WINDOW_NEWGAME_ONLY = 0,
     MAIN_MENU_WINDOW_CONTINUE,
     MAIN_MENU_WINDOW_NEWGAME,
+    MAIN_MENU_WINDOW_RANDOMIZER_ONLY,
+    MAIN_MENU_WINDOW_RANDOMIZER,
     MAIN_MENU_WINDOW_MYSTERYGIFT,
     MAIN_MENU_WINDOW_ERROR,
     MAIN_MENU_WINDOW_COUNT
@@ -46,7 +48,6 @@ enum MainMenuWindow
 #define tMGErrorMsgState data[9]
 #define tMGErrorType     data[10]
 
-static bool8 sHasToggledRandomizer = FALSE;
 static bool32 MainMenuGpuInit(u8 a0);
 static void Task_SetWin0BldRegsAndCheckSaveFile(u8 taskId);
 static void Task_MainMenuCheckBattery(u8);
@@ -94,11 +95,29 @@ static const struct WindowTemplate sWindowTemplate[] = {
         .tilemapLeft = 3,
         .tilemapTop = 1,
         .width = 24,
-        .height = 10,
+        .height = 8,
         .paletteNum = 15,
         .baseBlock = 0x001
     }, 
     [MAIN_MENU_WINDOW_NEWGAME] = {
+        .bg = 0,
+        .tilemapLeft = 3,
+        .tilemapTop = 10,
+        .width = 24,
+        .height = 2,
+        .paletteNum = 15,
+        .baseBlock = 0x0f1
+    }, 
+    [MAIN_MENU_WINDOW_RANDOMIZER_ONLY] = {
+        .bg = 0,
+        .tilemapLeft = 3,
+        .tilemapTop = 4,
+        .width = 24,
+        .height = 2,
+        .paletteNum = 15,
+        .baseBlock = 0x0f1
+    },
+    [MAIN_MENU_WINDOW_RANDOMIZER] = {
         .bg = 0,
         .tilemapLeft = 3,
         .tilemapTop = 13,
@@ -106,11 +125,11 @@ static const struct WindowTemplate sWindowTemplate[] = {
         .height = 2,
         .paletteNum = 15,
         .baseBlock = 0x0f1
-    }, 
+    },
     [MAIN_MENU_WINDOW_MYSTERYGIFT] = {
         .bg = 0,
         .tilemapLeft = 3,
-        .tilemapTop = 17,
+        .tilemapTop = 16,
         .width = 24,
         .height = 2,
         .paletteNum = 15,
@@ -144,7 +163,7 @@ static const struct BgTemplate sBgTemplate[] = {
     }
 };
 
-static const u8 sMenuCursorYMax[] = { 0, 1, 2 };
+static const u8 sMenuCursorYMax[] = { 1, 2, 3 };
 
 static void CB2_MainMenu(void)
 {
@@ -236,6 +255,8 @@ static void Task_SetWin0BldRegsAndCheckSaveFile(u8 taskId)
         {
         case SAVE_STATUS_OK:
             LoadUserFrameToBg(0);
+            gCachedRandomizerSeed = gSaveBlock2Ptr->randomizerSeed;
+            RandomizerSetEnabled(gCachedRandomizerSeed != 0);
             if (IsMysteryGiftEnabled() == TRUE)
             {
                 gTasks[taskId].tMenuType = MAIN_MENU_MYSTERYGIFT;
@@ -269,7 +290,8 @@ static void Task_SetWin0BldRegsAndCheckSaveFile(u8 taskId)
         default:
             LoadUserFrameToBg(0);
             gTasks[taskId].tMenuType = MAIN_MENU_NEWGAME;
-            gTasks[taskId].func = Task_SetWin0BldRegsNoSaveFileCheck;
+            RandomizerSetEnabled(FALSE);
+            gTasks[taskId].func = Task_WaitFadeAndPrintMainMenuText;
             break;
         case SAVE_STATUS_NO_FLASH:
             SetStdFrame0OnBg(0);
@@ -379,10 +401,7 @@ static void Task_SetWin0BldRegsNoSaveFileCheck(u8 taskId)
         SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT1_BG0 | BLDCNT_TGT1_BG1 | BLDCNT_TGT1_BG2 | BLDCNT_TGT1_BG3 | BLDCNT_TGT1_OBJ | BLDCNT_TGT1_BD | BLDCNT_EFFECT_DARKEN);
         SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(0, 0));
         SetGpuReg(REG_OFFSET_BLDY, 7);
-        if (gTasks[taskId].tMenuType == MAIN_MENU_NEWGAME)
-            gTasks[taskId].func = Task_ExecuteMainMenuSelection;
-        else
-            gTasks[taskId].func = Task_WaitFadeAndPrintMainMenuText;
+        gTasks[taskId].func = Task_WaitFadeAndPrintMainMenuText;
     }
 }
 
@@ -396,10 +415,9 @@ static void Task_WaitFadeAndPrintMainMenuText(u8 taskId)
 
 static void PrintRandomizerInfo(u8 windowId, u32 seed)
 {
-    AddTextPrinterParameterized3(windowId, FONT_NORMAL, 150, 2, sTextColor1, -1, gText_RandomizerOn);
     u8 seedString[32] = {0};
     ConvertIntToDecimalStringN(seedString, seed, STR_CONV_MODE_LEFT_ALIGN, 10);
-    AddTextPrinterParameterized3(windowId, FONT_NORMAL, 150, 15, sTextColor1, -1, seedString);
+    AddTextPrinterParameterized3(windowId, FONT_NORMAL, 74, 2, sTextColor1, -1, seedString);
 }
 
 static void Task_PrintMainMenuText(u8 taskId)
@@ -422,37 +440,43 @@ static void Task_PrintMainMenuText(u8 taskId)
     case MAIN_MENU_NEWGAME:
     default:
         FillWindowPixelBuffer(MAIN_MENU_WINDOW_NEWGAME_ONLY, PIXEL_FILL(10));
+        FillWindowPixelBuffer(MAIN_MENU_WINDOW_RANDOMIZER_ONLY, PIXEL_FILL(10));
         AddTextPrinterParameterized3(MAIN_MENU_WINDOW_NEWGAME_ONLY, FONT_NORMAL, 2, 2, sTextColor1, -1, gText_NewGame);
+        AddTextPrinterParameterized3(MAIN_MENU_WINDOW_RANDOMIZER_ONLY, FONT_NORMAL, 2, 2, sTextColor1, -1,
+            gRandomizerEnabled ? gText_RandomizerOn : gText_RandomizerOff);
         if (gRandomizerEnabled)
-            PrintRandomizerInfo(MAIN_MENU_WINDOW_NEWGAME_ONLY, GetRandomizerSeed());
+            PrintRandomizerInfo(MAIN_MENU_WINDOW_RANDOMIZER_ONLY, GetRandomizerSeed());
         else
-        {
-            AddTextPrinterParameterized3(MAIN_MENU_WINDOW_NEWGAME_ONLY, FONT_NORMAL, 150, 2, sTextColor1, -1, gText_RandomizerOff);
-            AddTextPrinterParameterized3(MAIN_MENU_WINDOW_NEWGAME_ONLY, FONT_NORMAL, 150, 15, sTextColor1, -1, gText_SeedOff);
-        }
+            AddTextPrinterParameterized3(MAIN_MENU_WINDOW_RANDOMIZER_ONLY, FONT_NORMAL, 150, 15, sTextColor1, -1, gText_SeedOff);
         MainMenu_DrawWindow(&sWindowTemplate[MAIN_MENU_WINDOW_NEWGAME_ONLY]);
+        MainMenu_DrawWindow(&sWindowTemplate[MAIN_MENU_WINDOW_RANDOMIZER_ONLY]);
         PutWindowTilemap(MAIN_MENU_WINDOW_NEWGAME_ONLY);
-        CopyWindowToVram(MAIN_MENU_WINDOW_NEWGAME_ONLY, COPYWIN_FULL);
+        PutWindowTilemap(MAIN_MENU_WINDOW_RANDOMIZER_ONLY);
+        CopyWindowToVram(MAIN_MENU_WINDOW_NEWGAME_ONLY, COPYWIN_GFX);
+        CopyWindowToVram(MAIN_MENU_WINDOW_RANDOMIZER_ONLY, COPYWIN_FULL);
         break;
     case MAIN_MENU_CONTINUE:
         FillWindowPixelBuffer(MAIN_MENU_WINDOW_CONTINUE, PIXEL_FILL(10));
         FillWindowPixelBuffer(MAIN_MENU_WINDOW_NEWGAME, PIXEL_FILL(10));
         AddTextPrinterParameterized3(MAIN_MENU_WINDOW_CONTINUE, FONT_NORMAL, 2, 2, sTextColor1, -1, gText_Continue);
         AddTextPrinterParameterized3(MAIN_MENU_WINDOW_NEWGAME, FONT_NORMAL, 2, 2, sTextColor1, -1, gText_NewGame);
+        FillWindowPixelBuffer(MAIN_MENU_WINDOW_RANDOMIZER, PIXEL_FILL(10));
+        AddTextPrinterParameterized3(MAIN_MENU_WINDOW_RANDOMIZER, FONT_NORMAL, 2, 2, sTextColor1, -1,
+            gRandomizerEnabled ? gText_RandomizerOn : gText_RandomizerOff);
         if (gRandomizerEnabled)
-            PrintRandomizerInfo(MAIN_MENU_WINDOW_CONTINUE, GetRandomizerSeed());
+            PrintRandomizerInfo(MAIN_MENU_WINDOW_RANDOMIZER, GetRandomizerSeed());
         else
-        {
-            AddTextPrinterParameterized3(MAIN_MENU_WINDOW_CONTINUE, FONT_NORMAL, 150, 2, sTextColor1, -1, gText_RandomizerOff);
-            AddTextPrinterParameterized3(MAIN_MENU_WINDOW_CONTINUE, FONT_NORMAL, 150, 15, sTextColor1, -1, gText_SeedOff);
-        }
+            AddTextPrinterParameterized3(MAIN_MENU_WINDOW_RANDOMIZER, FONT_NORMAL, 150, 15, sTextColor1, -1, gText_SeedOff);
         PrintContinueStats();
         MainMenu_DrawWindow(&sWindowTemplate[MAIN_MENU_WINDOW_CONTINUE]);
         MainMenu_DrawWindow(&sWindowTemplate[MAIN_MENU_WINDOW_NEWGAME]);
+        MainMenu_DrawWindow(&sWindowTemplate[MAIN_MENU_WINDOW_RANDOMIZER]);
         PutWindowTilemap(MAIN_MENU_WINDOW_CONTINUE);
         PutWindowTilemap(MAIN_MENU_WINDOW_NEWGAME);
+        PutWindowTilemap(MAIN_MENU_WINDOW_RANDOMIZER);
         CopyWindowToVram(MAIN_MENU_WINDOW_CONTINUE, COPYWIN_GFX);
-        CopyWindowToVram(MAIN_MENU_WINDOW_NEWGAME, COPYWIN_FULL);
+        CopyWindowToVram(MAIN_MENU_WINDOW_NEWGAME, COPYWIN_GFX);
+        CopyWindowToVram(MAIN_MENU_WINDOW_RANDOMIZER, COPYWIN_FULL);
         break;
     case MAIN_MENU_MYSTERYGIFT:
         FillWindowPixelBuffer(MAIN_MENU_WINDOW_CONTINUE, PIXEL_FILL(10));
@@ -460,17 +484,27 @@ static void Task_PrintMainMenuText(u8 taskId)
         FillWindowPixelBuffer(MAIN_MENU_WINDOW_MYSTERYGIFT, PIXEL_FILL(10));
         AddTextPrinterParameterized3(MAIN_MENU_WINDOW_CONTINUE, FONT_NORMAL, 2, 2, sTextColor1, -1, gText_Continue);
         AddTextPrinterParameterized3(MAIN_MENU_WINDOW_NEWGAME, FONT_NORMAL, 2, 2, sTextColor1, -1, gText_NewGame);
+        FillWindowPixelBuffer(MAIN_MENU_WINDOW_RANDOMIZER, PIXEL_FILL(10));
+        AddTextPrinterParameterized3(MAIN_MENU_WINDOW_RANDOMIZER, FONT_NORMAL, 2, 2, sTextColor1, -1,
+            gRandomizerEnabled ? gText_RandomizerOn : gText_RandomizerOff);
+        if (gRandomizerEnabled)
+            PrintRandomizerInfo(MAIN_MENU_WINDOW_RANDOMIZER, GetRandomizerSeed());
+        else
+            AddTextPrinterParameterized3(MAIN_MENU_WINDOW_RANDOMIZER, FONT_NORMAL, 150, 15, sTextColor1, -1, gText_SeedOff);
         gTasks[taskId].tMGErrorType = 1;
         AddTextPrinterParameterized3(MAIN_MENU_WINDOW_MYSTERYGIFT, FONT_NORMAL, 2, 2, sTextColor1, -1, gText_MysteryGift);
         PrintContinueStats();
         MainMenu_DrawWindow(&sWindowTemplate[MAIN_MENU_WINDOW_CONTINUE]);
         MainMenu_DrawWindow(&sWindowTemplate[MAIN_MENU_WINDOW_NEWGAME]);
+        MainMenu_DrawWindow(&sWindowTemplate[MAIN_MENU_WINDOW_RANDOMIZER]);
         MainMenu_DrawWindow(&sWindowTemplate[MAIN_MENU_WINDOW_MYSTERYGIFT]);
         PutWindowTilemap(MAIN_MENU_WINDOW_CONTINUE);
         PutWindowTilemap(MAIN_MENU_WINDOW_NEWGAME);
+        PutWindowTilemap(MAIN_MENU_WINDOW_RANDOMIZER);
         PutWindowTilemap(MAIN_MENU_WINDOW_MYSTERYGIFT);
         CopyWindowToVram(MAIN_MENU_WINDOW_CONTINUE, COPYWIN_GFX);
         CopyWindowToVram(MAIN_MENU_WINDOW_NEWGAME, COPYWIN_GFX);
+        CopyWindowToVram(MAIN_MENU_WINDOW_RANDOMIZER, COPYWIN_GFX);
         CopyWindowToVram(MAIN_MENU_WINDOW_MYSTERYGIFT, COPYWIN_FULL);
         break;
     }
@@ -523,6 +557,9 @@ static void Task_ExecuteMainMenuSelection(u8 taskId)
             case 1:
                 menuAction = MAIN_MENU_NEWGAME;
                 break;
+            case 2:
+                menuAction = MAIN_MENU_CONTINUE;
+                break;
             }
             break;
         case MAIN_MENU_MYSTERYGIFT:
@@ -536,6 +573,9 @@ static void Task_ExecuteMainMenuSelection(u8 taskId)
                 menuAction = MAIN_MENU_NEWGAME;
                 break;
             case 2:
+                menuAction = MAIN_MENU_CONTINUE;
+                break;
+            case 3:
                 if (!IsWirelessAdapterConnected())
                 {
                     SetStdFrame0OnBg(0);
@@ -555,7 +595,11 @@ static void Task_ExecuteMainMenuSelection(u8 taskId)
         {
         default:
         case MAIN_MENU_NEWGAME:
-            gCachedRandomizerSeed = gSaveBlock2Ptr->randomizerSeed;
+            if (gRandomizerEnabled)
+            {
+                gCachedRandomizerSeed = GenerateSeedForRandomizer();
+                gSaveBlock2Ptr->randomizerSeed = gCachedRandomizerSeed;
+            }
             gExitStairsMovementDisabled = FALSE;
             FreeAllWindowBuffers();
             DestroyTask(taskId);
@@ -627,24 +671,55 @@ static void MoveWindowByMenuTypeAndCursorPos(u8 menuType, u8 cursorPos)
     {
     default:
     case MAIN_MENU_NEWGAME:
-        win0vTop = 0x00 << 8;
-        win0vBot = 0x20;
+        switch (cursorPos)
+        {
+        default:
+        case 0: // NEW GAME
+            win0vTop = 0x00 << 8;
+            win0vBot = 0x20;
+            break;
+        case 1: // RANDOMIZER
+            win0vTop = 0x20 << 8;
+            win0vBot = 0x40;
+            break;
+        }
         break;
     case MAIN_MENU_CONTINUE:
+        switch (cursorPos)
+        {
+        default:
+        case 0: // CONTINUE
+            win0vTop = 0x00 << 8;
+            win0vBot = 0x50;
+            break;
+        case 1: // NEW GAME
+            win0vTop = 0x50 << 8;
+            win0vBot = 0x70;
+            break;
+        case 2: // RANDOMIZER
+            win0vTop = 0x70 << 8;
+            win0vBot = 0x90;
+            break;
+        }
+        break;
     case MAIN_MENU_MYSTERYGIFT:
         switch (cursorPos)
         {
         default:
         case 0: // CONTINUE
             win0vTop = 0x00 << 8;
-            win0vBot = 0x60;
+            win0vBot = 0x50;
             break;
         case 1: // NEW GAME
-            win0vTop = 0x60 << 8;
-            win0vBot = 0x80;
+            win0vTop = 0x50 << 8;
+            win0vBot = 0x70;
             break;
-        case 2: // MYSTERY GIFT
-            win0vTop = 0x80 << 8;
+        case 2: // RANDOMIZER
+            win0vTop = 0x70 << 8;
+            win0vBot = 0x90;
+            break;
+        case 3: // MYSTERY GIFT
+            win0vTop = 0x90 << 8;
             win0vBot = 0xA0;
             break;
         }
@@ -655,7 +730,16 @@ static void MoveWindowByMenuTypeAndCursorPos(u8 menuType, u8 cursorPos)
 
 static bool8 HandleMenuInput(u8 taskId)
 {
-    if (JOY_NEW(A_BUTTON))
+    if (JOY_NEW(A_BUTTON)
+        && ((gTasks[taskId].tMenuType == MAIN_MENU_NEWGAME && gTasks[taskId].tCursorPos == 1)
+            || (gTasks[taskId].tMenuType != MAIN_MENU_NEWGAME && gTasks[taskId].tCursorPos == 2)))
+    {
+        RandomizerSetEnabled(!gRandomizerEnabled);
+        PlaySE(SE_SELECT);
+        Task_PrintMainMenuText(taskId);
+        gTasks[taskId].func = Task_WaitDma3AndFadeIn;
+    }
+    else if (JOY_NEW(A_BUTTON))
     {
         PlaySE(SE_SELECT);
         IsWirelessAdapterConnected(); // called for its side effects only
@@ -680,34 +764,6 @@ static bool8 HandleMenuInput(u8 taskId)
         gTasks[taskId].tCursorPos++;
         return TRUE;
     }
-    if ((JOY_HELD(L_BUTTON) && JOY_HELD(R_BUTTON)) && !sHasToggledRandomizer)
-    {
-        gRandomizerEnabled ^= TRUE; // Toggle
-        sHasToggledRandomizer = TRUE;
-        PlaySE(SE_SELECT);
-
-        if (gRandomizerEnabled && gSaveBlock2Ptr->randomizerSeed == 0)
-            gSaveBlock2Ptr->randomizerSeed = (Random() << 16) | Random();
-
-        /*
-        * Mirror the current randomizer seed outside of the saveblock.  This
-        * allows the seed to survive SaveBlock2 clears during New Game
-        * initialization.  Without this assignment, calls to
-        * GetRandomizerSeed() before the seed is restored would return 0.
-        */
-        gCachedRandomizerSeed = gSaveBlock2Ptr->randomizerSeed;
-
-        Task_PrintMainMenuText(taskId);
-        MgbaPrintf(MGBA_LOG_DEBUG, "Randomizer: %s, Seed: 0x%08X",
-               gRandomizerEnabled ? "ENABLED" : "DISABLED",
-               GetRandomizerSeed());
-    }
-    else if (!(JOY_HELD(L_BUTTON) && JOY_HELD(R_BUTTON)))
-    {
-        sHasToggledRandomizer = FALSE;
-        
-    }
-
     return FALSE;
 }
 
@@ -735,12 +791,12 @@ static void PrintPlayerName(void)
     s32 i;
     u8 name[PLAYER_NAME_LENGTH + 1];
     u8 *ptr;
-    AddTextPrinterParameterized3(MAIN_MENU_WINDOW_CONTINUE, FONT_NORMAL, 2, 18, sTextColor2, -1, gText_Player);
+    AddTextPrinterParameterized3(MAIN_MENU_WINDOW_CONTINUE, FONT_NORMAL, 2, 10, sTextColor2, -1, gText_Player);
     ptr = name;
     for (i = 0; i < PLAYER_NAME_LENGTH; i++)
         *ptr++ = gSaveBlock2Ptr->playerName[i];
     *ptr = EOS;
-    AddTextPrinterParameterized3(MAIN_MENU_WINDOW_CONTINUE, FONT_NORMAL, 62, 18, sTextColor2, -1, name);
+    AddTextPrinterParameterized3(MAIN_MENU_WINDOW_CONTINUE, FONT_NORMAL, 62, 10, sTextColor2, -1, name);
 }
 
 static void PrintPlayTime(void)
@@ -748,11 +804,11 @@ static void PrintPlayTime(void)
     u8 strbuf[30];
     u8 *ptr;
 
-    AddTextPrinterParameterized3(MAIN_MENU_WINDOW_CONTINUE, FONT_NORMAL, 2, 34, sTextColor2, -1, gText_Time);
+    AddTextPrinterParameterized3(MAIN_MENU_WINDOW_CONTINUE, FONT_NORMAL, 2, 24, sTextColor2, -1, gText_Time);
     ptr = ConvertIntToDecimalStringN(strbuf, gSaveBlock2Ptr->playTimeHours, STR_CONV_MODE_LEFT_ALIGN, 3);
     *ptr++ = CHAR_COLON;
     ConvertIntToDecimalStringN(ptr, gSaveBlock2Ptr->playTimeMinutes, STR_CONV_MODE_LEADING_ZEROS, 2);
-    AddTextPrinterParameterized3(MAIN_MENU_WINDOW_CONTINUE, FONT_NORMAL, 62, 34, sTextColor2, -1, strbuf);
+    AddTextPrinterParameterized3(MAIN_MENU_WINDOW_CONTINUE, FONT_NORMAL, 62, 24, sTextColor2, -1, strbuf);
 }
 
 static void PrintDexCount(void)
@@ -766,10 +822,10 @@ static void PrintDexCount(void)
             dexcount = GetNationalPokedexCount(FLAG_GET_CAUGHT);
         else
             dexcount = GetKantoPokedexCount(FLAG_GET_CAUGHT);
-        AddTextPrinterParameterized3(MAIN_MENU_WINDOW_CONTINUE, FONT_NORMAL, 2, 50, sTextColor2, -1, gText_Pokedex);
+        AddTextPrinterParameterized3(MAIN_MENU_WINDOW_CONTINUE, FONT_NORMAL, 2, 38, sTextColor2, -1, gText_Pokedex);
         ptr = ConvertIntToDecimalStringN(strbuf, dexcount, STR_CONV_MODE_LEFT_ALIGN, 4);
         StringAppend(ptr, gTextJPDummy_Hiki);
-        AddTextPrinterParameterized3(MAIN_MENU_WINDOW_CONTINUE, FONT_NORMAL, 62, 50, sTextColor2, -1, strbuf);
+        AddTextPrinterParameterized3(MAIN_MENU_WINDOW_CONTINUE, FONT_NORMAL, 62, 38, sTextColor2, -1, strbuf);
     }
 }
 
@@ -784,10 +840,10 @@ static void PrintBadgeCount(void)
         if (FlagGet(flagId))
             nbadges++;
     }
-    AddTextPrinterParameterized3(MAIN_MENU_WINDOW_CONTINUE, FONT_NORMAL, 2, 66, sTextColor2, -1, gText_Badges);
+    AddTextPrinterParameterized3(MAIN_MENU_WINDOW_CONTINUE, FONT_NORMAL, 2, 52, sTextColor2, -1, gText_Badges);
     ptr = ConvertIntToDecimalStringN(strbuf, nbadges, STR_CONV_MODE_LEADING_ZEROS, 1);
     StringAppend(ptr, gTextJPDummy_Ko);
-    AddTextPrinterParameterized3(MAIN_MENU_WINDOW_CONTINUE, FONT_NORMAL, 62, 66, sTextColor2, -1, strbuf);
+    AddTextPrinterParameterized3(MAIN_MENU_WINDOW_CONTINUE, FONT_NORMAL, 62, 52, sTextColor2, -1, strbuf);
 }
 
 static void LoadUserFrameToBg(u8 bgId)

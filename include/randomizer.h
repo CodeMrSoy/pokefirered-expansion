@@ -87,6 +87,11 @@ struct RandomizerGroupSet {
 
 
 u32 GetRandomizerSeed(void);
+u32 GenerateSeedForRandomizer(void);
+
+// Enables/disables the randomizer master switch and synchronizes its feature flags.
+void RandomizerSetEnabled(bool8 enabled);
+void RandomizerApplyFeatureFlags(void);
 
 bool32 RandomizerFeatureEnabled(enum RandomizerFeature feature);
 
@@ -125,7 +130,11 @@ u16 RandomizeTrainerMon(u16 trainerId, u8 slot, u8 totalMons, u16 species);
 u16 RandomizeFixedEncounterMon(u16 species, u8 mapNum, u8 mapGroup, u8 localId);
 
 // Given a starter/gift slot and the list of original starters/gifts, returns the random mon in that slot.
-u16 RandomizeStarterAndGiftMon(u16 originalSlot, const u16* originalStarterAndGiftMons);
+u16 RandomizeStarterAndGiftMon(u16 originalSlot, const u16* originalStarterAndGiftMons, u8 count);
+u16 GetRandomizedStarterSpecies(u16 starterSlot);
+u16 GetRivalStarterSlot(u16 playerStarterSlot);
+u16 GetRivalStarterSpecies(u16 playerStarterSlot);
+u16 GetRivalTrainerSpecies(u16 originalSpecies, u8 level, u16 playerStarterSlot, u16 trainerId);
 
 // Given a egg slot and the list of original egg mons, returns the random egg mon in that slot.
 u16 RandomizeEggMon(u16 originalSlot, const u16* originalEggMons);

@@ -13,6 +13,7 @@
 #include "pokemon.h"
 #include "pokemon_storage_system.h"
 #include "random.h"
+#include "randomizer.h"
 #include "script.h"
 #include "script_pokemon_util.h"
 #include "wild_encounter.h"
@@ -390,7 +391,8 @@ void ScrCmd_createmonrandom(struct ScriptContext *ctx)
 {
     u8 side           = ScriptReadByte(ctx);
     u8 slot           = ScriptReadByte(ctx);
-    u16 species       = VarGet(ScriptReadHalfword(ctx));
+    u16 speciesVar    = ScriptReadHalfword(ctx);
+    u16 species       = VarGet(speciesVar);
     u8 level          = VarGet(ScriptReadHalfword(ctx));
 
     #if RANDOMIZER_AVAILABLE == TRUE
@@ -400,7 +402,17 @@ void ScrCmd_createmonrandom(struct ScriptContext *ctx)
             if(gStarterAndGiftMonTable[j] == species)
                 break;
         }
-        species = RandomizeStarterAndGiftMon(j, gStarterAndGiftMonTable);
+        if (j < STARTER_AND_GIFT_MON_COUNT)
+        {
+            species = RandomizeStarterAndGiftMon(j, gStarterAndGiftMonTable, STARTER_AND_GIFT_MON_COUNT);
+            if (speciesVar >= VARS_START && speciesVar < VARS_END)
+                VarSet(speciesVar, species);
+            if (speciesVar == VAR_TEMP_2)
+            {
+                VarSet(VAR_TEMP_5, GetRivalStarterSlot(VarGet(VAR_TEMP_1)));
+                VarSet(VAR_TEMP_3, GetRivalStarterSpecies(VarGet(VAR_TEMP_1)));
+            }
+        }
     #endif
 
     u32 flags         = ScriptReadWord(ctx);

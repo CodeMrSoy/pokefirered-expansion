@@ -35,6 +35,7 @@
 #include "pokemon_icon.h"
 #include "pokemon_summary_screen.h"
 #include "random.h"
+#include "randomizer.h"
 #include "region_map.h"
 #include "rtc.h"
 #include "scanline_effect.h"

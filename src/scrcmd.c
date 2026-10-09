@@ -2014,7 +2014,8 @@ bool8 ScrCmd_showmonpic(struct ScriptContext * ctx)
             if(gStarterAndGiftMonTable[i] == species)
                 break;
         }
-        species = RandomizeStarterAndGiftMon(i, gStarterAndGiftMonTable);
+        if (i < STARTER_AND_GIFT_MON_COUNT)
+            species = RandomizeStarterAndGiftMon(i, gStarterAndGiftMonTable, STARTER_AND_GIFT_MON_COUNT);
     #endif
 
     ScriptMenu_ShowPokemonPic(species, x, y);
