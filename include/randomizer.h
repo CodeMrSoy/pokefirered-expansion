@@ -35,7 +35,7 @@ enum RandomizerFeature
     RANDOMIZE_BASE_STATS,
     // Randomization of species types. Not yet implemented.
     RANDOMIZE_MON_TYPES,
-    // Randomization of species learnset. Not yet implemented.
+    // Randomization of species level-up learnsets.
     RANDOMIZE_LEARNSET,
     // Randomization of fixed encounters.
     RANDOMIZE_FIXED_MON,
@@ -139,8 +139,11 @@ u16 GetRivalTrainerSpecies(u16 originalSpecies, u8 level, u16 playerStarterSlot,
 // Given a egg slot and the list of original egg mons, returns the random egg mon in that slot.
 u16 RandomizeEggMon(u16 originalSlot, const u16* originalEggMons);
 
-// Given a species and an abilityNum, returns a replacement for that ability.
-u16 RandomizeAbility(u16 species, u8 abilityNum, u16 originalAbility);
+// Returns the seed-stable randomized ability shared by every ability slot of a species.
+u16 RandomizeAbility(u16 species, u16 originalAbility);
+
+// Returns a seed-stable randomized level-up learnset for a species.
+const struct LevelUpMove *RandomizeLearnset(u16 species, const struct LevelUpMove *originalLearnset);
 
 static inline bool32 GroupSetsIntersect(struct RandomizerGroupSet* originalCache, struct RandomizerGroupSet* targetCache)
 {

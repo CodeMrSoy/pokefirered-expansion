@@ -11,6 +11,7 @@
 #include "data.h"
 #include "data/randomizer/special_form_tables.h"
 #include "constants/abilities.h"
+#include "constants/moves.h"
 #include "constants/opponents.h"
 #include "data/randomizer/ability_whitelist.h"
 #include "constants/abilities.h"
@@ -52,6 +53,10 @@ void RandomizerApplyFeatureFlags(void)
     #ifndef FORCE_RANDOMIZE_ABILITIES
         if (gRandomizerEnabled) FlagSet(RANDOMIZER_FLAG_ABILITIES);
         else FlagClear(RANDOMIZER_FLAG_ABILITIES);
+    #endif
+    #ifndef FORCE_RANDOMIZE_LEARNSET
+        if (gRandomizerEnabled) FlagSet(RANDOMIZER_FLAG_LEARNSET);
+        else FlagClear(RANDOMIZER_FLAG_LEARNSET);
     #endif
 }
 
@@ -198,6 +203,12 @@ bool32 RandomizerFeatureEnabled(enum RandomizerFeature feature)
                 return FORCE_RANDOMIZE_ABILITIES;
             #else
                 return FlagGet(RANDOMIZER_FLAG_ABILITIES);
+            #endif
+        case RANDOMIZE_LEARNSET:
+            #ifdef FORCE_RANDOMIZE_LEARNSET
+                return FORCE_RANDOMIZE_LEARNSET;
+            #else
+                return FlagGet(RANDOMIZER_FLAG_LEARNSET);
             #endif
         default:
             return FALSE;
@@ -1346,38 +1357,69 @@ u16 RandomizeEggMon(u16 originalSlot, const u16* originalEggMons)
     return originalEggMons[originalSlot];
 }
 
-static inline bool32 IsAbilityIllegal(u16 ability)
-{
-    if (ability == ABILITY_NONE || ability == ABILITY_WONDER_GUARD)
-        return TRUE;
-    return FALSE;
-}
-
-// Given a species and an abilityNum, returns a replacement for that ability.
-u16 RandomizeAbility(u16 species, u8 abilityNum, u16 originalAbility)
+// Ability assignment is keyed only by species and seed, so every instance of a
+// species gets the same result regardless of its normal ability slot.
+u16 RandomizeAbility(u16 species, u16 originalAbility)
 {
     if (RandomizerFeatureEnabled(RANDOMIZE_ABILITIES) && originalAbility != ABILITY_NONE)
-    {  
+    {
         struct Sfc32State state;
-        u16 result;
-        u32 seed;
 
-        // Seed the generator using the species and the abilityNum 
-        seed = ((u32)species) << 8;
-        seed |= abilityNum;
-
-        state = RandomizerRandSeed(RANDOMIZER_REASON_ABILITIES, seed, species);
-
-        // Randomize abilities
-        do
-        {
-            result = sRandomizerAbilityWhitelist[RandomizerNextRange(&state, ABILITY_WHITELIST_SIZE)];
-        } while(IsAbilityIllegal(result));
-
-        return result;
+        // The randomizer seed and species form a stable per-species assignment.
+        state = RandomizerRandSeed(RANDOMIZER_REASON_ABILITIES, species, 0);
+        // Keep all defined abilities eligible, including Wonder Guard.
+        return sRandomizerAbilityWhitelist[RandomizerNextRange(&state, ABILITY_WHITELIST_SIZE)];
     }
 
     return originalAbility;
+}
+
+// A single small cache keeps consumers that expect a pointer-based learnset API
+// compatible with seeded randomization while avoiding a large per-species RAM table.
+EWRAM_DATA static struct LevelUpMove sRandomizedLevelUpLearnset[MAX_LEVEL_UP_MOVES + 1];
+EWRAM_DATA static u16 sRandomizedLevelUpLearnsetSpecies = SPECIES_NONE;
+EWRAM_DATA static u32 sRandomizedLevelUpLearnsetSeed = 0;
+
+const struct LevelUpMove *RandomizeLearnset(u16 species, const struct LevelUpMove *originalLearnset)
+{
+    struct Sfc32State state;
+    u32 seed = GetRandomizerSeed();
+    u32 i, j;
+
+    if (!RandomizerFeatureEnabled(RANDOMIZE_LEARNSET) || originalLearnset == NULL)
+        return originalLearnset;
+
+    if (sRandomizedLevelUpLearnsetSpecies == species
+        && sRandomizedLevelUpLearnsetSeed == seed)
+        return sRandomizedLevelUpLearnset;
+
+    // Preserve the species' move-learning levels and replace only the move IDs.
+    // Rejected duplicates ensure no species learns a generated move twice.
+    state = RandomizerRandSeed(RANDOMIZER_REASON_LEARNSET, species, 0);
+    for (i = 0; i < MAX_LEVEL_UP_MOVES && originalLearnset[i].move != LEVEL_UP_MOVE_END; i++)
+    {
+        u16 move;
+        bool32 duplicate;
+
+        do
+        {
+            move = RandomizerNextRange(&state, MOVES_COUNT);
+            duplicate = (move == MOVE_NONE || move == MOVE_STRUGGLE);
+            for (j = 0; !duplicate && j < i; j++)
+            {
+                if (sRandomizedLevelUpLearnset[j].move == move)
+                    duplicate = TRUE;
+            }
+        } while (duplicate);
+
+        sRandomizedLevelUpLearnset[i].move = move;
+        sRandomizedLevelUpLearnset[i].level = originalLearnset[i].level;
+    }
+    sRandomizedLevelUpLearnset[i].move = LEVEL_UP_MOVE_END;
+    sRandomizedLevelUpLearnset[i].level = LEVEL_UP_MOVE_END;
+    sRandomizedLevelUpLearnsetSpecies = species;
+    sRandomizedLevelUpLearnsetSeed = seed;
+    return sRandomizedLevelUpLearnset;
 }
 
 #endif // RANDOMIZER_AVAILABLE

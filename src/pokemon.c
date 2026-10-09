@@ -3664,7 +3664,7 @@ u16 GetAbilityBySpecies(u16 species, u8 abilityNum, u8 cantRandomizeAbility)
     #if RANDOMIZER_AVAILABLE == TRUE
         if(!cantRandomizeAbility && gLastUsedAbility != ABILITY_NONE)
         {
-            gLastUsedAbility = RandomizeAbility(species, abilityNum, gLastUsedAbility);
+            gLastUsedAbility = RandomizeAbility(species, gLastUsedAbility);
         }
     #endif
 
@@ -3676,7 +3676,7 @@ u16 GetMonAbility(struct Pokemon *mon)
     u16 species = GetMonData(mon, MON_DATA_SPECIES, NULL);
     u8 abilityNum = GetMonData(mon, MON_DATA_ABILITY_NUM, NULL);
     u8 cantRandomizeAbility = GetMonData(mon, MON_DATA_CANT_RANDOMIZE_ABILITY, NULL);
-    return GetAbilityBySpecies(species, abilityNum, FALSE);
+    return GetAbilityBySpecies(species, abilityNum, cantRandomizeAbility);
 }
 
 // void CreateSecretBaseEnemyParty(struct SecretBase *secretBaseRecord)
@@ -3797,7 +3797,7 @@ u32 GetSpeciesAbilityWithRandomizerCheck(u16 species, u8 slot, bool8 cantRandomi
 {
 #if RANDOMIZER_AVAILABLE == TRUE
     if (!cantRandomize && RandomizerFeatureEnabled(RANDOMIZE_ABILITIES))
-        return RandomizeAbility(species, slot, gSpeciesInfo[SanitizeSpeciesId(species)].abilities[slot]);
+        return RandomizeAbility(species, gSpeciesInfo[SanitizeSpeciesId(species)].abilities[slot]);
 #endif
     return gSpeciesInfo[SanitizeSpeciesId(species)].abilities[slot];
 }
@@ -3834,10 +3834,18 @@ u32 GetSpeciesBaseSpeed(u16 species)
 
 const struct LevelUpMove *GetSpeciesLevelUpLearnset(u16 species)
 {
-    const struct LevelUpMove *learnset = gSpeciesInfo[SanitizeSpeciesId(species)].levelUpLearnset;
+    const struct LevelUpMove *learnset;
+
+    species = SanitizeSpeciesId(species);
+    learnset = gSpeciesInfo[species].levelUpLearnset;
     if (learnset == NULL)
-        return gSpeciesInfo[SPECIES_NONE].levelUpLearnset;
+        learnset = gSpeciesInfo[SPECIES_NONE].levelUpLearnset;
+#if RANDOMIZER_AVAILABLE == TRUE
+    // Use the same seed-derived learnset for level-ups, move checks, and tutors.
+    return RandomizeLearnset(species, learnset);
+#else
     return learnset;
+#endif
 }
 
 const u16 *GetSpeciesTeachableLearnset(u16 species)
