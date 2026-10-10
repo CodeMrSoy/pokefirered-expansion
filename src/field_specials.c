@@ -27,6 +27,7 @@
 #include "event_object_movement.h"
 #include "item.h"
 #include "random.h"
+#include "randomizer.h"
 #include "mail.h"
 #include "help_system.h"
 #include "pokemon_storage_system.h"
@@ -1611,17 +1612,18 @@ void ForcePlayerToStartSurfing(void)
     SetPlayerAvatarTransitionFlags(PLAYER_AVATAR_FLAG_SURFING);
 }
 
-static const u16 sStarterSpecies[] = {
-    SPECIES_BULBASAUR,
-    SPECIES_SQUIRTLE,
-    SPECIES_CHARMANDER
-};
-
 static u16 GetStarterSpeciesById(u16 idx)
 {
-    if (idx >= NELEMS(sStarterSpecies))
+    if (idx >= 3)
         idx = 0;
-    return sStarterSpecies[idx];
+    
+    #if RANDOMIZER_AVAILABLE == TRUE
+    if (gRandomizerEnabled && GetRandomizerSeed() != 0)
+        return GetRandomizedStarterSpecies(idx);
+    #endif
+    
+    MgbaPrintf(MGBA_LOG_DEBUG, "Starter: Requesting slot %d", idx);
+    return (u16[]){SPECIES_BULBASAUR, SPECIES_SQUIRTLE, SPECIES_CHARMANDER}[idx];
 }
 
 u16 GetStarterSpecies(void)
@@ -2745,4 +2747,18 @@ void TrySkyBattle(void)
         }
     }
     gSpecialVar_Result = FALSE;
+}
+
+// Called before Oak's starter confirmation; leave the original species variable
+// intact so showmonpic and givemonrandom each randomize it exactly once.
+void BufferOakStarterChoice(void)
+{
+    gSpecialVar_Result = FALSE;
+#if RANDOMIZER_AVAILABLE == TRUE
+    if (RandomizerFeatureEnabled(RANDOMIZE_STARTER_AND_GIFT_MON))
+    {
+        StringCopy(gStringVar1, GetSpeciesName(GetRandomizedStarterSpecies(VarGet(VAR_TEMP_1))));
+        gSpecialVar_Result = TRUE;
+    }
+#endif
 }

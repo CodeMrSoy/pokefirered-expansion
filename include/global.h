@@ -21,6 +21,7 @@
 #include "constants/items.h"
 #include "config/save.h"
 
+
 // Prevent cross-jump optimization.
 #define BLOCK_CROSS_JUMP asm("");
 
@@ -430,7 +431,9 @@ struct SaveBlock2
 #endif //FREE_POKEMON_JUMP
     /*0xB10*/ struct BerryPickingResults berryPick;
     /*0x169C*/ struct BerryTree berryTrees[BERRY_TREES_COUNT]; // moved to SaveBlock2 due to QuestLogScene taking up SaveBlock1
-    /*0x???*/ u8 filler_90[212];
+    /*0x???*/ u32 randomizerSeed;
+    /*0x???*/ bool8 randomizerActive;
+    /*0x???*/ u8 filler_90[207];
 }; // size: 0xF24
 
 extern struct SaveBlock2 *gSaveBlock2Ptr;
@@ -908,7 +911,6 @@ struct SaveBlock1
     /*0x3D34*/ u32 towerChallengeId;
     /*0x3D38*/ struct TrainerTower trainerTower[NUM_TOWER_CHALLENGE_TYPES];
 #endif //FREE_TRAINER_HILL
-    /*0x3D24*/ u8 unusedSB1[0x1C];
 }; // size: 0x3D68
 
 struct MapPosition

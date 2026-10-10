@@ -40,6 +40,7 @@
 #include "quest_log.h"
 #include "quest_log_objects.h"
 #include "random.h"
+#include "randomizer.h"
 #include "renewable_hidden_items.h"
 #include "roamer.h"
 #include "rtc.h"
@@ -1704,7 +1705,16 @@ void CB2_NewGame(void)
     FieldClearVBlankHBlankCallbacks();
     StopMapMusic();
     ResetSafariZoneFlag_();
+    
+    // Restore seed and update toggle
+    gSaveBlock2Ptr->randomizerSeed = gCachedRandomizerSeed;
+    if(gSaveBlock2Ptr->randomizerSeed != 0)
+        gRandomizerEnabled = TRUE;
+    MgbaPrintf(MGBA_LOG_DEBUG, "Seed restored: 0x%08X", GetRandomizerSeed());
+
     NewGameInitData();
+    RandomizerApplyFeatureFlags();
+
     ResetInitialPlayerAvatarState();
     PlayTimeCounter_Start();
     ScriptContext_Init();
@@ -1865,11 +1875,20 @@ static void FieldCB_ShowMapNameOnContinue(void)
 
 void CB2_ContinueSavedGame(void)
 {
+    #if RANDOMIZER_AVAILABLE == TRUE
+    gCachedRandomizerSeed = gSaveBlock2Ptr->randomizerSeed;
+    gRandomizerEnabled = gCachedRandomizerSeed != 0;
+    RandomizerApplyFeatureFlags();
+    MgbaPrintf(MGBA_LOG_DEBUG, "Continue Game: Seed restored 0x%08X", GetRandomizerSeed());
+    #endif
     FieldClearVBlankHBlankCallbacks();
     StopMapMusic();
     ResetSafariZoneFlag_();
     LoadSaveblockMapHeader();
     LoadSaveblockObjEventScripts();
+    #if (RANDOMIZER_AVAILABLE == TRUE) && (RANDOMIZER_DYNAMIC_SPECIES == TRUE)
+        PreloadRandomizationTables();
+    #endif
     UnfreezeObjectEvents();
     DoTimeBasedEvents();
     Overworld_ResetStateOnContinue();

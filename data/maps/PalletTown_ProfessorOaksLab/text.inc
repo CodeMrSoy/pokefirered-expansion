@@ -366,3 +366,8 @@ PalletTown_ProfessorOaksLab_Text_RivalIllCompleteThePokedex::
     .string "ONE ISLAND first…\p"
     .string "Anyways, I'm outta here!$"
 
+
+PalletTown_ProfessorOaksLab_Text_OakChoosingRandomStarter::
+    .string "I see! {STR_VAR_1} is your choice.\p"
+    .string "So, {PLAYER}, you want to choose\n"
+    .string "{STR_VAR_1}?$"

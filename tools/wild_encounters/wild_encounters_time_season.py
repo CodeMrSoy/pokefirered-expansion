@@ -1,6 +1,7 @@
 import json
 import re
 
+
 mon_types = ["land_mons", "water_mons", "rock_smash_mons", "fishing_mons", "hidden_mons"]
 
 seasons = {
