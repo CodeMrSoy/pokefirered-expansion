@@ -788,8 +788,8 @@ void GetUniqueMonList(enum RandomizerReason reason, enum RandomizerSpeciesMode m
         if (!IsSpeciesPermitted(curOriginal))
         {
             // If there's non-permitted Pokémon in here, something is wrong.
-            // Just pass them through without marking.
-            curMon = curOriginal;
+            // Pass them through without marking them as randomized.
+            resultSpecies[i] = curOriginal;
             continue;
         }
 
