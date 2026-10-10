@@ -101,9 +101,50 @@ EventScript_ExitOaksPC::
 	end
 
 EventScript_AccessPokeGlass::
+	lockall
+	playse SE_SELECT
+	special StartPokeGlassIntro
+	waitstate
+EventScript_PokeGlassMenu::
+	multichoice 7, 3, MULTICHOICE_POKEGLASS, FALSE
+	switch VAR_RESULT
+	case 0, EventScript_PokeGlassPokedex
+	case 1, EventScript_PokeGlassParty
+	case 2, EventScript_PokeGlassStorage
+	case 3, EventScript_PokeGlassStats
+	case 4, EventScript_PokeGlassMap
+	case SCR_MENU_CANCEL, EventScript_PokeGlassClose
+	end
+
+EventScript_PokeGlassPokedex::
+	goto_if_unset FLAG_SYS_POKEDEX_GET, EventScript_PokeGlassClose
+	releaseall
+	special OpenPokeGlassPokedex
+	end
+
+EventScript_PokeGlassStorage::
+	goto_if_set FLAG_SYS_PC_STORAGE_DISABLED, EventScript_PCDisabled
 	playse SE_PC_LOGIN
-	msgbox Text_OpenedPkmnStorage, MSGBOX_DEFAULT
 	special ShowPokemonStorageSystemPC
 	waitstate
-	goto EventScript_TurnOffPC
+	goto EventScript_PokeGlassMenu
+	end
+
+EventScript_PokeGlassParty::
+	releaseall
+	special OpenPokeGlassParty
+	end
+
+EventScript_PokeGlassMap::
+	releaseall
+	special OpenPokeGlassMap
+	end
+
+EventScript_PokeGlassStats::
+	releaseall
+	special OpenPokeGlassStats
+	end
+
+EventScript_PokeGlassClose::
+	releaseall
 	end
