@@ -1005,6 +1005,92 @@ EWRAM_DATA static u32 sLastMonRandomizerHash = 0;
 EWRAM_DATA static u8 sLastMonRandomizerCount = 0;
 EWRAM_DATA static u16 sRandomizedMons[STARTER_AND_GIFT_MON_COUNT] = {0};
 
+// Restrict only the three actual player/rival starter slots. Gift Pokémon that
+// share the randomizer table keep using the regular all-species pool.
+static void RandomizeStarterSpeciesPool(u32 poolHash, u8 count, u16 *randomizedMons)
+{
+    u32 speciesWithPreEvolution[(RANDOMIZER_SPECIES_COUNT + 31) / 32] = {};
+    struct Sfc32State state;
+    u32 species, i, j, eligibleCount = 0;
+
+    // Mark only real evolution targets. EVO_NONE is metadata for form/breeding
+    // relationships and must not disqualify an otherwise unevolved species.
+    for (species = SPECIES_BULBASAUR; species <= RANDOMIZER_MAX_MON; species++)
+    {
+        const struct Evolution *evolutions = GetSpeciesEvolutions(species);
+
+        if (evolutions == NULL)
+            continue;
+        for (j = 0; evolutions[j].method != EVOLUTIONS_END; j++)
+        {
+            u16 targetSpecies;
+
+            if (evolutions[j].method == EVO_NONE)
+                continue;
+            targetSpecies = SanitizeSpeciesId(evolutions[j].targetSpecies);
+            if (targetSpecies <= RANDOMIZER_MAX_MON)
+                speciesWithPreEvolution[targetSpecies / 32] |= 1u << (targetSpecies % 32);
+        }
+    }
+
+    // Confirm enough candidates remain after reserving the randomized gift slots.
+    for (species = SPECIES_BULBASAUR; species <= RANDOMIZER_MAX_MON; species++)
+    {
+        bool32 isGiftSpecies = FALSE;
+
+        if (!IsSpeciesPermitted(species)
+            || IsRandomizerLegendary(species)
+            || (speciesWithPreEvolution[species / 32] & (1u << (species % 32))))
+            continue;
+
+        for (j = 3; j < count; j++)
+        {
+            if (randomizedMons[j] == species)
+            {
+                isGiftSpecies = TRUE;
+                break;
+            }
+        }
+        if (!isGiftSpecies)
+            eligibleCount++;
+    }
+
+    // The current game has many more than three eligible species. Keep a safe
+    // fallback if a future configuration disables nearly all of them.
+    if (eligibleCount < min(3, count))
+        return;
+
+    // Use a separate deterministic stream so these three choices do not depend
+    // on how many gift entries are in the shared table.
+    state = RandomizerRandSeed(RANDOMIZER_REASON_STARTER_AND_GIFT_MON, poolHash, 0x53545254);
+    for (i = 0; i < 3 && i < count; i++)
+    {
+        u16 candidate;
+        bool32 valid;
+
+        do
+        {
+            candidate = RandomizerNextRange(&state, RANDOMIZER_MAX_MON) + SPECIES_BULBASAUR;
+            valid = IsSpeciesPermitted(candidate)
+                && !IsRandomizerLegendary(candidate)
+                && !(speciesWithPreEvolution[candidate / 32] & (1u << (candidate % 32)));
+
+            for (j = 0; valid && j < i; j++)
+            {
+                if (randomizedMons[j] == candidate)
+                    valid = FALSE;
+            }
+            for (j = 3; valid && j < count; j++)
+            {
+                if (randomizedMons[j] == candidate)
+                    valid = FALSE;
+            }
+        } while (!valid);
+
+        randomizedMons[i] = candidate;
+    }
+}
+
 u16 RandomizeStarterAndGiftMon(u16 originalSlot, const u16* originalStarterAndGiftMons, u8 count)
 {
     /* Randomize the Pokémon given as a starter or gift … */
@@ -1044,6 +1130,12 @@ u16 RandomizeStarterAndGiftMon(u16 originalSlot, const u16* originalStarterAndGi
                               count,
                               originalStarterAndGiftMons,
                               sRandomizedMons);
+
+            if (originalStarterAndGiftMons == gStarterAndGiftMonTable
+                && count == STARTER_AND_GIFT_MON_COUNT)
+            {
+                RandomizeStarterSpeciesPool(starterHash, count, sRandomizedMons);
+            }
 
             // Cache the seed used to build the table
             sLastMonRandomizerSeed = GetRandomizerSeed();
