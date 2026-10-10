@@ -1312,6 +1312,9 @@ static u8 GetRivalEncounterStage(u16 trainerId)
         return 6;
     if (trainerId >= TRAINER_CHAMPION_FIRST_SQUIRTLE && trainerId <= TRAINER_CHAMPION_FIRST_CHARMANDER)
         return 7;
+    // Rematches remain past every story-based item/trade evolution milestone.
+    if (trainerId >= TRAINER_CHAMPION_REMATCH_SQUIRTLE && trainerId <= TRAINER_CHAMPION_REMATCH_CHARMANDER)
+        return 8;
     return 0xFF;
 }
 

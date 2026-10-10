@@ -443,7 +443,7 @@ static bool8 TryGenerateWildMon(const struct WildPokemonInfo * wildMonInfo, enum
 {
     u8 wildMonIndex = 0;
     u8 level;
-    u16 species = wildMonInfo->wildPokemon[wildMonIndex].species;
+    u16 species;
 
     switch (area)
     {
@@ -490,6 +490,8 @@ static bool8 TryGenerateWildMon(const struct WildPokemonInfo * wildMonInfo, enum
         break;
     }
 
+    // Species and level must come from the same selected encounter slot.
+    species = wildMonInfo->wildPokemon[wildMonIndex].species;
     level = ChooseWildMonLevel(wildMonInfo->wildPokemon, wildMonIndex, area);
     if (flags & WILD_CHECK_REPEL && !IsWildLevelAllowedByRepel(level))
         return FALSE;
@@ -500,8 +502,8 @@ static bool8 TryGenerateWildMon(const struct WildPokemonInfo * wildMonInfo, enum
     {
         species = RandomizeWildEncounter(
             species,
-            gSaveBlock1Ptr->location.mapGroup,
             gSaveBlock1Ptr->location.mapNum,
+            gSaveBlock1Ptr->location.mapGroup,
             area, wildMonIndex
         );
     }
@@ -517,12 +519,12 @@ static u16 GenerateFishingEncounter(const struct WildPokemonInfo * wildMonInfo, 
     u8 level = ChooseWildMonLevel(wildMonInfo->wildPokemon, wildMonIndex, WILD_AREA_FISHING);
 
     UpdateChainFishingStreak();
-   if (GetRandomizerSeed() != 0)
+    if (GetRandomizerSeed() != 0)
     {
         wildMonSpecies = RandomizeWildEncounter(
             wildMonSpecies,
-            gSaveBlock1Ptr->location.mapGroup,
             gSaveBlock1Ptr->location.mapNum,
+            gSaveBlock1Ptr->location.mapGroup,
             WILD_AREA_FISHING, wildMonIndex
         );
     }
