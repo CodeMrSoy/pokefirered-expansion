@@ -657,6 +657,8 @@ PalletTown_ProfessorOaksLab_EventScript_ReceiveDexScene::
 	call EventScript_RestorePrevTextColor
 	setflag FLAG_SYS_POKEDEX_GET
 	special SetUnlockedPokedexFlags
+	@ Oak gives the player the PokéGlass with the Pokédex so storage is available from anywhere.
+	giveitem_msg PalletTown_ProfessorOaksLab_Text_ReceivedPokeGlassFromOak, ITEM_POKEGLASS, 1
 	setvar VAR_MAP_SCENE_POKEMON_CENTER_TEALA, 1
 	msgbox PalletTown_ProfessorOaksLab_Text_OakCatchMonsForDataTakeThese
 	giveitem_msg PalletTown_ProfessorOaksLab_Text_ReceivedFivePokeBalls, ITEM_POKE_BALL, 5

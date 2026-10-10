@@ -12396,18 +12396,18 @@ const struct Item gItemsInfo[] =
         .iconPalette = gItemIconPalette_BerryPouch,
     },
 
-    [ITEM_POKEMON_BOX_LINK] =
+    [ITEM_POKEGLASS] =
     {
-        .name = _("{PKMN} Box Link"),
+        .name = _("PokéGlass"),
         .price = 0,
         .description = COMPOUND_STRING(
-            "This device grants "
-            "access to the\n{PKMN} "
+            "A high-tech tablet "
+            "that grants access to the\n"
             "Storage System."),
         .importance = 1,
         .pocket = POCKET_KEY_ITEMS,
         .type = ITEM_USE_FIELD,
-        .fieldUseFunc = ItemUseOutOfBattle_PokemonBoxLink,
+        .fieldUseFunc = ItemUseOutOfBattle_PokeGlass,
         .iconPic = gItemIcon_PokemonBoxLink,
         .iconPalette = gItemIconPalette_PokemonBoxLink,
     },

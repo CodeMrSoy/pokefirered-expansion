@@ -100,7 +100,7 @@ EventScript_ExitOaksPC::
 	goto EventScript_PCMainMenu
 	end
 
-EventScript_AccessPokemonBoxLink::
+EventScript_AccessPokeGlass::
 	playse SE_PC_LOGIN
 	msgbox Text_OpenedPkmnStorage, MSGBOX_DEFAULT
 	special ShowPokemonStorageSystemPC
