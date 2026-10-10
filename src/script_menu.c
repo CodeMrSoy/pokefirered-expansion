@@ -1,4 +1,5 @@
 #include "global.h"
+#include "poke_glass.h"
 #include "gflib.h"
 #include "menu.h"
 #include "task.h"
@@ -71,7 +72,6 @@ static void MultichoiceDynamicEventDebug_OnDestroy(struct DynamicListMenuEventAr
 static void MultichoiceDynamicEventShowItem_OnInit(struct DynamicListMenuEventArgs *eventArgs);
 static void MultichoiceDynamicEventShowItem_OnSelectionChanged(struct DynamicListMenuEventArgs *eventArgs);
 static void MultichoiceDynamicEventShowItem_OnDestroy(struct DynamicListMenuEventArgs *eventArgs);
-
 static const struct DynamicListMenuEventCollection sDynamicListMenuEventCollections[] =
 {
     [DYN_MULTICHOICE_CB_DEBUG] =
@@ -557,6 +557,20 @@ static const struct MenuAction sMultichoiceList_Exit[] = {
     { gOtherText_Exit }
 };
 
+static const u8 sText_PokeGlassPokedex[] = _("Pokédex");
+static const u8 sText_PokeGlassParty[] = _("Party");
+static const u8 sText_PokeGlassStorage[] = _("Pokémon Storage");
+static const u8 sText_PokeGlassStats[] = _("Stats");
+static const u8 sText_PokeGlassMap[] = _("Map");
+
+static const struct MenuAction sMultichoiceList_PokeGlass[] = {
+    { sText_PokeGlassPokedex },
+    { sText_PokeGlassParty },
+    { sText_PokeGlassStorage },
+    { sText_PokeGlassStats },
+    { sText_PokeGlassMap }
+};
+
 static const struct MultichoiceListStruct sMultichoiceLists[] = {
     [MULTICHOICE_YES_NO]                                     = MULTICHOICE(sMultichoiceList_YesNo),
     [MULTICHOICE_EEVEELUTIONS]                               = MULTICHOICE(sMultichoiceList_Eeveelutions),
@@ -623,6 +637,7 @@ static const struct MultichoiceListStruct sMultichoiceLists[] = {
     [MULTICHOICE_62]                                         = MULTICHOICE(sMultichoiceList_62),
     [MULTICHOICE_JOIN_OR_LEAD]                               = MULTICHOICE(sMultichoiceList_JoinOrLead),
     [MULTICHOICE_TRAINER_TOWER_MODE]                         = MULTICHOICE(sMultichoiceList_TrainerTowerMode),
+    [MULTICHOICE_POKEGLASS]                                  = MULTICHOICE(sMultichoiceList_PokeGlass),
 };
 
 // From Cool to Berries goes unused
@@ -1059,6 +1074,11 @@ void DrawMultichoiceMenuInternal(u8 left, u8 top, u8 multichoiceId, bool8 ignore
             tmp = GetStringWidth(FONT_NORMAL, actions[i].text, 0);
             if (tmp > strWidth)
                 strWidth = tmp;
+        }
+        if (multichoiceId == MULTICHOICE_POKEGLASS)
+        {
+            ShowPokeGlassHub(ignoreBPress);
+            return;
         }
         width = (strWidth + 9) / 8 + 1;
         if (left + width > 28)

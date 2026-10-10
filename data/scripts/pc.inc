@@ -100,10 +100,66 @@ EventScript_ExitOaksPC::
 	goto EventScript_PCMainMenu
 	end
 
-EventScript_AccessPokemonBoxLink::
+EventScript_AccessPokeGlass::
+	lockall
+	playse SE_SELECT
+	special StartPokeGlassIntro
+	waitstate
+EventScript_PokeGlassMenu::
+	multichoice 7, 3, MULTICHOICE_POKEGLASS, FALSE
+	switch VAR_RESULT
+	case 0, EventScript_PokeGlassPokedex
+	case 1, EventScript_PokeGlassParty
+	case 2, EventScript_PokeGlassStorage
+	case 3, EventScript_PokeGlassStats
+	case 4, EventScript_PokeGlassMap
+	case SCR_MENU_CANCEL, EventScript_PokeGlassClose
+	end
+
+EventScript_PokeGlassPokedex::
+	goto_if_unset FLAG_SYS_POKEDEX_GET, EventScript_PokeGlassMenu
+	special OpenPokeGlassPokedex
+	waitstate
+	goto EventScript_PokeGlassMenu
+	end
+
+EventScript_PokeGlassStorage::
+	goto_if_set FLAG_SYS_PC_STORAGE_DISABLED, EventScript_PokeGlassStorageDisabled
 	playse SE_PC_LOGIN
-	msgbox Text_OpenedPkmnStorage, MSGBOX_DEFAULT
 	special ShowPokemonStorageSystemPC
 	waitstate
-	goto EventScript_TurnOffPC
+	goto EventScript_PokeGlassMenu
+	end
+
+EventScript_PokeGlassParty::
+	getpartysize
+	compare VAR_RESULT, 0
+	goto_if_eq EventScript_PokeGlassMenu
+	special OpenPokeGlassParty
+	waitstate
+	goto EventScript_PokeGlassMenu
+	end
+
+EventScript_PokeGlassMap::
+	special OpenPokeGlassMap
+	waitstate
+	goto EventScript_PokeGlassMenu
+	end
+
+EventScript_PokeGlassStats::
+	getpartysize
+	compare VAR_RESULT, 0
+	goto_if_eq EventScript_PokeGlassMenu
+	special OpenPokeGlassStats
+	waitstate
+	goto EventScript_PokeGlassMenu
+	end
+
+EventScript_PokeGlassClose::
+	releaseall
+	end
+
+EventScript_PokeGlassStorageDisabled::
+	msgbox OneIsland_PokemonCenter_1F_Text_UsualPCServicesUnavailable
+	goto EventScript_PokeGlassMenu
 	end

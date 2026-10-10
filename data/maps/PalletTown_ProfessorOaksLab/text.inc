@@ -179,6 +179,10 @@ PalletTown_ProfessorOaksLab_Text_ReceivedPokedexFromOak::
     .string "{PLAYER} received the POKéDEX\n"
     .string "from PROF. OAK.$"
 
+PalletTown_ProfessorOaksLab_Text_ReceivedPokeGlassFromOak::
+    .string "{PLAYER} received the PokéGlass\n"
+    .string "from PROF. OAK.$"
+
 PalletTown_ProfessorOaksLab_Text_OakCatchMonsForDataTakeThese::
     .string "OAK: You can't get detailed data\n"
     .string "on POKéMON by just seeing them.\p"

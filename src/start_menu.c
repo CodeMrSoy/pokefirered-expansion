@@ -7,6 +7,8 @@
 #include "link.h"
 #include "pokedex.h"
 #include "item_menu.h"
+#include "item.h"
+#include "constants/items.h"
 #include "party_menu.h"
 #include "save.h"
 #include "link_rfu.h"
@@ -84,8 +86,7 @@ static void SetUpStartMenu_NormalField(void);
 static void SetUpStartMenu_Debug(void);
 static bool8 StartCB_HandleInput(void);
 static void StartMenu_FadeScreenIfLeavingOverworld(void);
-static bool8 StartMenuPokedexSanityCheck(void);
-static bool8 StartMenuPokedexCallback(void);
+static bool8 StartMenuPokeGlassCallback(void);
 static bool8 StartMenuPokemonCallback(void);
 static bool8 StartMenuBagCallback(void);
 static bool8 StartMenuPlayerCallback(void);
@@ -122,9 +123,11 @@ static void CloseSaveStatsWindow(void);
 static void HideStartMenuDebug(void);
 
 static const u8 sText_MenuDebug[] = _("DEBUG");
+static const u8 sText_MenuPokeGlass[] = _("PokéGlass");
+static const u8 sStartMenuDesc_PokeGlass[] = _("Open the PokéGlass for Pokémon data,\nstorage, stats, and maps.");
 
 static const struct MenuAction sStartMenuActionTable[] = {
-    [STARTMENU_POKEDEX] = {gText_MenuPokedex, {.u8_void = StartMenuPokedexCallback}},
+    [STARTMENU_POKEDEX] = {sText_MenuPokeGlass, {.u8_void = StartMenuPokeGlassCallback}},
     [STARTMENU_POKEMON] = {gText_MenuPokemon, {.u8_void = StartMenuPokemonCallback}},
     [STARTMENU_BAG]     = {gText_MenuBag,     {.u8_void = StartMenuBagCallback}},
     [STARTMENU_PLAYER]  = {gText_MenuPlayer,  {.u8_void = StartMenuPlayerCallback}},
@@ -168,7 +171,7 @@ static const struct WindowTemplate sSafariZoneStatsWindowTemplate = {
 };
 
 static const u8 *const sStartMenuDescPointers[] = {
-    gStartMenuDesc_Pokedex,
+    sStartMenuDesc_PokeGlass,
     gStartMenuDesc_Pokemon,
     gStartMenuDesc_Bag,
     gStartMenuDesc_Player,
@@ -241,10 +244,9 @@ static void AppendToStartMenuItems(u8 newEntry)
 static void SetUpStartMenu_Debug(void)
 {
     AppendToStartMenuItems(STARTMENU_DEBUG);
-    if (FlagGet(FLAG_SYS_POKEDEX_GET) == TRUE)
+    // Oak's tablet gift unlocks the hub; owning Pokémon or the Pokédex is not enough.
+    if (CheckBagHasItem(ITEM_POKEGLASS, 1))
         AppendToStartMenuItems(STARTMENU_POKEDEX);
-    if (FlagGet(FLAG_SYS_POKEMON_GET) == TRUE)
-        AppendToStartMenuItems(STARTMENU_POKEMON);
     AppendToStartMenuItems(STARTMENU_BAG);
     AppendToStartMenuItems(STARTMENU_PLAYER);
     AppendToStartMenuItems(STARTMENU_SAVE);
@@ -254,12 +256,10 @@ static void SetUpStartMenu_Debug(void)
 
 static void SetUpStartMenu_NormalField(void)
 {
-    if (FlagGet(FLAG_SYS_POKEDEX_GET) == TRUE)
+    if (CheckBagHasItem(ITEM_POKEGLASS, 1))
         AppendToStartMenuItems(STARTMENU_POKEDEX);
     if (DN_FLAG_DEXNAV_GET != 0 && FlagGet(DN_FLAG_DEXNAV_GET))
         AppendToStartMenuItems(STARTMENU_DEXNAV);
-    if (FlagGet(FLAG_SYS_POKEMON_GET) == TRUE)
-        AppendToStartMenuItems(STARTMENU_POKEMON);
     AppendToStartMenuItems(STARTMENU_BAG);
     AppendToStartMenuItems(STARTMENU_PLAYER);
     AppendToStartMenuItems(STARTMENU_SAVE);
@@ -270,8 +270,8 @@ static void SetUpStartMenu_NormalField(void)
 static void SetUpStartMenu_SafariZone(void)
 {
     AppendToStartMenuItems(STARTMENU_RETIRE);
-    AppendToStartMenuItems(STARTMENU_POKEDEX);
-    AppendToStartMenuItems(STARTMENU_POKEMON);
+    if (CheckBagHasItem(ITEM_POKEGLASS, 1))
+        AppendToStartMenuItems(STARTMENU_POKEDEX);
     AppendToStartMenuItems(STARTMENU_BAG);
     AppendToStartMenuItems(STARTMENU_PLAYER);
     AppendToStartMenuItems(STARTMENU_OPTION);
@@ -542,8 +542,6 @@ static bool8 StartCB_HandleInput(void)
     if (JOY_NEW(A_BUTTON))
     {
         PlaySE(SE_SELECT);
-        if (!StartMenuPokedexSanityCheck())
-            return FALSE;
         if (sStartMenuOrder[sStartMenuCursorPos] == STARTMENU_DEXNAV
             && MapHasNoEncounterData())
             return FALSE;
@@ -568,30 +566,27 @@ static void StartMenu_FadeScreenIfLeavingOverworld(void)
     if (sStartMenuCallback != StartMenuSaveCallback
      && sStartMenuCallback != StartMenuExitCallback
      && sStartMenuCallback != StartMenuDebugCallback
-     && sStartMenuCallback != StartMenuSafariZoneRetireCallback)
+     && sStartMenuCallback != StartMenuSafariZoneRetireCallback
+     && sStartMenuCallback != StartMenuPokeGlassCallback)
     {
         StopPokemonLeagueLightingEffectTask();
         FadeScreen(FADE_TO_BLACK, 0);
     }
 }
 
-static bool8 StartMenuPokedexSanityCheck(void)
-{
-    if (sStartMenuActionTable[sStartMenuOrder[sStartMenuCursorPos]].func.u8_void == StartMenuPokedexCallback && GetNationalPokedexCount(FLAG_GET_SEEN) == 0)
-        return FALSE;
-    return TRUE;
-}
-
-static bool8 StartMenuPokedexCallback(void)
+static bool8 StartMenuPokeGlassCallback(void)
 {
     if (!gPaletteFade.active)
     {
-        IncrementGameStat(GAME_STAT_CHECKED_POKEDEX);
         PlayRainStoppingSoundEffect();
         DestroySafariZoneStatsWindow();
         DestroyTimeWindow();
-        CleanupOverworldWindowsAndTilemaps();
-        SetMainCallback2(CB2_OpenPokedexFromStartMenu);
+        // The tablet opens as a field script, so its windows still need the
+        // overworld buffers. Freeing them here caused a use-after-free.
+        if (DEBUG_OVERWORLD_MENU != TRUE)
+            DestroyHelpMessageWindow_();
+        CloseStartMenu();
+        ScriptContext_SetupScript(EventScript_AccessPokeGlass);
         return TRUE;
     }
     return FALSE;

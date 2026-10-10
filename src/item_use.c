@@ -55,7 +55,11 @@ static void Task_ItemUse_CloseMessageBoxAndReturnToField(u8 taskId);
 static void Task_ItemUseWaitForFade(u8 taskId);
 static bool8 FieldCB2_UseItemFromField(void);
 static void CB2_CheckMail(void);
-static void Task_AccessPokemonBoxLink(u8);
+static void Task_AccessPokeGlass(u8);
+static void Task_PokeGlassIntro(u8 taskId);
+static void DrawPokeGlassIntroSprite(void);
+static void SetPokeGlassIntroPixel(u8 x, u8 y, u8 color);
+static void FillPokeGlassIntroRoundRect(u8 x, u8 y, u8 width, u8 height, u8 radius, u8 color);
 static void ItemUseOnFieldCB_Bicycle(u8 taskId);
 static bool8 CanFish(void);
 static void ItemUseOnFieldCB_Rod(u8 taskId);
@@ -400,15 +404,221 @@ void ItemUseOutOfBattle_Itemfinder(u8 taskId)
     SetUpItemUseOnFieldCallback(taskId);
 }
 
-void ItemUseOutOfBattle_PokemonBoxLink(u8 taskId)
+void ItemUseOutOfBattle_PokeGlass(u8 taskId)
 {
-    sItemUseOnFieldCB = Task_AccessPokemonBoxLink;
+    sItemUseOnFieldCB = Task_AccessPokeGlass;
     SetUpItemUseOnFieldCallback(taskId);
 }
 
-static void Task_AccessPokemonBoxLink(u8 taskId)
+// The intro tablet is drawn as a small 4bpp OBJ so the animation stays inside the ROM.
+#define TAG_POKEGLASS_INTRO_GFX 0xD10D
+#define TAG_POKEGLASS_INTRO_PAL 0xD10E
+
+static EWRAM_DATA u8 sPokeGlassIntroGfx[64 * 64 / 2] = {0};
+
+static const u16 sPokeGlassIntroPaletteOff[16] = {
+    RGB(0, 0, 0), RGB(2, 4, 9), RGB(8, 10, 15), RGB(19, 21, 25),
+    RGB(29, 30, 31), RGB(6, 8, 12), RGB(13, 16, 21), RGB(1, 2, 8),
+    RGB(3, 5, 14), RGB(6, 9, 18), RGB(24, 27, 30), RGB(26, 12, 12),
+    RGB(8, 20, 25), RGB(4, 13, 20), RGB(17, 22, 26), RGB(31, 31, 31)
+};
+
+static const u16 sPokeGlassIntroPaletteOn[16] = {
+    RGB(0, 0, 0), RGB(2, 4, 9), RGB(8, 10, 15), RGB(19, 21, 25),
+    RGB(29, 30, 31), RGB(6, 8, 12), RGB(13, 16, 21), RGB(12, 24, 31),
+    RGB(22, 29, 31), RGB(5, 15, 24), RGB(24, 27, 30), RGB(26, 12, 12),
+    RGB(8, 20, 25), RGB(4, 13, 20), RGB(17, 22, 26), RGB(31, 31, 31)
+};
+
+static const struct SpriteSheet sPokeGlassIntroSpriteSheet = {
+    .data = sPokeGlassIntroGfx,
+    .size = sizeof(sPokeGlassIntroGfx),
+    .tag = TAG_POKEGLASS_INTRO_GFX,
+};
+
+static const struct SpritePalette sPokeGlassIntroSpritePalette = {
+    .data = sPokeGlassIntroPaletteOff,
+    .tag = TAG_POKEGLASS_INTRO_PAL,
+};
+
+static const struct OamData sPokeGlassIntroOam = {
+    .affineMode = ST_OAM_AFFINE_NORMAL,
+    .objMode = ST_OAM_OBJ_NORMAL,
+    .bpp = 0,
+    .shape = SPRITE_SHAPE(64x64),
+    .size = SPRITE_SIZE(64x64),
+    .priority = 0,
+};
+
+static const struct SpriteTemplate sPokeGlassIntroSpriteTemplate = {
+    .tileTag = TAG_POKEGLASS_INTRO_GFX,
+    .paletteTag = TAG_POKEGLASS_INTRO_PAL,
+    .oam = &sPokeGlassIntroOam,
+    .anims = gDummySpriteAnimTable,
+    .images = NULL,
+    .affineAnims = gDummySpriteAffineAnimTable,
+    .callback = SpriteCallbackDummy,
+};
+
+static void SetPokeGlassIntroPixel(u8 x, u8 y, u8 color)
 {
-    ScriptContext_SetupScript(EventScript_AccessPokemonBoxLink);
+    u16 tile = (y / 8) * 8 + x / 8;
+    u16 pixel = (y % 8) * 8 + x % 8;
+    u16 byte = tile * 32 + pixel / 2;
+
+    if (x & 1)
+        sPokeGlassIntroGfx[byte] = (sPokeGlassIntroGfx[byte] & 0x0F) | (color << 4);
+    else
+        sPokeGlassIntroGfx[byte] = (sPokeGlassIntroGfx[byte] & 0xF0) | color;
+}
+
+static void FillPokeGlassIntroRoundRect(u8 x, u8 y, u8 width, u8 height, u8 radius, u8 color)
+{
+    u8 px, py;
+
+    for (py = y; py < y + height; py++)
+    {
+        for (px = x; px < x + width; px++)
+        {
+            s16 dx = px - x;
+            s16 dy = py - y;
+            s16 cornerX = (dx < radius) ? radius - dx : (dx >= width - radius) ? dx - (width - radius - 1) : 0;
+            s16 cornerY = (dy < radius) ? radius - dy : (dy >= height - radius) ? dy - (height - radius - 1) : 0;
+
+            if ((cornerX == 0 || cornerY == 0 || cornerX * cornerX + cornerY * cornerY <= radius * radius)
+             && px < 64 && py < 64)
+                SetPokeGlassIntroPixel(px, py, color);
+        }
+    }
+}
+
+static void DrawPokeGlassIntroSprite(void)
+{
+    memset(sPokeGlassIntroGfx, 0, sizeof(sPokeGlassIntroGfx));
+
+    // Layer the shell, rim, bezel, and glass to suggest a clear tablet casing.
+    FillPokeGlassIntroRoundRect(7, 1, 50, 62, 8, 1);
+    FillPokeGlassIntroRoundRect(9, 3, 46, 58, 7, 3);
+    FillPokeGlassIntroRoundRect(10, 4, 44, 56, 6, 4);
+    FillPokeGlassIntroRoundRect(13, 8, 38, 43, 4, 5);
+    FillPokeGlassIntroRoundRect(15, 10, 34, 39, 2, 7);
+
+    // A dim display, speaker, status bar, and simple app tiles illuminate at power-on.
+    FillPokeGlassIntroRoundRect(17, 12, 30, 2, 1, 8);
+    FillPokeGlassIntroRoundRect(18, 17, 8, 8, 1, 13);
+    FillPokeGlassIntroRoundRect(28, 17, 14, 2, 1, 9);
+    FillPokeGlassIntroRoundRect(28, 21, 11, 2, 1, 9);
+    FillPokeGlassIntroRoundRect(18, 28, 24, 2, 1, 9);
+    FillPokeGlassIntroRoundRect(18, 33, 24, 2, 1, 9);
+    FillPokeGlassIntroRoundRect(18, 38, 24, 2, 1, 9);
+    FillPokeGlassIntroRoundRect(27, 5, 10, 1, 0, 2);
+    FillPokeGlassIntroRoundRect(29, 55, 6, 3, 1, 2);
+    SetPokeGlassIntroPixel(14, 6, 15);
+    SetPokeGlassIntroPixel(49, 54, 12);
+}
+
+static u16 BlendPokeGlassIntroColor(u16 start, u16 end, u8 step, u8 maxSteps)
+{
+    s16 r = (start & 31) + (((end & 31) - (start & 31)) * step) / maxSteps;
+    s16 g = ((start >> 5) & 31) + ((((end >> 5) & 31) - ((start >> 5) & 31)) * step) / maxSteps;
+    s16 b = ((start >> 10) & 31) + ((((end >> 10) & 31) - ((start >> 10) & 31)) * step) / maxSteps;
+
+    return RGB(r, g, b);
+}
+
+static void Task_PokeGlassIntro(u8 taskId)
+{
+    struct Task *task = &gTasks[taskId];
+    struct Sprite *sprite = &gSprites[task->data[0]];
+    u8 step = task->data[2];
+
+    switch (task->data[1])
+    {
+    case 0: // Raise and enlarge the tablet into view.
+        if (step < 12)
+        {
+            sprite->y -= 6;
+            // OAM scaling uses an inverse fixed-point value: 0x300 starts at one-third size.
+            SetOamMatrixRotationScaling(sprite->oam.matrixNum, 0x300 - step * 0x2A, 0x300 - step * 0x2A, 0);
+            task->data[2]++;
+        }
+        else
+        {
+            SetOamMatrixRotationScaling(sprite->oam.matrixNum, 0x100, 0x100, 0);
+            PlaySE(SE_PC_ON);
+            task->data[1]++;
+            task->data[2] = 0;
+        }
+        break;
+    case 1: // Light up the screen after the power-on sound.
+        if (step < 8)
+        {
+            u16 palette[16];
+            u8 i;
+            u8 paletteNum = IndexOfSpritePaletteTag(TAG_POKEGLASS_INTRO_PAL);
+
+            for (i = 0; i < ARRAY_COUNT(palette); i++)
+                palette[i] = BlendPokeGlassIntroColor(sPokeGlassIntroPaletteOff[i], sPokeGlassIntroPaletteOn[i], step + 1, 8);
+            LoadPalette(palette, OBJ_PLTT_ID(paletteNum), sizeof(palette));
+            task->data[2]++;
+        }
+        else
+        {
+            task->data[1]++;
+            task->data[2] = 0;
+        }
+        break;
+    case 2: // Hold the lit tablet briefly before opening the hub menu.
+        if (step < 8)
+            task->data[2]++;
+        else
+        {
+            FreeOamMatrix(sprite->oam.matrixNum);
+            DestroySprite(sprite);
+            FreeSpriteTilesByTag(TAG_POKEGLASS_INTRO_GFX);
+            FreeSpritePaletteByTag(TAG_POKEGLASS_INTRO_PAL);
+            DestroyTask(taskId);
+            ScriptContext_Enable();
+        }
+        break;
+    }
+}
+
+void StartPokeGlassIntro(void)
+{
+    u8 spriteId;
+    u8 taskId;
+
+    DrawPokeGlassIntroSprite();
+    LoadSpriteSheet(&sPokeGlassIntroSpriteSheet);
+    LoadSpritePalette(&sPokeGlassIntroSpritePalette);
+    spriteId = CreateSprite(&sPokeGlassIntroSpriteTemplate, 120, 152, 0);
+    if (spriteId >= MAX_SPRITES)
+    {
+        FreeSpriteTilesByTag(TAG_POKEGLASS_INTRO_GFX);
+        FreeSpritePaletteByTag(TAG_POKEGLASS_INTRO_PAL);
+        ScriptContext_Enable();
+        return;
+    }
+
+    // CreateSprite allocates the affine matrix because this sprite uses affine OAM.
+    SetOamMatrixRotationScaling(gSprites[spriteId].oam.matrixNum, 0x300, 0x300, 0);
+    taskId = CreateTask(Task_PokeGlassIntro, 0);
+    if (taskId == TASK_NONE)
+    {
+        FreeOamMatrix(gSprites[spriteId].oam.matrixNum);
+        DestroySprite(&gSprites[spriteId]);
+        FreeSpriteTilesByTag(TAG_POKEGLASS_INTRO_GFX);
+        FreeSpritePaletteByTag(TAG_POKEGLASS_INTRO_PAL);
+        ScriptContext_Enable();
+        return;
+    }
+    gTasks[taskId].data[0] = spriteId;
+}
+
+static void Task_AccessPokeGlass(u8 taskId)
+{
+    ScriptContext_SetupScript(EventScript_AccessPokeGlass);
     DestroyTask(taskId);
 }
 

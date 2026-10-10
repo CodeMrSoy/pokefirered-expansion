@@ -90,6 +90,7 @@ struct PokedexCategoryPage
 };
 
 EWRAM_DATA static struct PokedexScreenData * sPokedexScreenData = NULL;
+static EWRAM_DATA MainCallback sPokedexExitCallback = NULL;
 
 static void Task_PokedexScreen(u8 taskId);
 static void DexScreen_InitGfxForTopMenu(void);
@@ -954,6 +955,12 @@ void DexScreen_LoadResources(void)
 
 void CB2_OpenPokedexFromStartMenu(void)
 {
+    CB2_OpenPokedexWithExitCB(CB2_ReturnToFieldWithOpenMenu);
+}
+
+void CB2_OpenPokedexWithExitCB(MainCallback exitCallback)
+{
+    sPokedexExitCallback = exitCallback;
     DexScreen_LoadResources();
     ClearGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON | DISPCNT_WIN1_ON);
     SetGpuReg(REG_OFFSET_BLDCNT, 0);
@@ -998,7 +1005,7 @@ void CB2_ClosePokedex(void)
     if (DoClosePokedex())
     {
         SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON | DISPCNT_WIN1_ON);
-        SetMainCallback2(CB2_ReturnToFieldWithOpenMenu);
+        SetMainCallback2(sPokedexExitCallback);
     }
 }
 

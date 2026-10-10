@@ -322,6 +322,7 @@ struct ShinyStarObjData
 };
 
 static EWRAM_DATA struct PokemonSummaryScreenData * sMonSummaryScreen = NULL;
+static EWRAM_DATA u8 sSummaryScreenStartPage = PSS_PAGE_INFO;
 static EWRAM_DATA struct Struct203B144 * sMonSkillsPrinterXpos = NULL;
 static EWRAM_DATA struct MoveSelectionCursor * sMoveSelectionCursorObjs[4] = {};
 static EWRAM_DATA struct MonStatusIconObj * sStatusIcon = NULL;
@@ -1202,6 +1203,8 @@ const struct SpriteTemplate gSpriteTemplate_MoveTypes =
 
 void ShowPokemonSummaryScreen(struct Pokemon * party, u8 cursorPos, u8 lastIdx, MainCallback savedCallback, u8 mode)
 {
+    u8 startPage = sSummaryScreenStartPage;
+    sSummaryScreenStartPage = PSS_PAGE_INFO;
     sMonSummaryScreen = AllocZeroed(sizeof(struct PokemonSummaryScreenData));
     sMonSkillsPrinterXpos = AllocZeroed(sizeof(struct Struct203B144));
 
@@ -1231,7 +1234,7 @@ void ShowPokemonSummaryScreen(struct Pokemon * party, u8 cursorPos, u8 lastIdx, 
     case PSS_MODE_NORMAL:
     default:
         SetHelpContext(HELPCONTEXT_POKEMON_INFO);
-        sMonSummaryScreen->curPageIndex = PSS_PAGE_INFO;
+        sMonSummaryScreen->curPageIndex = startPage;
         sMonSummaryScreen->isBoxMon = FALSE;
         sMonSummaryScreen->lockMovesFlag = FALSE;
         break;
@@ -1255,7 +1258,7 @@ void ShowPokemonSummaryScreen(struct Pokemon * party, u8 cursorPos, u8 lastIdx, 
     sMonSummaryScreen->loadBgGfxStep = 0;
     sMonSummaryScreen->spriteCreationStep = 0;
 
-    sMonSummaryScreen->whichBgLayerToTranslate = 0;
+    sMonSummaryScreen->whichBgLayerToTranslate = (sMonSummaryScreen->curPageIndex == PSS_PAGE_SKILLS);
     sMonSummaryScreen->skillsPageBgNum = 2;
     sMonSummaryScreen->infoAndMovesPageBgNum = 1;
     sMonSummaryScreen->flippingPages = FALSE;
@@ -1272,6 +1275,11 @@ void ShowPokemonSummaryScreen(struct Pokemon * party, u8 cursorPos, u8 lastIdx, 
     if (sMonSummaryScreen->isBadEgg == TRUE)
         sMonSummaryScreen->isEgg = TRUE;
 
+    if (sMonSummaryScreen->isEgg)
+    {
+        sMonSummaryScreen->curPageIndex = PSS_PAGE_INFO;
+        sMonSummaryScreen->whichBgLayerToTranslate = 0;
+    }
     sMonSummaryScreen->lastPageFlipDirection = 0xff;
     SetMainCallback2(CB2_SetUpPSS);
 }
@@ -2779,6 +2787,15 @@ static void PokeSum_Setup_InitGpu(void)
     SetBgTilemapBuffer(2, sMonSummaryScreen->bg2TilemapBuffer);
     SetBgTilemapBuffer(3, sMonSummaryScreen->bg3TilemapBuffer);
 
+    // Skills normally becomes the foreground after a page flip. Direct entry
+    // must set that layer order, scroll offset, and page-flip parity before
+    // its first frame is shown.
+    if (sMonSummaryScreen->curPageIndex == PSS_PAGE_SKILLS)
+    {
+        SetBgAttribute(1, BG_ATTR_PRIORITY, 1);
+        SetBgAttribute(2, BG_ATTR_PRIORITY, 2);
+        SetGpuReg(REG_OFFSET_BG2HOFS, -240);
+    }
     ShowBg(0);
     ShowBg(1);
     ShowBg(2);
@@ -3862,6 +3879,11 @@ u8 GetMoveSlotToReplace(void)
 void SetPokemonSummaryScreenMode(u8 mode)
 {
     sMonSummaryScreen->mode = mode;
+}
+
+void SetPokemonSummaryScreenStartPage(u8 page)
+{
+    sSummaryScreenStartPage = (page <= PSS_PAGE_MOVES) ? page : PSS_PAGE_INFO;
 }
 
 static bool32 IsMultiBattlePartner(void)

@@ -16,6 +16,7 @@ void SummaryScreen_SetUnknownTaskId(u8 a0);
 void SummaryScreen_DestroyUnknownTask(void);
 u8 GetLastViewedMonIndex(void);
 void ShowPokemonSummaryScreen(struct Pokemon * party, u8 cursorPos, u8 lastIdx, void (*callback)(void), u8 a4);
+void SetPokemonSummaryScreenStartPage(u8 page);
 void SetPokemonSummaryScreenMode(u8);
 void SummaryScreen_SetAnimDelayTaskId(u8 taskId);
 

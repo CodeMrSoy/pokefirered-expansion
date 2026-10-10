@@ -1,4 +1,5 @@
 #include "global.h"
+#include "poke_glass.h"
 #include "gflib.h"
 #include "battle.h"
 #include "battle_anim.h"
@@ -158,6 +159,7 @@ struct PartyMenuBox
 static void ShiftMoveSlot(struct Pokemon *, u8, u8);
 static void BlitBitmapToPartyWindow_LeftColumn(u8 windowId, u8 x, u8 y, u8 width, u8 height, bool8 hideHP);
 static void BlitBitmapToPartyWindow_RightColumn(u8 windowId, u8 x, u8 y, u8 width, u8 height, bool8 hideHP);
+static void BlitBitmapToPartyWindow_PokeGlass(u8 windowId, u8 x, u8 y, u8 width, u8 height, bool8 hideHP);
 static void CursorCB_Summary(u8 taskId);
 static void CursorCB_Switch(u8 taskId);
 static void CursorCB_Cancel1(u8 taskId);
@@ -209,6 +211,7 @@ static void DisplayPartyPokemonDataForMultiBattle(u8 slot);
 static void DisplayPartyPokemonDataForChooseMultiple(u8 slot);
 static bool8 DisplayPartyPokemonDataForMoveTutorOrEvolutionItem(u8 slot);
 static void DisplayPartyPokemonData(u8 slot);
+static void DisplayPartyPokemonDataForPokeGlass(u8 slot);
 static void DisplayPartyPokemonDataForWirelessMinigame(u8 slot);
 static void LoadPartyBoxPalette(struct PartyMenuBox *menuBox, u8 palFlags);
 static void DrawEmptySlot(u8 windowId);
@@ -271,6 +274,7 @@ static void Task_ReturnToChooseMonAfterText(u8 taskId);
 static void UpdateCurrentPartySelection(s8 *slotPtr, s8 movementDir);
 static void UpdatePartySelectionSingleLayout(s8 *slotPtr, s8 movementDir);
 static void UpdatePartySelectionDoubleLayout(s8 *slotPtr, s8 movementDir);
+static void UpdatePartySelectionPokeGlassLayout(s8 *slotPtr, s8 movementDir);
 static s8 GetNewSlotDoubleLayout(s8 slotId, s8 movementDir);
 static void Task_PrintAndWaitForText(u8 taskId);
 static void PrintMessage(const u8 *text);
@@ -425,6 +429,7 @@ static void ItemEffectToStatString(u8 effectType, u8 *dest);
 static EWRAM_DATA struct PartyMenuInternal *sPartyMenuInternal = NULL;
 EWRAM_DATA struct PartyMenu gPartyMenu = {0};
 static EWRAM_DATA struct PartyMenuBox *sPartyMenuBoxes = NULL;
+static EWRAM_DATA bool8 sPokeGlassStatsMode = FALSE;
 static EWRAM_DATA u8 *sPartyBgGfxTilemap = NULL;
 static EWRAM_DATA u8 *sPartyBgTilemapBuffer = NULL;
 EWRAM_DATA bool8 gPartyMenuUseExitCallback = FALSE;
@@ -887,7 +892,9 @@ static void LoadPartyMenuBoxes(u8 layout)
 
     for (i = 0; i < PARTY_SIZE; ++i)
     {
-        sPartyMenuBoxes[i].infoRects = &sPartyBoxInfoRects[PARTY_BOX_RIGHT_COLUMN];
+        sPartyMenuBoxes[i].infoRects = (layout == PARTY_LAYOUT_POKEGLASS)
+            ? &sPartyBoxInfoRects[PARTY_BOX_POKEGLASS]
+            : &sPartyBoxInfoRects[PARTY_BOX_RIGHT_COLUMN];
         sPartyMenuBoxes[i].spriteCoords = sPartyMenuSpriteCoords[layout][i];
         sPartyMenuBoxes[i].windowId = i;
         sPartyMenuBoxes[i].monSpriteId = SPRITE_NONE;
@@ -895,13 +902,15 @@ static void LoadPartyMenuBoxes(u8 layout)
         sPartyMenuBoxes[i].pokeballSpriteId = SPRITE_NONE;
         sPartyMenuBoxes[i].statusSpriteId = SPRITE_NONE;
     }
-    // The first party mon goes in the left column
-    sPartyMenuBoxes[0].infoRects = &sPartyBoxInfoRects[PARTY_BOX_LEFT_COLUMN];
-
-    if (layout == PARTY_LAYOUT_MULTI_SHOWCASE)
-        sPartyMenuBoxes[3].infoRects = &sPartyBoxInfoRects[PARTY_BOX_LEFT_COLUMN];
-    else if (layout != PARTY_LAYOUT_SINGLE)
-        sPartyMenuBoxes[1].infoRects = &sPartyBoxInfoRects[PARTY_BOX_LEFT_COLUMN];
+    if (layout != PARTY_LAYOUT_POKEGLASS)
+    {
+        // The first party mon goes in the left column.
+        sPartyMenuBoxes[0].infoRects = &sPartyBoxInfoRects[PARTY_BOX_LEFT_COLUMN];
+        if (layout == PARTY_LAYOUT_MULTI_SHOWCASE)
+            sPartyMenuBoxes[3].infoRects = &sPartyBoxInfoRects[PARTY_BOX_LEFT_COLUMN];
+        else if (layout != PARTY_LAYOUT_SINGLE)
+            sPartyMenuBoxes[1].infoRects = &sPartyBoxInfoRects[PARTY_BOX_LEFT_COLUMN];
+    }
 }
 
 static void RenderPartyMenuBox(u8 slot)
@@ -918,7 +927,10 @@ static void RenderPartyMenuBox(u8 slot)
     {
         if (GetMonData(&gPlayerParty[slot], MON_DATA_SPECIES) == SPECIES_NONE)
         {
-            DrawEmptySlot(sPartyMenuBoxes[slot].windowId);
+            if (gPartyMenu.layout == PARTY_LAYOUT_POKEGLASS)
+                sPartyMenuBoxes[slot].infoRects->blitFunc(sPartyMenuBoxes[slot].windowId, 0, 0, 0, 0, TRUE);
+            else
+                DrawEmptySlot(sPartyMenuBoxes[slot].windowId);
             CopyWindowToVram(sPartyMenuBoxes[slot].windowId, COPYWIN_GFX);
         }
         else
@@ -943,6 +955,11 @@ static void RenderPartyMenuBox(u8 slot)
 
 static void DisplayPartyPokemonData(u8 slot)
 {
+    if (gPartyMenu.layout == PARTY_LAYOUT_POKEGLASS)
+    {
+        DisplayPartyPokemonDataForPokeGlass(slot);
+        return;
+    }
     if (GetMonData(&gPlayerParty[slot], MON_DATA_IS_EGG))
     {
         sPartyMenuBoxes[slot].infoRects->blitFunc(sPartyMenuBoxes[slot].windowId, 0, 0, 0, 0, TRUE);
@@ -958,6 +975,27 @@ static void DisplayPartyPokemonData(u8 slot)
         DisplayPartyPokemonMaxHPCheck(&gPlayerParty[slot], &sPartyMenuBoxes[slot], DRAW_TEXT_ONLY);
         DisplayPartyPokemonHPBarCheck(&gPlayerParty[slot], &sPartyMenuBoxes[slot]);
     }
+}
+
+// Compact tablet cards show enough detail to identify a Pokémon; its full HP
+// and stats remain available after choosing it.
+static void DisplayPartyPokemonDataForPokeGlass(u8 slot)
+{
+    struct Pokemon *mon = &gPlayerParty[slot];
+    struct PartyMenuBox *menuBox = &sPartyMenuBoxes[slot];
+
+    if (GetMonData(mon, MON_DATA_IS_EGG))
+    {
+        menuBox->infoRects->blitFunc(menuBox->windowId, 0, 0, 0, 0, TRUE);
+        DisplayPartyPokemonNickname(mon, menuBox, DRAW_TEXT_ONLY);
+        return;
+    }
+
+    menuBox->infoRects->blitFunc(menuBox->windowId, 0, 0, 0, 0, FALSE);
+    DisplayPartyPokemonNickname(mon, menuBox, DRAW_TEXT_ONLY);
+    DisplayPartyPokemonLevelCheck(mon, menuBox, DRAW_TEXT_ONLY);
+    DisplayPartyPokemonGenderNidoranCheck(mon, menuBox, DRAW_TEXT_ONLY);
+    DisplayPartyPokemonHPBarCheck(mon, menuBox);
 }
 
 static void DisplayPartyPokemonDescriptionData(u8 slot, u8 stringId)
@@ -1319,6 +1357,13 @@ static void HandleChooseMonSelection(u8 taskId, s8 *slotPtr)
 {
     if (*slotPtr == SLOT_CONFIRM)
         gPartyMenu.task(taskId); // task here is always Task_ValidateChosenMonsForBattle
+    else if (gPartyMenu.layout == PARTY_LAYOUT_POKEGLASS && sPokeGlassStatsMode)
+    {
+        PlaySE(SE_SELECT);
+        gPartyMenu.slotId = *slotPtr;
+        sPartyMenuInternal->exitCallback = CB2_ShowPokemonSummaryScreen;
+        Task_ClosePartyMenu(taskId);
+    }
     else
     {
         switch (gPartyMenu.action)
@@ -1579,6 +1624,8 @@ static void UpdateCurrentPartySelection(s8 *slotPtr, s8 movementDir)
 
     if (layout == PARTY_LAYOUT_SINGLE)
         UpdatePartySelectionSingleLayout(slotPtr, movementDir);
+    else if (layout == PARTY_LAYOUT_POKEGLASS)
+        UpdatePartySelectionPokeGlassLayout(slotPtr, movementDir);
     else
         UpdatePartySelectionDoubleLayout(slotPtr, movementDir);
     if (*slotPtr != newSlotId)
@@ -1587,6 +1634,56 @@ static void UpdateCurrentPartySelection(s8 *slotPtr, s8 movementDir)
         AnimatePartySlot(newSlotId, 0);
         AnimatePartySlot(*slotPtr, 1);
     }
+}
+
+// PokéGlass slots are indexed down each column: 0-2 on the left, 3-5 on right.
+static void UpdatePartySelectionPokeGlassLayout(s8 *slotPtr, s8 movementDir)
+{
+    s8 slot = *slotPtr;
+    s8 next = slot;
+
+    if (slot == SLOT_CANCEL)
+    {
+        if (movementDir == MENU_DIR_DOWN)
+            *slotPtr = 0;
+        else if (movementDir == MENU_DIR_UP)
+            *slotPtr = sPartyMenuInternal->chooseMultiple ? SLOT_CONFIRM : gPlayerPartyCount - 1;
+        return;
+    }
+    if (slot == SLOT_CONFIRM)
+    {
+        if (movementDir == MENU_DIR_DOWN)
+            *slotPtr = SLOT_CANCEL;
+        else if (movementDir == MENU_DIR_UP)
+            *slotPtr = gPlayerPartyCount - 1;
+        return;
+    }
+
+    switch (movementDir)
+    {
+    case MENU_DIR_UP:
+        if (slot % 3 == 0)
+            next = SLOT_CANCEL;
+        else if (GetMonData(&gPlayerParty[slot - 1], MON_DATA_SPECIES) != SPECIES_NONE)
+            next = slot - 1;
+        break;
+    case MENU_DIR_DOWN:
+        if (slot % 3 == 2 || slot == gPlayerPartyCount - 1)
+            next = sPartyMenuInternal->chooseMultiple ? SLOT_CONFIRM : SLOT_CANCEL;
+        else if (slot + 1 < PARTY_SIZE && GetMonData(&gPlayerParty[slot + 1], MON_DATA_SPECIES) != SPECIES_NONE)
+            next = slot + 1;
+        break;
+    case MENU_DIR_LEFT:
+        if (slot >= 3 && GetMonData(&gPlayerParty[slot - 3], MON_DATA_SPECIES) != SPECIES_NONE)
+            next = slot - 3;
+        break;
+    case MENU_DIR_RIGHT:
+        if (slot < 3 && slot + 3 < gPlayerPartyCount
+            && GetMonData(&gPlayerParty[slot + 3], MON_DATA_SPECIES) != SPECIES_NONE)
+            next = slot + 3;
+        break;
+    }
+    *slotPtr = next;
 }
 
 static void UpdatePartySelectionSingleLayout(s8 *slotPtr, s8 movementDir)
@@ -2295,6 +2392,9 @@ static void InitPartyMenuWindows(u8 layout)
     case PARTY_LAYOUT_MULTI:
         InitWindows(sMultiPartyMenuWindowTemplate);
         break;
+    case PARTY_LAYOUT_POKEGLASS:
+        InitWindows(sPokeGlassPartyMenuWindowTemplate);
+        break;
     default: // PARTY_LAYOUT_MULTI_SHOWCASE
         InitWindows(sShowcaseMultiPartyMenuWindowTemplate);
         break;
@@ -2312,6 +2412,8 @@ static void LoadPartyMenuWindows(void)
     LoadStdWindowGfx(0, 0x58, BG_PLTT_ID(15));
     LoadPalette(GetTextWindowPalette(2), BG_PLTT_ID(12), PLTT_SIZE_4BPP);
     LoadPalette(GetTextWindowPalette(0), BG_PLTT_ID(14), PLTT_SIZE_4BPP);
+    if (gPartyMenu.layout == PARTY_LAYOUT_POKEGLASS)
+        DrawPokeGlassFrame(1);
 }
 
 static void CreateCancelConfirmWindows(bool8 chooseMultiple)
@@ -2399,6 +2501,21 @@ static void BlitBitmapToPartyWindow_RightColumn(u8 windowId, u8 x, u8 y, u8 widt
         BlitBitmapToPartyWindow(windowId, sSlotTilemap_Wide, 18, x, y, width, height);
     else
         BlitBitmapToPartyWindow(windowId, sSlotTilemap_WideNoHP, 18, x, y, width, height);
+}
+
+// The PokéGlass uses the existing party card art clipped to a 14-by-3-tile
+// viewport, keeping each of the six cards inside the two-column tablet grid.
+static void BlitBitmapToPartyWindow_PokeGlass(u8 windowId, u8 x, u8 y, u8 width, u8 height, bool8 hideHP)
+{
+    // Draw a complete compact card; clipping the legacy wide card left HP
+    // labels and borders over the nickname and level text.
+    if (width == 0 && height == 0)
+    {
+        FillWindowPixelBuffer(windowId, PIXEL_FILL(4));
+        FillWindowPixelRect(windowId, PIXEL_FILL(5), 1, 1, 102, 30);
+    }
+    else
+        FillWindowPixelRect(windowId, PIXEL_FILL(5), x * 8, y * 8, width * 8, height * 8);
 }
 
 static void DrawEmptySlot(u8 windowId)
@@ -2563,6 +2680,8 @@ static void DisplayPartyPokemonGender(u8 gender, u16 species, u8 *nickname, stru
 
 static void DisplayPartyPokemonHPCheck(struct Pokemon *mon, struct PartyMenuBox *menuBox, u8 drawMenuBoxOrText)
 {
+    if (gPartyMenu.layout == PARTY_LAYOUT_POKEGLASS)
+        return;
     if (GetMonData(mon, MON_DATA_SPECIES) != SPECIES_NONE)
     {
         if (drawMenuBoxOrText != DRAW_TEXT_ONLY)
@@ -2583,6 +2702,8 @@ static void DisplayPartyPokemonHP(u16 hp, struct PartyMenuBox *menuBox)
 
 static void DisplayPartyPokemonMaxHPCheck(struct Pokemon *mon, struct PartyMenuBox *menuBox, u8 drawMenuBoxOrText)
 {
+    if (gPartyMenu.layout == PARTY_LAYOUT_POKEGLASS)
+        return;
     if (GetMonData(mon, MON_DATA_SPECIES) != SPECIES_NONE)
     {
         if (drawMenuBoxOrText != DRAW_TEXT_ONLY)
@@ -3039,7 +3160,11 @@ static void SpriteCB_HeldItem(struct Sprite *sprite)
 static void CreatePartyMonPokeballSprite(struct Pokemon *mon, struct PartyMenuBox *menuBox)
 {
     if (GetMonData(mon, MON_DATA_SPECIES) != SPECIES_NONE)
+    {
         menuBox->pokeballSpriteId = CreateSprite(&sSpriteTemplate_MenuPokeball, menuBox->spriteCoords[6], menuBox->spriteCoords[7], 8);
+        if (gPartyMenu.layout == PARTY_LAYOUT_POKEGLASS && menuBox->pokeballSpriteId != SPRITE_NONE)
+            gSprites[menuBox->pokeballSpriteId].invisible = TRUE;
+    }
 }
 
 static void CreatePartyMonPokeballSpriteParameterized(u16 species, struct PartyMenuBox *menuBox)
@@ -3311,6 +3436,8 @@ static void CB2_ShowPokemonSummaryScreen(void)
 {
     if (gPartyMenu.menuType == PARTY_MENU_TYPE_IN_BATTLE)
         UpdatePartyToBattleOrder();
+    if (gPartyMenu.layout == PARTY_LAYOUT_POKEGLASS && sPokeGlassStatsMode)
+        SetPokemonSummaryScreenStartPage(PSS_PAGE_SKILLS);
     ShowPokemonSummaryScreen(gPlayerParty, gPartyMenu.slotId, gPlayerPartyCount - 1, CB2_ReturnToPartyMenuFromSummaryScreen, PSS_MODE_NORMAL);
 }
 
@@ -3318,7 +3445,10 @@ static void CB2_ReturnToPartyMenuFromSummaryScreen(void)
 {
     gPaletteFade.bufferTransferDisabled = TRUE;
     gPartyMenu.slotId = GetLastViewedMonIndex();
-    InitPartyMenu(gPartyMenu.menuType, KEEP_PARTY_LAYOUT, gPartyMenu.action, TRUE, PARTY_MSG_DO_WHAT_WITH_MON, Task_TryCreateSelectionWindow, gPartyMenu.exitCallback);
+    if (gPartyMenu.layout == PARTY_LAYOUT_POKEGLASS && sPokeGlassStatsMode)
+        InitPartyMenu(gPartyMenu.menuType, KEEP_PARTY_LAYOUT, PARTY_ACTION_CHOOSE_MON, TRUE, PARTY_MSG_CHOOSE_MON, Task_HandleChooseMonInput, gPartyMenu.exitCallback);
+    else
+        InitPartyMenu(gPartyMenu.menuType, KEEP_PARTY_LAYOUT, gPartyMenu.action, TRUE, PARTY_MSG_DO_WHAT_WITH_MON, Task_TryCreateSelectionWindow, gPartyMenu.exitCallback);
 }
 
 static void CursorCB_Switch(u8 taskId)
@@ -6224,6 +6354,18 @@ static void TryTutorSelectedMon(u8 taskId)
 void CB2_PartyMenuFromStartMenu(void)
 {
     InitPartyMenu(PARTY_MENU_TYPE_FIELD, PARTY_LAYOUT_SINGLE, PARTY_ACTION_CHOOSE_MON, FALSE, PARTY_MSG_CHOOSE_MON, Task_HandleChooseMonInput, CB2_ReturnToFieldWithOpenMenu);
+}
+
+void CB2_PokeGlassPartyMenu(void)
+{
+    sPokeGlassStatsMode = FALSE;
+    InitPartyMenu(PARTY_MENU_TYPE_FIELD, PARTY_LAYOUT_POKEGLASS, PARTY_ACTION_CHOOSE_MON, FALSE, PARTY_MSG_CHOOSE_MON, Task_HandleChooseMonInput, CB2_ReturnToFieldContinueScript);
+}
+
+void CB2_PokeGlassPartyStats(void)
+{
+    sPokeGlassStatsMode = TRUE;
+    InitPartyMenu(PARTY_MENU_TYPE_FIELD, PARTY_LAYOUT_POKEGLASS, PARTY_ACTION_CHOOSE_MON, FALSE, PARTY_MSG_CHOOSE_MON, Task_HandleChooseMonInput, CB2_ReturnToFieldContinueScript);
 }
 
 // Giving an item by selecting Give from the bag menu

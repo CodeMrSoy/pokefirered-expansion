@@ -275,6 +275,7 @@ struct FlyMap
     u8 state;
     u8 unused; // Never read
     bool8 selectedDestination;
+    MainCallback exitCallback;
 };
 
 static EWRAM_DATA struct RegionMap * sRegionMap = NULL;
@@ -3859,7 +3860,18 @@ static void ClearOrDrawTopBar(bool8 clear)
 
 void CB2_OpenFlyMap(void)
 {
+    CB2_OpenFlyMapWithExitCB(CB2_ReturnToPartyMenuFromFlyMap);
+}
+
+void CB2_OpenFlyMapWithExitCB(MainCallback callback)
+{
     InitFlyMap();
+    if (sFlyMap == NULL)
+    {
+        SetMainCallback2(callback);
+        return;
+    }
+    sFlyMap->exitCallback = callback;
     InitRegionMap(REGIONMAP_TYPE_FLY);
 }
 
@@ -3985,8 +3997,11 @@ static void Task_FlyMap(u8 taskId)
 static void InitFlyMap(void)
 {
     sFlyMap = AllocZeroed(sizeof(struct FlyMap));
-    sFlyMap->state = 0;
-    sFlyMap->unused = 0;
+    if (sFlyMap != NULL)
+    {
+        sFlyMap->state = 0;
+        sFlyMap->unused = 0;
+    }
 }
 
 static void FreeFlyMap(u8 taskId)
@@ -4003,7 +4018,7 @@ static void FreeFlyMap(u8 taskId)
     if (sFlyMap->selectedDestination == TRUE)
         SetMainCallback2(CB2_ReturnToField);
     else
-        SetMainCallback2(CB2_ReturnToPartyMenuFromFlyMap);
+        SetMainCallback2(sFlyMap->exitCallback);
     FREE_IF_NOT_NULL(sFlyMap);
 }
 

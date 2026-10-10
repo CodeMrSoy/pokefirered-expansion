@@ -33,6 +33,7 @@ enum
 {
     PARTY_BOX_LEFT_COLUMN,
     PARTY_BOX_RIGHT_COLUMN,
+    PARTY_BOX_POKEGLASS,
 };
 
 static const struct PartyMenuBoxInfoRects sPartyBoxInfoRects[] =
@@ -64,6 +65,20 @@ static const struct PartyMenuBoxInfoRects sPartyBoxInfoRects[] =
              88, 10, 48,  3  // HP bar
         }, 
         77, 4, 64, 16        // Description text
+    },
+    [PARTY_BOX_POKEGLASS] =
+    {
+        BlitBitmapToPartyWindow_PokeGlass,
+        {
+            // Compact tablet card: nickname, level, gender, HP and HP bar.
+            28,  2, 72, 13, // Nickname
+            28, 18, 24,  8, // Level
+            90, 16,  8,  8, // Gender
+            67, 18, 24,  8, // HP
+            91, 18, 20,  8, // Max HP
+            54, 26, 44,  3  // HP bar
+        },
+        20, 4, 72, 16
     },
 };
 
@@ -105,6 +120,16 @@ static const u8 sPartyMenuSpriteCoords[PARTY_LAYOUT_COUNT][PARTY_SIZE][4 * 2] =
         { 16, 104,  20, 114,  56, 116,  16,  98},
         {104, 106, 106, 116, 144, 115, 102, 113},
         {104, 130, 106, 140, 144, 139, 102, 137},
+    },
+    [PARTY_LAYOUT_POKEGLASS] =
+    {
+        // Three vertically stacked cards in each column.
+        {20,26,24,36,48,35,12,22},
+        {20,58,24,68,48,67,12,54},
+        {20,90,24,100,48,99,12,86},
+        {140,26,144,36,168,35,132,22},
+        {140,58,144,68,168,67,132,54},
+        {140,90,144,100,168,99,132,86},
     },
 };
 
@@ -382,6 +407,27 @@ static const struct WindowTemplate sShowcaseMultiPartyMenuWindowTemplate[] =
         .baseBlock = 0x1A1,
     },
     DUMMY_WIN_TEMPLATE
+};
+
+// Six compact cards form the PokéGlass two-column, three-row party picker.
+static const struct WindowTemplate sPokeGlassPartyMenuWindowTemplate[] =
+{
+    { .bg = 0, .tilemapLeft = 1,  .tilemapTop = 2,  .width = 13, .height = 4, .paletteNum = 3, .baseBlock = 0x63 },
+    { .bg = 0, .tilemapLeft = 1,  .tilemapTop = 6,  .width = 13, .height = 4, .paletteNum = 4, .baseBlock = 0x9B },
+    { .bg = 0, .tilemapLeft = 1,  .tilemapTop = 10,  .width = 13, .height = 4, .paletteNum = 5, .baseBlock = 0xD3 },
+    { .bg = 0, .tilemapLeft = 16, .tilemapTop = 2,  .width = 13, .height = 4, .paletteNum = 6, .baseBlock = 0x10B },
+    { .bg = 0, .tilemapLeft = 16, .tilemapTop = 6,  .width = 13, .height = 4, .paletteNum = 7, .baseBlock = 0x143 },
+    { .bg = 0, .tilemapLeft = 16, .tilemapTop = 10,  .width = 13, .height = 4, .paletteNum = 8, .baseBlock = 0x17B },
+    {
+        .bg = 2,
+        .tilemapLeft = 1,
+        .tilemapTop = 15,
+        .width = 28,
+        .height = 4,
+        .paletteNum = 14,
+        .baseBlock = 0x1DF,
+    },
+    DUMMY_WIN_TEMPLATE,
 };
 
 static const struct WindowTemplate sCancelButtonWindowTemplate =

@@ -16,6 +16,9 @@
 #include "fieldmap.h"
 #include "field_specials.h"
 #include "region_map.h"
+#include "field_move.h"
+#include "fldeff.h"
+#include "pokemon.h"
 #include "task.h"
 #include "battle_tower.h"
 #include "field_camera.h"
@@ -30,6 +33,7 @@
 #include "script_menu.h"
 #include "data.h"
 #include "pokedex.h"
+#include "pokedex_screen.h"
 #include "text_window.h"
 #include "menu.h"
 #include "mystery_gift.h"
@@ -47,6 +51,49 @@
 #include "constants/menu.h"
 #include "constants/event_objects.h"
 #include "constants/metatile_labels.h"
+
+// PokéGlass shortcuts reuse the same screens and map rules as the normal menus.
+void OpenPokeGlassPokedex(void)
+{
+    CleanupOverworldWindowsAndTilemaps();
+    CB2_OpenPokedexWithExitCB(CB2_ReturnToFieldContinueScript);
+}
+
+void OpenPokeGlassMap(void)
+{
+    u8 i;
+    CleanupOverworldWindowsAndTilemaps();
+    if (FieldMove_IsUnlocked(FIELD_MOVE_FLY) && FieldMove_SetUpFly())
+    {
+        for (i = 0; i < gPlayerPartyCount; i++)
+        {
+            if (!GetMonData(&gPlayerParty[i], MON_DATA_IS_EGG)
+             && MonKnowsMove(&gPlayerParty[i], MOVE_FLY))
+            {
+                gPartyMenu.slotId = i;
+                CB2_OpenFlyMapWithExitCB(CB2_ReturnToFieldContinueScript);
+                return;
+            }
+        }
+    }
+    InitRegionMapWithExitCB(REGIONMAP_TYPE_NORMAL, CB2_ReturnToFieldContinueScript);
+}
+
+void OpenPokeGlassParty(void)
+{
+    if (gPlayerPartyCount == 0)
+        return;
+    CleanupOverworldWindowsAndTilemaps();
+    CB2_PokeGlassPartyMenu();
+}
+
+void OpenPokeGlassStats(void)
+{
+    if (gPlayerPartyCount == 0)
+        return;
+    CleanupOverworldWindowsAndTilemaps();
+    CB2_PokeGlassPartyStats();
+}
 
 static EWRAM_DATA u8 sElevatorCurrentFloorWindowId = 0;
 static EWRAM_DATA u16 sElevatorScroll = 0;
