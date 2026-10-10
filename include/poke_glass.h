@@ -2,5 +2,6 @@
 #define GUARD_POKE_GLASS_H
 
 void DrawPokeGlassFrame(u8 bg);
+void ShowPokeGlassHub(bool8 ignoreBPress);
 
 #endif

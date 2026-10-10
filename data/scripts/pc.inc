@@ -117,13 +117,14 @@ EventScript_PokeGlassMenu::
 	end
 
 EventScript_PokeGlassPokedex::
-	goto_if_unset FLAG_SYS_POKEDEX_GET, EventScript_PokeGlassClose
-	releaseall
+	goto_if_unset FLAG_SYS_POKEDEX_GET, EventScript_PokeGlassMenu
 	special OpenPokeGlassPokedex
+	waitstate
+	goto EventScript_PokeGlassMenu
 	end
 
 EventScript_PokeGlassStorage::
-	goto_if_set FLAG_SYS_PC_STORAGE_DISABLED, EventScript_PCDisabled
+	goto_if_set FLAG_SYS_PC_STORAGE_DISABLED, EventScript_PokeGlassStorageDisabled
 	playse SE_PC_LOGIN
 	special ShowPokemonStorageSystemPC
 	waitstate
@@ -131,20 +132,34 @@ EventScript_PokeGlassStorage::
 	end
 
 EventScript_PokeGlassParty::
-	releaseall
+	getpartysize
+	compare VAR_RESULT, 0
+	goto_if_eq EventScript_PokeGlassMenu
 	special OpenPokeGlassParty
+	waitstate
+	goto EventScript_PokeGlassMenu
 	end
 
 EventScript_PokeGlassMap::
-	releaseall
 	special OpenPokeGlassMap
+	waitstate
+	goto EventScript_PokeGlassMenu
 	end
 
 EventScript_PokeGlassStats::
-	releaseall
+	getpartysize
+	compare VAR_RESULT, 0
+	goto_if_eq EventScript_PokeGlassMenu
 	special OpenPokeGlassStats
+	waitstate
+	goto EventScript_PokeGlassMenu
 	end
 
 EventScript_PokeGlassClose::
 	releaseall
+	end
+
+EventScript_PokeGlassStorageDisabled::
+	msgbox OneIsland_PokemonCenter_1F_Text_UsualPCServicesUnavailable
+	goto EventScript_PokeGlassMenu
 	end

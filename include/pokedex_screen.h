@@ -20,8 +20,10 @@
 #define DEX_ORDER_START DEX_ORDER_NUMERICAL_KANTO
 
 #include "pokedex.h"
+#include "main.h"
 
 void CB2_OpenPokedexFromStartMenu(void);
+void CB2_OpenPokedexWithExitCB(MainCallback exitCallback);
 s8 DexScreen_GetSetPokedexFlag(u16 nationalDexNo, u8 caseId, bool8 indexIsSpecies);
 
 #endif //GUARD_POKEDEX_SCREEN_H

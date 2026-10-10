@@ -1,5 +1,62 @@
 # PokéGlass QA — QOL, 2026-10-10
 
+## Latest follow-up: glass launcher and app returns
+
+The hub now uses a translucent inset tablet with five icon tiles, selection
+highlights, a header, and button hints. BG0 alpha blending shows the player and
+overworld through the glass. Closing the hub restores the field palette and
+window/blending registers. Cursor changes redraw only the affected tiles to
+avoid dropping short button presses during a full-screen redraw.
+
+![Glass hub in the emulator](images/pokeglass-glass-hub.png)
+
+Pokédex, Party, Stats, and Map now resume the tablet script on exit, matching
+Storage. The selected app remains highlighted on return. Nested screens still
+step back through their own parent screen. The normal Pokédex entry point keeps
+its original exit callback. The ownership gate from Oak's gift remains intact.
+
+Validation on the rebuilt ROM:
+
+- `make -j2` and `git diff --check` passed.
+- mGBA fixture: six Pokémon, Pokédex enabled, tablet in Key Items.
+- Each of the five apps opened; exiting each returned to the live hub task.
+- Stats Summary returned through the picker to the hub.
+- Screenshots confirmed transparency, the player behind the hub, and a clean
+  field screen after closing it.
+- Direction changes followed by short A presses worked after redraw optimization.
+- Ten consecutive hub open/close cycles passed.
+
+ROM SHA-256: `5f75fc56a78a8d8b21b9d20137ac53dbcf8da31059f0c4bdb8dd52695995d152`.
+These were controlled UI tests, not a full playthrough. Fly travel, weather and
+Flash-map combinations, and multiplayer remain untested. No commit or push was
+performed for these changes.
+
+## Follow-up: unlock only after Oak's tablet gift
+
+The normal, debug, and Safari Start menus now require ownership of
+`ITEM_POKEGLASS`. Starter and Pokédex flags alone do not unlock the hub.
+This supersedes the earlier starter-flag unlock described below.
+
+The updated ROM built successfully with `make -j2` after sourcing the local
+`build-env.sh`; `git diff --check` passed.
+ROM SHA-256: `c00fac191f84f91d577b41d387f5fe35095a0506d32e299cdd5264edd3269aee`.
+
+Focused mGBA checks used a disposable field fixture and assertions against the
+live Start-menu entries:
+
+- Fresh game without the tablet: hidden.
+- Starter flag set without the tablet: hidden.
+- Pokédex flag also set without the tablet: hidden.
+- Exact compiled `giveitem_msg` sequence from Oak's scene executed: item present
+  in the bag, gift message displayed, and PokéGlass visible in Start.
+- Selecting PokéGlass after the gift: five-app hub displayed.
+- Removing the tablet in the fixture: hidden again despite the story flags.
+
+The gift bytecode was matched uniquely in the ROM and executed in a controlled
+field fixture. This verifies the gift routine and menu gate, not the full Oak
+cutscene or a complete progression playthrough. No commit or push was performed
+for this follow-up.
+
 ## Build and test method
 
 Full ROM build passed with the existing ARM GCC 13.2.1 toolchain (`make -j2`).
