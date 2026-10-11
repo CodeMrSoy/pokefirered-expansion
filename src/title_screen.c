@@ -23,7 +23,10 @@
 #include "scanline_effect.h"
 #include "sound.h"
 #include "task.h"
+#include "title_screen.h"
 #include "constants/songs.h"
+
+#define USE_QUANTUM_TITLE_SCREEN TRUE
 
 enum TitleScreenScene
 {
@@ -350,6 +353,13 @@ static const u32 *const sUnused_Tilemaps[] = {
 
 void CB2_InitTitleScreen(void)
 {
+    // Keep the original scenes available while Quantum uses its own title.
+    if (USE_QUANTUM_TITLE_SCREEN)
+    {
+        CB2_InitQuantumTitleScreen();
+        return;
+    }
+
     switch (gMain.state)
     {
     default:

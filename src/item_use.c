@@ -29,6 +29,7 @@
 #include "overworld.h"
 #include "party_menu.h"
 #include "pokemon.h"
+#include "poke_glass.h"
 #include "pokemon_summary_screen.h"
 #include "quest_log.h"
 #include "region_map.h"
@@ -128,6 +129,8 @@ static void SetUpItemUseCallback(u8 taskId)
     sUsingRegisteredPartyItem = gTasks[taskId].tUsingRegisteredKeyItem == TRUE;
     if (sUsingRegisteredPartyItem)
     {
+        if (gSpecialVar_ItemId == ITEM_LEVEL_CAP_CANDY)
+            CapturePokeGlassBackdrop();
         FadeScreen(FADE_TO_BLACK, 0);
         gTasks[taskId].func = Task_OpenRegisteredPartyItem;
         return;
@@ -564,11 +567,11 @@ static void Task_PokeGlassIntro(u8 taskId)
     switch (task->data[1])
     {
     case 0: // Raise and enlarge the tablet into view.
-        if (step < 12)
+        if (step < 8)
         {
-            sprite->y -= 6;
+            sprite->y -= 9;
             // OAM scaling uses an inverse fixed-point value: 0x300 starts at one-third size.
-            SetOamMatrixRotationScaling(sprite->oam.matrixNum, 0x300 - step * 0x2A, 0x300 - step * 0x2A, 0);
+            SetOamMatrixRotationScaling(sprite->oam.matrixNum, 0x300 - step * 0x40, 0x300 - step * 0x40, 0);
             task->data[2]++;
         }
         else
@@ -580,14 +583,14 @@ static void Task_PokeGlassIntro(u8 taskId)
         }
         break;
     case 1: // Light up the screen after the power-on sound.
-        if (step < 8)
+        if (step < 4)
         {
             u16 palette[16];
             u8 i;
             u8 paletteNum = IndexOfSpritePaletteTag(TAG_POKEGLASS_INTRO_PAL);
 
             for (i = 0; i < ARRAY_COUNT(palette); i++)
-                palette[i] = BlendPokeGlassIntroColor(sPokeGlassIntroPaletteOff[i], sPokeGlassIntroPaletteOn[i], step + 1, 8);
+                palette[i] = BlendPokeGlassIntroColor(sPokeGlassIntroPaletteOff[i], sPokeGlassIntroPaletteOn[i], step + 1, 4);
             LoadPalette(palette, OBJ_PLTT_ID(paletteNum), sizeof(palette));
             task->data[2]++;
         }
@@ -598,7 +601,7 @@ static void Task_PokeGlassIntro(u8 taskId)
         }
         break;
     case 2: // Hold the lit tablet briefly before opening the hub menu.
-        if (step < 8)
+        if (step < 2)
             task->data[2]++;
         else
         {

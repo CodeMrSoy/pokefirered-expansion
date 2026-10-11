@@ -512,7 +512,6 @@ void Task_StartMenuHandleInput(u8 taskId)
 
 void ShowStartMenu(void)
 {
-    CapturePokeGlassBackdrop();
     if (!IsUpdateLinkStateCBActive())
     {
         FreezeObjectEvents();
@@ -548,6 +547,9 @@ static bool8 StartCB_HandleInput(void)
             && MapHasNoEncounterData())
             return FALSE;
         sStartMenuCallback = sStartMenuActionTable[sStartMenuOrder[sStartMenuCursorPos]].func.u8_void;
+        // A bag item may open the glass party screen after field VRAM is gone.
+        if (sStartMenuCallback == StartMenuBagCallback)
+            CapturePokeGlassBackdrop();
         StartMenu_FadeScreenIfLeavingOverworld();
         return FALSE;
     }

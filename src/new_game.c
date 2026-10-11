@@ -157,6 +157,8 @@ void NewGameInitData(void)
     SetAllRenewableItemFlags();
     WarpToPlayersRoom();
     RunScriptImmediately(EventScript_ResetAllMapFlags);
+    FlagSet(FLAG_SYS_B_DASH);
+    FlagSet(FLAG_HIDE_PEWTER_CITY_RUNNING_SHOES_GUY);
     StringCopy(gSaveBlock1Ptr->rivalName, rivalName);
     ResetTrainerTowerResults();
     ResetItemFlags();

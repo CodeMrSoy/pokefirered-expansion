@@ -2,6 +2,7 @@
 #include "gflib.h"
 #include "menu.h"
 #include "poke_glass.h"
+#include "pokemon.h"
 #include "event_data.h"
 #include "script.h"
 #include "sound.h"
@@ -17,72 +18,37 @@ void ReleasePokeGlassBackdrop(void)
     sFieldBackdrop = NULL;
 }
 
-// The party menu rebuilds VRAM. Keep a compact, frozen view of the field
-// underneath its glass instead of blending against the legacy party artwork.
-void CapturePokeGlassBackdrop(void)
+// Capture only for screens that replace the field's VRAM. Walk tile rows,
+// rather than resolving three tilemaps independently for every screen pixel.
+static u8 ClosestBackdropColor(u16 color)
 {
-    u8 *pixels = Alloc(240 * 160);
-    u32 counts[256] = {0};
-    u8 remap[256];
-    u32 x, y, bg, i, j;
-    u16 controls[4], scrollX[4], scrollY[4];
-    u16 display = GetGpuReg(REG_OFFSET_DISPCNT);
-    const u8 *vram = (const u8 *)VRAM;
+    u32 j, best = 1, distance = 0xFFFFFFFF;
+    for (j = 1; j < 16; j++)
+    {
+        u16 target = sFieldBackdropPalette[j];
+        s32 r = (color & 31) - (target & 31);
+        s32 g = ((color >> 5) & 31) - ((target >> 5) & 31);
+        s32 b = ((color >> 10) & 31) - ((target >> 10) & 31);
+        u32 d = r * r + g * g + b * b;
+        if (d < distance) { distance = d; best = j; }
+    }
+    return best;
+}
 
-    if (pixels == NULL)
-        return;
-    if (sFieldBackdrop == NULL)
-        sFieldBackdrop = Alloc(240 * 160 / 2);
-    if (sFieldBackdrop == NULL)
-    {
-        Free(pixels);
-        return;
-    }
-    for (bg = 1; bg < 4; bg++)
-    {
-        controls[bg] = GetGpuReg(REG_OFFSET_BG0CNT + bg * 2);
-        scrollX[bg] = GetGpuReg(REG_OFFSET_BG0HOFS + bg * 4);
-        scrollY[bg] = GetGpuReg(REG_OFFSET_BG0VOFS + bg * 4);
-    }
-    for (y = 0; y < 160; y++)
-        for (x = 0; x < 240; x++)
-        {
-            u8 color = 0, priority = 4;
-            for (bg = 1; bg < 4; bg++)
-            {
-                u16 c = controls[bg], tile, px, py;
-                u32 width = (c & 0x4000) ? 512 : 256;
-                u32 height = (c & 0x8000) ? 512 : 256;
-                u32 sx = (x + scrollX[bg]) & (width - 1), sy = (y + scrollY[bg]) & (height - 1);
-                u32 block = sx / 256 + sy / 256 * (width / 256);
-                const u16 *map = (const u16 *)(vram + ((c >> 8) & 31) * 0x800 + block * 0x800);
-                const u8 *gfx;
-                u8 pixel;
-                if ((c & 3) >= priority || !(display & (0x100 << bg)))
-                    continue;
-                tile = map[(sy % 256 / 8) * 32 + sx % 256 / 8];
-                px = sx & 7; py = sy & 7;
-                if (tile & 0x400) px = 7 - px;
-                if (tile & 0x800) py = 7 - py;
-                gfx = vram + ((c >> 2) & 3) * 0x4000 + (tile & 0x3FF) * 32;
-                pixel = (gfx[py * 4 + px / 2] >> ((px & 1) * 4)) & 15;
-                if (pixel)
-                {
-                    color = (tile >> 12) * 16 + pixel;
-                    priority = c & 3;
-                }
-            }
-            pixels[y * 240 + x] = color;
-            counts[color]++;
-        }
-    // Preserve field characters as well as the map in the frozen backdrop.
+// First pass counts visible character colors; second pass draws them using
+// the selected palette. Offscreen sprites never incur palette matching work.
+static void CaptureBackdropSprites(u32 *counts)
+{
+    static const u8 widths[3][4] = {{8,16,32,64}, {16,32,32,64}, {8,8,16,32}};
+    static const u8 heights[3][4] = {{8,16,32,64}, {8,8,16,32}, {16,32,32,64}};
+    const u8 *vram = (const u8 *)VRAM;
+    u32 i, x, y, j;
+    bool8 oneDimensional = GetGpuReg(REG_OFFSET_DISPCNT) & DISPCNT_OBJ_1D_MAP ? TRUE : FALSE;
     for (i = MAX_SPRITES; i-- > 0;)
     {
-        static const u8 widths[3][4] = {{8,16,32,64}, {16,32,32,64}, {8,8,16,32}};
-        static const u8 heights[3][4] = {{8,16,32,64}, {8,8,16,32}, {16,32,32,64}};
         const struct Sprite *sprite = &gSprites[i];
         u8 colors[16];
-        u32 width, height;
+        u32 width, height, palette;
         s32 left, top;
         if (!sprite->inUse || sprite->invisible || sprite->oam.affineMode != 0
             || sprite->oam.objMode != 0 || sprite->oam.bpp || sprite->oam.shape >= 3)
@@ -92,72 +58,111 @@ void CapturePokeGlassBackdrop(void)
         left = sprite->x + sprite->x2 + sprite->centerToCornerVecX;
         top = sprite->y + sprite->y2 + sprite->centerToCornerVecY;
         if (sprite->coordOffsetEnabled) { left += gSpriteCoordOffsetX; top += gSpriteCoordOffsetY; }
-        for (j = 1; j < 16; j++)
-        {
-            u32 k, best = 0, distance = 0xFFFFFFFF;
-            u16 color = gPlttBufferFaded[OBJ_PLTT_ID(sprite->oam.paletteNum) + j];
-            for (k = 0; k < 256; k++)
-            {
-                u16 target = gPlttBufferFaded[k];
-                s32 r = (color & 31) - (target & 31);
-                s32 g = ((color >> 5) & 31) - ((target >> 5) & 31);
-                s32 b = ((color >> 10) & 31) - ((target >> 10) & 31);
-                u32 d = r * r + g * g + b * b;
-                if (d < distance) { distance = d; best = k; }
-            }
-            colors[j] = best;
-        }
+        if (left >= 240 || top >= 160 || left + (s32)width <= 0 || top + (s32)height <= 0)
+            continue;
+        palette = OBJ_PLTT_ID(sprite->oam.paletteNum);
+        if (counts == NULL)
+            for (j = 1; j < 16; j++)
+                colors[j] = ClosestBackdropColor(gPlttBufferFaded[palette + j]);
         for (y = 0; y < height; y++)
+        {
+            s32 dy = top + y;
+            u32 py = sprite->vFlip ? height - 1 - y : y;
+            if (dy < 0 || dy >= 160) continue;
             for (x = 0; x < width; x++)
             {
-                u32 px = (sprite->oam.matrixNum & 8) ? width - 1 - x : x;
-                u32 py = (sprite->oam.matrixNum & 16) ? height - 1 - y : y;
-                u32 tile = sprite->oam.tileNum + (py / 8) * ((display & DISPCNT_OBJ_1D_MAP) ? width / 8 : 32) + px / 8;
+                s32 dx = left + x;
+                u32 px = sprite->hFlip ? width - 1 - x : x;
+                u32 tile = sprite->oam.tileNum + (py / 8) * (oneDimensional ? width / 8 : 32) + px / 8;
+                u32 offset, shift;
                 u8 color;
-                u32 offset;
-                if (left + (s32)x < 0 || left + x >= 240 || top + (s32)y < 0 || top + y >= 160)
-                    continue;
+                if (dx < 0 || dx >= 240) continue;
                 color = (vram[0x10000 + tile * 32 + (py & 7) * 4 + (px & 7) / 2] >> ((px & 1) * 4)) & 15;
                 if (!color) continue;
-                offset = (top + y) * 240 + left + x;
-                counts[pixels[offset]]--;
-                pixels[offset] = colors[color];
-                counts[pixels[offset]]++;
+                if (counts != NULL)
+                    counts[palette + color]++;
+                else
+                {
+                    offset = ((dy / 8) * 30 + dx / 8) * 32 + (dy & 7) * 4 + (dx & 7) / 2;
+                    shift = (dx & 1) * 4;
+                    sFieldBackdrop[offset] = (sFieldBackdrop[offset] & ~(15 << shift)) | (colors[color] << shift);
+                }
             }
+        }
     }
-    // Reserve color zero for transparent tiles; choose the common field colors
-    // and map the remaining colors to their closest RGB match.
+}
+
+void CapturePokeGlassBackdrop(void)
+{
+    u8 *pixels = AllocZeroed(240 * 160);
+    u32 counts[512] = {0};
+    u8 remap[256];
+    u32 x, y, i, j;
+    s32 priority, bg;
+    u16 display = GetGpuReg(REG_OFFSET_DISPCNT);
+    const u8 *vram = (const u8 *)VRAM;
+    if (pixels == NULL) return;
+    if (sFieldBackdrop == NULL) sFieldBackdrop = Alloc(240 * 160 / 2);
+    if (sFieldBackdrop == NULL) { Free(pixels); return; }
+    // Lower priority layers first; lower BG numbers win ties.
+    for (priority = 3; priority >= 0; priority--)
+        for (bg = 3; bg >= 1; bg--)
+        {
+            u16 control = GetGpuReg(REG_OFFSET_BG0CNT + bg * 2);
+            u32 scrollX, scrollY, widthMask, heightMask, blockStride;
+            const u16 *map;
+            const u8 *tiles;
+            if (!(display & (0x100 << bg)) || (control & 3) != priority) continue;
+            scrollX = GetGpuReg(REG_OFFSET_BG0HOFS + bg * 4);
+            scrollY = GetGpuReg(REG_OFFSET_BG0VOFS + bg * 4);
+            widthMask = control & 0x4000 ? 511 : 255;
+            heightMask = control & 0x8000 ? 511 : 255;
+            blockStride = control & 0x4000 ? 2048 : 1024;
+            map = (const u16 *)(vram + ((control >> 8) & 31) * 0x800);
+            tiles = vram + ((control >> 2) & 3) * 0x4000;
+            for (y = 0; y < 160; y++)
+            {
+                u32 sy = (y + scrollY) & heightMask;
+                u32 row = (sy >> 8) * blockStride + ((sy & 248) << 2);
+                u8 *dest = pixels + y * 240;
+                for (x = 0; x < 240;)
+                {
+                    u32 sx = (x + scrollX) & widthMask;
+                    u16 tile = map[row + (sx >> 8) * 1024 + ((sx & 255) >> 3)];
+                    u32 py = tile & 0x800 ? 7 - (sy & 7) : sy & 7;
+                    u32 count = 8 - (sx & 7), px = sx & 7;
+                    const u8 *gfx = tiles + (tile & 1023) * 32 + py * 4;
+                    u8 palette = (tile >> 12) * 16;
+                    if (count > 240 - x) count = 240 - x;
+                    for (j = 0; j < count; j++, px++, x++)
+                    {
+                        u32 tx = tile & 0x400 ? 7 - px : px;
+                        u8 color = (gfx[tx >> 1] >> ((tx & 1) * 4)) & 15;
+                        if (color) dest[x] = palette + color;
+                    }
+                }
+            }
+        }
+    for (i = 0; i < 240 * 160; i++) counts[pixels[i]]++;
+    CaptureBackdropSprites(counts);
     sFieldBackdropPalette[0] = gPlttBufferFaded[0] & 0x7FFF;
     counts[0] = 0;
     for (i = 1; i < 16; i++)
     {
         u32 best = 1;
-        for (j = 2; j < 256; j++)
+        for (j = 2; j < 512; j++)
             if (counts[j] > counts[best]) best = j;
         sFieldBackdropPalette[i] = gPlttBufferFaded[best] & 0x7FFF;
         counts[best] = 0;
     }
-    for (i = 0; i < 256; i++)
-    {
-        u32 best = 1, distance = 0xFFFFFFFF;
-        u16 color = gPlttBufferFaded[i];
-        for (j = 1; j < 16; j++)
-        {
-            u16 target = sFieldBackdropPalette[j];
-            s32 r = (color & 31) - (target & 31);
-            s32 g = ((color >> 5) & 31) - ((target >> 5) & 31);
-            s32 b = ((color >> 10) & 31) - ((target >> 10) & 31);
-            u32 d = r * r + g * g + b * b;
-            if (d < distance) { distance = d; best = j; }
-        }
-        remap[i] = best;
-    }
+    for (i = 0; i < 256; i++) remap[i] = ClosestBackdropColor(gPlttBufferFaded[i]);
     for (y = 0; y < 160; y++)
         for (x = 0; x < 240; x += 2)
         {
             u32 offset = ((y / 8) * 30 + x / 8) * 32 + (y & 7) * 4 + (x & 7) / 2;
             sFieldBackdrop[offset] = remap[pixels[y * 240 + x]] | (remap[pixels[y * 240 + x + 1]] << 4);
         }
+    CaptureBackdropSprites(NULL);
     Free(pixels);
 }
 
@@ -257,7 +262,26 @@ static const struct WindowTemplate sHubTemplate = {
 
 static void HubRect(u8 color, u16 x, u16 y, u16 width, u16 height)
 {
-    FillWindowPixelRect(sHubWindow, PIXEL_FILL(color), x, y, width, height);
+    u8 *pixels = (u8 *)GetWindowAttribute(sHubWindow, WINDOW_TILE_DATA);
+    u32 py, px, fill = 0x11111111 * color;
+    // The hub redraws large rectangles. Fill each aligned eight-pixel tile
+    // row in one write, handling only its edges a pixel at a time.
+    for (py = y; py < y + height; py++)
+        for (px = x; px < x + width;)
+        {
+            u32 offset = ((py / 8) * 28 + px / 8) * 32 + (py & 7) * 4 + (px & 7) / 2;
+            if (!(px & 7) && px + 8 <= x + width)
+            {
+                *(u32 *)(pixels + offset) = fill;
+                px += 8;
+            }
+            else
+            {
+                u32 shift = (px & 1) * 4;
+                pixels[offset] = (pixels[offset] & ~(15 << shift)) | (color << shift);
+                px++;
+            }
+        }
 }
 
 static void DrawHubIcon(u8 app, u16 x, u16 y)
@@ -366,7 +390,7 @@ static void Task_PokeGlassHub(u8 taskId)
     u8 oldCursor = sHubCursor;
     if (gPaletteFade.active)
         return;
-    if (gTasks[taskId].data[1] < 8)
+    if (gTasks[taskId].data[1] < 2)
     {
         gTasks[taskId].data[1]++;
         return;
@@ -395,6 +419,8 @@ static void Task_PokeGlassHub(u8 taskId)
     }
     PlaySE(SE_SELECT);
     CloseHub();
+    if ((gSpecialVar_Result == 1 || gSpecialVar_Result == 3) && gPlayerPartyCount != 0)
+        CapturePokeGlassBackdrop();
     if (gSpecialVar_Result == SCR_MENU_CANCEL)
         ReleasePokeGlassBackdrop();
     DestroyTask(taskId);
@@ -404,7 +430,6 @@ static void Task_PokeGlassHub(u8 taskId)
 void ShowPokeGlassHub(bool8 ignoreBPress)
 {
     u8 taskId;
-    CapturePokeGlassBackdrop();
     sHubWindow = AddWindow(&sHubTemplate);
     if (sHubWindow == WINDOW_NONE)
     {

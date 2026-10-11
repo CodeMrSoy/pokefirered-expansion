@@ -2182,8 +2182,46 @@ static const struct SpriteTemplate sWheelWindowTemplate = {
     .oam = &sWheelWindowOam, .anims = gDummySpriteAnimTable, .images = NULL,
     .affineAnims = gDummySpriteAffineAnimTable, .callback = SpriteCallbackDummy,
 };
-static const s16 sWheelX[] = {120, 156, 120, 84};
-static const s16 sWheelY[] = {44, 80, 116, 80};
+static const s16 sWheelX[] = {120, 154, 120, 86};
+static const s16 sWheelY[] = {46, 80, 114, 80};
+static const s8 sWheelIconOffsetX[] = {0, -2, 0, 2};
+static const s8 sWheelIconOffsetY[] = {2, 0, -2, 0};
+
+// Bag icons occupy the top-left 24x24 of a 32x32 sprite. Resample and
+// center a 20x20 image so every wheel slot has the same visual padding.
+static u8 AddWheelItemIcon(u16 tag, u16 item)
+{
+    struct SpriteTemplate template = gItemIconSpriteTemplate;
+    struct SpriteSheet sheet;
+    struct SpritePalette palette;
+    u32 x, y;
+    u8 spriteId;
+    if (!AllocItemIconTemporaryBuffers())
+        return MAX_SPRITES;
+    DecompressDataWithHeaderWram(GetItemIconPic(item), gItemIconDecompressionBuffer);
+    for (y = 0; y < 20; y++)
+        for (x = 0; x < 20; x++)
+        {
+            u32 sx = x * 24 / 20, sy = y * 24 / 20;
+            u32 src = (sy / 8 * 3 + sx / 8) * 32 + (sy & 7) * 4 + (sx & 7) / 2;
+            u32 dx = x + 6, dy = y + 6;
+            u32 dst = (dy / 8 * 4 + dx / 8) * 32 + (dy & 7) * 4 + (dx & 7) / 2;
+            u8 color = (gItemIconDecompressionBuffer[src] >> ((sx & 1) * 4)) & 15;
+            gItemIcon4x4Buffer[dst] |= color << ((dx & 1) * 4);
+        }
+    sheet.data = gItemIcon4x4Buffer;
+    sheet.size = 0x200;
+    sheet.tag = tag;
+    LoadSpriteSheet(&sheet);
+    palette.data = GetItemIconPalette(item);
+    palette.tag = tag;
+    LoadSpritePalette(&palette);
+    template.tileTag = tag;
+    template.paletteTag = tag;
+    spriteId = CreateSprite(&template, 0, 0, 0);
+    FreeItemIconTemporaryBuffers();
+    return spriteId;
+}
 
 static void FreeKeyItemWheel(u8 taskId)
 {
@@ -2229,12 +2267,12 @@ static void Task_KeyItemWheel(u8 taskId)
             if (gSaveBlock1Ptr->flashLevel > 1)
                 data[12 + i] = CreateSprite(&sWheelWindowTemplate, sWheelX[i], sWheelY[i], 2);
             if (*RegisteredItemAt(i) == ITEM_NONE) continue;
-            spriteId = AddItemIconSprite(TAG_KEY_ITEM_WHEEL + i + 1, TAG_KEY_ITEM_WHEEL + i + 1, *RegisteredItemAt(i));
+            spriteId = AddWheelItemIcon(TAG_KEY_ITEM_WHEEL + i + 1, *RegisteredItemAt(i));
             data[8 + i] = spriteId;
             if (spriteId < MAX_SPRITES)
             {
-                gSprites[spriteId].x = sWheelX[i];
-                gSprites[spriteId].y = sWheelY[i];
+                gSprites[spriteId].x = sWheelX[i] + sWheelIconOffsetX[i];
+                gSprites[spriteId].y = sWheelY[i] + sWheelIconOffsetY[i];
                 gSprites[spriteId].oam.priority = 0;
                 gSprites[spriteId].subpriority = 0;
             }
@@ -2271,7 +2309,6 @@ bool8 UseRegisteredKeyItemOnField(void)
     u16 item = ITEM_NONE;
     u8 taskId;
     if (InUnionRoom() == TRUE) return FALSE;
-    CapturePokeGlassBackdrop();
     HideMapNamePopUpWindow();
     ChangeBgY(0, 0, 0);
     for (i = 0; i < 4; i++)
