@@ -1841,6 +1841,8 @@ const u32 gItemIcon_BerryPouch[] = INCBIN_U32("graphics/items/icons/berry_pouch.
 const u16 gItemIconPalette_BerryPouch[] = INCBIN_U16("graphics/items/icon_palettes/berry_pouch.gbapal");
 
 const u32 gItemIcon_PokemonBoxLink[] = INCBIN_U32("graphics/items/icons/pokemon_box_link.4bpp.lz");
+const u32 gItemIcon_PokeGlass[] = INCBIN_U32("graphics/items/icons/poke_glass.4bpp.lz");
+const u16 gItemIconPalette_PokeGlass[] = INCBIN_U16("graphics/items/icon_palettes/poke_glass.gbapal");
 const u16 gItemIconPalette_PokemonBoxLink[] = INCBIN_U16("graphics/items/icon_palettes/pokemon_box_link.gbapal");
 
 const u32 gItemIcon_CoinCase[] = INCBIN_U32("graphics/items/icons/coin_case.4bpp.lz");

@@ -52,6 +52,9 @@ struct OakSpeechResources
 static EWRAM_DATA struct OakSpeechResources *sOakSpeechResources = NULL;
 
 static void Task_NewGameScene(u8);
+static void Task_CharacterCreation_Init(u8);
+
+#define SKIP_NEW_GAME_TUTORIAL TRUE
 
 static void ControlsGuide_LoadPage1(void);
 static void Task_ControlsGuide_HandleInput(u8);
@@ -769,6 +772,12 @@ static void Task_NewGameScene(u8 taskId)
     case 5:
         sOakSpeechResources->textSpeed = GetPlayerTextSpeedDelay();
         gTextFlags.canABSpeedUpPrint = TRUE;
+        if (SKIP_NEW_GAME_TUTORIAL)
+        {
+            gTasks[taskId].func = Task_CharacterCreation_Init;
+            gMain.state = 0;
+            return;
+        }
         DecompressAndCopyTileDataToVram(1, sControlsGuide_PikachuIntro_Background_Tiles, 0, 0, 0);
         break;
     case 6:
@@ -1158,6 +1167,31 @@ static inline void OakSpeechPrintMessage(const u8 *str, u8 speed, bool32 isStrin
 //     }                                                                                                                                                        \
 //     CopyWindowToVram(WIN_INTRO_TEXTBOX, COPYWIN_FULL);                                                                                                       \
 // })
+
+// Start directly at character creation, with the same resources used after naming.
+static void Task_CharacterCreation_Init(u8 taskId)
+{
+    u32 size;
+
+    sOakSpeechResources->oakSpeechBackgroundTiles = malloc_and_decompress(sOakSpeech_Background_Tiles, &size);
+    LoadBgTiles(1, sOakSpeechResources->oakSpeechBackgroundTiles, size, 0);
+    CopyToBgTilemapBuffer(1, sOakSpeech_Background_Tilemap, 0, 0);
+    CopyBgTilemapBufferToVram(1);
+    FillBgTilemapBufferRect_Palette0(2, 0, 0, 0, 32, 32);
+    CopyBgTilemapBufferToVram(2);
+    CreatePikachuOrPlatformSprites(taskId, SPRITE_TYPE_PLATFORM);
+    gTasks[taskId].tTrainerPicPosX = -60;
+    OakSpeechPrintMessage(gOakSpeech_Text_AskPlayerGender, 0, FALSE);
+    gPaletteFade.bufferTransferDisabled = FALSE;
+    BeginNormalPaletteFade(PALETTES_ALL, 0, 16, 0, RGB_BLACK);
+    SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_MODE_0 | DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON);
+    ShowBg(0);
+    ShowBg(1);
+    ShowBg(2);
+    SetVBlankCallback(VBlankCB_NewGameScene);
+    PlayBGM(MUS_ROUTE24);
+    gTasks[taskId].func = Task_OakSpeech_ShowGenderOptions;
+}
 
 static void Task_OakSpeech_WelcomeToTheWorld(u8 taskId)
 {

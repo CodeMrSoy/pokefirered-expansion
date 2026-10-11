@@ -2413,7 +2413,10 @@ static void LoadPartyMenuWindows(void)
     LoadPalette(GetTextWindowPalette(2), BG_PLTT_ID(12), PLTT_SIZE_4BPP);
     LoadPalette(GetTextWindowPalette(0), BG_PLTT_ID(14), PLTT_SIZE_4BPP);
     if (gPartyMenu.layout == PARTY_LAYOUT_POKEGLASS)
+    {
         DrawPokeGlassFrame(1);
+        LoadPokeGlassBackdrop();
+    }
 }
 
 static void CreateCancelConfirmWindows(bool8 chooseMultiple)
@@ -4537,6 +4540,8 @@ void CB2_ShowPartyMenuForItemUse(void)
     u8 msgId;
     TaskFunc task;
 
+    sPokeGlassStatsMode = FALSE;
+
     if (gMain.inBattle)
     {
         menuType = PARTY_MENU_TYPE_IN_BATTLE;
@@ -4545,7 +4550,7 @@ void CB2_ShowPartyMenuForItemUse(void)
     else
     {
         menuType = PARTY_MENU_TYPE_FIELD;
-        partyLayout = PARTY_LAYOUT_SINGLE;
+        partyLayout = gSpecialVar_ItemId == ITEM_LEVEL_CAP_CANDY ? PARTY_LAYOUT_POKEGLASS : PARTY_LAYOUT_SINGLE;
     }
 
     if (GetItemEffectType(gSpecialVar_ItemId) == ITEM_EFFECT_SACRED_ASH)
@@ -4582,6 +4587,8 @@ void CB2_ShowPartyMenuForItemUse(void)
         }
         task = Task_HandleChooseMonInput;
     }
+    if (!gMain.inBattle && IsUsingRegisteredPartyItem())
+        callback = CB2_ReturnFromRegisteredPartyItem;
     InitPartyMenu(menuType, partyLayout, PARTY_ACTION_USE_ITEM, TRUE, msgId, task, callback);
 }
 
@@ -5687,7 +5694,7 @@ static void CB2_ReturnToPartyMenuWhileLearningMove(void)
     {
         if (sFinalLevel != 0)
             SetMonData(&gPlayerParty[gPartyMenu.slotId], MON_DATA_LEVEL, &sFinalLevel); // to avoid displaying incorrect level
-        InitPartyMenu(PARTY_MENU_TYPE_FIELD, PARTY_LAYOUT_SINGLE, PARTY_ACTION_CHOOSE_MON, TRUE, PARTY_MSG_NONE, Task_ReturnToPartyMenuWhileLearningMove, gPartyMenu.exitCallback);
+        InitPartyMenu(PARTY_MENU_TYPE_FIELD, KEEP_PARTY_LAYOUT, PARTY_ACTION_CHOOSE_MON, TRUE, PARTY_MSG_NONE, Task_ReturnToPartyMenuWhileLearningMove, gPartyMenu.exitCallback);
     }
 }
 

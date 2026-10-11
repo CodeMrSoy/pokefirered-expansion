@@ -1,4 +1,5 @@
 #include "global.h"
+#include "poke_glass.h"
 #include "gflib.h"
 #include "battle.h"
 #include "battle_controllers.h"
@@ -1901,7 +1902,7 @@ static void ItemMenu_Register(u8 taskId)
         RemoveContextWindow();
         BagMenu_RemoveWindow(ITEMWIN_SELECTIONTEXT);
         PutWindowTilemap(WIN_DESCRIPTION);
-        FillWindowPixelBuffer(WIN_DESCRIPTION, PIXEL_FILL(0));
+        FillWindowPixelBuffer(WIN_DESCRIPTION, PIXEL_FILL(1));
         BagMenu_Print(WIN_DESCRIPTION, FONT_NORMAL, sText_RegisterDirection, 2, 3, 0, 0, TEXT_SKIP_DRAW, COLORID_BLACK_CURSOR);
         CopyWindowToVram(WIN_DESCRIPTION, COPYWIN_FULL);
         gTasks[taskId].func = Task_RegisterDirection;
@@ -2270,6 +2271,7 @@ bool8 UseRegisteredKeyItemOnField(void)
     u16 item = ITEM_NONE;
     u8 taskId;
     if (InUnionRoom() == TRUE) return FALSE;
+    CapturePokeGlassBackdrop();
     HideMapNamePopUpWindow();
     ChangeBgY(0, 0, 0);
     for (i = 0; i < 4; i++)

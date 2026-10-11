@@ -1,6 +1,6 @@
 const struct Tileset gTileset_General =
 {
-    .lightPalettes = 0x28, // Glass colors only; roofs retain normal time tint.
+    .lightPalettes = 0x2c, // Glass colors only; roofs retain normal time tint.
     .isCompressed = TRUE,
     .isSecondary = FALSE,
     .tiles = gTilesetTiles_General,
@@ -763,7 +763,7 @@ const struct Tileset gTileset_HallOfFame =
 
 const struct Tileset gTileset_GeneralWinter =
 {
-    .lightPalettes = 0x28, // Glass colors only; roofs retain normal time tint.
+    .lightPalettes = 0x2c, // Glass colors only; roofs retain normal time tint.
     .isCompressed = TRUE,
     .isSecondary = FALSE,
     .tiles = gTilesetTiles_GeneralWinter,
@@ -775,7 +775,7 @@ const struct Tileset gTileset_GeneralWinter =
 
 const struct Tileset gTileset_GeneralAutumn =
 {
-    .lightPalettes = 0x28, // Glass colors only; roofs retain normal time tint.
+    .lightPalettes = 0x2c, // Glass colors only; roofs retain normal time tint.
     .isCompressed = TRUE,
     .isSecondary = FALSE,
     .tiles = gTilesetTiles_GeneralAutumn,
@@ -787,7 +787,7 @@ const struct Tileset gTileset_GeneralAutumn =
 
 const struct Tileset gTileset_GeneralSummer =
 {
-    .lightPalettes = 0x28, // Glass colors only; roofs retain normal time tint.
+    .lightPalettes = 0x2c, // Glass colors only; roofs retain normal time tint.
     .isCompressed = TRUE,
     .isSecondary = FALSE,
     .tiles = gTilesetTiles_GeneralSummer,

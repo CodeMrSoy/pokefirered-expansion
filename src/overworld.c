@@ -1,4 +1,5 @@
 #include "global.h"
+#include "poke_glass.h"
 #include "gflib.h"
 #include "io_reg.h"
 #include "cable_club.h"
@@ -1795,6 +1796,7 @@ static void CB2_LoadMapOnReturnToFieldCableClub(void)
 
 void CB2_ReturnToField(void)
 {
+    ReleasePokeGlassBackdrop();
     if (IsUpdateLinkStateCBActive() == TRUE)
     {
         SetMainCallback2(CB2_ReturnToFieldLink);
@@ -1840,6 +1842,7 @@ void CB2_ReturnToFieldFromMultiplayer(void)
 
 void CB2_ReturnToFieldWithOpenMenu(void)
 {
+    ReleasePokeGlassBackdrop();
     FieldClearVBlankHBlankCallbacks();
     gFieldCallback2 = FieldCB_ReturnToFieldOpenStartMenu;
     CB2_ReturnToField();
@@ -1847,6 +1850,7 @@ void CB2_ReturnToFieldWithOpenMenu(void)
 
 void CB2_ReturnToFieldContinueScript(void)
 {
+    ReleasePokeGlassBackdrop();
     FieldClearVBlankHBlankCallbacks();
     gFieldCallback = FieldCB_ContinueScript;
     CB2_ReturnToField();
@@ -2248,6 +2252,7 @@ static void DoMapLoadLoop(u8 *state)
 
 static void MoveSaveBlocks_ResetHeap_(void)
 {
+    ReleasePokeGlassBackdrop();
     MoveSaveBlocks_ResetHeap();
 }
 

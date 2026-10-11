@@ -90,6 +90,30 @@ static bool8 TryToWaterSudowoodo(void);
 // Below is set TRUE by UseRegisteredKeyItemOnField
 #define tUsingRegisteredKeyItem  data[3]
 
+static EWRAM_DATA bool8 sUsingRegisteredPartyItem = FALSE;
+static void SetFieldCallback2ForItemUse(void);
+
+bool8 IsUsingRegisteredPartyItem(void)
+{
+    return sUsingRegisteredPartyItem;
+}
+
+void CB2_ReturnFromRegisteredPartyItem(void)
+{
+    sUsingRegisteredPartyItem = FALSE;
+    SetFieldCallback2ForItemUse();
+    SetMainCallback2(CB2_ReturnToField);
+}
+
+static void Task_OpenRegisteredPartyItem(u8 taskId)
+{
+    if (!gPaletteFade.active)
+    {
+        DestroyTask(taskId);
+        SetMainCallback2(CB2_ShowPartyMenuForItemUse);
+    }
+}
+
 static void (*const sExitCallbackByItemType[])(void) = {
     [ITEM_USE_PARTY_MENU - 1] = CB2_ShowPartyMenuForItemUse,
     [ITEM_USE_FIELD      - 1] = CB2_ReturnToField,
@@ -101,6 +125,13 @@ static void (*const sExitCallbackByItemType[])(void) = {
 static void SetUpItemUseCallback(u8 taskId)
 {
     u8 itemType;
+    sUsingRegisteredPartyItem = gTasks[taskId].tUsingRegisteredKeyItem == TRUE;
+    if (sUsingRegisteredPartyItem)
+    {
+        FadeScreen(FADE_TO_BLACK, 0);
+        gTasks[taskId].func = Task_OpenRegisteredPartyItem;
+        return;
+    }
     if (gSpecialVar_ItemId == ITEM_ENIGMA_BERRY_E_READER)
         itemType = gTasks[taskId].data[4] - 1;
     else

@@ -1,4 +1,5 @@
 #include "global.h"
+#include "poke_glass.h"
 #include "gflib.h"
 #include "debug.h"
 #include "dexnav.h"
@@ -511,6 +512,7 @@ void Task_StartMenuHandleInput(u8 taskId)
 
 void ShowStartMenu(void)
 {
+    CapturePokeGlassBackdrop();
     if (!IsUpdateLinkStateCBActive())
     {
         FreezeObjectEvents();

@@ -4058,6 +4058,8 @@ extern const u16 gItemIconPalette_TMCase[];
 extern const u32 gItemIcon_BerryPouch[];
 extern const u16 gItemIconPalette_BerryPouch[];
 extern const u32 gItemIcon_PokemonBoxLink[];
+extern const u32 gItemIcon_PokeGlass[];
+extern const u16 gItemIconPalette_PokeGlass[];
 extern const u16 gItemIconPalette_PokemonBoxLink[];
 extern const u32 gItemIcon_CoinCase[];
 extern const u16 gItemIconPalette_CoinCase[];

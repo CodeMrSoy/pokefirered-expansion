@@ -1,6 +1,9 @@
 #ifndef GUARD_ITEM_USE_H
 #define GUARD_ITEM_USE_H
 
+bool8 IsUsingRegisteredPartyItem(void);
+void CB2_ReturnFromRegisteredPartyItem(void);
+
 void ItemUseOutOfBattle_AbilityCapsule(u8 taskId);
 void ItemUseOutOfBattle_AbilityPatch(u8 taskId);
 void ItemUseOutOfBattle_BerryPouch(u8 taskId);
