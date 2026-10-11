@@ -908,7 +908,10 @@ struct SaveBlock1
     /*0x3D34*/ u32 towerChallengeId;
     /*0x3D38*/ struct TrainerTower trainerTower[NUM_TOWER_CHALLENGE_TYPES];
 #endif //FREE_TRAINER_HILL
-    /*0x3D24*/ u8 unusedSB1[0x1C];
+    /*0x3D24*/ union {
+        u8 unusedSB1[0x1C];
+        struct { u16 registeredItemsExtra[3]; };
+    };
 }; // size: 0x3D68
 
 struct MapPosition
