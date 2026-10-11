@@ -864,7 +864,10 @@ struct SaveBlock1
     /*0x0296*/ u16 registeredItem; // registered for use with SELECT button
     /*0x0298*/ struct ItemSlot pcItems[PC_ITEMS_COUNT];
     /*0x560*/ struct Bag bag;
-    /*0x062C*/ u16 berryBlenderRecords[3]; // unused
+    /*0x062C*/ union PACKED ALIGNED(2) {
+        u16 berryBlenderRecords[3]; // unused in FRLG
+        u16 registeredItemsExtra[3]; // ORAS wheel; reuse existing save space
+    };
 #if FREE_MATCH_CALL == FALSE
     /*0x0638*/ u16 trainerRematchStepCounter;
     /*0x063A*/ u8 trainerRematches[MAX_REMATCH_ENTRIES];
