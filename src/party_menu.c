@@ -5805,6 +5805,48 @@ static void Task_TryLearningNextMoveAfterText(u8 taskId)
         Task_TryLearningNextMove(taskId);
 }
 
+// Cap Candy stops at the next level-up milestone so the normal Rare Candy
+// flow can display stat changes, offer new moves, and run level evolutions.
+static u8 GetCapCandyTargetLevel(struct Pokemon *mon, u8 currentLevel, u8 levelCap)
+{
+    u16 species = GetMonData(mon, MON_DATA_SPECIES);
+    const struct LevelUpMove *learnset = GetSpeciesLevelUpLearnset(species);
+    const struct Evolution *evolutions = GetSpeciesEvolutions(species);
+    u8 targetLevel = levelCap;
+    u8 i;
+
+    for (; learnset->move != LEVEL_UP_MOVE_END; learnset++)
+    {
+        bool8 alreadyKnowsMove = FALSE;
+        u16 move = learnset->move;
+
+        if (learnset->level <= currentLevel || learnset->level > targetLevel)
+            continue;
+
+        for (i = 0; i < MAX_MON_MOVES; i++)
+        {
+            if (GetMonData(mon, MON_DATA_MOVE1 + i) == move)
+            {
+                alreadyKnowsMove = TRUE;
+                break;
+            }
+        }
+
+        if (!alreadyKnowsMove)
+            targetLevel = learnset->level;
+    }
+
+    for (; evolutions->method != EVO_NONE; evolutions++)
+    {
+        if (evolutions->method == EVO_LEVEL
+         && evolutions->param > currentLevel
+         && evolutions->param < targetLevel)
+            targetLevel = evolutions->param;
+    }
+
+    return targetLevel;
+}
+
 void ItemUseCB_RareCandy(u8 taskId, TaskFunc func)
 {
     struct Pokemon *mon = &gPlayerParty[gPartyMenu.slotId];
@@ -5813,7 +5855,28 @@ void ItemUseCB_RareCandy(u8 taskId, TaskFunc func)
     u8 holdEffectParam = GetItemHoldEffectParam(*itemPtr);
 
     sInitialLevel = GetMonData(mon, MON_DATA_LEVEL);
-    if (!(B_RARE_CANDY_CAP && sInitialLevel >= GetCurrentLevelCap()))
+    if (gSpecialVar_ItemId == ITEM_LEVEL_CAP_CANDY)
+    {
+        u8 levelCap = GetCurrentLevelCap();
+
+        if (GetMonData(mon, MON_DATA_IS_EGG) || sInitialLevel >= levelCap)
+        {
+            cannotUseEffect = TRUE;
+        }
+        else
+        {
+            u8 targetLevel = GetCapCandyTargetLevel(mon, sInitialLevel, levelCap);
+            u16 species = GetMonData(mon, MON_DATA_SPECIES);
+            u32 experience = gExperienceTables[gSpeciesInfo[species].growthRate][targetLevel];
+
+            GetMonLevelUpWindowStats(mon, sLevelUpStatsBefore);
+            SetMonData(mon, MON_DATA_EXP, &experience);
+            CalculateMonStats(mon);
+            GetMonLevelUpWindowStats(mon, sLevelUpStatsAfter);
+            cannotUseEffect = FALSE;
+        }
+    }
+    else if (!(B_RARE_CANDY_CAP && sInitialLevel >= GetCurrentLevelCap()))
     {
         GetMonLevelUpWindowStats(mon, sLevelUpStatsBefore);
         cannotUseEffect = ExecuteTableBasedItemEffect(mon, *itemPtr, gPartyMenu.slotId, 0);

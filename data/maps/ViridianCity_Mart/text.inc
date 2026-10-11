@@ -11,8 +11,8 @@ ViridianCity_Mart_Text_ReceivedOaksParcelFromClerk::
     .string "{PLAYER} received OAK'S PARCEL\n"
     .string "from the POKéMON MART clerk.$"
 
-ViridianCity_Mart_Text_ReceivedPokeCocaineFromClerk::
-    .string "{PLAYER} received Poké Cocaine\n"
+ViridianCity_Mart_Text_ReceivedLevelCapCandyFromClerk::
+    .string "{PLAYER} received a Cap Candy\n"
     .string "from the POKéMON MART clerk.$"
 
 ViridianCity_Mart_Text_SayHiToOakForMe::

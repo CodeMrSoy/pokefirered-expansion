@@ -1934,10 +1934,9 @@ const struct Item gItemsInfo[] =
     {
         .name = _("Cap Candy"),
         .price = 0,
-        .holdEffectParam = EXP_99999,
         .description = COMPOUND_STRING(
-        "Levels up a Pokémon\n"
-        "but only to the level cap."),
+        "Raises a Pokémon to its next\n"
+        "move, evolution, or level cap."),
         .importance = 1,
         .pocket = POCKET_KEY_ITEMS,
         .type = ITEM_USE_PARTY_MENU,
@@ -13051,23 +13050,6 @@ const struct Item gItemsInfo[] =
         .fieldUseFunc = ItemUseOutOfBattle_CannotUse,
         .iconPic = gItemIcon_Gem,
         .iconPalette = gItemIconPalette_Sapphire,
-    },
-
-    [ITEM_POKE_COCAINE] =
-    {
-    .name = _("Poké Cocaine"),
-    .price = 0,
-    .description = COMPOUND_STRING(
-        "Just a little bit "
-        "of this good stuff\n"
-        "will have everyone "
-        "feeling good."),
-    .importance = 1,
-    .pocket = POCKET_KEY_ITEMS,
-    .type = ITEM_USE_FIELD,
-    .fieldUseFunc = ItemUseOutOfBattle_PokeCocaine,
-    .iconPic = gItemIcon_PokeCocaine,
-    .iconPalette = gItemIconPalette_PokeCocaine,
     },
 
     [ITEM_ABILITY_SHIELD] =
