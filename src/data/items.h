@@ -1934,6 +1934,7 @@ const struct Item gItemsInfo[] =
     {
         .name = _("Cap Candy"),
         .price = 0,
+        .notConsumed = TRUE,
         .description = COMPOUND_STRING(
         "Raises a Pokémon to its next\n"
         "move, evolution, or level cap."),
@@ -14153,4 +14154,3 @@ const struct Item gItemsInfo[] =
         .iconPic = gItemIcon_PokeshiDoll,
         .iconPalette = gItemIconPalette_PokeshiDoll,
     },
-};

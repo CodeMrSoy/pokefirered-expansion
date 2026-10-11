@@ -5836,12 +5836,20 @@ static u8 GetCapCandyTargetLevel(struct Pokemon *mon, u8 currentLevel, u8 levelC
             targetLevel = learnset->level;
     }
 
-    for (; evolutions->method != EVO_NONE; evolutions++)
+    for (; evolutions != NULL && evolutions->method != EVOLUTIONS_END; evolutions++)
     {
-        if (evolutions->method == EVO_LEVEL
-         && evolutions->param > currentLevel
-         && evolutions->param < targetLevel)
-            targetLevel = evolutions->param;
+        if (evolutions->method == EVO_LEVEL)
+        {
+            // Once a level requirement is met (including parameter 0), other
+            // conditions can become true on any level-up, e.g. friendship.
+            // Advance one level at a time so the normal evolution check runs
+            // after each friendship increase and move-learning prompt.
+            u16 evolutionLevel = evolutions->param > currentLevel
+                ? evolutions->param : currentLevel + 1;
+
+            if (evolutionLevel < targetLevel)
+                targetLevel = evolutionLevel;
+        }
     }
 
     return targetLevel;
@@ -5896,7 +5904,8 @@ void ItemUseCB_RareCandy(u8 taskId, TaskFunc func)
         sInitialLevel = 0;
         sFinalLevel = 0;
 
-        if (holdEffectParam == 0)
+        if (holdEffectParam == 0
+         && (*itemPtr != ITEM_LEVEL_CAP_CANDY || !GetMonData(mon, MON_DATA_IS_EGG)))
         {
             targetSpecies = GetEvolutionTargetSpecies(mon, EVO_MODE_NORMAL, ITEM_NONE, NULL, &canStopEvo, CHECK_EVO);
         }
@@ -5904,7 +5913,8 @@ void ItemUseCB_RareCandy(u8 taskId, TaskFunc func)
         if (targetSpecies != SPECIES_NONE)
         {
             GetEvolutionTargetSpecies(mon, EVO_MODE_NORMAL, ITEM_NONE, NULL, &canStopEvo, DO_EVO);
-            RemoveBagItem(gSpecialVar_ItemId, 1);
+            if (GetItemConsumability(gSpecialVar_ItemId))
+                RemoveBagItem(gSpecialVar_ItemId, 1);
             FreePartyPointers();
             gCB2_AfterEvolution = gPartyMenu.exitCallback;
             BeginEvolutionScene(mon, targetSpecies, canStopEvo, gPartyMenu.slotId);
@@ -5943,7 +5953,8 @@ static void ItemUseCB_RareCandyStep(u8 taskId, TaskFunc func)
     gPartyMenuUseExitCallback = TRUE;
     ItemUse_SetQuestLogEvent(QL_EVENT_USED_ITEM, mon, gSpecialVar_ItemId, 0xFFFF);
     UpdateMonDisplayInfoAfterRareCandy(gPartyMenu.slotId, mon);
-    RemoveBagItem(gSpecialVar_ItemId, 1);
+    if (GetItemConsumability(gSpecialVar_ItemId))
+        RemoveBagItem(gSpecialVar_ItemId, 1);
     GetMonNickname(mon, gStringVar1);
     if (sFinalLevel > sInitialLevel)
     {
