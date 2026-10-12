@@ -70,14 +70,14 @@ static const struct PartyMenuBoxInfoRects sPartyBoxInfoRects[] =
     {
         BlitBitmapToPartyWindow_PokeGlass,
         {
-            33, 2, 64, 13, // Nickname
-            3, 25, 24, 8,  // Level
-            100, 2, 8, 8, // Gender
-            48, 25, 56, 8, // Current/max HP
-            72, 25, 32, 8,
-            48, 18, 56, 3 // HP bar
+            30, 1, 56, 13, // Nickname
+            28, 19, 24, 8, // Level
+            86, 1, 8, 8, // Gender
+            52, 19, 42, 8, // Current/max HP
+            65, 19, 29, 8,
+            40, 16, 52, 3 // HP bar
         },
-        30, 10, 72, 16
+        28, 10, 64, 16
     },
 };
 
@@ -122,12 +122,12 @@ static const u8 sPartyMenuSpriteCoords[PARTY_LAYOUT_COUNT][PARTY_SIZE][4 * 2] =
     },
     [PARTY_LAYOUT_POKEGLASS] =
     {
-        {24,22,28,32,48,31,12,18},
-        {136,22,140,32,160,31,124,18},
-        {24,62,28,72,48,71,12,58},
-        {136,62,140,72,160,71,124,58},
-        {24,102,28,112,48,111,12,98},
-        {136,102,140,112,160,111,124,98},
+        {38,38,42,48,60,47,28,34},
+        {134,38,138,48,156,47,124,34},
+        {38,70,42,80,60,79,28,66},
+        {134,70,138,80,156,79,124,66},
+        {38,102,42,112,60,111,28,98},
+        {134,102,138,112,156,111,124,98},
     },
 };
 
@@ -407,17 +407,33 @@ static const struct WindowTemplate sShowcaseMultiPartyMenuWindowTemplate[] =
     DUMMY_WIN_TEMPLATE
 };
 
-// Six compact cards form the PokéGlass two-column, three-row party picker.
+// The same inset glass area as the hub and Stats app contains all six cards.
 static const struct WindowTemplate sPokeGlassPartyMenuWindowTemplate[] =
 {
-    { .bg = 0, .tilemapLeft = 1, .tilemapTop = 1, .width = 14, .height = 5, .paletteNum = 3, .baseBlock = 0x63 },
-    { .bg = 0, .tilemapLeft = 15, .tilemapTop = 1, .width = 14, .height = 5, .paletteNum = 4, .baseBlock = 0xa9 },
-    { .bg = 0, .tilemapLeft = 1, .tilemapTop = 6, .width = 14, .height = 5, .paletteNum = 5, .baseBlock = 0xef },
-    { .bg = 0, .tilemapLeft = 15, .tilemapTop = 6, .width = 14, .height = 5, .paletteNum = 6, .baseBlock = 0x135 },
-    { .bg = 0, .tilemapLeft = 1, .tilemapTop = 11, .width = 14, .height = 5, .paletteNum = 7, .baseBlock = 0x17b },
-    { .bg = 0, .tilemapLeft = 15, .tilemapTop = 11, .width = 14, .height = 5, .paletteNum = 8, .baseBlock = 0x1c1 },
-    { .bg = 2, .tilemapLeft = 1, .tilemapTop = 15, .width = 28, .height = 4, .paletteNum = 14, .baseBlock = 0x21F },
+    { .bg = 0, .tilemapLeft = 3, .tilemapTop = 3, .width = 12, .height = 4, .paletteNum = 3, .baseBlock = 0x63 },
+    { .bg = 0, .tilemapLeft = 15, .tilemapTop = 3, .width = 12, .height = 4, .paletteNum = 4, .baseBlock = 0x93 },
+    { .bg = 0, .tilemapLeft = 3, .tilemapTop = 7, .width = 12, .height = 4, .paletteNum = 5, .baseBlock = 0xc3 },
+    { .bg = 0, .tilemapLeft = 15, .tilemapTop = 7, .width = 12, .height = 4, .paletteNum = 6, .baseBlock = 0xf3 },
+    { .bg = 0, .tilemapLeft = 3, .tilemapTop = 11, .width = 12, .height = 4, .paletteNum = 7, .baseBlock = 0x123 },
+    { .bg = 0, .tilemapLeft = 15, .tilemapTop = 11, .width = 12, .height = 4, .paletteNum = 8, .baseBlock = 0x153 },
+    { .bg = 2, .tilemapLeft = 3, .tilemapTop = 12, .width = 24, .height = 4, .paletteNum = 14, .baseBlock = 0x1b1 },
     DUMMY_WIN_TEMPLATE,
+};
+static const struct WindowTemplate sPokeGlassPartyHintTemplate =
+{
+    .bg = 2, .tilemapLeft = 3, .tilemapTop = 15, .width = 18, .height = 2,
+    .paletteNum = 11, .baseBlock = 0x18d,
+};
+static const struct WindowTemplate sPokeGlassPartyCancelTemplate =
+{
+    .bg = 0, .tilemapLeft = 22, .tilemapTop = 15, .width = 5, .height = 2,
+    .paletteNum = 11, .baseBlock = 0x183,
+};
+static const u16 sPokeGlassPartyPalette[16] = {
+    RGB(0,0,0), RGB(26,31,31), RGB(0,6,11), RGB(26,31,31),
+    RGB(8,25,29), RGB(0,6,11), RGB(0,16,24), RGB(15,29,31),
+    RGB(26,31,31), RGB(5,25,12), RGB(12,31,20), RGB(15,25,31),
+    RGB(0,6,11), RGB(0,16,24), RGB(14,16,19), RGB(31,31,31)
 };
 
 static const struct WindowTemplate sCancelButtonWindowTemplate =

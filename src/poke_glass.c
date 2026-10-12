@@ -185,64 +185,21 @@ void LoadPokeGlassBackdrop(void)
     SetGpuReg(REG_OFFSET_BG3HOFS, 0);
     SetGpuReg(REG_OFFSET_BG3VOFS, 0);
     SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_BG3_ON);
-    SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT1_BG0 | BLDCNT_TGT1_BG1 | BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_BG3);
-    SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(12, 6));
+    SetPokeGlassBlend(FALSE);
 }
 #include "constants/menu.h"
 #include "constants/songs.h"
 
-// Both screens share the bezel palette and nine reusable tiles. Reserving only
-// nine tiles avoids overwriting the field menu's standard window-border art.
 static const u16 sPalette[16] = {
     RGB(0,0,0), RGB(2,2,3), RGB(5,5,7), RGB(11,12,14), RGB(0,6,11), RGB(0,16,24), RGB(8,25,29), RGB(15,29,31), RGB(26,31,31), RGB(22,2,5), RGB(31,5,7), RGB(31,14,15), RGB(20,21,24), RGB(28,29,30), RGB(14,16,19), RGB(31,31,31)
 };
-static const u8 sFrameTiles[] = {
-    0x11, 0x11, 0x11, 0x11, 0x91, 0x99, 0x99, 0x99, 0x91, 0xBB, 0xBB, 0xBB, 0x91, 0xAA, 0xAA, 0xAA,
-    0x91, 0xAA, 0xAA, 0xAA, 0x91, 0xAA, 0x2A, 0x22, 0x91, 0xAA, 0x2A, 0x22, 0x91, 0xAA, 0x2A, 0x42,
-    0x11, 0x11, 0x11, 0x11, 0xCC, 0xCC, 0xCC, 0xCC, 0xDD, 0xDD, 0xDD, 0xDD, 0xFF, 0xFF, 0xFF, 0xFF,
-    0xDD, 0xDD, 0xDD, 0xDD, 0x22, 0x22, 0x22, 0x22, 0x33, 0x33, 0x33, 0x33, 0x44, 0x44, 0x44, 0x44,
-    0x11, 0x11, 0x11, 0x11, 0x99, 0x99, 0x99, 0x19, 0xBB, 0xBB, 0xBB, 0x19, 0xAA, 0xAA, 0xAA, 0x19,
-    0xAA, 0xAA, 0xAA, 0x19, 0x22, 0xA2, 0xAA, 0x19, 0x22, 0xA2, 0xAA, 0x19, 0x24, 0xA2, 0xAA, 0x19,
-    0xC1, 0xFD, 0x2D, 0x43, 0xC1, 0xFD, 0x2D, 0x43, 0xC1, 0xFD, 0x2D, 0x43, 0xC1, 0xFD, 0x2D, 0x43,
-    0xC1, 0xFD, 0x2D, 0x43, 0xC1, 0xFD, 0x2D, 0x43, 0xC1, 0xFD, 0x2D, 0x43, 0xC1, 0xFD, 0x2D, 0x43,
-    0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44,
-    0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44,
-    0x34, 0xD2, 0xDF, 0x1C, 0x34, 0xD2, 0xDF, 0x1C, 0x34, 0xD2, 0xDF, 0x1C, 0x34, 0xD2, 0xDF, 0x1C,
-    0x34, 0xD2, 0xDF, 0x1C, 0x34, 0xD2, 0xDF, 0x1C, 0x34, 0xD2, 0xDF, 0x1C, 0x34, 0xD2, 0xDF, 0x1C,
-    0x91, 0xAA, 0x2A, 0x42, 0x91, 0xAA, 0x2A, 0x22, 0x91, 0xAA, 0x2A, 0x22, 0x91, 0xAA, 0xAA, 0xAA,
-    0x91, 0xAA, 0xAA, 0xAA, 0x91, 0xBB, 0xBB, 0xBB, 0x91, 0x99, 0x99, 0x99, 0x11, 0x11, 0x11, 0x11,
-    0x44, 0x44, 0x44, 0x44, 0x33, 0x33, 0x33, 0x33, 0x22, 0x22, 0x22, 0x22, 0xDD, 0xDD, 0xDD, 0xDD,
-    0xFF, 0xFF, 0xFF, 0xFF, 0xDD, 0xDD, 0xDD, 0xDD, 0xCC, 0xCC, 0xCC, 0xCC, 0x11, 0x11, 0x11, 0x11,
-    0x24, 0xA2, 0xAA, 0x19, 0x22, 0xA2, 0xAA, 0x19, 0x22, 0xA2, 0xAA, 0x19, 0xAA, 0xAA, 0xAA, 0x19,
-    0xAA, 0xAA, 0xAA, 0x19, 0xBB, 0xBB, 0xBB, 0x19, 0x99, 0x99, 0x99, 0x19, 0x11, 0x11, 0x11, 0x11,
-};
-
-void DrawPokeGlassFrame(u8 bg)
-{
-    u8 x, y, tx, ty;
-    // Field BG0 starts at char block 2; tile 0x300 would overwrite map
-    // screen blocks. Party BG1 instead has free space above its menu windows.
-    u16 tileBase = bg == 0 ? 0x280 : 0x3F7;
-    LoadPalette(sPalette, BG_PLTT_ID(11), sizeof(sPalette));
-    LoadBgTiles(bg, sFrameTiles, sizeof(sFrameTiles), tileBase);
-    for (y = 0; y < 20; y++)
-    {
-        ty = y == 0 ? 0 : y == 19 ? 2 : 1;
-        for (x = 0; x < 30; x++)
-        {
-            tx = x == 0 ? 0 : x == 29 ? 2 : 1;
-            FillBgTilemapBufferRect(bg, tileBase + ty * 3 + tx, x, y, 1, 1, 11);
-        }
-    }
-    ScheduleBgCopyTilemapToVram(bg);
-}
 
 // The field hub owns one BG0 window. Hardware alpha blending keeps the map and
 // player visible through the glass; restore field/weather registers on every exit.
 
 static EWRAM_DATA u8 sHubWindow = 0;
 static EWRAM_DATA u8 sHubCursor = 0;
-static EWRAM_DATA u16 sHubBlend[5] = {0};
+static EWRAM_DATA u16 sHubBlend[8] = {0};
 static EWRAM_DATA u16 sHubPalette[32] = {0};
 static const u8 sHubTitle[] = _("POKéGLASS");
 static const u8 sHubHint[] = _("A Open   B Close");
@@ -254,9 +211,8 @@ static const struct WindowTemplate sHubTemplate = {
     .width = 28, .height = 18, .paletteNum = 11, .baseBlock = 0x038,
 };
 
-static void HubRect(u8 color, u16 x, u16 y, u16 width, u16 height)
+static void TabletRect(u8 *pixels, u8 color, u16 x, u16 y, u16 width, u16 height)
 {
-    u8 *pixels = (u8 *)GetWindowAttribute(sHubWindow, WINDOW_TILE_DATA);
     u32 py, px, fill = 0x11111111 * color;
     // The hub redraws large rectangles. Fill each aligned eight-pixel tile
     // row in one write, handling only its edges a pixel at a time.
@@ -276,6 +232,28 @@ static void HubRect(u8 color, u16 x, u16 y, u16 width, u16 height)
                 px++;
             }
         }
+}
+
+static void HubRect(u8 color, u16 x, u16 y, u16 width, u16 height)
+{
+    TabletRect((u8 *)GetWindowAttribute(sHubWindow, WINDOW_TILE_DATA), color, x, y, width, height);
+}
+
+// Only the glass blends. The shell and corner grips remain solid, and party
+// cards/sprites are clipped to the display during switching animations.
+void SetPokeGlassBlend(bool8 field)
+{
+    SetGpuReg(REG_OFFSET_WIN1H, WIN_RANGE(20, 220));
+    SetGpuReg(REG_OFFSET_WIN1V, WIN_RANGE(23, 136));
+    SetGpuReg(REG_OFFSET_WININ, WININ_WIN1_BG_ALL | WININ_WIN1_OBJ | WININ_WIN1_CLR);
+    SetGpuReg(REG_OFFSET_WINOUT, field ? WINOUT_WIN01_BG_ALL | WINOUT_WIN01_OBJ
+        : WINOUT_WIN01_BG1 | WINOUT_WIN01_BG3);
+    ClearGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON | DISPCNT_OBJWIN_ON);
+    SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN1_ON);
+    SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT1_BG0 | (field ? 0 : BLDCNT_TGT1_BG1)
+        | BLDCNT_EFFECT_BLEND | (field ? BLDCNT_TGT2_BG1 | BLDCNT_TGT2_BG2
+        | BLDCNT_TGT2_BG3 | BLDCNT_TGT2_OBJ | BLDCNT_TGT2_BD : BLDCNT_TGT2_BG3));
+    SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(12, 6));
 }
 
 // Cyan pictograms echo the reference tablet at native GBA pixel resolution.
@@ -333,7 +311,7 @@ static void DrawHubIcon(u8 app, u16 x, u16 y)
 static void DrawHubApp(u8 i, bool8 upload)
 {
     static const u8 textColors[] = {0, 8, 4};
-    static const u8 positions[5][2] = {{25,34}, {127,34}, {25,78}, {174,118}, {127,78}};
+    static const u8 positions[5][2] = {{25,34}, {127,34}, {25,78}, {174,116}, {127,78}};
     u16 x = positions[i][0], y = positions[i][1];
     bool8 selected = i == sHubCursor;
     if (i == 3)
@@ -353,44 +331,90 @@ static void DrawHubApp(u8 i, bool8 upload)
         CopyWindowRectToVram(sHubWindow, COPYWIN_GFX, x / 8, y / 8, (x + (i == 3 ? 36 : 72) + 7) / 8 - x / 8, (y + (i == 3 ? 10 : 38) + 7) / 8 - y / 8);
 }
 
-static void DrawTabletShell(void)
+static void DrawTabletShell(u8 *pixels)
 {
     u8 i;
-    FillWindowPixelBuffer(sHubWindow, PIXEL_FILL(0));
+    CpuFill16(0, pixels, 28 * 18 * 32);
     // Ivory shell, red corner grips, graphite bezel, and transparent blue glass.
-    HubRect(1, 4, 0, 216, 144);
-    HubRect(1, 0, 4, 224, 136);
-    HubRect(12, 4, 2, 216, 140);
-    HubRect(13, 3, 4, 218, 136);
-    HubRect(15, 24, 3, 176, 1);
+    TabletRect(pixels, 1, 4, 0, 216, 144);
+    TabletRect(pixels, 1, 0, 4, 224, 136);
+    TabletRect(pixels, 12, 4, 2, 216, 140);
+    TabletRect(pixels, 13, 3, 4, 218, 136);
+    TabletRect(pixels, 15, 24, 3, 176, 1);
     for (i = 0; i < 4; i++)
     {
         u16 x = (i & 1) ? 200 : 1;
         u16 y = (i & 2) ? 121 : 1;
-        HubRect(9, x, y, 23, 22);
-        HubRect(10, x + 2, y + 2, 19, 18);
-        HubRect(11, x + 4, y + 3, 15, 2);
+        TabletRect(pixels, 9, x, y, 23, 22);
+        TabletRect(pixels, 10, x + 2, y + 2, 19, 18);
+        TabletRect(pixels, 11, x + 4, y + 3, 15, 2);
     }
-    HubRect(2, 8, 11, 208, 120);
-    HubRect(3, 10, 12, 204, 1);
-    HubRect(4, 12, 15, 200, 113);
-    HubRect(6, 13, 16, 20, 1);
-    HubRect(7, 13, 17, 12, 1);
+    TabletRect(pixels, 2, 8, 11, 208, 120);
+    TabletRect(pixels, 3, 10, 12, 204, 1);
+    TabletRect(pixels, 4, 12, 15, 200, 113);
+    TabletRect(pixels, 6, 13, 16, 20, 1);
+    TabletRect(pixels, 7, 13, 17, 12, 1);
     // Camera and home button match the bag and startup tablet.
-    HubRect(1, 104, 4, 16, 4);
-    HubRect(7, 111, 5, 2, 2);
-    HubRect(1, 103, 132, 18, 10);
-    HubRect(10, 106, 133, 12, 4);
-    HubRect(15, 106, 138, 12, 3);
-    HubRect(1, 103, 137, 18, 1);
-    HubRect(15, 110, 136, 4, 3);
+    TabletRect(pixels, 1, 104, 4, 16, 4);
+    TabletRect(pixels, 7, 111, 5, 2, 2);
+    TabletRect(pixels, 1, 103, 132, 18, 10);
+    TabletRect(pixels, 10, 106, 133, 12, 4);
+    TabletRect(pixels, 15, 106, 138, 12, 3);
+    TabletRect(pixels, 1, 103, 137, 18, 1);
+    TabletRect(pixels, 15, 110, 136, 4, 3);
+}
+
+void DrawPokeGlassFrame(u8 bg)
+{
+    u8 x, y;
+    u16 count = 1, tile;
+    u8 *pixels = AllocZeroed(28 * 18 * 32);
+    u8 *tiles = AllocZeroed(128 * 32);
+    if (pixels == NULL || tiles == NULL)
+    {
+        Free(pixels);
+        Free(tiles);
+        return;
+    }
+    DrawTabletShell(pixels);
+    // Cards blend directly with the captured field instead of an opaque
+    // second copy of the glass on BG1. Their pixels supply its blue tint.
+    TabletRect(pixels, 0, 16, 16, 192, 96);
+    FillBgTilemapBufferRect(bg, 0x180, 0, 0, 32, 32, 11);
+    for (y = 0; y < 18; y++)
+        for (x = 0; x < 28; x++)
+        {
+            const u8 *source = pixels + (y * 28 + x) * 32;
+            for (tile = 0; tile < count; tile++)
+                if (memcmp(source, tiles + tile * 32, 32) == 0)
+                    break;
+            if (tile == count)
+            {
+                if (count == 128)
+                {
+                    Free(pixels);
+                    Free(tiles);
+                    return;
+                }
+                CpuCopy16(source, tiles + count * 32, 32);
+                count++;
+            }
+            FillBgTilemapBufferRect(bg, 0x180 + tile, x + 1, y + 1, 1, 1, 11);
+        }
+    // Deduplicate the shared shell into the reserved final 4 KiB of char
+    // block 1. Party windows use the space below; the backdrop starts at 0x8000.
+    LoadPalette(sPalette, BG_PLTT_ID(11), sizeof(sPalette));
+    CpuCopy16(tiles, (void *)(VRAM + 0x7000), count * 32);
+    Free(pixels);
+    Free(tiles);
+    ScheduleBgCopyTilemapToVram(bg);
 }
 
 static void DrawHub(void)
 {
     static const u8 textColors[] = {0, 8, 4};
     u8 i;
-    DrawTabletShell();
+    DrawTabletShell((u8 *)GetWindowAttribute(sHubWindow, WINDOW_TILE_DATA));
     AddTextPrinterParameterized3(sHubWindow, FONT_SMALL, 75, 18, textColors, TEXT_SKIP_DRAW, sHubTitle);
     // Signal and battery indicators on the glass.
     for (i = 0; i < 3; i++) HubRect(8, 176 + i * 4, 26 - i * 2, 2, 2 + i * 2);
@@ -398,7 +422,7 @@ static void DrawHub(void)
     HubRect(4, 192, 21, 14, 5);
     HubRect(6, 193, 22, 10, 3);
     for (i = 0; i < 5; i++) DrawHubApp(i, FALSE);
-    AddTextPrinterParameterized3(sHubWindow, FONT_SMALL, 24, 116, textColors, TEXT_SKIP_DRAW, sHubHint);
+    AddTextPrinterParameterized3(sHubWindow, FONT_SMALL, 24, 114, textColors, TEXT_SKIP_DRAW, sHubHint);
     PutWindowTilemap(sHubWindow);
     CopyWindowToVram(sHubWindow, COPYWIN_FULL);
 }
@@ -408,6 +432,11 @@ static void CloseHub(void)
     ClearWindowTilemap(sHubWindow);
     RemoveWindow(sHubWindow);
     sHubWindow = WINDOW_NONE;
+    ScheduleBgCopyTilemapToVram(0);
+}
+
+static void RestoreTabletAppearance(void)
+{
     CpuCopy16(sHubPalette, &gPlttBufferUnfaded[BG_PLTT_ID(11)], 32);
     CpuCopy16(sHubPalette + 16, &gPlttBufferFaded[BG_PLTT_ID(11)], 32);
     SetGpuReg(REG_OFFSET_BLDCNT, sHubBlend[0]);
@@ -415,7 +444,26 @@ static void CloseHub(void)
     SetGpuReg(REG_OFFSET_BLDY, sHubBlend[2]);
     SetGpuReg(REG_OFFSET_WININ, sHubBlend[3]);
     SetGpuReg(REG_OFFSET_WINOUT, sHubBlend[4]);
-    ScheduleBgCopyTilemapToVram(0);
+    SetGpuReg(REG_OFFSET_WIN1H, sHubBlend[5]);
+    SetGpuReg(REG_OFFSET_WIN1V, sHubBlend[6]);
+    ClearGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON | DISPCNT_WIN1_ON | DISPCNT_OBJWIN_ON);
+    SetGpuRegBits(REG_OFFSET_DISPCNT, sHubBlend[7]);
+}
+
+static void Task_CloseTablet(u8 taskId)
+{
+    // Let the cleared tilemap reach VRAM before restoring its old palette.
+    // Capture on the following frame, after both changes have reached VBlank.
+    if (gTasks[taskId].data[2] == 0)
+    {
+        RestoreTabletAppearance();
+        gTasks[taskId].data[2] = 1;
+        return;
+    }
+    if (gTasks[taskId].data[3])
+        CapturePokeGlassBackdrop();
+    DestroyTask(taskId);
+    ScriptContext_Enable();
 }
 
 static void Task_PokeGlassHub(u8 taskId)
@@ -452,12 +500,11 @@ static void Task_PokeGlassHub(u8 taskId)
     }
     PlaySE(SE_SELECT);
     CloseHub();
-    if (gSpecialVar_Result == 1 && gPlayerPartyCount != 0)
-        CapturePokeGlassBackdrop();
+    gTasks[taskId].data[2] = 0;
+    gTasks[taskId].data[3] = gSpecialVar_Result == 1 && gPlayerPartyCount != 0;
+    gTasks[taskId].func = Task_CloseTablet;
     if (gSpecialVar_Result == SCR_MENU_CANCEL)
         ReleasePokeGlassBackdrop();
-    DestroyTask(taskId);
-    ScriptContext_Enable();
 }
 
 static bool8 OpenTabletWindow(void)
@@ -474,14 +521,13 @@ static bool8 OpenTabletWindow(void)
     sHubBlend[2] = GetGpuReg(REG_OFFSET_BLDY);
     sHubBlend[3] = GetGpuReg(REG_OFFSET_WININ);
     sHubBlend[4] = GetGpuReg(REG_OFFSET_WINOUT);
-    SetGpuRegBits(REG_OFFSET_WININ, WININ_WIN0_CLR | WININ_WIN1_CLR);
-    SetGpuRegBits(REG_OFFSET_WINOUT, WINOUT_WIN01_CLR | WINOUT_WINOBJ_CLR);
+    sHubBlend[5] = GetGpuReg(REG_OFFSET_WIN1H);
+    sHubBlend[6] = GetGpuReg(REG_OFFSET_WIN1V);
+    sHubBlend[7] = GetGpuReg(REG_OFFSET_DISPCNT) & (DISPCNT_WIN0_ON | DISPCNT_WIN1_ON | DISPCNT_OBJWIN_ON);
     CpuCopy16(&gPlttBufferUnfaded[BG_PLTT_ID(11)], sHubPalette, 32);
     CpuCopy16(&gPlttBufferFaded[BG_PLTT_ID(11)], sHubPalette + 16, 32);
     LoadPalette(sPalette, BG_PLTT_ID(11), sizeof(sPalette));
-    SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT1_BG0 | BLDCNT_EFFECT_BLEND
-        | BLDCNT_TGT2_BG1 | BLDCNT_TGT2_BG2 | BLDCNT_TGT2_BG3 | BLDCNT_TGT2_OBJ | BLDCNT_TGT2_BD);
-    SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(12, 6));
+    SetPokeGlassBlend(TRUE);
     // Storage's field menu can leave a frame outside our inset window.
     // BG0 belongs to menus here; clear it before drawing the tablet again.
     FillBgTilemapBufferRect(0, 0, 0, 0, 32, 32, 0);
@@ -498,6 +544,7 @@ void ShowPokeGlassHub(bool8 ignoreBPress)
     if (taskId == TASK_NONE)
     {
         CloseHub();
+        RestoreTabletAppearance();
         gSpecialVar_Result = SCR_MENU_CANCEL;
         ScriptContext_Enable();
         return;
@@ -558,7 +605,7 @@ static void DrawStatsPage(void)
     u8 paletteSlot;
     bool8 isEgg = GetMonData(mon, MON_DATA_IS_EGG);
     static const u8 rightEdges[] = {160, 185, 207};
-    DrawTabletShell();
+    DrawTabletShell((u8 *)GetWindowAttribute(sHubWindow, WINDOW_TILE_DATA));
     GetMonData(mon, MON_DATA_NICKNAME, nickname);
     StringGet_Nickname(nickname);
     StatsText(17, 18, nickname);
@@ -569,16 +616,16 @@ static void DrawStatsPage(void)
     }
     StatsNumber(76, 29, sStatsPartySlot + 1);
     // Clear column headings and thin rules keep all six rows on one page.
-    HubRect(6, 90, 16, 120, 90);
-    HubRect(4, 91, 17, 118, 88);
+    HubRect(6, 90, 16, 120, 84);
+    HubRect(4, 91, 17, 118, 82);
     StatsText(137, 18, sStatsValueHeader);
     StatsText(173, 18, sStatsEVHeader);
     StatsText(195, 18, sStatsIVHeader);
     HubRect(6, 92, 31, 116, 1);
     for (row = 0; row < 6; row++)
     {
-        u16 y = 33 + row * 12;
-        HubRect((row & 1) ? 4 : 5, 92, y, 116, 12);
+        u16 y = 33 + row * 11;
+        HubRect((row & 1) ? 4 : 5, 92, y, 116, 11);
         StatsText(94, y, sStatsLabels[row]);
         for (column = 0; column < 3; column++)
         {
@@ -588,10 +635,10 @@ static void DrawStatsPage(void)
                 StatsNumber(rightEdges[column], y, GetMonData(mon, sStatsFields[row][column]));
         }
     }
-    HubRect(6, 17, 107, 190, 1);
-    StatsText(18, 108, sStatsAbility);
-    StatsText(64, 108, isEgg ? sStatsEggAbility : gAbilitiesInfo[GetMonAbility(mon)].name);
-    StatsText(28, 119, sStatsHint);
+    HubRect(6, 17, 101, 190, 1);
+    StatsText(18, 102, sStatsAbility);
+    StatsText(64, 102, isEgg ? sStatsEggAbility : gAbilitiesInfo[GetMonAbility(mon)].name);
+    StatsText(28, 114, sStatsHint);
     PutWindowTilemap(sHubWindow);
     CopyWindowToVram(sHubWindow, COPYWIN_FULL);
     // Reuse the portrait buffer and OBJ tiles when changing party members.
@@ -641,8 +688,9 @@ static void Task_PokeGlassStats(u8 taskId)
         PlaySE(SE_SELECT);
         DestroyStatsMonSprite();
         CloseHub();
-        DestroyTask(taskId);
-        ScriptContext_Enable();
+        gTasks[taskId].data[2] = 0;
+        gTasks[taskId].data[3] = FALSE;
+        gTasks[taskId].func = Task_CloseTablet;
         return;
     }
     if (JOY_NEW(DPAD_LEFT))
@@ -675,6 +723,7 @@ void ShowPokeGlassStats(void)
     {
         DestroyStatsMonSprite();
         CloseHub();
+        RestoreTabletAppearance();
         ScriptContext_Enable();
     }
 }

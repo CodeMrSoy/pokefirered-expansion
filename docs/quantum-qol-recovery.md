@@ -82,3 +82,19 @@ text remain in place. `tests/quantum_title_emulator.py` passed checks for three
 Minior, 18 trail sprites, constant offsets, diagonal motion, a synchronized
 pause/loop, and transition to the main menu with Start. Emulator frames were
 visually inspected.
+
+## Shared opaque tablet shell
+
+The app hub, Stats screen, and party picker now draw the same inset tablet
+shell. Hardware window masking limits alpha blending to the blue display;
+the ivory panels, red grips, camera, and home button remain opaque. The six
+party cards use cyan app borders inside that display, with matching hints and
+Cancel control. Deduplicated shell tiles occupy reserved VRAM at 0x7000;
+party cards, action menus, and field-move help use separate tile allocations.
+
+Closing a field tablet clears its tilemap before restoring the original palette
+and window registers, then captures the backdrop after VBlank. This removes
+the brief pink/grey recoloring when opening Party. Footer text stays inside
+the glass. The ARM build, existing QOL and Stats emulator checks, and new
+`tests/pokeglass_shell_emulator.py` checks passed. Native-resolution captures
+and the frame-by-frame Party transition were inspected.

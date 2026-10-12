@@ -430,6 +430,7 @@ static EWRAM_DATA struct PartyMenuInternal *sPartyMenuInternal = NULL;
 EWRAM_DATA struct PartyMenu gPartyMenu = {0};
 static EWRAM_DATA struct PartyMenuBox *sPartyMenuBoxes = NULL;
 static EWRAM_DATA bool8 sPokeGlassStatsMode = FALSE;
+static EWRAM_DATA u8 sPokeGlassCancelWindow = 0;
 static EWRAM_DATA u8 *sPartyBgGfxTilemap = NULL;
 static EWRAM_DATA u8 *sPartyBgTilemapBuffer = NULL;
 EWRAM_DATA bool8 gPartyMenuUseExitCallback = FALSE;
@@ -800,6 +801,8 @@ static bool8 AllocPartyMenuBg(void)
     memset(sPartyBgTilemapBuffer, 0, 0x800);
     ResetBgsAndClearDma3BusyFlags(0);
     InitBgsFromTemplates(0, sPartyMenuBgTemplates, ARRAY_COUNT(sPartyMenuBgTemplates));
+    if (gPartyMenu.layout == PARTY_LAYOUT_POKEGLASS)
+        SetBgAttribute(1, BG_ATTR_CHARBASEINDEX, 1);
     SetBgTilemapBuffer(1, sPartyBgTilemapBuffer);
     ResetAllBgsCoordinates();
     ScheduleBgCopyTilemapToVram(1);
@@ -1175,6 +1178,11 @@ static bool8 CreatePartyMonSpritesLoop(void)
 
 static void CreateCancelConfirmPokeballSprites(void)
 {
+    if (gPartyMenu.layout == PARTY_LAYOUT_POKEGLASS)
+    {
+        AnimatePartySlot(gPartyMenu.slotId, 1);
+        return;
+    }
     if (gPartyMenu.menuType == PARTY_MENU_TYPE_MULTI_SHOWCASE)
     {
         // The showcase has no Cancel/Confirm buttons
@@ -1198,6 +1206,20 @@ static void CreateCancelConfirmPokeballSprites(void)
 void AnimatePartySlot(u8 slot, u8 animNum)
 {
     u8 spriteId;
+
+    if (gPartyMenu.layout == PARTY_LAYOUT_POKEGLASS && slot >= PARTY_SIZE)
+    {
+        if (sPokeGlassCancelWindow != WINDOW_NONE)
+        {
+            static const u8 colors[] = {0, 8, 4};
+            FillWindowPixelBuffer(sPokeGlassCancelWindow, PIXEL_FILL(0));
+            FillWindowPixelRect(sPokeGlassCancelWindow, PIXEL_FILL(animNum ? 8 : 6), 0, 1, 40, 14);
+            FillWindowPixelRect(sPokeGlassCancelWindow, PIXEL_FILL(4), 1, 2, 38, 12);
+            AddTextPrinterParameterized3(sPokeGlassCancelWindow, FONT_SMALL, 5, 1, colors, TEXT_SKIP_DRAW, gFameCheckerText_Cancel);
+            CopyWindowToVram(sPokeGlassCancelWindow, COPYWIN_GFX);
+        }
+        return;
+    }
 
     switch (slot)
     {
@@ -2417,6 +2439,9 @@ static void LoadPartyMenuWindows(void)
     {
         DrawPokeGlassFrame(1);
         LoadPokeGlassBackdrop();
+        for (i = 3; i <= 8; i++)
+            LoadPalette(sPokeGlassPartyPalette, BG_PLTT_ID(i), PLTT_SIZE_4BPP);
+        sPokeGlassCancelWindow = WINDOW_NONE;
     }
 }
 
@@ -2425,6 +2450,18 @@ static void CreateCancelConfirmWindows(bool8 chooseMultiple)
     u8 confirmWindowId;
     u8 cancelWindowId;
     u8 offset;
+
+    if (gPartyMenu.layout == PARTY_LAYOUT_POKEGLASS)
+    {
+        static const u8 colors[] = {0, 8, 4};
+        sPokeGlassCancelWindow = AddWindow(&sPokeGlassPartyCancelTemplate);
+        FillWindowPixelBuffer(sPokeGlassCancelWindow, PIXEL_FILL(0));
+        AddTextPrinterParameterized3(sPokeGlassCancelWindow, FONT_SMALL, 5, 1, colors, TEXT_SKIP_DRAW, gFameCheckerText_Cancel);
+        PutWindowTilemap(sPokeGlassCancelWindow);
+        AnimatePartySlot(SLOT_CANCEL, gPartyMenu.slotId == SLOT_CANCEL);
+        CopyWindowToVram(sPokeGlassCancelWindow, COPYWIN_FULL);
+        return;
+    }
 
     if (gPartyMenu.menuType != PARTY_MENU_TYPE_MULTI_SHOWCASE)
     {
@@ -2507,17 +2544,14 @@ static void BlitBitmapToPartyWindow_RightColumn(u8 windowId, u8 x, u8 y, u8 widt
         BlitBitmapToPartyWindow(windowId, sSlotTilemap_WideNoHP, 18, x, y, width, height);
 }
 
-// The PokéGlass uses the existing party card art clipped to a 14-by-3-tile
-// viewport, keeping each of the six cards inside the two-column tablet grid.
+// Cyan app cards use the same glass colors and thin borders as the hub.
 static void BlitBitmapToPartyWindow_PokeGlass(u8 windowId, u8 x, u8 y, u8 width, u8 height, bool8 hideHP)
 {
-    static const u8 card[] = INCBIN_U8("graphics/party_menu/ds_card.4bpp");
-    static const u8 egg[] = INCBIN_U8("graphics/party_menu/ds_card_egg.4bpp");
-    static const u8 empty[] = INCBIN_U8("graphics/party_menu/ds_card_empty.4bpp");
     if (width == 0 && height == 0)
     {
-        const u8 *bitmap = windowId >= gPlayerPartyCount ? empty : hideHP ? egg : card;
-        BlitBitmapToWindow(windowId, bitmap, 0, 0, 112, 40);
+        FillWindowPixelBuffer(windowId, PIXEL_FILL(5));
+        FillWindowPixelRect(windowId, PIXEL_FILL(4), 1, 1, 94, 30);
+        FillWindowPixelRect(windowId, PIXEL_FILL(5), 2, 2, 92, 28);
     }
     else
         FillWindowPixelRect(windowId, PIXEL_FILL(5), x * 8, y * 8, width * 8, height * 8);
@@ -2543,6 +2577,22 @@ static void DrawEmptySlot(u8 windowId)
 static void LoadPartyBoxPalette(struct PartyMenuBox *menuBox, u8 palFlags)
 {
     u8 palOffset = BG_PLTT_ID(GetWindowAttribute(menuBox->windowId, WINDOW_PALETTE_NUM));
+
+    if (gPartyMenu.layout == PARTY_LAYOUT_POKEGLASS)
+    {
+        u16 colors[3] = {RGB(8,25,29), RGB(0,6,11), RGB(0,16,24)};
+        if (palFlags & PARTY_PAL_SELECTED)
+        {
+            colors[0] = RGB(26,31,31);
+            colors[1] = RGB(0,16,24);
+        }
+        else if (palFlags & (PARTY_PAL_TO_SWITCH | PARTY_PAL_SWITCHING | PARTY_PAL_TO_SOFTBOIL))
+            colors[0] = RGB(31,25,8);
+        else if (palFlags & PARTY_PAL_FAINTED)
+            colors[0] = RGB(31,14,15);
+        LoadPalette(colors, palOffset + 4, sizeof(colors));
+        return;
+    }
 
     if (palFlags & PARTY_PAL_TO_SOFTBOIL)
     {
@@ -2693,7 +2743,7 @@ static void DisplayPartyPokemonHPCheck(struct Pokemon *mon, struct PartyMenuBox 
     if (GetMonData(mon, MON_DATA_SPECIES) != SPECIES_NONE)
     {
         if (gPartyMenu.layout == PARTY_LAYOUT_POKEGLASS && drawMenuBoxOrText != DRAW_TEXT_ONLY)
-            FillWindowPixelRect(menuBox->windowId, PIXEL_FILL(5), 40, 25, 64, 13);
+            FillWindowPixelRect(menuBox->windowId, PIXEL_FILL(5), 40, 19, 54, 12);
         if (gPartyMenu.layout != PARTY_LAYOUT_POKEGLASS && drawMenuBoxOrText != DRAW_TEXT_ONLY)
             menuBox->infoRects->blitFunc(menuBox->windowId, menuBox->infoRects->dimensions[12] / 8, (menuBox->infoRects->dimensions[13] / 8) + 1, menuBox->infoRects->dimensions[14] / 8, menuBox->infoRects->dimensions[15] / 8, FALSE);
         if (drawMenuBoxOrText != DRAW_MENU_BOX_ONLY)
@@ -2803,7 +2853,9 @@ void DisplayPartyMenuStdMessage(u32 stringId)
 
     if (stringId != PARTY_MSG_NONE)
     {
-        switch (stringId)
+        if (gPartyMenu.layout == PARTY_LAYOUT_POKEGLASS)
+            *windowPtr = AddWindow(&sPokeGlassPartyHintTemplate);
+        else switch (stringId)
         {
         case PARTY_MSG_DO_WHAT_WITH_MON:
             *windowPtr = AddWindow(&sDoWhatWithMonMsgWindowTemplate);
@@ -2833,9 +2885,20 @@ void DisplayPartyMenuStdMessage(u32 stringId)
             else if (!ShouldUseChooseMonText())
                 stringId = PARTY_MSG_CHOOSE_MON_OR_CANCEL;
         }
-        DrawStdFrameWithCustomTileAndPalette(*windowPtr, FALSE, 0x58, 15);
         StringExpandPlaceholders(gStringVar4, sActionStringTable[stringId]);
-        AddTextPrinterParameterized(*windowPtr, FONT_NORMAL, gStringVar4, 0, 2, 0, 0);
+        if (gPartyMenu.layout == PARTY_LAYOUT_POKEGLASS)
+        {
+            static const u8 colors[] = {0, 8, 4};
+            FillWindowPixelBuffer(*windowPtr, PIXEL_FILL(0));
+            AddTextPrinterParameterized3(*windowPtr, FONT_SMALL, 0, 1, colors, TEXT_SKIP_DRAW, gStringVar4);
+            PutWindowTilemap(*windowPtr);
+            CopyWindowToVram(*windowPtr, COPYWIN_FULL);
+        }
+        else
+        {
+            DrawStdFrameWithCustomTileAndPalette(*windowPtr, FALSE, 0x58, 15);
+            AddTextPrinterParameterized(*windowPtr, FONT_NORMAL, gStringVar4, 0, 2, 0, 0);
+        }
         ScheduleBgCopyTilemapToVram(2);
     }
 }
@@ -2868,7 +2931,9 @@ static u8 DisplaySelectionWindow(u8 windowType)
     switch (windowType)
     {
     case SELECTWINDOW_ACTIONS:
-        window = CreateWindowTemplate(2, 19, 19 - (sPartyMenuInternal->numActions * 2), 10, sPartyMenuInternal->numActions * 2, 14, 0x2FF);
+        window = CreateWindowTemplate(2, gPartyMenu.layout == PARTY_LAYOUT_POKEGLASS ? 16 : 19,
+            (gPartyMenu.layout == PARTY_LAYOUT_POKEGLASS ? 16 : 19) - (sPartyMenuInternal->numActions * 2),
+            10, sPartyMenuInternal->numActions * 2, 14, 0x2FF);
         break;
     case SELECTWINDOW_ITEM:
         window = sItemGiveTakeWindowTemplate;
@@ -2885,6 +2950,12 @@ static u8 DisplaySelectionWindow(u8 windowType)
     default: // SELECTWINDOW_MOVES
         window = sMoveSelectWindowTemplate;
         break;
+    }
+    if (gPartyMenu.layout == PARTY_LAYOUT_POKEGLASS)
+    {
+        window.baseBlock = 0x211;
+        window.tilemapLeft = min(window.tilemapLeft, 27 - window.width);
+        window.tilemapTop = min(window.tilemapTop, 16 - window.height);
     }
     sPartyMenuInternal->windowId[0] = AddWindow(&window);
     DrawStdFrameWithCustomTileAndPalette(sPartyMenuInternal->windowId[0], FALSE, 0x4F, 13);
@@ -2922,7 +2993,14 @@ static void PartyMenuDisplayYesNoMenu(void)
 
 static u8 CreateLevelUpStatsWindow(void)
 {
-    sPartyMenuInternal->windowId[0] = AddWindow(&sLevelUpStatsWindowTemplate);
+    struct WindowTemplate window = sLevelUpStatsWindowTemplate;
+    if (gPartyMenu.layout == PARTY_LAYOUT_POKEGLASS)
+    {
+        window.baseBlock = 0x211;
+        window.tilemapLeft = 16;
+        window.tilemapTop = 4;
+    }
+    sPartyMenuInternal->windowId[0] = AddWindow(&window);
     DrawStdFrameWithCustomTileAndPalette(sPartyMenuInternal->windowId[0], FALSE, 0x4F, 13);
     return sPartyMenuInternal->windowId[0];
 }
@@ -2976,7 +3054,18 @@ static void ToggleFieldMoveDescriptionWindow(u8 action)
     else
     {
         if (ptr->windowId[2] == WINDOW_NONE)
-            ptr->windowId[2] = AddWindow(&sFieldMoveDescriptionWindowTemplate);
+        {
+            struct WindowTemplate window = sFieldMoveDescriptionWindowTemplate;
+            if (gPartyMenu.layout == PARTY_LAYOUT_POKEGLASS)
+            {
+                window.baseBlock = 0x2bc;
+                window.tilemapLeft = 3;
+                window.tilemapTop = 12;
+                window.width = 24;
+                window.height = 4;
+            }
+            ptr->windowId[2] = AddWindow(&window);
+        }
         DrawHelpMessageWindowTilesById(ptr->windowId[2]);
         letterSpacing = GetFontAttribute(FONT_NORMAL, FONTATTR_LETTER_SPACING);
         AddTextPrinterParameterized4(ptr->windowId[2], FONT_NORMAL, 3, 6, letterSpacing, 0, sFontColorTable[5], 0, gFieldMovesInfo[action - CURSOR_OPTION_FIELD_MOVES].description);
