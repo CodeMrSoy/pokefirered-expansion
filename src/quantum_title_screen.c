@@ -22,6 +22,10 @@
 
 #define TAG_QUANTUM_MINIOR 0x7100
 #define TAG_QUANTUM_TRAIL 0x7101
+#define MINIOR_FLIGHT_FRAMES 400
+#define MINIOR_FLIGHT_PAUSE 90
+
+static EWRAM_DATA u16 sMiniorFlightFrame = 0;
 
 static const u32 sSpaceTiles[] = INCBIN_U32("graphics/title_screen/quantum/space.8bpp.lz");
 static const u16 sSpacePalette[] = INCBIN_U16("graphics/title_screen/quantum/space.gbapal");
@@ -29,8 +33,8 @@ static const u16 sSpaceMap[] = INCBIN_U16("graphics/title_screen/quantum/space.t
 static const u32 sLogoTiles[] = INCBIN_U32("graphics/title_screen/quantum/pokemon_logo.4bpp.lz");
 static const u16 sLogoPalette[] = INCBIN_U16("graphics/title_screen/quantum/pokemon_logo.gbapal");
 static const u16 sLogoMap[] = INCBIN_U16("graphics/title_screen/quantum/logo.tilemap");
-static const u32 sMiniorTiles[] = INCBIN_U32("graphics/pokemon/minior/core/front.4bpp.lz");
-static const u16 sMiniorPalette[] = INCBIN_U16("graphics/pokemon/minior/core/red/normal.gbapal");
+static const u32 sMiniorTiles[] = INCBIN_U32("graphics/pokemon/minior/front.4bpp.lz");
+static const u16 sMiniorPalette[] = INCBIN_U16("graphics/pokemon/minior/normal.gbapal");
 static const u8 sVersion[] = _("QUANTUM VERSION");
 static const u8 sPressStart[] = _("PRESS START");
 static const u16 sTextPalette[16] = {RGB_BLACK, RGB_WHITE, RGB(9, 15, 24)};
@@ -81,6 +85,8 @@ static void QuantumTitleVBlank(void)
 
 static void QuantumTitleRun(void)
 {
+    if (++sMiniorFlightFrame >= MINIOR_FLIGHT_FRAMES + MINIOR_FLIGHT_PAUSE)
+        sMiniorFlightFrame = 0;
     RunTasks();
     AnimateSprites();
     BuildOamBuffer();
@@ -89,7 +95,9 @@ static void QuantumTitleRun(void)
 
 void CB2_InitQuantumTitleScreen(void)
 {
-    u8 spriteId, i;
+    u8 spriteId, i, j;
+    // The lead is down-right, with one follower on either wing of the V.
+    static const s8 formationOffsets[3][2] = {{0, 0}, {-8, -40}, {-42, -6}};
     const struct CompressedSpriteSheet miniorSheet = {sMiniorTiles, 64 * 64 / 2, TAG_QUANTUM_MINIOR};
     const struct SpritePalette miniorPalette = {sMiniorPalette, TAG_QUANTUM_MINIOR};
     const struct SpriteSheet trailSheet = {sTrailTiles, sizeof(sTrailTiles), TAG_QUANTUM_TRAIL};
@@ -103,6 +111,7 @@ void CB2_InitQuantumTitleScreen(void)
         InitHeap(gHeap, HEAP_SIZE);
         ResetTasks();
         ResetSpriteData();
+        sMiniorFlightFrame = 0;
         FreeAllSpritePalettes();
         ResetPaletteFade();
         ScanlineEffect_Stop();
@@ -138,17 +147,20 @@ void CB2_InitQuantumTitleScreen(void)
         LoadSpritePalette(&miniorPalette);
         LoadSpriteSheet(&trailSheet);
         LoadSpritePalette(&trailPalette);
-        spriteId = CreateSprite(&sMiniorTemplate, -40, 112, 0);
-        if (spriteId < MAX_SPRITES)
+        for (i = 0; i < ARRAY_COUNT(formationOffsets); i++)
         {
-            gSprites[spriteId].data[0] = -40 * 16;
-            for (i = 0; i < 6; i++)
+            spriteId = CreateSprite(&sMiniorTemplate, -44 + formationOffsets[i][0], -28 + formationOffsets[i][1], i);
+            if (spriteId >= MAX_SPRITES)
+                continue;
+            gSprites[spriteId].data[0] = formationOffsets[i][0];
+            gSprites[spriteId].data[1] = formationOffsets[i][1];
+            for (j = 0; j < 6; j++)
             {
-                u8 trailId = CreateSprite(&sTrailTemplate, -40, 112, i + 1);
+                u8 trailId = CreateSprite(&sTrailTemplate, -64, -64, j + 3);
                 if (trailId < MAX_SPRITES)
                 {
                     gSprites[trailId].data[0] = spriteId;
-                    gSprites[trailId].data[1] = i;
+                    gSprites[trailId].data[1] = j;
                 }
             }
         }
@@ -175,29 +187,23 @@ void CB2_InitQuantumTitleScreen(void)
 
 static void SpriteCB_QuantumMinior(struct Sprite *sprite)
 {
-    if (sprite->data[2] != 0)
-    {
-        sprite->data[2]--;
+    // Every member uses the same clock, including the offscreen pause, so the
+    // formation stays together as it crosses the screen and loops again.
+    sprite->invisible = sMiniorFlightFrame >= MINIOR_FLIGHT_FRAMES;
+    if (sprite->invisible)
         return;
-    }
-    sprite->data[0] += 12;
-    sprite->data[1]++;
-    sprite->x = sprite->data[0] >> 4;
-    sprite->y = 110 + Sin((sprite->data[1] / 3) & 255, 7);
-    if (sprite->x > 288)
-    {
-        sprite->data[0] = -64 * 16;
-        sprite->x = -64;
-        sprite->data[2] = 90;
-    }
+    sprite->x = -44 + sMiniorFlightFrame + sprite->data[0];
+    sprite->y = -28 + (sMiniorFlightFrame * 11) / 16 + sprite->data[1];
 }
 
 static void SpriteCB_QuantumTrail(struct Sprite *sprite)
 {
     const struct Sprite *minior = &gSprites[sprite->data[0]];
-    sprite->x = minior->x - 20 - sprite->data[1] * 7;
-    sprite->y = minior->y + Sin((minior->data[1] * 3 + sprite->data[1] * 20) & 255, 2);
-    sprite->invisible = minior->data[2] != 0;
+    s16 distance = 20 + sprite->data[1] * 7;
+    sprite->x = minior->x - distance;
+    sprite->y = minior->y - (distance * 11) / 16
+        + Sin((sMiniorFlightFrame * 3 + sprite->data[1] * 20) & 255, 2);
+    sprite->invisible = minior->invisible;
 }
 
 static void Task_QuantumTitle(u8 taskId)
@@ -230,7 +236,7 @@ static void Task_QuantumTitle(u8 taskId)
             data[2] = 3;
         else if (JOY_NEW(A_BUTTON | START_BUTTON))
         {
-            PlayCry_Normal(SPECIES_MINIOR_CORE_RED, 0);
+            PlayCry_Normal(SPECIES_MINIOR, 0);
             data[2] = 0;
         }
         else if (data[1] >= 2700)

@@ -48,3 +48,37 @@ binutils. Set `MGBA_CORE` when the core is not at the default Linux path and
 ```sh
 python3 tests/quantum_qol_emulator.py
 ```
+
+
+## PokéGlass reference design and Stats app
+
+The tablet now uses red corner grips, ivory shell panels, a graphite bezel,
+and cyan app symbols, with matching bag and startup art. Startup lights the
+screen before revealing its app symbols. The field stays visible through the
+glass. The hub preserves the Stats shortcut beside its four main apps.
+
+Stats opens a dedicated field overlay rather than the party/summary workflow.
+It shows a front portrait, nickname, level, current ability, and six rows of
+actual stats, EVs and IVs. HP uses maximum HP. Left/right wraps through party
+members; B resumes the hub script. Eggs show a portrait but hide stats and
+ability. The portrait buffer and tiles are reused during navigation, with a
+private OBJ palette released on exit.
+
+Validation: ARM build and `tests/quantum_qol_emulator.py` passed. The additional
+`tests/pokeglass_stats_emulator.py` uses distinct EV/IV values, checks egg
+handling and wraparound, switches portraits 36 times, opens/closes the app
+eight times, and verifies that party data is unchanged and the script resumes.
+Native-resolution emulator captures were inspected for column placement,
+portrait colors, and return to the hub.
+
+
+## Minior title formation
+
+The title uses the native meteor-form Minior sprite and palette. Three Minior
+travel in a diagonal V from the top-left to the bottom-right, with their trails
+following the same slope. A shared clock preserves the formation through the
+offscreen pause and next pass. The space scene, planet, and Quantum Version
+text remain in place. `tests/quantum_title_emulator.py` passed checks for three
+Minior, 18 trail sprites, constant offsets, diagonal motion, a synchronized
+pause/loop, and transition to the main menu with Start. Emulator frames were
+visually inspected.

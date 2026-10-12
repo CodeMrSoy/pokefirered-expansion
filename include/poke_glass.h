@@ -6,5 +6,6 @@ void CapturePokeGlassBackdrop(void);
 void LoadPokeGlassBackdrop(void);
 void ReleasePokeGlassBackdrop(void);
 void ShowPokeGlassHub(bool8 ignoreBPress);
+void ShowPokeGlassStats(void);
 
 #endif

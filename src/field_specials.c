@@ -40,6 +40,7 @@
 #include "mystery_gift.h"
 #include "naming_screen.h"
 #include "party_menu.h"
+#include "poke_glass.h"
 #include "rtc.h"
 #include "tilesets.h"
 #include "wallclock.h"
@@ -92,8 +93,7 @@ void OpenPokeGlassStats(void)
 {
     if (gPlayerPartyCount == 0)
         return;
-    CleanupOverworldWindowsAndTilemaps();
-    CB2_PokeGlassPartyStats();
+    ShowPokeGlassStats();
 }
 
 static EWRAM_DATA u8 sElevatorCurrentFloorWindowId = 0;

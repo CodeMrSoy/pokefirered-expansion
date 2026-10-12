@@ -7,6 +7,9 @@
 #include "script.h"
 #include "sound.h"
 #include "task.h"
+#include "string_util.h"
+#include "trainer_pokemon_sprites.h"
+#include "decompress.h"
 
 static EWRAM_DATA u8 *sFieldBackdrop = NULL;
 static EWRAM_DATA u16 sFieldBackdropPalette[16] = {0};
@@ -191,29 +194,27 @@ void LoadPokeGlassBackdrop(void)
 // Both screens share the bezel palette and nine reusable tiles. Reserving only
 // nine tiles avoids overwriting the field menu's standard window-border art.
 static const u16 sPalette[16] = {
-    RGB(0,0,0), RGB(4,8,12), RGB(11,17,22), RGB(24,29,31),
-    RGB(3,11,18), RGB(7,19,27), RGB(18,26,30), RGB(12,22,28),
-    0, 0, 0, 0, 0, 0, 0, RGB(31,31,31)
+    RGB(0,0,0), RGB(2,2,3), RGB(5,5,7), RGB(11,12,14), RGB(0,6,11), RGB(0,16,24), RGB(8,25,29), RGB(15,29,31), RGB(26,31,31), RGB(22,2,5), RGB(31,5,7), RGB(31,14,15), RGB(20,21,24), RGB(28,29,30), RGB(14,16,19), RGB(31,31,31)
 };
 static const u8 sFrameTiles[] = {
-    0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22,
-    0x22, 0x22, 0x33, 0x33, 0x22, 0x22, 0x33, 0x33, 0x22, 0x22, 0x33, 0x33, 0x22, 0x22, 0x33, 0x33,
-    0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22,
-    0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33,
-    0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22,
-    0x33, 0x33, 0x22, 0x22, 0x33, 0x33, 0x22, 0x22, 0x33, 0x33, 0x22, 0x22, 0x33, 0x33, 0x22, 0x22,
-    0x22, 0x22, 0x33, 0x33, 0x22, 0x22, 0x33, 0x33, 0x22, 0x22, 0x33, 0x33, 0x22, 0x22, 0x33, 0x33,
-    0x22, 0x22, 0x33, 0x33, 0x22, 0x22, 0x33, 0x33, 0x22, 0x22, 0x33, 0x33, 0x22, 0x22, 0x33, 0x33,
+    0x11, 0x11, 0x11, 0x11, 0x91, 0x99, 0x99, 0x99, 0x91, 0xBB, 0xBB, 0xBB, 0x91, 0xAA, 0xAA, 0xAA,
+    0x91, 0xAA, 0xAA, 0xAA, 0x91, 0xAA, 0x2A, 0x22, 0x91, 0xAA, 0x2A, 0x22, 0x91, 0xAA, 0x2A, 0x42,
+    0x11, 0x11, 0x11, 0x11, 0xCC, 0xCC, 0xCC, 0xCC, 0xDD, 0xDD, 0xDD, 0xDD, 0xFF, 0xFF, 0xFF, 0xFF,
+    0xDD, 0xDD, 0xDD, 0xDD, 0x22, 0x22, 0x22, 0x22, 0x33, 0x33, 0x33, 0x33, 0x44, 0x44, 0x44, 0x44,
+    0x11, 0x11, 0x11, 0x11, 0x99, 0x99, 0x99, 0x19, 0xBB, 0xBB, 0xBB, 0x19, 0xAA, 0xAA, 0xAA, 0x19,
+    0xAA, 0xAA, 0xAA, 0x19, 0x22, 0xA2, 0xAA, 0x19, 0x22, 0xA2, 0xAA, 0x19, 0x24, 0xA2, 0xAA, 0x19,
+    0xC1, 0xFD, 0x2D, 0x43, 0xC1, 0xFD, 0x2D, 0x43, 0xC1, 0xFD, 0x2D, 0x43, 0xC1, 0xFD, 0x2D, 0x43,
+    0xC1, 0xFD, 0x2D, 0x43, 0xC1, 0xFD, 0x2D, 0x43, 0xC1, 0xFD, 0x2D, 0x43, 0xC1, 0xFD, 0x2D, 0x43,
     0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44,
     0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44,
-    0x33, 0x33, 0x22, 0x22, 0x33, 0x33, 0x22, 0x22, 0x33, 0x33, 0x22, 0x22, 0x33, 0x33, 0x22, 0x22,
-    0x33, 0x33, 0x22, 0x22, 0x33, 0x33, 0x22, 0x22, 0x33, 0x33, 0x22, 0x22, 0x33, 0x33, 0x22, 0x22,
-    0x22, 0x22, 0x33, 0x33, 0x22, 0x22, 0x33, 0x33, 0x22, 0x22, 0x33, 0x33, 0x22, 0x22, 0x33, 0x33,
-    0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22,
-    0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33,
-    0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22,
-    0x33, 0x33, 0x22, 0x22, 0x33, 0x33, 0x22, 0x22, 0x33, 0x33, 0x22, 0x22, 0x33, 0x33, 0x22, 0x22,
-    0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22,
+    0x34, 0xD2, 0xDF, 0x1C, 0x34, 0xD2, 0xDF, 0x1C, 0x34, 0xD2, 0xDF, 0x1C, 0x34, 0xD2, 0xDF, 0x1C,
+    0x34, 0xD2, 0xDF, 0x1C, 0x34, 0xD2, 0xDF, 0x1C, 0x34, 0xD2, 0xDF, 0x1C, 0x34, 0xD2, 0xDF, 0x1C,
+    0x91, 0xAA, 0x2A, 0x42, 0x91, 0xAA, 0x2A, 0x22, 0x91, 0xAA, 0x2A, 0x22, 0x91, 0xAA, 0xAA, 0xAA,
+    0x91, 0xAA, 0xAA, 0xAA, 0x91, 0xBB, 0xBB, 0xBB, 0x91, 0x99, 0x99, 0x99, 0x11, 0x11, 0x11, 0x11,
+    0x44, 0x44, 0x44, 0x44, 0x33, 0x33, 0x33, 0x33, 0x22, 0x22, 0x22, 0x22, 0xDD, 0xDD, 0xDD, 0xDD,
+    0xFF, 0xFF, 0xFF, 0xFF, 0xDD, 0xDD, 0xDD, 0xDD, 0xCC, 0xCC, 0xCC, 0xCC, 0x11, 0x11, 0x11, 0x11,
+    0x24, 0xA2, 0xAA, 0x19, 0x22, 0xA2, 0xAA, 0x19, 0x22, 0xA2, 0xAA, 0x19, 0xAA, 0xAA, 0xAA, 0x19,
+    0xAA, 0xAA, 0xAA, 0x19, 0xBB, 0xBB, 0xBB, 0x19, 0x99, 0x99, 0x99, 0x19, 0x11, 0x11, 0x11, 0x11,
 };
 
 void DrawPokeGlassFrame(u8 bg)
@@ -243,15 +244,8 @@ static EWRAM_DATA u8 sHubWindow = 0;
 static EWRAM_DATA u8 sHubCursor = 0;
 static EWRAM_DATA u16 sHubBlend[5] = {0};
 static EWRAM_DATA u16 sHubPalette[32] = {0};
-static const u16 sHubColors[16] = {
-    RGB(0,0,0), RGB(2,6,12), RGB(9,18,24), RGB(2,5,9),
-    RGB(4,11,18), RGB(8,21,27), RGB(14,25,29), RGB(23,30,31),
-    RGB(9,27,23), RGB(27,20,9), RGB(20,16,29), RGB(13,22,31),
-    RGB(10,15,20), RGB(17,22,25), RGB(25,29,30), RGB(31,31,31)
-};
 static const u8 sHubTitle[] = _("POKéGLASS");
 static const u8 sHubHint[] = _("A Open   B Close");
-static const u8 sHubHome[] = _("HOME");
 static const u8 sHubLabels[][16] = {
     _("Pokédex"), _("Party"), _("Storage"), _("Stats"), _("Map")
 };
@@ -284,89 +278,128 @@ static void HubRect(u8 color, u16 x, u16 y, u16 width, u16 height)
         }
 }
 
+// Cyan pictograms echo the reference tablet at native GBA pixel resolution.
 static void DrawHubIcon(u8 app, u16 x, u16 y)
 {
-    u8 color = 7;
     switch (app)
     {
-    case 0: // Hinged Pokédex with a lens and lower display.
-        HubRect(color, x + 1, y, 13, 18);
-        HubRect(4, x + 3, y + 2, 9, 14);
-        HubRect(11, x + 4, y + 3, 4, 4);
-        HubRect(color, x + 4, y + 10, 7, 1);
-        HubRect(color, x + 4, y + 13, 5, 1);
+    case 0: // Pokédex: a Poké Ball.
+        HubRect(8, x + 8, y, 8, 2);
+        HubRect(8, x + 5, y + 2, 14, 3);
+        HubRect(8, x + 2, y + 5, 20, 4);
+        HubRect(8, x, y + 9, 24, 6);
+        HubRect(8, x + 2, y + 15, 20, 4);
+        HubRect(8, x + 5, y + 19, 14, 3);
+        HubRect(8, x + 8, y + 22, 8, 2);
+        HubRect(5, x, y + 11, 24, 2);
+        HubRect(5, x + 8, y + 8, 8, 8);
+        HubRect(8, x + 10, y + 10, 4, 4);
         break;
-    case 1: // Poké Ball.
-        HubRect(color, x + 3, y + 1, 10, 16);
-        HubRect(color, x, y + 4, 16, 10);
-        HubRect(4, x, y + 8, 16, 2);
-        HubRect(4, x + 5, y + 6, 6, 6);
-        HubRect(15, x + 7, y + 8, 2, 2);
+    case 1: // Party: pointed ears and a rounded Pokémon head.
+        HubRect(8, x + 2, y + 1, 3, 9);
+        HubRect(8, x + 19, y + 1, 3, 9);
+        HubRect(8, x + 4, y + 5, 3, 8);
+        HubRect(8, x + 17, y + 5, 3, 8);
+        HubRect(8, x + 3, y + 9, 18, 10);
+        HubRect(8, x + 6, y + 19, 12, 3);
         break;
-    case 2: // Storage drawers.
-        HubRect(color, x, y + 1, 16, 16);
-        HubRect(4, x + 2, y + 3, 12, 5);
-        HubRect(4, x + 2, y + 10, 12, 5);
-        HubRect(8, x + 6, y + 5, 4, 1);
-        HubRect(8, x + 6, y + 12, 4, 1);
+    case 2: // PC storage: a box with a handle and inset drawer.
+        HubRect(8, x + 7, y + 1, 10, 3);
+        HubRect(8, x + 5, y + 3, 3, 5);
+        HubRect(8, x + 16, y + 3, 3, 5);
+        HubRect(8, x + 3, y + 7, 18, 16);
+        HubRect(5, x + 7, y + 11, 10, 9);
+        HubRect(8, x + 10, y + 13, 4, 2);
         break;
-    case 3: // Stat bars.
-        HubRect(color, x, y + 16, 17, 1);
-        HubRect(8, x + 1, y + 10, 3, 5);
-        HubRect(11, x + 7, y + 6, 3, 9);
-        HubRect(9, x + 13, y + 1, 3, 14);
+    case 3: // Existing stats shortcut remains available in the dock.
+        HubRect(8, x + 2, y + 16, 20, 2);
+        HubRect(8, x + 3, y + 10, 4, 6);
+        HubRect(8, x + 10, y + 6, 4, 10);
+        HubRect(8, x + 17, y + 1, 4, 15);
         break;
-    case 4: // Folded route map.
-        HubRect(color, x, y + 2, 17, 14);
-        HubRect(4, x + 5, y + 2, 1, 14);
-        HubRect(4, x + 11, y + 2, 1, 14);
-        HubRect(8, x + 2, y + 10, 12, 2);
-        HubRect(8, x + 12, y + 5, 2, 7);
-        HubRect(9, x + 11, y + 3, 4, 4);
+    case 4: // Map: a location pin on a folded map.
+        HubRect(8, x + 1, y + 17, 7, 5);
+        HubRect(8, x + 16, y + 17, 7, 5);
+        HubRect(8, x + 3, y + 22, 18, 2);
+        HubRect(8, x + 8, y + 1, 8, 12);
+        HubRect(8, x + 6, y + 4, 12, 6);
+        HubRect(5, x + 10, y + 4, 4, 4);
+        HubRect(8, x + 9, y + 13, 6, 3);
+        HubRect(8, x + 11, y + 16, 2, 3);
         break;
     }
 }
 
 static void DrawHubApp(u8 i, bool8 upload)
 {
-    static const u8 textColors[] = {0, 15, 3};
-    u16 x = 12 + (i % 2) * 104;
-    u16 y = 32 + (i / 2) * 31;
-    u16 width = i == 4 ? 200 : 96;
+    static const u8 textColors[] = {0, 8, 4};
+    static const u8 positions[5][2] = {{25,34}, {127,34}, {25,78}, {174,118}, {127,78}};
+    u16 x = positions[i][0], y = positions[i][1];
     bool8 selected = i == sHubCursor;
-    HubRect(selected ? 7 : 2, x, y, width, 27);
-    HubRect(selected ? 5 : 4, x + 1, y + 1, width - 2, 25);
-    if (selected)
-        HubRect(15, x + 2, y + 5, 2, 17);
-    DrawHubIcon(i, x + 8, y + 5);
-    AddTextPrinterParameterized3(sHubWindow, FONT_SMALL, x + 30, y + 7, textColors, TEXT_SKIP_DRAW, sHubLabels[i]);
+    if (i == 3)
+    {
+        HubRect(selected ? 8 : 6, x, y, 36, 10);
+        HubRect(4, x + 1, y + 1, 34, 8);
+        AddTextPrinterParameterized3(sHubWindow, FONT_SMALL, x + 4, y - 1, textColors, TEXT_SKIP_DRAW, sHubLabels[i]);
+    }
+    else
+    {
+        HubRect(selected ? 8 : 6, x, y, 72, 38);
+        HubRect(selected ? 5 : 4, x + 2, y + 2, 68, 34);
+        DrawHubIcon(i, x + 8, y + 7);
+        AddTextPrinterParameterized3(sHubWindow, FONT_SMALL, x + 35, y + 13, textColors, TEXT_SKIP_DRAW, sHubLabels[i]);
+    }
     if (upload)
-        CopyWindowRectToVram(sHubWindow, COPYWIN_GFX, x / 8, y / 8, (x + width + 7) / 8 - x / 8, (y + 27 + 7) / 8 - y / 8);
+        CopyWindowRectToVram(sHubWindow, COPYWIN_GFX, x / 8, y / 8, (x + (i == 3 ? 36 : 72) + 7) / 8 - x / 8, (y + (i == 3 ? 10 : 38) + 7) / 8 - y / 8);
+}
+
+static void DrawTabletShell(void)
+{
+    u8 i;
+    FillWindowPixelBuffer(sHubWindow, PIXEL_FILL(0));
+    // Ivory shell, red corner grips, graphite bezel, and transparent blue glass.
+    HubRect(1, 4, 0, 216, 144);
+    HubRect(1, 0, 4, 224, 136);
+    HubRect(12, 4, 2, 216, 140);
+    HubRect(13, 3, 4, 218, 136);
+    HubRect(15, 24, 3, 176, 1);
+    for (i = 0; i < 4; i++)
+    {
+        u16 x = (i & 1) ? 200 : 1;
+        u16 y = (i & 2) ? 121 : 1;
+        HubRect(9, x, y, 23, 22);
+        HubRect(10, x + 2, y + 2, 19, 18);
+        HubRect(11, x + 4, y + 3, 15, 2);
+    }
+    HubRect(2, 8, 11, 208, 120);
+    HubRect(3, 10, 12, 204, 1);
+    HubRect(4, 12, 15, 200, 113);
+    HubRect(6, 13, 16, 20, 1);
+    HubRect(7, 13, 17, 12, 1);
+    // Camera and home button match the bag and startup tablet.
+    HubRect(1, 104, 4, 16, 4);
+    HubRect(7, 111, 5, 2, 2);
+    HubRect(1, 103, 132, 18, 10);
+    HubRect(10, 106, 133, 12, 4);
+    HubRect(15, 106, 138, 12, 3);
+    HubRect(1, 103, 137, 18, 1);
+    HubRect(15, 110, 136, 4, 3);
 }
 
 static void DrawHub(void)
 {
-    static const u8 textColors[] = {0, 15, 3};
-    static const u8 mutedColors[] = {0, 14, 3};
+    static const u8 textColors[] = {0, 8, 4};
     u8 i;
-    FillWindowPixelBuffer(sHubWindow, PIXEL_FILL(0));
-    // Inset corners, double rim, and a narrow reflection along the top edge.
-    HubRect(2, 4, 0, 216, 144);
-    HubRect(2, 0, 4, 224, 136);
-    HubRect(7, 5, 2, 214, 1);
-    HubRect(6, 2, 5, 1, 134);
-    HubRect(1, 5, 5, 214, 134);
-    HubRect(6, 12, 25, 200, 1);
-    AddTextPrinterParameterized3(sHubWindow, FONT_SMALL, 13, 7, textColors, TEXT_SKIP_DRAW, sHubTitle);
-    AddTextPrinterParameterized3(sHubWindow, FONT_SMALL, 156, 8, mutedColors, TEXT_SKIP_DRAW, sHubHome);
-    HubRect(6, 197, 10, 13, 7);
-    HubRect(8, 199, 12, 9, 3);
-    HubRect(6, 210, 12, 2, 3);
-    for (i = 0; i < 5; i++)
-        DrawHubApp(i, FALSE);
-    AddTextPrinterParameterized3(sHubWindow, FONT_SMALL, 66, 126, mutedColors, TEXT_SKIP_DRAW, sHubHint);
+    DrawTabletShell();
+    AddTextPrinterParameterized3(sHubWindow, FONT_SMALL, 75, 18, textColors, TEXT_SKIP_DRAW, sHubTitle);
+    // Signal and battery indicators on the glass.
+    for (i = 0; i < 3; i++) HubRect(8, 176 + i * 4, 26 - i * 2, 2, 2 + i * 2);
+    HubRect(8, 191, 20, 16, 7);
+    HubRect(4, 192, 21, 14, 5);
+    HubRect(6, 193, 22, 10, 3);
+    for (i = 0; i < 5; i++) DrawHubApp(i, FALSE);
+    AddTextPrinterParameterized3(sHubWindow, FONT_SMALL, 24, 116, textColors, TEXT_SKIP_DRAW, sHubHint);
     PutWindowTilemap(sHubWindow);
-    // Upload once after drawing all labels; per-label copies stall rapid input.
     CopyWindowToVram(sHubWindow, COPYWIN_FULL);
 }
 
@@ -401,14 +434,14 @@ static void Task_PokeGlassHub(u8 taskId)
         gSpecialVar_Result = sHubCursor;
     else
     {
-        if (JOY_NEW(DPAD_UP) && sHubCursor >= 2)
-            sHubCursor -= 2;
-        else if (JOY_NEW(DPAD_DOWN) && sHubCursor < 4)
-            sHubCursor = sHubCursor >= 2 ? 4 : sHubCursor + 2;
-        else if (JOY_NEW(DPAD_LEFT) && sHubCursor < 4)
-            sHubCursor &= ~1;
-        else if (JOY_NEW(DPAD_RIGHT) && sHubCursor < 4)
-            sHubCursor |= 1;
+        if (JOY_NEW(DPAD_UP))
+            sHubCursor = sHubCursor == 2 ? 0 : sHubCursor == 4 ? 1 : sHubCursor == 3 ? 4 : sHubCursor;
+        else if (JOY_NEW(DPAD_DOWN))
+            sHubCursor = sHubCursor == 0 ? 2 : sHubCursor == 1 ? 4 : 3;
+        else if (JOY_NEW(DPAD_LEFT))
+            sHubCursor = sHubCursor == 1 ? 0 : sHubCursor == 4 ? 2 : sHubCursor;
+        else if (JOY_NEW(DPAD_RIGHT))
+            sHubCursor = sHubCursor == 0 ? 1 : sHubCursor == 2 ? 4 : sHubCursor;
         if (oldCursor != sHubCursor)
         {
             PlaySE(SE_SELECT);
@@ -419,7 +452,7 @@ static void Task_PokeGlassHub(u8 taskId)
     }
     PlaySE(SE_SELECT);
     CloseHub();
-    if ((gSpecialVar_Result == 1 || gSpecialVar_Result == 3) && gPlayerPartyCount != 0)
+    if (gSpecialVar_Result == 1 && gPlayerPartyCount != 0)
         CapturePokeGlassBackdrop();
     if (gSpecialVar_Result == SCR_MENU_CANCEL)
         ReleasePokeGlassBackdrop();
@@ -427,15 +460,14 @@ static void Task_PokeGlassHub(u8 taskId)
     ScriptContext_Enable();
 }
 
-void ShowPokeGlassHub(bool8 ignoreBPress)
+static bool8 OpenTabletWindow(void)
 {
-    u8 taskId;
     sHubWindow = AddWindow(&sHubTemplate);
     if (sHubWindow == WINDOW_NONE)
     {
         gSpecialVar_Result = SCR_MENU_CANCEL;
         ScriptContext_Enable();
-        return;
+        return FALSE;
     }
     sHubBlend[0] = GetGpuReg(REG_OFFSET_BLDCNT);
     sHubBlend[1] = GetGpuReg(REG_OFFSET_BLDALPHA);
@@ -446,11 +478,203 @@ void ShowPokeGlassHub(bool8 ignoreBPress)
     SetGpuRegBits(REG_OFFSET_WINOUT, WINOUT_WIN01_CLR | WINOUT_WINOBJ_CLR);
     CpuCopy16(&gPlttBufferUnfaded[BG_PLTT_ID(11)], sHubPalette, 32);
     CpuCopy16(&gPlttBufferFaded[BG_PLTT_ID(11)], sHubPalette + 16, 32);
-    LoadPalette(sHubColors, BG_PLTT_ID(11), sizeof(sHubColors));
+    LoadPalette(sPalette, BG_PLTT_ID(11), sizeof(sPalette));
     SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT1_BG0 | BLDCNT_EFFECT_BLEND
         | BLDCNT_TGT2_BG1 | BLDCNT_TGT2_BG2 | BLDCNT_TGT2_BG3 | BLDCNT_TGT2_OBJ | BLDCNT_TGT2_BD);
     SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(12, 6));
+    // Storage's field menu can leave a frame outside our inset window.
+    // BG0 belongs to menus here; clear it before drawing the tablet again.
+    FillBgTilemapBufferRect(0, 0, 0, 0, 32, 32, 0);
+    return TRUE;
+}
+
+void ShowPokeGlassHub(bool8 ignoreBPress)
+{
+    u8 taskId;
+    if (!OpenTabletWindow())
+        return;
     DrawHub();
     taskId = CreateTask(Task_PokeGlassHub, 80);
+    if (taskId == TASK_NONE)
+    {
+        CloseHub();
+        gSpecialVar_Result = SCR_MENU_CANCEL;
+        ScriptContext_Enable();
+        return;
+    }
     gTasks[taskId].data[0] = ignoreBPress;
+}
+
+
+#define TAG_POKEGLASS_STATS_MON 0xD10F
+static EWRAM_DATA u8 sStatsPartySlot = 0;
+static EWRAM_DATA u16 sStatsMonSprite = 0;
+static const u8 sStatsLabels[6][12] = {
+    _("HP"), _("Attack"), _("Defense"), _("Sp. Atk"), _("Sp. Def"), _("Speed")
+};
+static const u8 sStatsFields[6][3] = {
+    {MON_DATA_MAX_HP, MON_DATA_HP_EV, MON_DATA_HP_IV},
+    {MON_DATA_ATK, MON_DATA_ATK_EV, MON_DATA_ATK_IV},
+    {MON_DATA_DEF, MON_DATA_DEF_EV, MON_DATA_DEF_IV},
+    {MON_DATA_SPATK, MON_DATA_SPATK_EV, MON_DATA_SPATK_IV},
+    {MON_DATA_SPDEF, MON_DATA_SPDEF_EV, MON_DATA_SPDEF_IV},
+    {MON_DATA_SPEED, MON_DATA_SPEED_EV, MON_DATA_SPEED_IV},
+};
+static const u8 sStatsValueHeader[] = _("Stat");
+static const u8 sStatsEVHeader[] = _("EV");
+static const u8 sStatsIVHeader[] = _("IV");
+static const u8 sStatsAbility[] = _("Ability:");
+static const u8 sStatsHint[] = _("Left/Right: Pokémon   B Back");
+static const u8 sStatsEggAbility[] = _("Unknown");
+static const u8 sStatsDash[] = _("-");
+static const u8 sStatsLevel[] = _("Lv.");
+
+static void StatsText(u16 x, u16 y, const u8 *text)
+{
+    static const u8 colors[] = {0, 8, 4};
+    AddTextPrinterParameterized3(sHubWindow, FONT_SMALL, x, y, colors, TEXT_SKIP_DRAW, text);
+}
+
+static void StatsNumber(u16 right, u16 y, u16 value)
+{
+    u8 text[6];
+    ConvertIntToDecimalStringN(text, value, STR_CONV_MODE_LEFT_ALIGN, 5);
+    StatsText(right - GetStringWidth(FONT_SMALL, text, 0), y, text);
+}
+
+static void DestroyStatsMonSprite(void)
+{
+    if (sStatsMonSprite != 0xFFFF)
+        FreeAndDestroyMonPicSpriteNoPalette(sStatsMonSprite);
+    FreeSpritePaletteByTag(TAG_POKEGLASS_STATS_MON);
+    sStatsMonSprite = 0xFFFF;
+}
+
+static void DrawStatsPage(void)
+{
+    struct Pokemon *mon = &gPlayerParty[sStatsPartySlot];
+    u8 nickname[POKEMON_NAME_LENGTH + 1];
+    u8 row, column;
+    u8 paletteSlot;
+    bool8 isEgg = GetMonData(mon, MON_DATA_IS_EGG);
+    static const u8 rightEdges[] = {160, 185, 207};
+    DrawTabletShell();
+    GetMonData(mon, MON_DATA_NICKNAME, nickname);
+    StringGet_Nickname(nickname);
+    StatsText(17, 18, nickname);
+    if (!isEgg)
+    {
+        StatsText(17, 29, sStatsLevel);
+        StatsNumber(52, 29, GetMonData(mon, MON_DATA_LEVEL));
+    }
+    StatsNumber(76, 29, sStatsPartySlot + 1);
+    // Clear column headings and thin rules keep all six rows on one page.
+    HubRect(6, 90, 16, 120, 90);
+    HubRect(4, 91, 17, 118, 88);
+    StatsText(137, 18, sStatsValueHeader);
+    StatsText(173, 18, sStatsEVHeader);
+    StatsText(195, 18, sStatsIVHeader);
+    HubRect(6, 92, 31, 116, 1);
+    for (row = 0; row < 6; row++)
+    {
+        u16 y = 33 + row * 12;
+        HubRect((row & 1) ? 4 : 5, 92, y, 116, 12);
+        StatsText(94, y, sStatsLabels[row]);
+        for (column = 0; column < 3; column++)
+        {
+            if (isEgg)
+                StatsText(rightEdges[column] - 4, y, sStatsDash);
+            else
+                StatsNumber(rightEdges[column], y, GetMonData(mon, sStatsFields[row][column]));
+        }
+    }
+    HubRect(6, 17, 107, 190, 1);
+    StatsText(18, 108, sStatsAbility);
+    StatsText(64, 108, isEgg ? sStatsEggAbility : gAbilitiesInfo[GetMonAbility(mon)].name);
+    StatsText(28, 119, sStatsHint);
+    PutWindowTilemap(sHubWindow);
+    CopyWindowToVram(sHubWindow, COPYWIN_FULL);
+    // Reuse the portrait buffer and OBJ tiles when changing party members.
+    // This keeps allocation and sprite creation out of repeated navigation.
+    if (sStatsMonSprite != 0xFFFF)
+    {
+        paletteSlot = IndexOfSpritePaletteTag(TAG_POKEGLASS_STATS_MON);
+        LoadPalette(GetMonSpritePalFromSpeciesAndPersonality(GetMonData(mon, MON_DATA_SPECIES_OR_EGG),
+            GetMonData(mon, MON_DATA_IS_SHINY), GetMonData(mon, MON_DATA_PERSONALITY)),
+            OBJ_PLTT_ID(paletteSlot), PLTT_SIZE_4BPP);
+        LoadSpecialPokePic((void *)gSprites[sStatsMonSprite].images[0].data,
+            GetMonData(mon, MON_DATA_SPECIES_OR_EGG), GetMonData(mon, MON_DATA_PERSONALITY), TRUE);
+        StartSpriteAnim(&gSprites[sStatsMonSprite], 0);
+        return;
+    }
+    // Reserve a private OBJ slot. The generic portrait helper's tagged path
+    // loads a species tag, so use its explicit-slot path for this overlay.
+    paletteSlot = LoadSpritePaletteWithTag(GetMonSpritePalFromSpeciesAndPersonality(
+        GetMonData(mon, MON_DATA_SPECIES_OR_EGG), GetMonData(mon, MON_DATA_IS_SHINY),
+        GetMonData(mon, MON_DATA_PERSONALITY)), TAG_POKEGLASS_STATS_MON);
+    if (paletteSlot == 0xFF)
+        return;
+    sStatsMonSprite = CreateMonPicSprite(GetMonData(mon, MON_DATA_SPECIES_OR_EGG),
+        GetMonData(mon, MON_DATA_IS_SHINY), GetMonData(mon, MON_DATA_PERSONALITY),
+        TRUE, 60, 76, paletteSlot, TAG_NONE);
+    if (sStatsMonSprite < MAX_SPRITES)
+        gSprites[sStatsMonSprite].oam.priority = 0;
+    else
+    {
+        sStatsMonSprite = 0xFFFF;
+        FreeSpritePaletteByTag(TAG_POKEGLASS_STATS_MON);
+    }
+}
+
+static void Task_PokeGlassStats(u8 taskId)
+{
+    u8 previous = sStatsPartySlot;
+    if (gPaletteFade.active)
+        return;
+    if (gTasks[taskId].data[0] < 2)
+    {
+        gTasks[taskId].data[0]++;
+        return;
+    }
+    if (JOY_NEW(B_BUTTON))
+    {
+        PlaySE(SE_SELECT);
+        DestroyStatsMonSprite();
+        CloseHub();
+        DestroyTask(taskId);
+        ScriptContext_Enable();
+        return;
+    }
+    if (JOY_NEW(DPAD_LEFT))
+        sStatsPartySlot = sStatsPartySlot == 0 ? gPlayerPartyCount - 1 : sStatsPartySlot - 1;
+    else if (JOY_NEW(DPAD_RIGHT))
+        sStatsPartySlot = (sStatsPartySlot + 1) % gPlayerPartyCount;
+    if (previous != sStatsPartySlot)
+    {
+        PlaySE(SE_SELECT);
+        DrawStatsPage();
+    }
+}
+
+void ShowPokeGlassStats(void)
+{
+    u8 taskId;
+    if (gPlayerPartyCount == 0)
+    {
+        ScriptContext_Enable();
+        return;
+    }
+    if (!OpenTabletWindow())
+        return;
+    if (sStatsPartySlot >= gPlayerPartyCount)
+        sStatsPartySlot = 0;
+    sStatsMonSprite = 0xFFFF;
+    DrawStatsPage();
+    taskId = CreateTask(Task_PokeGlassStats, 80);
+    if (taskId == TASK_NONE)
+    {
+        DestroyStatsMonSprite();
+        CloseHub();
+        ScriptContext_Enable();
+    }
 }
