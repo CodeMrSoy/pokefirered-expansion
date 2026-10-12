@@ -40,21 +40,21 @@ const struct Coords16 sTypeIconPositions[][2] =
 {
     [B_POSITION_PLAYER_LEFT] =
     {
-        [FALSE] = {128, 85},
-        [TRUE] = {127, 72},
+        [FALSE] = {130, 85},
+        [TRUE] = {129, 72},
     },
     [B_POSITION_OPPONENT_LEFT] =
     {
-        [FALSE] = {112, 25},
-        [TRUE] = {112, 14},
+        [FALSE] = {110, 25},
+        [TRUE] = {110, 14},
     },
     [B_POSITION_PLAYER_RIGHT] =
     {
-        [TRUE] = {139, 97},
+        [TRUE] = {141, 97},
     },
     [B_POSITION_OPPONENT_RIGHT] =
     {
-        [TRUE] = {100, 39},
+        [TRUE] = {98, 39},
     },
 };
 
@@ -198,7 +198,8 @@ const struct OamData sOamData_TypeIcons =
     .objMode = ST_OAM_OBJ_NORMAL,
     .shape = SPRITE_SHAPE(16x16),
     .size = SPRITE_SIZE(16x16),
-    .priority = 1,
+    // Keep complete badges above the neighbouring health-box shadows in doubles.
+    .priority = 0,
 };
 
 const struct CompressedSpriteSheet sSpriteSheet_TypeIcons2 =

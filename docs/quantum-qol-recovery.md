@@ -17,9 +17,13 @@ Restored features:
 
 Battle icon fixes:
 
-- Expanded the legacy half-symbol tabs into complete 16-pixel badges.
+- Expanded the legacy half-symbol tabs into complete symbols. The follow-up
+  compact design uses 12-by-10-pixel badges inside native 16-pixel sprites,
+  with crisp pixel symbols and a one-pixel frame.
 - Positioned badges against health boxes in single and double battles.
 - Kept both palettes and tile banks correct when displayed types change.
+- Draw badges above neighbouring health-box shadows so all symbols remain
+  visible in double battles.
 - Moved category icons inside the move panel and matched their background
   to the panel's palette, preserving its right border.
 
