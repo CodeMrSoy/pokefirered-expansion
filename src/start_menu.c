@@ -548,7 +548,7 @@ static bool8 StartCB_HandleInput(void)
             return FALSE;
         sStartMenuCallback = sStartMenuActionTable[sStartMenuOrder[sStartMenuCursorPos]].func.u8_void;
         // A bag item may open the glass party screen after field VRAM is gone.
-        if (sStartMenuCallback == StartMenuBagCallback)
+        if (sStartMenuCallback == StartMenuBagCallback || sStartMenuCallback == StartMenuPokemonCallback)
             CapturePokeGlassBackdrop();
         StartMenu_FadeScreenIfLeavingOverworld();
         return FALSE;

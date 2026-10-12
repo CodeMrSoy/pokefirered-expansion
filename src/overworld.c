@@ -1,4 +1,5 @@
 #include "global.h"
+#include "text_window.h"
 #include "poke_glass.h"
 #include "gflib.h"
 #include "io_reg.h"
@@ -3782,13 +3783,15 @@ static u8 ReformatItemDescription(u16 item, u8 *dest)
     {
         if (count >= maxChars)
         {
-            while (*desc != CHAR_SPACE && *desc != CHAR_NEWLINE)
+            while (*desc != CHAR_SPACE && *desc != CHAR_NEWLINE && *desc != EOS)
             {
                 *dest = *desc;  //finish word
                 dest++;
                 desc++;
             }
 
+            if (*desc == EOS)
+                break;
             *dest = CHAR_NEWLINE;
             count = 0;
             numLines++;
@@ -3819,6 +3822,7 @@ void ScriptShowItemDescription(struct ScriptContext *ctx)
     struct WindowTemplate template;
     u16 item = gSpecialVar_0x8006;
     u8 textY;
+    u8 lines;
     u8 *dst;
     bool8 handleFlash = FALSE;
 
@@ -3836,15 +3840,16 @@ void ScriptShowItemDescription(struct ScriptContext *ctx)
         return; //no box if item obtained previously
     }
 
-    SetWindowTemplateFields(&template, 0, 1, 1, 28, 3, 15, 8);
+    lines = ReformatItemDescription(item, dst);
+    SetWindowTemplateFields(&template, 0, 1, 1, 28, min(lines * 2, 12), 15, 8);
     sHeaderBoxWindowId = AddWindow(&template);
-    FillWindowPixelBuffer(sHeaderBoxWindowId, PIXEL_FILL(0));
+    FillWindowPixelBuffer(sHeaderBoxWindowId, PIXEL_FILL(1));
     PutWindowTilemap(sHeaderBoxWindowId);
     CopyWindowToVram(sHeaderBoxWindowId, 3);
-    SetStandardWindowBorderStyle(sHeaderBoxWindowId, FALSE);
+    LoadStdWindowGfx(sHeaderBoxWindowId, 0x214, BG_PLTT_ID(14));
     DrawStdFrameWithCustomTileAndPalette(sHeaderBoxWindowId, FALSE, 0x214, 14);
 
-    if (ReformatItemDescription(item, dst) == 1)
+    if (lines == 1)
         textY = 4;
     else
         textY = 0;
@@ -3918,8 +3923,11 @@ static void DestroyItemIconSprite(void)
 {
     FreeSpriteTilesByTag(ITEM_TAG);
     FreeSpritePaletteByTag(ITEM_TAG);
-    FreeSpriteOamMatrix(&gSprites[sItemIconSpriteId]);
-    DestroySprite(&gSprites[sItemIconSpriteId]);
+    if (sItemIconSpriteId < MAX_SPRITES)
+    {
+        FreeSpriteOamMatrix(&gSprites[sItemIconSpriteId]);
+        DestroySprite(&gSprites[sItemIconSpriteId]);
+    }
 
     if ((GetFlashLevel() > 0) && sItemIconSpriteId2 != MAX_SPRITES)
     {

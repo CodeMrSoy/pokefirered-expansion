@@ -995,6 +995,7 @@ static void DisplayPartyPokemonDataForPokeGlass(u8 slot)
     DisplayPartyPokemonNickname(mon, menuBox, DRAW_TEXT_ONLY);
     DisplayPartyPokemonLevelCheck(mon, menuBox, DRAW_TEXT_ONLY);
     DisplayPartyPokemonGenderNidoranCheck(mon, menuBox, DRAW_TEXT_ONLY);
+    DisplayPartyPokemonHPCheck(mon, menuBox, DRAW_TEXT_ONLY);
     DisplayPartyPokemonHPBarCheck(mon, menuBox);
 }
 
@@ -1662,25 +1663,25 @@ static void UpdatePartySelectionPokeGlassLayout(s8 *slotPtr, s8 movementDir)
     switch (movementDir)
     {
     case MENU_DIR_UP:
-        if (slot % 3 == 0)
+        if (slot < 2)
             next = SLOT_CANCEL;
-        else if (GetMonData(&gPlayerParty[slot - 1], MON_DATA_SPECIES) != SPECIES_NONE)
-            next = slot - 1;
+        else if (GetMonData(&gPlayerParty[slot - 2], MON_DATA_SPECIES) != SPECIES_NONE)
+            next = slot - 2;
         break;
     case MENU_DIR_DOWN:
-        if (slot % 3 == 2 || slot == gPlayerPartyCount - 1)
+        if (slot + 2 >= gPlayerPartyCount)
             next = sPartyMenuInternal->chooseMultiple ? SLOT_CONFIRM : SLOT_CANCEL;
-        else if (slot + 1 < PARTY_SIZE && GetMonData(&gPlayerParty[slot + 1], MON_DATA_SPECIES) != SPECIES_NONE)
-            next = slot + 1;
+        else if (GetMonData(&gPlayerParty[slot + 2], MON_DATA_SPECIES) != SPECIES_NONE)
+            next = slot + 2;
         break;
     case MENU_DIR_LEFT:
-        if (slot >= 3 && GetMonData(&gPlayerParty[slot - 3], MON_DATA_SPECIES) != SPECIES_NONE)
-            next = slot - 3;
+        if ((slot & 1) && GetMonData(&gPlayerParty[slot - 1], MON_DATA_SPECIES) != SPECIES_NONE)
+            next = slot - 1;
         break;
     case MENU_DIR_RIGHT:
-        if (slot < 3 && slot + 3 < gPlayerPartyCount
-            && GetMonData(&gPlayerParty[slot + 3], MON_DATA_SPECIES) != SPECIES_NONE)
-            next = slot + 3;
+        if (!(slot & 1) && slot + 1 < gPlayerPartyCount
+            && GetMonData(&gPlayerParty[slot + 1], MON_DATA_SPECIES) != SPECIES_NONE)
+            next = slot + 1;
         break;
     }
     *slotPtr = next;
@@ -2510,12 +2511,13 @@ static void BlitBitmapToPartyWindow_RightColumn(u8 windowId, u8 x, u8 y, u8 widt
 // viewport, keeping each of the six cards inside the two-column tablet grid.
 static void BlitBitmapToPartyWindow_PokeGlass(u8 windowId, u8 x, u8 y, u8 width, u8 height, bool8 hideHP)
 {
-    // Draw a complete compact card; clipping the legacy wide card left HP
-    // labels and borders over the nickname and level text.
+    static const u8 card[] = INCBIN_U8("graphics/party_menu/ds_card.4bpp");
+    static const u8 egg[] = INCBIN_U8("graphics/party_menu/ds_card_egg.4bpp");
+    static const u8 empty[] = INCBIN_U8("graphics/party_menu/ds_card_empty.4bpp");
     if (width == 0 && height == 0)
     {
-        FillWindowPixelBuffer(windowId, PIXEL_FILL(4));
-        FillWindowPixelRect(windowId, PIXEL_FILL(5), 1, 1, 102, 30);
+        const u8 *bitmap = windowId >= gPlayerPartyCount ? empty : hideHP ? egg : card;
+        BlitBitmapToWindow(windowId, bitmap, 0, 0, 112, 40);
     }
     else
         FillWindowPixelRect(windowId, PIXEL_FILL(5), x * 8, y * 8, width * 8, height * 8);
@@ -2523,6 +2525,11 @@ static void BlitBitmapToPartyWindow_PokeGlass(u8 windowId, u8 x, u8 y, u8 width,
 
 static void DrawEmptySlot(u8 windowId)
 {
+    if (gPartyMenu.layout == PARTY_LAYOUT_POKEGLASS)
+    {
+        BlitBitmapToPartyWindow_PokeGlass(windowId, 0, 0, 0, 0, TRUE);
+        return;
+    }
     BlitBitmapToPartyWindow(windowId, sSlotTilemap_WideEmpty, 18, 0, 0, 18, 3);
 }
 
@@ -2683,11 +2690,11 @@ static void DisplayPartyPokemonGender(u8 gender, u16 species, u8 *nickname, stru
 
 static void DisplayPartyPokemonHPCheck(struct Pokemon *mon, struct PartyMenuBox *menuBox, u8 drawMenuBoxOrText)
 {
-    if (gPartyMenu.layout == PARTY_LAYOUT_POKEGLASS)
-        return;
     if (GetMonData(mon, MON_DATA_SPECIES) != SPECIES_NONE)
     {
-        if (drawMenuBoxOrText != DRAW_TEXT_ONLY)
+        if (gPartyMenu.layout == PARTY_LAYOUT_POKEGLASS && drawMenuBoxOrText != DRAW_TEXT_ONLY)
+            FillWindowPixelRect(menuBox->windowId, PIXEL_FILL(5), 40, 25, 64, 13);
+        if (gPartyMenu.layout != PARTY_LAYOUT_POKEGLASS && drawMenuBoxOrText != DRAW_TEXT_ONLY)
             menuBox->infoRects->blitFunc(menuBox->windowId, menuBox->infoRects->dimensions[12] / 8, (menuBox->infoRects->dimensions[13] / 8) + 1, menuBox->infoRects->dimensions[14] / 8, menuBox->infoRects->dimensions[15] / 8, FALSE);
         if (drawMenuBoxOrText != DRAW_MENU_BOX_ONLY)
             DisplayPartyPokemonHP(GetMonData(mon, MON_DATA_HP), menuBox);
@@ -2700,6 +2707,11 @@ static void DisplayPartyPokemonHP(u16 hp, struct PartyMenuBox *menuBox)
 
     strOut[0] = CHAR_SLASH;
     strOut[1] = EOS;
+    if (gPartyMenu.layout == PARTY_LAYOUT_POKEGLASS)
+    {
+        u32 slot = menuBox - sPartyMenuBoxes;
+        ConvertIntToDecimalStringN(strOut + 1, GetMonData(&gPlayerParty[slot], MON_DATA_MAX_HP), STR_CONV_MODE_LEFT_ALIGN, 3);
+    }
     DisplayPartyPokemonBarDetail(menuBox->windowId, gStringVar1, 0, &menuBox->infoRects->dimensions[12]);
 }
 
@@ -2856,7 +2868,7 @@ static u8 DisplaySelectionWindow(u8 windowType)
     switch (windowType)
     {
     case SELECTWINDOW_ACTIONS:
-        window = CreateWindowTemplate(2, 19, 19 - (sPartyMenuInternal->numActions * 2), 10, sPartyMenuInternal->numActions * 2, 14, 0x2BF);
+        window = CreateWindowTemplate(2, 19, 19 - (sPartyMenuInternal->numActions * 2), 10, sPartyMenuInternal->numActions * 2, 14, 0x2FF);
         break;
     case SELECTWINDOW_ITEM:
         window = sItemGiveTakeWindowTemplate;
@@ -3501,7 +3513,7 @@ static void SwitchSelectedMons(u8 taskId)
         tSlot1Width = GetWindowAttribute(windowIds[0], WINDOW_WIDTH);
         tSlot1Height = GetWindowAttribute(windowIds[0], WINDOW_HEIGHT);
         tSlot1Offset = 0;
-        if (tSlot1Width == 10)
+        if (tSlot1Width == 10 || (gPartyMenu.layout == PARTY_LAYOUT_POKEGLASS && !(gPartyMenu.slotId & 1)))
             tSlot1SlideDir = -1;
         else
             tSlot1SlideDir = 1;
@@ -3511,7 +3523,7 @@ static void SwitchSelectedMons(u8 taskId)
         tSlot2Width = GetWindowAttribute(windowIds[1], WINDOW_WIDTH);
         tSlot2Height = GetWindowAttribute(windowIds[1], WINDOW_HEIGHT);
         tSlot2Offset = 0;
-        if (tSlot2Width == 10)
+        if (tSlot2Width == 10 || (gPartyMenu.layout == PARTY_LAYOUT_POKEGLASS && !(gPartyMenu.slotId2 & 1)))
             tSlot2SlideDir = -1;
         else
             tSlot2SlideDir = 1;
@@ -4550,7 +4562,7 @@ void CB2_ShowPartyMenuForItemUse(void)
     else
     {
         menuType = PARTY_MENU_TYPE_FIELD;
-        partyLayout = gSpecialVar_ItemId == ITEM_LEVEL_CAP_CANDY ? PARTY_LAYOUT_POKEGLASS : PARTY_LAYOUT_SINGLE;
+        partyLayout = PARTY_LAYOUT_POKEGLASS;
     }
 
     if (GetItemEffectType(gSpecialVar_ItemId) == ITEM_EFFECT_SACRED_ASH)
@@ -6434,7 +6446,8 @@ static void TryTutorSelectedMon(u8 taskId)
 
 void CB2_PartyMenuFromStartMenu(void)
 {
-    InitPartyMenu(PARTY_MENU_TYPE_FIELD, PARTY_LAYOUT_SINGLE, PARTY_ACTION_CHOOSE_MON, FALSE, PARTY_MSG_CHOOSE_MON, Task_HandleChooseMonInput, CB2_ReturnToFieldWithOpenMenu);
+    sPokeGlassStatsMode = FALSE;
+    InitPartyMenu(PARTY_MENU_TYPE_FIELD, PARTY_LAYOUT_POKEGLASS, PARTY_ACTION_CHOOSE_MON, FALSE, PARTY_MSG_CHOOSE_MON, Task_HandleChooseMonInput, CB2_ReturnToFieldWithOpenMenu);
 }
 
 void CB2_PokeGlassPartyMenu(void)

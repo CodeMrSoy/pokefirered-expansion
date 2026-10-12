@@ -1804,6 +1804,21 @@ static void MoveSelectionDisplayMoveType(u32 battler)
 
     PrependFontIdToFit(txtPtr, end, FONT_NORMAL, WindowWidthPx(B_WIN_MOVE_TYPE) - 25);
     BattlePutTextOnWindow(gDisplayedStringBattle, B_WIN_MOVE_TYPE);
+    if (B_SHOW_CATEGORY_ICON)
+    {
+        static const u16 palette[] = INCBIN_U16("graphics/interface/split_icons_battle.gbapal");
+        static const u8 icons[] = INCBIN_U8("graphics/interface/split_icons_battle.4bpp");
+        u16 panelPalette[16];
+        u32 category = GetBattleMoveCategory(move);
+        CpuCopy16(palette, panelPalette, sizeof(panelPalette));
+        // Match the surrounding move-info panel instead of a white rectangle.
+        panelPalette[0] = gPlttBufferUnfaded[BG_PLTT_ID(5) + 14];
+        panelPalette[7] = panelPalette[0];
+        LoadPalette(panelPalette, BG_PLTT_ID(10), sizeof(panelPalette));
+        BlitBitmapToWindow(B_WIN_CATEGORY_ICON, icons + category * 128, 0, 0, 16, 16);
+        PutWindowTilemap(B_WIN_CATEGORY_ICON);
+        CopyWindowToVram(B_WIN_CATEGORY_ICON, COPYWIN_FULL);
+    }
 }
 
 static void TryMoveSelectionDisplayMoveDescription(u32 battler)
@@ -2044,6 +2059,8 @@ static void HandleChooseActionAfterDma3(u32 battler)
     {
         gBattle_BG0_X = 0;
         gBattle_BG0_Y = DISPLAY_HEIGHT;
+        if (B_SHOW_TYPES == SHOW_TYPES_ALWAYS)
+            LoadTypeIcons(battler);
         if (gBattleStruct->aiDelayTimer != 0)
         {
             gBattleStruct->aiDelayFrames = gMain.vblankCounter1 - gBattleStruct->aiDelayTimer;

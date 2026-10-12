@@ -221,7 +221,7 @@ void DrawPokeGlassFrame(u8 bg)
     u8 x, y, tx, ty;
     // Field BG0 starts at char block 2; tile 0x300 would overwrite map
     // screen blocks. Party BG1 instead has free space above its menu windows.
-    u16 tileBase = bg == 0 ? 0x280 : 0x3E0;
+    u16 tileBase = bg == 0 ? 0x280 : 0x3F7;
     LoadPalette(sPalette, BG_PLTT_ID(11), sizeof(sPalette));
     LoadBgTiles(bg, sFrameTiles, sizeof(sFrameTiles), tileBase);
     for (y = 0; y < 20; y++)

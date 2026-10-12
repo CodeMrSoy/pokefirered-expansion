@@ -70,15 +70,14 @@ static const struct PartyMenuBoxInfoRects sPartyBoxInfoRects[] =
     {
         BlitBitmapToPartyWindow_PokeGlass,
         {
-            // Compact tablet card: nickname, level, gender, HP and HP bar.
-            28,  2, 72, 13, // Nickname
-            28, 18, 24,  8, // Level
-            90, 16,  8,  8, // Gender
-            67, 18, 24,  8, // HP
-            91, 18, 20,  8, // Max HP
-            54, 26, 44,  3  // HP bar
+            33, 2, 64, 13, // Nickname
+            3, 25, 24, 8,  // Level
+            100, 2, 8, 8, // Gender
+            48, 25, 56, 8, // Current/max HP
+            72, 25, 32, 8,
+            48, 18, 56, 3 // HP bar
         },
-        20, 4, 72, 16
+        30, 10, 72, 16
     },
 };
 
@@ -123,13 +122,12 @@ static const u8 sPartyMenuSpriteCoords[PARTY_LAYOUT_COUNT][PARTY_SIZE][4 * 2] =
     },
     [PARTY_LAYOUT_POKEGLASS] =
     {
-        // Three vertically stacked cards in each column.
-        {20,26,24,36,48,35,12,22},
-        {20,58,24,68,48,67,12,54},
-        {20,90,24,100,48,99,12,86},
-        {140,26,144,36,168,35,132,22},
-        {140,58,144,68,168,67,132,54},
-        {140,90,144,100,168,99,132,86},
+        {24,22,28,32,48,31,12,18},
+        {136,22,140,32,160,31,124,18},
+        {24,62,28,72,48,71,12,58},
+        {136,62,140,72,160,71,124,58},
+        {24,102,28,112,48,111,12,98},
+        {136,102,140,112,160,111,124,98},
     },
 };
 
@@ -412,21 +410,13 @@ static const struct WindowTemplate sShowcaseMultiPartyMenuWindowTemplate[] =
 // Six compact cards form the PokéGlass two-column, three-row party picker.
 static const struct WindowTemplate sPokeGlassPartyMenuWindowTemplate[] =
 {
-    { .bg = 0, .tilemapLeft = 1,  .tilemapTop = 2,  .width = 13, .height = 4, .paletteNum = 3, .baseBlock = 0x63 },
-    { .bg = 0, .tilemapLeft = 1,  .tilemapTop = 6,  .width = 13, .height = 4, .paletteNum = 4, .baseBlock = 0x9B },
-    { .bg = 0, .tilemapLeft = 1,  .tilemapTop = 10,  .width = 13, .height = 4, .paletteNum = 5, .baseBlock = 0xD3 },
-    { .bg = 0, .tilemapLeft = 16, .tilemapTop = 2,  .width = 13, .height = 4, .paletteNum = 6, .baseBlock = 0x10B },
-    { .bg = 0, .tilemapLeft = 16, .tilemapTop = 6,  .width = 13, .height = 4, .paletteNum = 7, .baseBlock = 0x143 },
-    { .bg = 0, .tilemapLeft = 16, .tilemapTop = 10,  .width = 13, .height = 4, .paletteNum = 8, .baseBlock = 0x17B },
-    {
-        .bg = 2,
-        .tilemapLeft = 1,
-        .tilemapTop = 15,
-        .width = 28,
-        .height = 4,
-        .paletteNum = 14,
-        .baseBlock = 0x1DF,
-    },
+    { .bg = 0, .tilemapLeft = 1, .tilemapTop = 1, .width = 14, .height = 5, .paletteNum = 3, .baseBlock = 0x63 },
+    { .bg = 0, .tilemapLeft = 15, .tilemapTop = 1, .width = 14, .height = 5, .paletteNum = 4, .baseBlock = 0xa9 },
+    { .bg = 0, .tilemapLeft = 1, .tilemapTop = 6, .width = 14, .height = 5, .paletteNum = 5, .baseBlock = 0xef },
+    { .bg = 0, .tilemapLeft = 15, .tilemapTop = 6, .width = 14, .height = 5, .paletteNum = 6, .baseBlock = 0x135 },
+    { .bg = 0, .tilemapLeft = 1, .tilemapTop = 11, .width = 14, .height = 5, .paletteNum = 7, .baseBlock = 0x17b },
+    { .bg = 0, .tilemapLeft = 15, .tilemapTop = 11, .width = 14, .height = 5, .paletteNum = 8, .baseBlock = 0x1c1 },
+    { .bg = 2, .tilemapLeft = 1, .tilemapTop = 15, .width = 28, .height = 4, .paletteNum = 14, .baseBlock = 0x21F },
     DUMMY_WIN_TEMPLATE,
 };
 
@@ -438,7 +428,7 @@ static const struct WindowTemplate sCancelButtonWindowTemplate =
     .width = 6,
     .height = 2,
     .paletteNum = 3,
-    .baseBlock = 0x1C7,
+    .baseBlock = 0x207,
 };
 
 static const struct WindowTemplate sMultiCancelButtonWindowTemplate =
@@ -449,7 +439,7 @@ static const struct WindowTemplate sMultiCancelButtonWindowTemplate =
     .width = 6,
     .height = 2,
     .paletteNum = 3,
-    .baseBlock = 0x1C7,
+    .baseBlock = 0x207,
 };
 
 static const struct WindowTemplate sConfirmButtonWindowTemplate =
@@ -460,7 +450,7 @@ static const struct WindowTemplate sConfirmButtonWindowTemplate =
     .width = 6,
     .height = 2,
     .paletteNum = 3,
-    .baseBlock = 0x1D3,
+    .baseBlock = 0x213,
 };
 
 static const struct WindowTemplate sDefaultPartyMsgWindowTemplate =
@@ -471,7 +461,7 @@ static const struct WindowTemplate sDefaultPartyMsgWindowTemplate =
     .width = 21,
     .height = 2,
     .paletteNum = 15,
-    .baseBlock = 0x24F,
+    .baseBlock = 0x28f,
 };
 
 static const struct WindowTemplate sDoWhatWithMonMsgWindowTemplate =
@@ -482,7 +472,7 @@ static const struct WindowTemplate sDoWhatWithMonMsgWindowTemplate =
     .width = 16,
     .height = 2,
     .paletteNum = 15,
-    .baseBlock = 0x279,
+    .baseBlock = 0x2b9,
 };
 
 static const struct WindowTemplate sDoWhatWithItemMsgWindowTemplate =
@@ -493,7 +483,7 @@ static const struct WindowTemplate sDoWhatWithItemMsgWindowTemplate =
     .width = 19,
     .height = 2,
     .paletteNum = 15,
-    .baseBlock = 0x299,
+    .baseBlock = 0x2d9,
 };
 
 static const struct WindowTemplate sDoWhatWithMailMsgWindowTemplate =
@@ -504,7 +494,7 @@ static const struct WindowTemplate sDoWhatWithMailMsgWindowTemplate =
     .width = 16,
     .height = 2,
     .paletteNum = 15,
-    .baseBlock = 0x299,
+    .baseBlock = 0x2d9,
 };
 
 static const struct WindowTemplate sWhichMoveMsgWindowTemplate =
@@ -515,7 +505,7 @@ static const struct WindowTemplate sWhichMoveMsgWindowTemplate =
     .width = 15,
     .height = 2,
     .paletteNum = 15,
-    .baseBlock = 0x299,
+    .baseBlock = 0x2d9,
 };
 
 static const struct WindowTemplate sOrderWhichApplianceMsgWindowTemplate =
@@ -526,7 +516,7 @@ static const struct WindowTemplate sOrderWhichApplianceMsgWindowTemplate =
     .width = 14,
     .height = 4,
     .paletteNum = 15,
-    .baseBlock = 0x299,
+    .baseBlock = 0x2d9,
 };
 
 static const struct WindowTemplate sItemGiveTakeWindowTemplate =
@@ -537,7 +527,7 @@ static const struct WindowTemplate sItemGiveTakeWindowTemplate =
     .width = 7,
     .height = 6,
     .paletteNum = 14,
-    .baseBlock = 0x373,
+    .baseBlock = 0x3b3,
 };
 
 static const struct WindowTemplate sMailReadTakeWindowTemplate =
@@ -548,7 +538,7 @@ static const struct WindowTemplate sMailReadTakeWindowTemplate =
     .width = 10,
     .height = 6,
     .paletteNum = 14,
-    .baseBlock = 0x373,
+    .baseBlock = 0x3b3,
 };
 
 static const struct WindowTemplate sCatalogSelectWindowTemplate =
@@ -559,7 +549,7 @@ static const struct WindowTemplate sCatalogSelectWindowTemplate =
     .width = 12,
     .height = 14,
     .paletteNum = 14,
-    .baseBlock = 0x2E9,
+    .baseBlock = 0x329,
 };
 
 static const struct WindowTemplate sZygardeCubeSelectWindowTemplate =
@@ -570,7 +560,7 @@ static const struct WindowTemplate sZygardeCubeSelectWindowTemplate =
     .width = 11,
     .height = 6,
     .paletteNum = 14,
-    .baseBlock = 0x2E9,
+    .baseBlock = 0x329,
 };
 
 static const struct WindowTemplate sMoveSelectWindowTemplate =
@@ -581,7 +571,7 @@ static const struct WindowTemplate sMoveSelectWindowTemplate =
     .width = 11,
     .height = 8,
     .paletteNum = 14,
-    .baseBlock = 0x2BF,
+    .baseBlock = 0x2ff,
 };
 
 static const struct WindowTemplate sPartyMenuYesNoWindowTemplate =
@@ -592,7 +582,7 @@ static const struct WindowTemplate sPartyMenuYesNoWindowTemplate =
     .width = 6,
     .height = 4,
     .paletteNum = 14,
-    .baseBlock = 0x2BF,
+    .baseBlock = 0x2ff,
 };
 
 static const struct WindowTemplate sLevelUpStatsWindowTemplate =
@@ -603,7 +593,7 @@ static const struct WindowTemplate sLevelUpStatsWindowTemplate =
     .width = 10,
     .height = 11,
     .paletteNum = 14,
-    .baseBlock = 0x2BF,
+    .baseBlock = 0x2ff,
 };
 
 static const struct WindowTemplate sWindowTemplate_FirstBattleOakVoiceover =
@@ -614,7 +604,7 @@ static const struct WindowTemplate sWindowTemplate_FirstBattleOakVoiceover =
     .width = 26,
     .height = 4,
     .paletteNum = 14,
-    .baseBlock = 0x1DF,
+    .baseBlock = 0x21f,
 };
 
 static const struct WindowTemplate sFieldMoveDescriptionWindowTemplate =
@@ -625,7 +615,7 @@ static const struct WindowTemplate sFieldMoveDescriptionWindowTemplate =
     .width = 18,
     .height = 3,
     .paletteNum = 12,
-    .baseBlock = 0x373,
+    .baseBlock = 0x3b3,
 };
 
 // Plain tilemaps for party menu slots.
