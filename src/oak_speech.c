@@ -1,4 +1,5 @@
 #include "global.h"
+#include "avatar.h"
 #include "bg.h"
 #include "data.h"
 #include "decompress.h"
@@ -79,6 +80,8 @@ static void Task_OakSpeech_ShowGenderOptions(u8);
 static void Task_OakSpeech_HandleGenderInput(u8);
 static void Task_OakSpeech_ClearGenderWindows(u8);
 static void Task_OakSpeech_LoadPlayerPic(u8);
+static void Task_AvatarChoice_Init(u8 taskId);
+static void Task_AvatarChoice_Input(u8 taskId);
 static void Task_OakSpeech_YourNameWhatIsIt(u8);
 static void Task_OakSpeech_FadeOutForPlayerNamingScreen(u8);
 static void Task_OakSpeech_HandleRivalNameInput(u8);
@@ -1379,6 +1382,7 @@ static void Task_OakSpeech_HandleGenderInput(u8 taskId)
     case MENU_NOTHING_CHOSEN:
         return;
     }
+    SetCurrentAvatarLook(gSaveBlock2Ptr->playerGender == FEMALE ? AVATAR_LEAF : AVATAR_RED);
     gTasks[taskId].func = Task_OakSpeech_ClearGenderWindows;
 
 }
@@ -1392,7 +1396,60 @@ static void Task_OakSpeech_ClearGenderWindows(u8 taskId)
     ClearDialogWindowAndFrame(tMenuWindowId, TRUE);
     FillBgTilemapBufferRect_Palette0(0, 0, 0, 0, 30, 20);
     CopyBgTilemapBufferToVram(0);
-    gTasks[taskId].func = Task_OakSpeech_LoadPlayerPic;
+    gTasks[taskId].func = Task_AvatarChoice_Init;
+}
+
+static void DrawAvatarChoice(void)
+{
+    static const u8 hint[] = _("Left/Right Look  A OK  B Back");
+    ClearTrainerPic();
+    LoadTrainerPic(MALE_PLAYER_PIC, 0);
+    StringCopy(gStringVar4, GetAvatarLookName(GetCurrentAvatarLook()));
+    StringAppend(gStringVar4, COMPOUND_STRING(" - "));
+    StringAppend(gStringVar4, GetAvatarLookStyle(GetCurrentAvatarLook()));
+    StringAppend(gStringVar4, COMPOUND_STRING("\n"));
+    StringAppend(gStringVar4, hint);
+    OakSpeechPrintMessage(gStringVar4, 0, TRUE);
+}
+
+static void Task_AvatarChoice_Init(u8 taskId)
+{
+    gTasks[taskId].tTrainerPicPosX = 0;
+    SetGpuReg(REG_OFFSET_BLDCNT, 0);
+    ShowBg(2);
+    DrawAvatarChoice();
+    gTasks[taskId].func = Task_AvatarChoice_Input;
+}
+
+static void Task_AvatarChoice_Input(u8 taskId)
+{
+    u8 look = GetCurrentAvatarLook();
+    if (gPaletteFade.active)
+        return;
+    if (JOY_NEW(A_BUTTON))
+    {
+        PlaySE(SE_SELECT);
+        ClearDialogWindowAndFrame(WIN_INTRO_TEXTBOX, TRUE);
+        gTasks[taskId].func = Task_OakSpeech_LoadPlayerPic;
+        return;
+    }
+    if (JOY_NEW(B_BUTTON))
+    {
+        PlaySE(SE_SELECT);
+        ClearTrainerPic();
+        OakSpeechPrintMessage(gOakSpeech_Text_AskPlayerGender, 0, FALSE);
+        gTasks[taskId].func = Task_OakSpeech_ShowGenderOptions;
+        return;
+    }
+    if (JOY_NEW(DPAD_LEFT))
+        look = look == 0 ? AVATAR_LOOK_COUNT - 1 : look - 1;
+    else if (JOY_NEW(DPAD_RIGHT))
+        look = (look + 1) % AVATAR_LOOK_COUNT;
+    else
+        return;
+    PlaySE(SE_SELECT);
+    SetCurrentAvatarLook(look);
+    DrawAvatarChoice();
 }
 
 static void Task_OakSpeech_LoadPlayerPic(u8 taskId)
@@ -2021,11 +2078,40 @@ static void DestroyPikachuOrPlatformSprites(u8 taskId, u8 spriteType)
     }
 }
 
+static bool8 LoadAvatarCreationPortrait(u16 tileOffset)
+{
+    u8 *fourBit = Alloc(0x800);
+    u8 *eightBit = AllocZeroed(0x1800);
+    u32 i;
+    u16 pic = GetCurrentAvatarFrontPic();
+    if (fourBit == NULL || eightBit == NULL)
+    {
+        Free(fourBit);
+        Free(eightBit);
+        return FALSE;
+    }
+    DecompressDataWithHeaderWram(gTrainerSprites[pic].frontPic.data, fourBit);
+    // Keep the standard 64x96 creation canvas and align a 64x64 portrait
+    // to its bottom. Nonzero indices address the player's BG palette bank.
+    for (i = 0; i < 0x800; i++)
+    {
+        u8 low = fourBit[i] & 15, high = fourBit[i] >> 4;
+        eightBit[0x800 + i * 2] = low ? 64 + low : 0;
+        eightBit[0x801 + i * 2] = high ? 64 + high : 0;
+    }
+    LoadPalette(gTrainerSprites[pic].palette.data, BG_PLTT_ID(4), PLTT_SIZE_4BPP);
+    CpuCopy16(eightBit, (void *)(VRAM + 0x600 + tileOffset), 0x1800);
+    Free(fourBit);
+    Free(eightBit);
+    return TRUE;
+}
+
 static void LoadTrainerPic(u16 whichPic, u16 tileOffset)
 {
     u32 i;
 
-    switch (whichPic)
+    if (!((whichPic == MALE_PLAYER_PIC || whichPic == FEMALE_PLAYER_PIC)
+        && LoadAvatarCreationPortrait(tileOffset))) switch (whichPic)
     {
     case MALE_PLAYER_PIC:
         LoadPalette(sOakSpeech_Red_Pal, BG_PLTT_ID(4), sizeof(sOakSpeech_Red_Pal));

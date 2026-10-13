@@ -1,3 +1,31 @@
+const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_AvatarBrendanNormal;
+const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_AvatarBrendanBike;
+const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_AvatarBrendanSurf;
+const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_AvatarBrendanFieldMove;
+const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_AvatarBrendanFish;
+const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_AvatarBrendanVSSeeker;
+const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_AvatarBrendanVSSeekerBike;
+const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_AvatarMayNormal;
+const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_AvatarMayBike;
+const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_AvatarMaySurf;
+const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_AvatarMayFieldMove;
+const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_AvatarMayFish;
+const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_AvatarMayVSSeeker;
+const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_AvatarMayVSSeekerBike;
+const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_AvatarRSBrendanNormal;
+const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_AvatarRSBrendanBike;
+const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_AvatarRSBrendanSurf;
+const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_AvatarRSBrendanFieldMove;
+const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_AvatarRSBrendanFish;
+const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_AvatarRSBrendanVSSeeker;
+const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_AvatarRSBrendanVSSeekerBike;
+const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_AvatarRSMayNormal;
+const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_AvatarRSMayBike;
+const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_AvatarRSMaySurf;
+const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_AvatarRSMayFieldMove;
+const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_AvatarRSMayFish;
+const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_AvatarRSMayVSSeeker;
+const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_AvatarRSMayVSSeekerBike;
 const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_RedNormal;
 const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_RedBike;
 const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_RedSurf;
@@ -316,4 +344,33 @@ const struct ObjectEventGraphicsInfo *const gObjectEventGraphicsInfoPointers[NUM
     [OBJ_EVENT_GFX_BERRY_TREE] =               &gObjectEventGraphicsInfo_BerryTree,
     [OBJ_EVENT_GFX_BERRY_TREE_EARLY_STAGES] =  &gObjectEventGraphicsInfo_BerryTreeEarlyStages,
     [OBJ_EVENT_GFX_BERRY_TREE_LATE_STAGES] =   &gObjectEventGraphicsInfo_BerryTreeLateStages,
+
+    [OBJ_EVENT_GFX_AVATAR_BRENDAN_NORMAL] = &gObjectEventGraphicsInfo_AvatarBrendanNormal,
+    [OBJ_EVENT_GFX_AVATAR_BRENDAN_BIKE] = &gObjectEventGraphicsInfo_AvatarBrendanBike,
+    [OBJ_EVENT_GFX_AVATAR_BRENDAN_SURF] = &gObjectEventGraphicsInfo_AvatarBrendanSurf,
+    [OBJ_EVENT_GFX_AVATAR_BRENDAN_FIELDMOVE] = &gObjectEventGraphicsInfo_AvatarBrendanFieldMove,
+    [OBJ_EVENT_GFX_AVATAR_BRENDAN_FISH] = &gObjectEventGraphicsInfo_AvatarBrendanFish,
+    [OBJ_EVENT_GFX_AVATAR_BRENDAN_VSSEEKER] = &gObjectEventGraphicsInfo_AvatarBrendanVSSeeker,
+    [OBJ_EVENT_GFX_AVATAR_BRENDAN_VSSEEKERBIKE] = &gObjectEventGraphicsInfo_AvatarBrendanVSSeekerBike,
+    [OBJ_EVENT_GFX_AVATAR_MAY_NORMAL] = &gObjectEventGraphicsInfo_AvatarMayNormal,
+    [OBJ_EVENT_GFX_AVATAR_MAY_BIKE] = &gObjectEventGraphicsInfo_AvatarMayBike,
+    [OBJ_EVENT_GFX_AVATAR_MAY_SURF] = &gObjectEventGraphicsInfo_AvatarMaySurf,
+    [OBJ_EVENT_GFX_AVATAR_MAY_FIELDMOVE] = &gObjectEventGraphicsInfo_AvatarMayFieldMove,
+    [OBJ_EVENT_GFX_AVATAR_MAY_FISH] = &gObjectEventGraphicsInfo_AvatarMayFish,
+    [OBJ_EVENT_GFX_AVATAR_MAY_VSSEEKER] = &gObjectEventGraphicsInfo_AvatarMayVSSeeker,
+    [OBJ_EVENT_GFX_AVATAR_MAY_VSSEEKERBIKE] = &gObjectEventGraphicsInfo_AvatarMayVSSeekerBike,
+    [OBJ_EVENT_GFX_AVATAR_RSBRENDAN_NORMAL] = &gObjectEventGraphicsInfo_AvatarRSBrendanNormal,
+    [OBJ_EVENT_GFX_AVATAR_RSBRENDAN_BIKE] = &gObjectEventGraphicsInfo_AvatarRSBrendanBike,
+    [OBJ_EVENT_GFX_AVATAR_RSBRENDAN_SURF] = &gObjectEventGraphicsInfo_AvatarRSBrendanSurf,
+    [OBJ_EVENT_GFX_AVATAR_RSBRENDAN_FIELDMOVE] = &gObjectEventGraphicsInfo_AvatarRSBrendanFieldMove,
+    [OBJ_EVENT_GFX_AVATAR_RSBRENDAN_FISH] = &gObjectEventGraphicsInfo_AvatarRSBrendanFish,
+    [OBJ_EVENT_GFX_AVATAR_RSBRENDAN_VSSEEKER] = &gObjectEventGraphicsInfo_AvatarRSBrendanVSSeeker,
+    [OBJ_EVENT_GFX_AVATAR_RSBRENDAN_VSSEEKERBIKE] = &gObjectEventGraphicsInfo_AvatarRSBrendanVSSeekerBike,
+    [OBJ_EVENT_GFX_AVATAR_RSMAY_NORMAL] = &gObjectEventGraphicsInfo_AvatarRSMayNormal,
+    [OBJ_EVENT_GFX_AVATAR_RSMAY_BIKE] = &gObjectEventGraphicsInfo_AvatarRSMayBike,
+    [OBJ_EVENT_GFX_AVATAR_RSMAY_SURF] = &gObjectEventGraphicsInfo_AvatarRSMaySurf,
+    [OBJ_EVENT_GFX_AVATAR_RSMAY_FIELDMOVE] = &gObjectEventGraphicsInfo_AvatarRSMayFieldMove,
+    [OBJ_EVENT_GFX_AVATAR_RSMAY_FISH] = &gObjectEventGraphicsInfo_AvatarRSMayFish,
+    [OBJ_EVENT_GFX_AVATAR_RSMAY_VSSEEKER] = &gObjectEventGraphicsInfo_AvatarRSMayVSSeeker,
+    [OBJ_EVENT_GFX_AVATAR_RSMAY_VSSEEKERBIKE] = &gObjectEventGraphicsInfo_AvatarRSMayVSSeekerBike,
 };

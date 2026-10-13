@@ -484,6 +484,7 @@ static const u8 gInitialMovementTypeFacingDirections[MOVEMENT_TYPES_COUNT] = {
 #include "data/object_events/object_event_subsprites.h"
 #include "data/object_events/object_event_graphics_info.h"
 #include "data/object_events/object_event_graphics_info_followers.h"
+#include "data/object_events/avatar_graphics.h"
 
 static const struct SpritePalette sObjectEventSpritePalettes[] = {
     {gObjectEventPal_Npc1,                    OBJ_EVENT_PAL_TAG_NPC_1},
@@ -542,6 +543,15 @@ static const struct SpritePalette sObjectEventSpritePalettes[] = {
 #endif //OW_FOLLOWERS_POKEBALLS
     {gObjectEventPal_Substitute,            OBJ_EVENT_PAL_TAG_SUBSTITUTE},
     {gObjectEventPaletteEmotes,             OBJ_EVENT_PAL_TAG_EMOTES},
+    // Append to preserve the legacy palette indices used by berry graphics.
+    {sAvatarBrendanPalette, OBJ_EVENT_PAL_TAG_AVATAR_BRENDAN},
+    {sAvatarBrendanPalette, OBJ_EVENT_PAL_TAG_AVATAR_BRENDAN_REFLECTION},
+    {sAvatarMayPalette, OBJ_EVENT_PAL_TAG_AVATAR_MAY},
+    {sAvatarMayPalette, OBJ_EVENT_PAL_TAG_AVATAR_MAY_REFLECTION},
+    {sAvatarRSBrendanPalette, OBJ_EVENT_PAL_TAG_AVATAR_RSBRENDAN},
+    {sAvatarRSBrendanPalette, OBJ_EVENT_PAL_TAG_AVATAR_RSBRENDAN_REFLECTION},
+    {sAvatarRSMayPalette, OBJ_EVENT_PAL_TAG_AVATAR_RSMAY},
+    {sAvatarRSMayPalette, OBJ_EVENT_PAL_TAG_AVATAR_RSMAY_REFLECTION},
 #ifdef BUGFIX
     {NULL,                                    OBJ_EVENT_PAL_TAG_NONE},
 #else

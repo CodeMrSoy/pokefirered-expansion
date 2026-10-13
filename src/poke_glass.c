@@ -1,4 +1,6 @@
 #include "global.h"
+#include "avatar.h"
+#include "data.h"
 #include "gflib.h"
 #include "menu.h"
 #include "poke_glass.h"
@@ -204,7 +206,7 @@ static EWRAM_DATA u16 sHubPalette[32] = {0};
 static const u8 sHubTitle[] = _("POKéGLASS");
 static const u8 sHubHint[] = _("A Open   B Close");
 static const u8 sHubLabels[][16] = {
-    _("Pokédex"), _("Party"), _("Storage"), _("Stats"), _("Map")
+    _("Pokédex"), _("Party"), _("Storage"), _("Stats"), _("Map"), _("Wardrobe")
 };
 static const struct WindowTemplate sHubTemplate = {
     .bg = 0, .tilemapLeft = 1, .tilemapTop = 1,
@@ -311,13 +313,14 @@ static void DrawHubIcon(u8 app, u16 x, u16 y)
 static void DrawHubApp(u8 i, bool8 upload)
 {
     static const u8 textColors[] = {0, 8, 4};
-    static const u8 positions[5][2] = {{25,34}, {127,34}, {25,78}, {174,116}, {127,78}};
+    static const u8 positions[6][2] = {{25,34}, {127,34}, {25,78}, {112,116}, {127,78}, {152,116}};
     u16 x = positions[i][0], y = positions[i][1];
     bool8 selected = i == sHubCursor;
-    if (i == 3)
+    u8 dockWidth = i == 5 ? 54 : 36;
+    if (i == 3 || i == 5)
     {
-        HubRect(selected ? 8 : 6, x, y, 36, 10);
-        HubRect(4, x + 1, y + 1, 34, 8);
+        HubRect(selected ? 8 : 6, x, y, dockWidth, 10);
+        HubRect(4, x + 1, y + 1, dockWidth - 2, 8);
         AddTextPrinterParameterized3(sHubWindow, FONT_SMALL, x + 4, y - 1, textColors, TEXT_SKIP_DRAW, sHubLabels[i]);
     }
     else
@@ -328,7 +331,7 @@ static void DrawHubApp(u8 i, bool8 upload)
         AddTextPrinterParameterized3(sHubWindow, FONT_SMALL, x + 35, y + 13, textColors, TEXT_SKIP_DRAW, sHubLabels[i]);
     }
     if (upload)
-        CopyWindowRectToVram(sHubWindow, COPYWIN_GFX, x / 8, y / 8, (x + (i == 3 ? 36 : 72) + 7) / 8 - x / 8, (y + (i == 3 ? 10 : 38) + 7) / 8 - y / 8);
+        CopyWindowRectToVram(sHubWindow, COPYWIN_GFX, x / 8, y / 8, (x + ((i == 3 || i == 5) ? dockWidth : 72) + 7) / 8 - x / 8, (y + (i == 3 ? 10 : 38) + 7) / 8 - y / 8);
 }
 
 static void DrawTabletShell(u8 *pixels)
@@ -421,7 +424,7 @@ static void DrawHub(void)
     HubRect(8, 191, 20, 16, 7);
     HubRect(4, 192, 21, 14, 5);
     HubRect(6, 193, 22, 10, 3);
-    for (i = 0; i < 5; i++) DrawHubApp(i, FALSE);
+    for (i = 0; i < 6; i++) DrawHubApp(i, FALSE);
     AddTextPrinterParameterized3(sHubWindow, FONT_SMALL, 24, 114, textColors, TEXT_SKIP_DRAW, sHubHint);
     PutWindowTilemap(sHubWindow);
     CopyWindowToVram(sHubWindow, COPYWIN_FULL);
@@ -483,13 +486,13 @@ static void Task_PokeGlassHub(u8 taskId)
     else
     {
         if (JOY_NEW(DPAD_UP))
-            sHubCursor = sHubCursor == 2 ? 0 : sHubCursor == 4 ? 1 : sHubCursor == 3 ? 4 : sHubCursor;
+            sHubCursor = sHubCursor == 2 ? 0 : sHubCursor == 4 ? 1 : (sHubCursor == 3 || sHubCursor == 5) ? 4 : sHubCursor;
         else if (JOY_NEW(DPAD_DOWN))
-            sHubCursor = sHubCursor == 0 ? 2 : sHubCursor == 1 ? 4 : 3;
+            sHubCursor = sHubCursor == 0 ? 2 : sHubCursor == 1 ? 4 : (sHubCursor == 3 || sHubCursor == 5) ? 5 : 3;
         else if (JOY_NEW(DPAD_LEFT))
-            sHubCursor = sHubCursor == 1 ? 0 : sHubCursor == 4 ? 2 : sHubCursor;
+            sHubCursor = sHubCursor == 1 ? 0 : sHubCursor == 4 ? 2 : sHubCursor == 5 ? 3 : sHubCursor;
         else if (JOY_NEW(DPAD_RIGHT))
-            sHubCursor = sHubCursor == 0 ? 1 : sHubCursor == 2 ? 4 : sHubCursor;
+            sHubCursor = sHubCursor == 0 ? 1 : sHubCursor == 2 ? 4 : sHubCursor == 3 ? 5 : sHubCursor;
         if (oldCursor != sHubCursor)
         {
             PlaySE(SE_SELECT);
@@ -722,6 +725,100 @@ void ShowPokeGlassStats(void)
     if (taskId == TASK_NONE)
     {
         DestroyStatsMonSprite();
+        CloseHub();
+        RestoreTabletAppearance();
+        ScriptContext_Enable();
+    }
+}
+
+#define TAG_POKEGLASS_WARDROBE 0xD110
+static EWRAM_DATA u8 sWardrobeLook = 0;
+static EWRAM_DATA u16 sWardrobePortrait = 0;
+
+static void DestroyWardrobePortrait(void)
+{
+    if (sWardrobePortrait != 0xFFFF)
+        FreeAndDestroyTrainerPicSprite(sWardrobePortrait);
+    FreeSpritePaletteByTag(TAG_POKEGLASS_WARDROBE);
+    sWardrobePortrait = 0xFFFF;
+}
+
+static void DrawWardrobePage(void)
+{
+    u8 i, palette;
+    u16 pic = GetAvatarFrontPic(sWardrobeLook);
+    DrawTabletShell((u8 *)GetWindowAttribute(sHubWindow, WINDOW_TILE_DATA));
+    StatsText(17, 18, COMPOUND_STRING("WARDROBE"));
+    StatsText(107, 35, GetAvatarLookName(sWardrobeLook));
+    StatsText(107, 49, GetAvatarLookStyle(sWardrobeLook));
+    StatsText(107, 72, sWardrobeLook == GetCurrentAvatarLook() ? COMPOUND_STRING("Currently worn") : COMPOUND_STRING("Preview"));
+    StatsText(107, 88, COMPOUND_STRING("Look"));
+    StatsNumber(148, 88, sWardrobeLook + 1);
+    StatsText(153, 88, COMPOUND_STRING("/ 6"));
+    for (i = 0; i < AVATAR_LOOK_COUNT; i++)
+        HubRect(i == sWardrobeLook ? 8 : 6, 107 + i * 14, 103, 6, 3);
+    StatsText(30, 114, COMPOUND_STRING("Left/Right: Look   A Wear   B Back"));
+    PutWindowTilemap(sHubWindow);
+    CopyWindowToVram(sHubWindow, COPYWIN_FULL);
+    DestroyWardrobePortrait();
+    palette = LoadSpritePaletteWithTag(gTrainerSprites[pic].palette.data, TAG_POKEGLASS_WARDROBE);
+    if (palette == 0xFF)
+        return;
+    sWardrobePortrait = CreateTrainerPicSprite(pic, TRUE, 65, 78, palette, TAG_NONE);
+    if (sWardrobePortrait < MAX_SPRITES)
+        gSprites[sWardrobePortrait].oam.priority = 0;
+    else
+    {
+        sWardrobePortrait = 0xFFFF;
+        FreeSpritePaletteByTag(TAG_POKEGLASS_WARDROBE);
+    }
+}
+
+static void Task_PokeGlassWardrobe(u8 taskId)
+{
+    u8 previous = sWardrobeLook;
+    if (gPaletteFade.active)
+        return;
+    if (gTasks[taskId].data[0] < 2)
+    {
+        gTasks[taskId].data[0]++;
+        return;
+    }
+    if (JOY_NEW(A_BUTTON | B_BUTTON))
+    {
+        PlaySE(SE_SELECT);
+        if (JOY_NEW(A_BUTTON))
+            ApplyAvatarLookToField(sWardrobeLook);
+        DestroyWardrobePortrait();
+        CloseHub();
+        gTasks[taskId].data[2] = 0;
+        gTasks[taskId].data[3] = FALSE;
+        gTasks[taskId].func = Task_CloseTablet;
+        return;
+    }
+    if (JOY_NEW(DPAD_LEFT))
+        sWardrobeLook = sWardrobeLook == 0 ? AVATAR_LOOK_COUNT - 1 : sWardrobeLook - 1;
+    else if (JOY_NEW(DPAD_RIGHT))
+        sWardrobeLook = (sWardrobeLook + 1) % AVATAR_LOOK_COUNT;
+    if (previous != sWardrobeLook)
+    {
+        PlaySE(SE_SELECT);
+        DrawWardrobePage();
+    }
+}
+
+void ShowPokeGlassWardrobe(void)
+{
+    u8 taskId;
+    if (!OpenTabletWindow())
+        return;
+    sWardrobeLook = GetCurrentAvatarLook();
+    sWardrobePortrait = 0xFFFF;
+    DrawWardrobePage();
+    taskId = CreateTask(Task_PokeGlassWardrobe, 80);
+    if (taskId == TASK_NONE)
+    {
+        DestroyWardrobePortrait();
         CloseHub();
         RestoreTabletAppearance();
         ScriptContext_Enable();

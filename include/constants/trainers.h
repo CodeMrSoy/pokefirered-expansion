@@ -166,6 +166,8 @@
 #define TRAINER_PIC_RUIN_MANIAC           145
 #define TRAINER_PIC_LADY                  146
 #define TRAINER_PIC_PAINTER               147
+#define TRAINER_PIC_QUANTUM_BRENDAN       148
+#define TRAINER_PIC_QUANTUM_MAY           149
 
 // The player back pics are assumed to alternate according to the gender values (MALE/FEMALE)
 #define TRAINER_BACK_PIC_RED                    0
@@ -175,6 +177,8 @@
 #define TRAINER_BACK_PIC_POKEDUDE               4
 #define TRAINER_BACK_PIC_OLD_MAN                5
 #define TRAINER_BACK_PIC_STEVEN                 6
+#define TRAINER_BACK_PIC_QUANTUM_BRENDAN        7
+#define TRAINER_BACK_PIC_QUANTUM_MAY            8
 
 // Special Trainer Ids.
 #define TRAINER_UNION_ROOM          0xC00

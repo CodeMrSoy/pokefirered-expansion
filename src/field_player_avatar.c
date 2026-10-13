@@ -1,4 +1,5 @@
 #include "global.h"
+#include "avatar.h"
 #include "gflib.h"
 #include "bike.h"
 #include "event_data.h"
@@ -1178,11 +1179,13 @@ u8 GetRSAvatarGraphicsIdByGender(u8 gender)
 
 u8 GetPlayerAvatarGraphicsIdByStateId(u8 state)
 {
-    return GetPlayerAvatarGraphicsIdByStateIdAndGender(state, gPlayerAvatar.gender);
+    return GetAvatarGraphicsId(GetCurrentAvatarLook(), state);
 }
 
 u8 GetPlayerAvatarGenderByGraphicsId(u16 graphicsId)
 {
+    if (graphicsId >= OBJ_EVENT_GFX_AVATAR_BRENDAN_NORMAL && graphicsId < NUM_OBJ_EVENT_GFX)
+        return gSaveBlock2Ptr->playerGender;
     switch (graphicsId)
     {
     case OBJ_EVENT_GFX_GREEN_NORMAL:
@@ -1252,6 +1255,16 @@ u8 GetPlayerAvatarStateTransitionByGraphicsId(u16 graphicsId, u8 gender)
 {
     u8 i;
 
+    if (graphicsId >= OBJ_EVENT_GFX_AVATAR_BRENDAN_NORMAL && graphicsId < NUM_OBJ_EVENT_GFX)
+    {
+        u8 slot = (graphicsId - OBJ_EVENT_GFX_AVATAR_BRENDAN_NORMAL) % 7;
+        return slot == 1 ? PLAYER_AVATAR_FLAG_MACH_BIKE : slot == 2 ? PLAYER_AVATAR_FLAG_SURFING : PLAYER_AVATAR_FLAG_ON_FOOT;
+    }
+    if (graphicsId <= OBJ_EVENT_GFX_GREEN_VS_SEEKER_BIKE)
+    {
+        u8 slot = graphicsId % 7;
+        return slot == 1 ? PLAYER_AVATAR_FLAG_MACH_BIKE : slot == 2 ? PLAYER_AVATAR_FLAG_SURFING : PLAYER_AVATAR_FLAG_ON_FOOT;
+    }
     for (i = 0; i < NELEMS(*sPlayerAvatarGfxToStateFlag); i++)
     {
         if (sPlayerAvatarGfxToStateFlag[gender][i][0] == graphicsId)
@@ -1262,15 +1275,12 @@ u8 GetPlayerAvatarStateTransitionByGraphicsId(u16 graphicsId, u8 gender)
 
 u16 GetPlayerAvatarGraphicsIdByCurrentState(void)
 {
-    u8 i;
-    u8 flags = gPlayerAvatar.flags;
-
-    for (i = 0; i < NELEMS(*sPlayerAvatarGfxToStateFlag); i++)
-    {
-        if (sPlayerAvatarGfxToStateFlag[gPlayerAvatar.gender][i][1] & flags)
-            return sPlayerAvatarGfxToStateFlag[gPlayerAvatar.gender][i][0];
-    }
-    return 0;
+    u8 state = PLAYER_AVATAR_STATE_NORMAL;
+    if (gPlayerAvatar.flags & (PLAYER_AVATAR_FLAG_MACH_BIKE | PLAYER_AVATAR_FLAG_ACRO_BIKE))
+        state = PLAYER_AVATAR_STATE_MACH_BIKE;
+    else if (gPlayerAvatar.flags & PLAYER_AVATAR_FLAG_SURFING)
+        state = PLAYER_AVATAR_STATE_SURFING;
+    return GetAvatarGraphicsId(GetCurrentAvatarLook(), state);
 }
 
 void SetPlayerAvatarExtraStateTransition(u16 graphicsId, u8 extras)
@@ -1288,7 +1298,7 @@ void InitPlayerAvatar(s16 x, s16 y, u8 direction, u8 gender)
     struct ObjectEvent *objectEvent;
 
     playerObjEventTemplate.localId = LOCALID_PLAYER;
-    playerObjEventTemplate.graphicsId = GetPlayerAvatarGraphicsIdByStateIdAndGender(PLAYER_AVATAR_STATE_NORMAL, gender);
+    playerObjEventTemplate.graphicsId = GetAvatarGraphicsId(GetCurrentAvatarLook(), PLAYER_AVATAR_STATE_NORMAL);
     playerObjEventTemplate.x = x - 7;
     playerObjEventTemplate.y = y - 7;
     playerObjEventTemplate.elevation = 0;
@@ -1326,15 +1336,10 @@ void StartPlayerAvatarSummonMonForFieldMoveAnim(void)
     StartSpriteAnim(&gSprites[gPlayerAvatar.spriteId], ANIM_FIELD_MOVE);
 }
 
-static const u8 sPlayerAvatarVsSeekerBikeGfxIds[] = {
-    OBJ_EVENT_GFX_RED_VS_SEEKER_BIKE,
-    OBJ_EVENT_GFX_GREEN_VS_SEEKER_BIKE
-};
-
 u8 GetPlayerAvatarVsSeekerGfxId(void)
 {
     if (gPlayerAvatar.flags & (PLAYER_AVATAR_FLAG_MACH_BIKE | PLAYER_AVATAR_FLAG_ACRO_BIKE))
-        return sPlayerAvatarVsSeekerBikeGfxIds[gPlayerAvatar.gender];
+        return GetAvatarBikeVsSeekerGraphicsId(GetCurrentAvatarLook());
     else
         return GetPlayerAvatarGraphicsIdByStateId(PLAYER_AVATAR_STATE_VSSEEKER);
 }

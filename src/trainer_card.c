@@ -1,4 +1,5 @@
 #include "global.h"
+#include "avatar.h"
 #include "decompress.h"
 #include "gflib.h"
 #include "scanline_effect.h"
@@ -1931,7 +1932,7 @@ static void CreateTrainerCardTrainerPic(void)
         }
         else
         {
-            CreateTrainerCardTrainerPicSprite(PlayerGenderToFrontTrainerPicId(sTrainerCardDataPtr->trainerCard.rse.gender), TRUE,
+            CreateTrainerCardTrainerPicSprite(sTrainerCardDataPtr->isLink ? PlayerGenderToFrontTrainerPicId(sTrainerCardDataPtr->trainerCard.rse.gender) : GetCurrentAvatarFrontPic(), TRUE,
                     sTrainerPicOffsets[sTrainerCardDataPtr->cardType][sTrainerCardDataPtr->trainerCard.rse.gender][0],
                     sTrainerPicOffsets[sTrainerCardDataPtr->cardType][sTrainerCardDataPtr->trainerCard.rse.gender][1],
                     8, 2);

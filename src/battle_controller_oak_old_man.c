@@ -1,4 +1,5 @@
 #include "global.h"
+#include "avatar.h"
 #include "gflib.h"
 #include "task.h"
 #include "pokeball.h"
@@ -670,13 +671,13 @@ void OakOldManBufferExecCompleted(u32 battler)
 
 static void OakOldManHandleDrawTrainerPic(u32 battler)
 {
-    u32 trainerPicId = (gBattleTypeFlags & BATTLE_TYPE_FIRST_BATTLE) ? gSaveBlock2Ptr->playerGender + TRAINER_BACK_PIC_RED : TRAINER_BACK_PIC_OLD_MAN;
+    u32 trainerPicId = (gBattleTypeFlags & BATTLE_TYPE_FIRST_BATTLE) ? GetCurrentAvatarBackPic() : TRAINER_BACK_PIC_OLD_MAN;
     BtlController_HandleDrawTrainerPic(battler, trainerPicId, FALSE, 80, (8 - gTrainerBacksprites[trainerPicId].coordinates.size) * 4 + 80, 30);
 }
 
 static void OakOldManHandleTrainerSlide(u32 battler)
 {
-    u32 trainerPicId = (gBattleTypeFlags & BATTLE_TYPE_FIRST_BATTLE) ? gSaveBlock2Ptr->playerGender + TRAINER_BACK_PIC_RED : TRAINER_BACK_PIC_OLD_MAN;
+    u32 trainerPicId = (gBattleTypeFlags & BATTLE_TYPE_FIRST_BATTLE) ? GetCurrentAvatarBackPic() : TRAINER_BACK_PIC_OLD_MAN;
     BtlController_HandleTrainerSlide(battler, trainerPicId);
 }
 

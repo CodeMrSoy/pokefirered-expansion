@@ -1,4 +1,5 @@
 #include "global.h"
+#include "avatar.h"
 #include "decompress.h"
 #include "gflib.h"
 #include "data.h"
@@ -1393,7 +1394,7 @@ static void NamingScreen_CreatePlayerIcon(void)
     u8 rivalGfxId;
     u8 spriteId;
 
-    rivalGfxId = GetRivalAvatarGraphicsIdByStateIdAndGender(PLAYER_AVATAR_STATE_NORMAL, sNamingScreen->monSpecies);
+    rivalGfxId = GetAvatarGraphicsId(GetCurrentAvatarLook(), PLAYER_AVATAR_STATE_NORMAL);
     spriteId = CreateObjectGraphicsSprite(rivalGfxId, SpriteCallbackDummy, 56, 37, 0);
     gSprites[spriteId].oam.priority = 3;
     StartSpriteAnim(&gSprites[spriteId], ANIM_STD_GO_SOUTH);

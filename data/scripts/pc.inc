@@ -113,6 +113,7 @@ EventScript_PokeGlassMenu::
 	case 2, EventScript_PokeGlassStorage
 	case 3, EventScript_PokeGlassStats
 	case 4, EventScript_PokeGlassMap
+	case 5, EventScript_PokeGlassWardrobe
 	case SCR_MENU_CANCEL, EventScript_PokeGlassClose
 	end
 
@@ -151,6 +152,12 @@ EventScript_PokeGlassStats::
 	compare VAR_RESULT, 0
 	goto_if_eq EventScript_PokeGlassMenu
 	special OpenPokeGlassStats
+	waitstate
+	goto EventScript_PokeGlassMenu
+	end
+
+EventScript_PokeGlassWardrobe::
+	special OpenPokeGlassWardrobe
 	waitstate
 	goto EventScript_PokeGlassMenu
 	end

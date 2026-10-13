@@ -1,4 +1,6 @@
 #include "global.h"
+#include "avatar.h"
+#include "constants/vars.h"
 #include "gflib.h"
 #include "random.h"
 #include "randomizer.h"
@@ -113,6 +115,7 @@ void ResetMenuAndMonGlobals(void)
 void NewGameInitData(void)
 {
     u8 rivalName[PLAYER_NAME_LENGTH + 1];
+    u8 avatar = GetCurrentAvatarLook();
     
     if (gSaveFileStatus == SAVE_STATUS_EMPTY || gSaveFileStatus == SAVE_STATUS_INVALID)
         RtcReset();
@@ -133,6 +136,7 @@ void NewGameInitData(void)
     PlayTimeCounter_Reset();
     ClearPokedexFlags();
     InitEventData();
+    SetCurrentAvatarLook(avatar);
     InitTimeBasedEvents(); // remove if wallclock
     ResetFameChecker();
     SetMoney(&gSaveBlock1Ptr->money, 3000);

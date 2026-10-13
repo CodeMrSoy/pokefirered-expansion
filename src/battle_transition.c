@@ -1,4 +1,5 @@
 #include "global.h"
+#include "avatar.h"
 
 
 #include "gpu_regs.h"
@@ -2097,7 +2098,7 @@ static void Mugshots_CreateTrainerPics(struct Task *task)
                                                   gTrainerSprites[trainerId].mugshotCoords.x - 32,
                                                   gTrainerSprites[trainerId].mugshotCoords.y + 42,
                                                   0, gDecompressionBuffer);
-    task->tPlayerSpriteId = CreateTrainerSprite(PlayerGenderToFrontTrainerPicId(gSaveBlock2Ptr->playerGender),
+    task->tPlayerSpriteId = CreateTrainerSprite(GetCurrentAvatarFrontPic(),
                                                 DISPLAY_WIDTH + 32,
                                                 106,
                                                 0, gDecompressionBuffer);

@@ -1,4 +1,5 @@
 #include "global.h"
+#include "avatar.h"
 #include "battle.h"
 #include "battle_anim.h"
 #include "battle_controllers.h"
@@ -242,7 +243,7 @@ void SafariBufferExecCompleted(u32 battler)
 
 static void SafariHandleDrawTrainerPic(u32 battler)
 {
-    u32 trainerPicId = gSaveBlock2Ptr->playerGender + TRAINER_BACK_PIC_RED;
+    u32 trainerPicId = GetCurrentAvatarBackPic();
 
     BtlController_HandleDrawTrainerPic(battler, trainerPicId, FALSE,
                                        80, 80 + 4 * (8 - gTrainerBacksprites[trainerPicId].coordinates.size),

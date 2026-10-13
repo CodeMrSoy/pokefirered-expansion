@@ -89,6 +89,11 @@ void OpenPokeGlassParty(void)
     CB2_PokeGlassPartyMenu();
 }
 
+void OpenPokeGlassWardrobe(void)
+{
+    ShowPokeGlassWardrobe();
+}
+
 void OpenPokeGlassStats(void)
 {
     if (gPlayerPartyCount == 0)

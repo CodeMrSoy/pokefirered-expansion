@@ -1,4 +1,5 @@
 #include "global.h"
+#include "avatar.h"
 #include "decompress.h"
 #include "gflib.h"
 #include "scanline_effect.h"
@@ -403,6 +404,16 @@ static const u32 sSwitchMapCursorRight_Gfx[] = INCBIN_U32("graphics/region_map/s
 static const u32 sMapCursor_Gfx[] = INCBIN_U32("graphics/region_map/cursor.4bpp.lz");
 static const u32 sPlayerIcon_Red[] = INCBIN_U32("graphics/region_map/player_icon_red.4bpp.lz");
 static const u32 sPlayerIcon_Leaf[] = INCBIN_U32("graphics/region_map/player_icon_leaf.4bpp.lz");
+static const u32 sAvatarMap_brendan[] = INCBIN_U32("graphics/avatars/brendan/map.4bpp.lz");
+static const u16 sAvatarMapPal_brendan[] = INCBIN_U16("graphics/avatars/brendan/map.gbapal");
+static const u32 sAvatarMap_may[] = INCBIN_U32("graphics/avatars/may/map.4bpp.lz");
+static const u16 sAvatarMapPal_may[] = INCBIN_U16("graphics/avatars/may/map.gbapal");
+static const u32 sAvatarMap_rsbrendan[] = INCBIN_U32("graphics/avatars/rsbrendan/map.4bpp.lz");
+static const u16 sAvatarMapPal_rsbrendan[] = INCBIN_U16("graphics/avatars/rsbrendan/map.gbapal");
+static const u32 sAvatarMap_rsmay[] = INCBIN_U32("graphics/avatars/rsmay/map.4bpp.lz");
+static const u16 sAvatarMapPal_rsmay[] = INCBIN_U16("graphics/avatars/rsmay/map.gbapal");
+static const u32 *const sAvatarMapPics[] = {sAvatarMap_brendan, sAvatarMap_may, sAvatarMap_rsbrendan, sAvatarMap_rsmay};
+static const u16 *const sAvatarMapPalettes[] = {sAvatarMapPal_brendan, sAvatarMapPal_may, sAvatarMapPal_rsbrendan, sAvatarMapPal_rsmay};
 static const u32 sRegionMap_Gfx[] = INCBIN_U32("graphics/region_map/region_map.4bpp.lz");
 static const u32 sMapEdge_Gfx[] = INCBIN_U32("graphics/region_map/map_edge.4bpp.lz");
 static const u32 sSwitchMapMenu_Gfx[] = INCBIN_U32("graphics/region_map/switch_map_menu.4bpp.lz");
@@ -3359,7 +3370,9 @@ static u8 GetSelectedMapSection(u8 whichMap, u8 layer, s16 y, s16 x)
 static void CreatePlayerIcon(u16 tileTag, u16 palTag)
 {
     sPlayerIcon = AllocZeroed(sizeof(struct PlayerIcon));
-    if (gSaveBlock2Ptr->playerGender == FEMALE)
+    if (GetCurrentAvatarLook() >= AVATAR_BRENDAN)
+        DecompressDataWithHeaderWram(sAvatarMapPics[GetCurrentAvatarLook() - AVATAR_BRENDAN], sPlayerIcon->tiles);
+    else if (GetCurrentAvatarLook() == AVATAR_LEAF)
         DecompressDataWithHeaderWram(sPlayerIcon_Leaf, sPlayerIcon->tiles);
     else
         DecompressDataWithHeaderWram(sPlayerIcon_Red, sPlayerIcon->tiles);
@@ -3392,7 +3405,9 @@ static void CreatePlayerIconSprite(void)
         .callback = SpriteCallbackDummy
     };
 
-    if (gSaveBlock2Ptr->playerGender == FEMALE)
+    if (GetCurrentAvatarLook() >= AVATAR_BRENDAN)
+        spritePalette.data = sAvatarMapPalettes[GetCurrentAvatarLook() - AVATAR_BRENDAN];
+    else if (GetCurrentAvatarLook() == AVATAR_LEAF)
         spritePalette.data = sPlayerIcon_LeafPal;
 
     LoadSpriteSheet(&spriteSheet);

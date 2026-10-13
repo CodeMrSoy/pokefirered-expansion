@@ -696,3 +696,13 @@ $(WALLPAPERGFXDIR)/tiles/tiles.4bpp: %.4bpp: %.png
 
 $(WALLPAPERGFXDIR)/volcano/tiles.4bpp: %.4bpp: %.png
 	$(GFX) $< $@ -num_tiles 57 -Wnum_tiles
+
+# Hoenn character animation sheets retain whole-sprite frame ordering.
+graphics/avatars/brendan/walking.4bpp graphics/avatars/brendan/running.4bpp graphics/avatars/may/walking.4bpp graphics/avatars/may/running.4bpp graphics/avatars/rsbrendan/normal.4bpp graphics/avatars/rsmay/normal.4bpp: %.4bpp: %.png
+	$(GFX) $< $@ -mwidth 2 -mheight 4
+
+graphics/avatars/brendan/mach_bike.4bpp graphics/avatars/brendan/surfing.4bpp graphics/avatars/brendan/field_move.4bpp graphics/avatars/brendan/fishing.4bpp graphics/avatars/may/mach_bike.4bpp graphics/avatars/may/surfing.4bpp graphics/avatars/may/field_move.4bpp graphics/avatars/may/fishing.4bpp graphics/avatars/rsbrendan/mach_bike.4bpp graphics/avatars/rsbrendan/surfing.4bpp graphics/avatars/rsbrendan/field_move.4bpp graphics/avatars/rsbrendan/fishing.4bpp graphics/avatars/rsmay/mach_bike.4bpp graphics/avatars/rsmay/surfing.4bpp graphics/avatars/rsmay/field_move.4bpp graphics/avatars/rsmay/fishing.4bpp: %.4bpp: %.png
+	$(GFX) $< $@ -mwidth 4 -mheight 4
+
+graphics/avatars/brendan/back.4bpp graphics/avatars/may/back.4bpp: %.4bpp: %.png
+	$(GFX) $< $@ -mwidth 8 -mheight 8

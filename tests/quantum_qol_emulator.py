@@ -69,7 +69,7 @@ def inject(b):
  addr=symbols['gDecompressionBuffer'];write(addr,b)
  ctx=symbols['sGlobalScriptContext'];write(ctx,b'\x00\x01\x00\x00');write(ctx+8,struct.pack('<I',addr));write(symbols['sGlobalScriptContextStatus'],b'\x00');run(180)
 run(360);press(3);press(8);snap('boot')
-for i in range(8):press(8)
+for i in range(9):press(8)
 press(3);press(8)
 for i in range(5):press(8)
 press(5);press(8)

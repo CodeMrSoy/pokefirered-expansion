@@ -1,4 +1,5 @@
 #include "global.h"
+#include "avatar.h"
 #include "gflib.h"
 #include "data.h"
 #include "decompress.h"
@@ -3301,7 +3302,7 @@ static void FlyOutFieldEffect_FlyOffWithBird(struct Task *task)
         objectEvent->inanimate = FALSE;
         objectEvent->hasShadow = FALSE;
         SetFlyBirdPlayerSpriteId(task->tBirdSpriteId, objectEvent->spriteId);
-        StartSpriteAnim(&gSprites[task->tBirdSpriteId], gSaveBlock2Ptr->playerGender * 2 + 1);
+        StartSpriteAnim(&gSprites[task->tBirdSpriteId], GetCurrentAvatarLook() < AVATAR_BRENDAN ? GetCurrentAvatarLook() * 2 + 1 : 0);
         DoBirdSpriteWithPlayerAffineAnim(&gSprites[task->tBirdSpriteId], 0);
         gSprites[task->tBirdSpriteId].callback = SpriteCB_FlyBirdWithPlayer;
         CameraObjectReset2();
@@ -3539,7 +3540,7 @@ static void FlyInFieldEffect_BirdSwoopDown(struct Task *task)
         task->tBirdSpriteId = CreateFlyBirdSprite();
         StartFlyBirdSwoopDown(task->tBirdSpriteId);
         SetFlyBirdPlayerSpriteId(task->tBirdSpriteId, playerObj->spriteId);
-        StartSpriteAnim(&gSprites[task->tBirdSpriteId], gSaveBlock2Ptr->playerGender * 2 + 2);
+        StartSpriteAnim(&gSprites[task->tBirdSpriteId], GetCurrentAvatarLook() < AVATAR_BRENDAN ? GetCurrentAvatarLook() * 2 + 2 : 0);
         DoBirdSpriteWithPlayerAffineAnim(&gSprites[task->tBirdSpriteId], 1);
         gSprites[task->tBirdSpriteId].callback = SpriteCB_FlyBirdWithPlayer;
     }
@@ -3680,6 +3681,13 @@ static void SpriteCB_FlyBirdWithPlayer(struct Sprite *sprite)
         playerSprite->y = sprite->y + sprite->y2 - 8;
         playerSprite->x2 = 0;
         playerSprite->y2 = 0;
+        // Hoenn looks ride as their real player sprite above the empty bird,
+        // avoiding the FRLG bird frames with a baked-in Red/Leaf passenger.
+        if (GetCurrentAvatarLook() >= AVATAR_BRENDAN)
+        {
+            playerSprite->invisible = FALSE;
+            playerSprite->oam.priority = 0;
+        }
     }
     if (sprite->data[2] >= 128)
     {
