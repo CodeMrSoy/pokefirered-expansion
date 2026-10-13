@@ -1,13 +1,52 @@
 ViridianCity_Gym_MapScripts::
+	map_script MAP_SCRIPT_ON_TRANSITION, ViridianCity_Gym_StellarTicketState
 	.byte 0
+
+ViridianCity_Gym_StellarTicketState::
+	goto_if_set FLAG_STELLAR_TICKET_DROPPED, ViridianCity_Gym_StellarTicketVisible
+	goto_if_unset FLAG_DEFEATED_LEADER_GIOVANNI, ViridianCity_Gym_StellarTicketHidden
+	setflag FLAG_STELLAR_TICKET_DROPPED
+	goto ViridianCity_Gym_StellarTicketVisible
+
+ViridianCity_Gym_StellarTicketHidden::
+	setflag FLAG_HIDE_STELLAR_TICKET
+	end
+
+ViridianCity_Gym_StellarTicketVisible::
+	checkitem ITEM_STELLAR_TICKET
+	goto_if_eq VAR_RESULT, TRUE, ViridianCity_Gym_StellarTicketCollected
+	clearflag FLAG_HIDE_STELLAR_TICKET
+	end
+
+ViridianCity_Gym_StellarTicketCollected::
+	setflag FLAG_HIDE_STELLAR_TICKET
+	end
+
+ViridianCity_Gym_EventScript_StellarTicket::
+	lock
+	faceplayer
+	giveitem ITEM_STELLAR_TICKET
+	goto_if_eq VAR_RESULT, FALSE, ViridianCity_Gym_StellarTicketNoRoom
+	setflag FLAG_HIDE_STELLAR_TICKET
+	removeobject LOCALID_STELLAR_TICKET
+	msgbox ViridianCity_Gym_Text_StellarTicket
+	release
+	end
+
+ViridianCity_Gym_StellarTicketNoRoom::
+	msgbox ViridianCity_Gym_Text_YouDoNotHaveSpace
+	release
+	end
 
 ViridianCity_Gym_EventScript_Giovanni::
 	famechecker FAMECHECKER_GIOVANNI, FCPICKSTATE_COLORED, UpdatePickStateFromSpecialVar8005
 	trainerbattle_single TRAINER_LEADER_GIOVANNI, ViridianCity_Gym_Text_GiovanniIntro, ViridianCity_Gym_Text_GiovanniDefeat, ViridianCity_Gym_EventScript_DefeatedGiovanni, NO_MUSIC
 	goto_if_unset FLAG_GOT_TM26_FROM_GIOVANNI, ViridianCity_Gym_EventScript_GiveTM26
+ViridianCity_Gym_EventScript_GiovanniDeparture::
 	msgbox ViridianCity_Gym_Text_GiovanniPostBattle
 	closemessage
 	fadescreen FADE_TO_BLACK
+	setflag FLAG_HIDE_VIRIDIAN_GIOVANNI
 	removeobject LOCALID_VIRIDIAN_GIOVANNI
 	fadescreen FADE_FROM_BLACK
 	release
@@ -17,7 +56,9 @@ ViridianCity_Gym_EventScript_DefeatedGiovanni::
 	famechecker FAMECHECKER_GIOVANNI, 3
 	setflag FLAG_HIDE_MISC_KANTO_ROCKETS
 	setflag FLAG_DEFEATED_LEADER_GIOVANNI
-	setflag FLAG_BADGE08_GET
+	setflag FLAG_STELLAR_TICKET_DROPPED
+	clearflag FLAG_HIDE_STELLAR_TICKET
+	addobject LOCALID_STELLAR_TICKET
 	setvar VAR_MAP_SCENE_ROUTE22, 3
 	set_gym_trainers 8
 	goto ViridianCity_Gym_EventScript_GiveTM26
@@ -30,7 +71,7 @@ ViridianCity_Gym_EventScript_GiveTM26::
 	giveitem_msg ViridianCity_Gym_Text_ReceivedTM26FromGiovanni, ITEM_TM26
 	setflag FLAG_GOT_TM26_FROM_GIOVANNI
 	msgbox ViridianCity_Gym_Text_ExplainTM26
-	release
+	goto ViridianCity_Gym_EventScript_GiovanniDeparture
 	end
 
 ViridianCity_Gym_EventScript_NoRoomForTM26::
@@ -94,7 +135,7 @@ ViridianCity_Gym_EventScript_GymGuyPostVictory::
 
 ViridianCity_Gym_EventScript_GymStatue::
 	lockall
-	goto_if_set FLAG_BADGE08_GET, ViridianCity_Gym_EventScript_GymStatuePostVictory
+	goto_if_set FLAG_DEFEATED_LEADER_GIOVANNI, ViridianCity_Gym_EventScript_GymStatuePostVictory
 	msgbox ViridianCity_Gym_Text_GymStatue
 	releaseall
 	end

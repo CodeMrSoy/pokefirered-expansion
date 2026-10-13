@@ -16,24 +16,6 @@ PokemonLeague_ChampionsRoom_Text_Intro::
     .string "I am the most powerful TRAINER in\n"
     .string "the world!$"
 
-PokemonLeague_ChampionsRoom_Text_RematchIntro::
-    .string "{RIVAL}: Hey, {PLAYER}!\p"
-    .string "You came back, {PLAYER}!\n"
-    .string "Hahah, that is so great!\p"
-    .string "My rival should be strong to keep\n"
-    .string "me sharp.\p"
-    .string "While working on my POKéDEX, I\n"
-    .string "looked all over for POKéMON.\p"
-    .string "Not only that, I assembled teams\n"
-    .string "that would beat any POKéMON type.\p"
-    .string "And now…\p"
-    .string "I'm the POKéMON LEAGUE CHAMPION!\p"
-    .string "{PLAYER}!\n"
-    .string "Do you know what that means?\p"
-    .string "I'll tell you.\p"
-    .string "I am the most powerful TRAINER in\n"
-    .string "the world!$"
-
 PokemonLeague_ChampionsRoom_Text_Defeat::
     .string "NO!\n"
     .string "That can't be!\l"
@@ -42,17 +24,6 @@ PokemonLeague_ChampionsRoom_Text_Defeat::
     .string "the LEAGUE CHAMP?\p"
     .string "My reign is over already?\n"
     .string "It's not fair!$"
-
-PokemonLeague_ChampionsRoom_Text_Victory::
-    .string "はーはッ！\n"
-    .string "かった！　かった！　かった！\p"
-    .string "{PLAYER}に　まける　ような\n"
-    .string "おれさま　では　なーい！\p"
-    .string "ま！　ポケモンの\n"
-    .string "てんさい　{RIVAL}さま　あいてに\l"
-    .string "ここまで　よく　がんばった！\p"
-    .string "ほめて　つかわす！\n"
-    .string "はーッ！　はーはッはッ！$"
 
 PokemonLeague_ChampionsRoom_Text_PostBattle::
     .string "Why?\n"

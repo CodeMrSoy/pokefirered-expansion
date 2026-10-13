@@ -1,0 +1,59 @@
+# Quantum Island regional map
+
+The new island is a native GBA region-map page, available through PokéGlass Map
+and the Fly map's region switch icon. The picker lists Kanto, Sevii Islands
+(Islands 1–3), and Quantum Island. Viewing a map does not unlock travel.
+
+The accepted concept becomes a 176×120-pixel map on the 22×15 cursor grid:
+
+| Location | Grid position |
+| --- | --- |
+| Port City | 15, 12 |
+| Coastal City | 4, 10 |
+| Forest Town | 6, 7 |
+| Lake Town | 14, 7 |
+| Snow Town | 10, 2 |
+| Hot Springs | 13, 2 |
+
+Eight named routes connect these locations: Coastal Road, Forest Path, Mountain
+Pass, Snow Trail, Lake Road, Harbor Road, River Road, and Woodland Link. Names
+are descriptive placeholders. Port City has a larger built-up market district,
+piers and a small daycare garden in the regional artwork.
+
+The island reuses the retired Sevii 4–5 region page, so the region-map structure
+does not grow. Its atlas preserves all 320 original map tiles and adds 191 native
+4bpp tiles including controls, remaining within BG0's 512-tile character bank.
+The new palette uses BG palette bank 5. Existing section IDs, including
+`MAPSEC_NONE`, retain their original values; new section IDs follow that sentinel.
+The shared name lookup and current-location projection support the new IDs.
+
+The Stellar Ticket quest adds a playable harbor, five starter town layouts,
+four connecting route layouts, and individual Pokémon Centers with working
+upstairs rooms. The field layouts are travel foundations using existing native
+Kanto tiles; the finished port market, daycare, snowy terrain, hot springs and
+island story are future work. The regional artwork remains the accepted concept.
+
+Giovanni's gym victory no longer grants the Earth Badge. He leaves a recoverable
+Stellar Ticket beside him, still offers TM26, and departs. The ticket is a reusable
+Key Item: the Vermilion ferry sailor offers the Quantum trip even before Bill's
+early-island visit. The harbor's sailor returns the player to Vermilion. Old saves
+that already earned the Earth Badge keep it; Continue does not remove badges.
+
+A legitimate ticketed voyage sets the arrival flag. Each town's Center entrance
+then sets its own saved Fly flag and healing point; arrival or viewing the map
+alone unlocks no town. Fly can subsequently cross between Kanto and visited
+island towns. The Earth Badge guard still blocks the League until the later
+island confrontation awards the badge; that confrontation has not been authored.
+New map and healing IDs are appended, preserving every existing V1 map ID and
+retired-map save migration.
+
+Run `python3 tools/quantum_region/generate.py` to regenerate the artwork,
+binary atlas/tilemaps, controls, hit map, palette and matching location metadata.
+`make` compresses the binary assets and converts the palette normally.
+
+The combined build uses 23,823,688 bytes of ROM. Global EWRAM/IWRAM usage
+is unchanged. `tests/quantum_stellar_emulator.py` exercises the gym quest,
+full Key Item pocket recovery, restricted outbound voyage, return boat,
+independent Center unlocks, exits and stairs, route crossings, cross-region Fly,
+and reset/Continue persistence. The region-map and campaign tests cover map
+navigation, retired-map migration and the existing ending.

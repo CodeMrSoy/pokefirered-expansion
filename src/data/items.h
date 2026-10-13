@@ -14154,4 +14154,16 @@ const struct Item gItemsInfo[] =
         .iconPic = gItemIcon_PokeshiDoll,
         .iconPalette = gItemIconPalette_PokeshiDoll,
     },
+    [ITEM_STELLAR_TICKET] = {
+        .name = _("Stellar Ticket"),
+        .pluralName = _("Stellar Tickets"),
+        .price = 0,
+        .description = COMPOUND_STRING("A ferry ticket to\n" "Quantum Island from\n" "Vermilion's port."),
+        .importance = 1,
+        .pocket = POCKET_KEY_ITEMS,
+        .type = ITEM_USE_BAG_MENU,
+        .fieldUseFunc = ItemUseOutOfBattle_CannotUse,
+        .iconPic = gItemIcon_SSTicket,
+        .iconPalette = gItemIconPalette_SSTicket,
+    },
 };

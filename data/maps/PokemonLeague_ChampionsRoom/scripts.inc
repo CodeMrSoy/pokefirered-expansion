@@ -50,14 +50,12 @@ PokemonLeague_ChampionsRoom_EventScript_EnterRoom::
 	applymovement LOCALID_PLAYER, PokemonLeague_ChampionsRoom_Movement_PlayerEnter
 	waitmovement 0
 	delay 20
-	call_if_unset FLAG_SYS_GAME_CLEAR, PokemonLeague_ChampionsRoom_EventScript_Intro
-	call_if_set FLAG_SYS_GAME_CLEAR, PokemonLeague_ChampionsRoom_EventScript_RematchIntro
+	call PokemonLeague_ChampionsRoom_EventScript_Intro
 	goto_if_questlog PokemonLeague_ChampionsRoom_EventScript_QuestLogEnd
 	setflag FLAG_TEMP_3
 	setflag FLAG_TEMP_5
 	savebgm MUS_VICTORY_GYM_LEADER
-	call_if_unset FLAG_SYS_CAN_LINK_WITH_RS, PokemonLeague_ChampionsRoom_EventScript_Battle
-	call_if_set FLAG_SYS_CAN_LINK_WITH_RS, PokemonLeague_ChampionsRoom_EventScript_Rematch
+	call PokemonLeague_ChampionsRoom_EventScript_Battle
 	setflag FLAG_TEMP_4
 	clearflag FLAG_TEMP_5
 	setflag FLAG_DEFEATED_CHAMP
@@ -106,18 +104,8 @@ PokemonLeague_ChampionsRoom_EventScript_Battle::
 	call_if_eq VAR_STARTER_MON, 0, PokemonLeague_ChampionsRoom_EventScript_BattleCharmander
 	return
 
-PokemonLeague_ChampionsRoom_EventScript_Rematch::
-	call_if_eq VAR_STARTER_MON, 2, PokemonLeague_ChampionsRoom_EventScript_RematchSquirtle
-	call_if_eq VAR_STARTER_MON, 1, PokemonLeague_ChampionsRoom_EventScript_RematchBulbasaur
-	call_if_eq VAR_STARTER_MON, 0, PokemonLeague_ChampionsRoom_EventScript_RematchCharmander
-	return
-
 PokemonLeague_ChampionsRoom_EventScript_Intro::
 	msgbox PokemonLeague_ChampionsRoom_Text_Intro
-	return
-
-PokemonLeague_ChampionsRoom_EventScript_RematchIntro::
-	msgbox PokemonLeague_ChampionsRoom_Text_RematchIntro
 	return
 
 PokemonLeague_ChampionsRoom_EventScript_BattleSquirtle::
@@ -130,18 +118,6 @@ PokemonLeague_ChampionsRoom_EventScript_BattleBulbasaur::
 
 PokemonLeague_ChampionsRoom_EventScript_BattleCharmander::
 	trainerbattle_no_intro TRAINER_CHAMPION_FIRST_CHARMANDER, PokemonLeague_ChampionsRoom_Text_Defeat
-	return
-
-PokemonLeague_ChampionsRoom_EventScript_RematchSquirtle::
-	trainerbattle_no_intro TRAINER_CHAMPION_REMATCH_SQUIRTLE, PokemonLeague_ChampionsRoom_Text_Defeat
-	return
-
-PokemonLeague_ChampionsRoom_EventScript_RematchBulbasaur::
-	trainerbattle_no_intro TRAINER_CHAMPION_REMATCH_BULBASAUR, PokemonLeague_ChampionsRoom_Text_Defeat
-	return
-
-PokemonLeague_ChampionsRoom_EventScript_RematchCharmander::
-	trainerbattle_no_intro TRAINER_CHAMPION_REMATCH_CHARMANDER, PokemonLeague_ChampionsRoom_Text_Defeat
 	return
 
 PokemonLeague_ChampionsRoom_Movement_PlayerEnter::

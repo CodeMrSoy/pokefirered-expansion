@@ -130,35 +130,75 @@
     },
     {
       "id": "HEAL_LOCATION_FOUR_ISLAND",
-      "map": "MAP_FOUR_ISLAND",
-      "x": 18,
-      "y": 21,
-      "respawn_map": "MAP_FOUR_ISLAND_POKEMON_CENTER_1F",
-      "respawn_npc": "LOCALID_FOUR_ISLAND_NURSE"
+      "map": "MAP_PALLET_TOWN",
+      "x": 6,
+      "y": 8,
+      "respawn_map": "MAP_PALLET_TOWN_PLAYERS_HOUSE_1F",
+      "respawn_npc": "LOCALID_MOM"
     },
     {
       "id": "HEAL_LOCATION_FIVE_ISLAND",
-      "map": "MAP_FIVE_ISLAND",
-      "x": 18,
-      "y": 7,
-      "respawn_map": "MAP_FIVE_ISLAND_POKEMON_CENTER_1F",
-      "respawn_npc": "LOCALID_FIVE_ISLAND_NURSE"
+      "map": "MAP_PALLET_TOWN",
+      "x": 6,
+      "y": 8,
+      "respawn_map": "MAP_PALLET_TOWN_PLAYERS_HOUSE_1F",
+      "respawn_npc": "LOCALID_MOM"
     },
     {
       "id": "HEAL_LOCATION_SEVEN_ISLAND",
-      "map": "MAP_SEVEN_ISLAND",
-      "x": 12,
-      "y": 4,
-      "respawn_map": "MAP_SEVEN_ISLAND_POKEMON_CENTER_1F",
-      "respawn_npc": "LOCALID_SEVEN_ISLAND_NURSE"
+      "map": "MAP_PALLET_TOWN",
+      "x": 6,
+      "y": 8,
+      "respawn_map": "MAP_PALLET_TOWN_PLAYERS_HOUSE_1F",
+      "respawn_npc": "LOCALID_MOM"
     },
     {
       "id": "HEAL_LOCATION_SIX_ISLAND",
-      "map": "MAP_SIX_ISLAND",
+      "map": "MAP_PALLET_TOWN",
+      "x": 6,
+      "y": 8,
+      "respawn_map": "MAP_PALLET_TOWN_PLAYERS_HOUSE_1F",
+      "respawn_npc": "LOCALID_MOM"
+    },
+    {
+      "id": "HEAL_LOCATION_QUANTUM_PORT_CITY",
+      "map": "MAP_QUANTUM_PORT_CITY",
       "x": 11,
-      "y": 12,
-      "respawn_map": "MAP_SIX_ISLAND_POKEMON_CENTER_1F",
-      "respawn_npc": "LOCALID_SIX_ISLAND_NURSE"
+      "y": 11,
+      "respawn_map": "MAP_QUANTUM_PORT_CITY_POKEMON_CENTER1_F",
+      "respawn_npc": "LOCALID_QUANTUM_PORT_CITY_NURSE"
+    },
+    {
+      "id": "HEAL_LOCATION_QUANTUM_COASTAL_CITY",
+      "map": "MAP_QUANTUM_COASTAL_CITY",
+      "x": 11,
+      "y": 11,
+      "respawn_map": "MAP_QUANTUM_COASTAL_CITY_POKEMON_CENTER1_F",
+      "respawn_npc": "LOCALID_QUANTUM_COASTAL_CITY_NURSE"
+    },
+    {
+      "id": "HEAL_LOCATION_QUANTUM_FOREST_TOWN",
+      "map": "MAP_QUANTUM_FOREST_TOWN",
+      "x": 11,
+      "y": 11,
+      "respawn_map": "MAP_QUANTUM_FOREST_TOWN_POKEMON_CENTER1_F",
+      "respawn_npc": "LOCALID_QUANTUM_FOREST_TOWN_NURSE"
+    },
+    {
+      "id": "HEAL_LOCATION_QUANTUM_LAKE_TOWN",
+      "map": "MAP_QUANTUM_LAKE_TOWN",
+      "x": 11,
+      "y": 11,
+      "respawn_map": "MAP_QUANTUM_LAKE_TOWN_POKEMON_CENTER1_F",
+      "respawn_npc": "LOCALID_QUANTUM_LAKE_TOWN_NURSE"
+    },
+    {
+      "id": "HEAL_LOCATION_QUANTUM_SNOW_TOWN",
+      "map": "MAP_QUANTUM_SNOW_TOWN",
+      "x": 11,
+      "y": 11,
+      "respawn_map": "MAP_QUANTUM_SNOW_TOWN_POKEMON_CENTER1_F",
+      "respawn_npc": "LOCALID_QUANTUM_SNOW_TOWN_NURSE"
     }
   ]
 }

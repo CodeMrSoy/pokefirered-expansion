@@ -15,8 +15,6 @@ PalletTown_ProfessorOaksLab_MapScripts::
 PalletTown_ProfessorOaksLab_OnTransition::
 	setflag FLAG_VISITED_OAKS_LAB
 	call_if_eq VAR_MAP_SCENE_PALLET_TOWN_PROFESSOR_OAKS_LAB, 1, PalletTown_ProfessorOaksLab_EventScript_ReadyOakForStarterScene
-	call_if_eq VAR_MAP_SCENE_PALLET_TOWN_PROFESSOR_OAKS_LAB, 7, PalletTown_ProfessorOaksLab_EventScript_ReadyOakForNationalDexScene
-	call_if_eq VAR_MAP_SCENE_PALLET_TOWN_PROFESSOR_OAKS_LAB, 8, PalletTown_ProfessorOaksLab_EventScript_SetNationalDexSceneFinished
 	call_if_set FLAG_GOT_POKEBALLS_FROM_OAK_AFTER_22_RIVAL, PalletTown_ProfessorOaksLab_EventScript_SetSkipPokeBallCheck
 	end
 
@@ -24,19 +22,10 @@ PalletTown_ProfessorOaksLab_EventScript_SetSkipPokeBallCheck::
 	setflag FLAG_OAK_SKIP_22_RIVAL_CHECK
 	return
 
-PalletTown_ProfessorOaksLab_EventScript_SetNationalDexSceneFinished::
-	setvar VAR_MAP_SCENE_PALLET_TOWN_PROFESSOR_OAKS_LAB, 9
-	return
-
 PalletTown_ProfessorOaksLab_EventScript_ReadyOakForStarterScene::
 	setobjectxyperm LOCALID_OAKS_LAB_PROF_OAK, 6, 11
 	setobjectmovementtype LOCALID_OAKS_LAB_PROF_OAK, MOVEMENT_TYPE_FACE_UP
 	savebgm MUS_OAK
-	return
-
-PalletTown_ProfessorOaksLab_EventScript_ReadyOakForNationalDexScene::
-	setobjectxyperm LOCALID_OAKS_LAB_PROF_OAK, 6, 11
-	setobjectmovementtype LOCALID_OAKS_LAB_PROF_OAK, MOVEMENT_TYPE_FACE_UP
 	return
 
 PalletTown_ProfessorOaksLab_OnWarp::
@@ -49,153 +38,7 @@ PalletTown_ProfessorOaksLab_EventScript_ReadyPlayerForStarterScene::
 
 PalletTown_ProfessorOaksLab_OnFrame::
 	map_script_2 VAR_MAP_SCENE_PALLET_TOWN_PROFESSOR_OAKS_LAB, 1, PalletTown_ProfessorOaksLab_ChooseStarterScene
-	map_script_2 VAR_MAP_SCENE_PALLET_TOWN_PROFESSOR_OAKS_LAB, 7, PalletTown_ProfessorOaksLab_EventScript_EnterForNationalDexScene
 	.2byte 0
-
-PalletTown_ProfessorOaksLab_EventScript_EnterForNationalDexScene:: @ 8169002 
-	lockall
-	setvar VAR_FACING, DIR_NORTH
-	textcolor NPC_TEXT_COLOR_MALE
-	applymovement LOCALID_OAKS_LAB_PROF_OAK, PalletTown_ProfessorOaksLab_Movement_OakEnter
-	waitmovement 0
-	removeobject LOCALID_OAKS_LAB_PROF_OAK
-	setobjectxyperm LOCALID_OAKS_LAB_PROF_OAK, 6, 3
-	setobjectmovementtype LOCALID_OAKS_LAB_PROF_OAK, MOVEMENT_TYPE_FACE_DOWN
-	clearflag FLAG_HIDE_OAK_IN_HIS_LAB
-	applymovement LOCALID_PLAYER, PalletTown_ProfessorOaksLab_Movement_PlayerEnter
-	waitmovement 0
-	goto PalletTown_ProfessorOaksLab_EventScript_NationalDexScene
-	end
-
-PalletTown_ProfessorOaksLab_EventScript_NationalDexScene::
-	msgbox PalletTown_ProfessorOaksLab_Text_OakSightingsOfRareMons
-	closemessage
-	call_if_eq VAR_FACING, DIR_NORTH, PalletTown_ProfessorOaksLab_EventScript_NationalDexSceneRivalEnterNorth
-	call_if_eq VAR_FACING, DIR_SOUTH, PalletTown_ProfessorOaksLab_EventScript_NationalDexSceneRivalEnterSouth
-	call_if_eq VAR_FACING, DIR_EAST, PalletTown_ProfessorOaksLab_EventScript_NationalDexSceneRivalEnterEastWest
-	call_if_eq VAR_FACING, DIR_WEST, PalletTown_ProfessorOaksLab_EventScript_NationalDexSceneRivalEnterEastWest
-	msgbox PalletTown_ProfessorOaksLab_Text_RivalJustLetMeHandleEverything
-	fadedefaultbgm
-	msgbox PalletTown_ProfessorOaksLab_Text_OakNeedYourHelpTooNeedToSeePokedexes
-	call_if_eq VAR_FACING, DIR_NORTH, PalletTown_ProfessorOaksLab_EventScript_PlayerFaceOakNorth
-	call_if_eq VAR_FACING, DIR_WEST, PalletTown_ProfessorOaksLab_EventScript_PlayerFaceOakWest
-	textcolor NPC_TEXT_COLOR_NEUTRAL
-	msgbox PalletTown_ProfessorOaksLab_Text_OakTookBothPokedexUnits
-	closemessage
-	call EventScript_RestorePrevTextColor
-	call_if_eq VAR_FACING, DIR_NORTH, PalletTown_ProfessorOaksLab_EventScript_OakBringDexesToDeskNorth
-	call_if_eq VAR_FACING, DIR_SOUTH, PalletTown_ProfessorOaksLab_EventScript_OakBringDexesToDeskSouth
-	call_if_eq VAR_FACING, DIR_EAST, PalletTown_ProfessorOaksLab_EventScript_OakBringDexesToDeskEast
-	call_if_eq VAR_FACING, DIR_WEST, PalletTown_ProfessorOaksLab_EventScript_OakBringDexesToDeskWest
-	addobject LOCALID_POKEDEX_1
-	addobject LOCALID_POKEDEX_2
-	delay 30
-	msgbox PalletTown_ProfessorOaksLab_Text_OakNowTheseUnitsCanRecordMoreData
-	closemessage
-	removeobject LOCALID_POKEDEX_1
-	removeobject LOCALID_POKEDEX_2
-	delay 30
-	call_if_eq VAR_FACING, DIR_NORTH, PalletTown_ProfessorOaksLab_EventScript_OakBringDexesOverNorth
-	call_if_eq VAR_FACING, DIR_SOUTH, PalletTown_ProfessorOaksLab_EventScript_OakBringDexesOverSouth
-	call_if_eq VAR_FACING, DIR_EAST, PalletTown_ProfessorOaksLab_EventScript_OakBringDexesOverEast
-	call_if_eq VAR_FACING, DIR_WEST, PalletTown_ProfessorOaksLab_EventScript_OakBringDexesOverWest
-	textcolor NPC_TEXT_COLOR_NEUTRAL
-	playfanfare MUS_OBTAIN_KEY_ITEM
-	message PalletTown_ProfessorOaksLab_Text_PlayersPokedexWasUpgraded
-	waitmessage
-	waitfanfare
-	call EventScript_RestorePrevTextColor
-	special EnableNationalPokedex
-	msgbox PalletTown_ProfessorOaksLab_Text_OakMustReallyWorkToFillPokedex
-	msgbox PalletTown_ProfessorOaksLab_Text_RivalIllCompleteThePokedex
-	closemessage
-	playbgm MUS_RIVAL_EXIT, 0
-	call_if_eq VAR_FACING, DIR_NORTH, PalletTown_ProfessorOaksLab_EventScript_RivalExitNorth
-	call_if_eq VAR_FACING, DIR_SOUTH, PalletTown_ProfessorOaksLab_EventScript_RivalExit
-	call_if_eq VAR_FACING, DIR_EAST, PalletTown_ProfessorOaksLab_EventScript_RivalExit
-	call_if_eq VAR_FACING, DIR_WEST, PalletTown_ProfessorOaksLab_EventScript_RivalExit
-	removeobject LOCALID_OAKS_LAB_RIVAL
-	fadedefaultbgm
-	setvar VAR_MAP_SCENE_PALLET_TOWN_PROFESSOR_OAKS_LAB, 8
-	releaseall
-	end
-
-PalletTown_ProfessorOaksLab_EventScript_NationalDexSceneRivalEnterNorth::
-	setobjectxyperm LOCALID_OAKS_LAB_RIVAL, 5, 10
-	addobject LOCALID_OAKS_LAB_RIVAL
-	playbgm MUS_ENCOUNTER_RIVAL, 0
-	applymovement LOCALID_PLAYER, PalletTown_ProfessorOaksLab_Movement_WatchRivalEnterNorth
-	applymovement LOCALID_OAKS_LAB_RIVAL, PalletTown_ProfessorOaksLab_Movement_RivalEnter
-	waitmovement 0
-	return
-
-PalletTown_ProfessorOaksLab_EventScript_NationalDexSceneRivalEnterEastWest::
-	setobjectxyperm LOCALID_OAKS_LAB_RIVAL, 6, 10
-	addobject LOCALID_OAKS_LAB_RIVAL
-	playbgm MUS_ENCOUNTER_RIVAL, 0
-	applymovement LOCALID_OAKS_LAB_PROF_OAK, Common_Movement_WalkInPlaceFasterDown
-	applymovement LOCALID_PLAYER, PalletTown_ProfessorOaksLab_Movement_WatchRivalEnterEastWest
-	applymovement LOCALID_OAKS_LAB_RIVAL, PalletTown_ProfessorOaksLab_Movement_RivalEnter
-	waitmovement 0
-	return
-
-PalletTown_ProfessorOaksLab_EventScript_NationalDexSceneRivalEnterSouth::
-	setobjectxyperm LOCALID_OAKS_LAB_RIVAL, 6, 10
-	addobject LOCALID_OAKS_LAB_RIVAL
-	playbgm MUS_ENCOUNTER_RIVAL, 0
-	applymovement LOCALID_OAKS_LAB_PROF_OAK, Common_Movement_WalkInPlaceFasterDown
-	applymovement LOCALID_OAKS_LAB_RIVAL, PalletTown_ProfessorOaksLab_Movement_RivalEnter
-	waitmovement 0
-	return
-
-PalletTown_ProfessorOaksLab_EventScript_PlayerFaceOakNorth::
-	applymovement LOCALID_PLAYER, Common_Movement_WalkInPlaceFasterUp
-	waitmovement 0
-	return
-
-PalletTown_ProfessorOaksLab_EventScript_PlayerFaceOakWest::
-	applymovement LOCALID_PLAYER, Common_Movement_WalkInPlaceFasterLeft
-	waitmovement 0
-	return
-
-PalletTown_ProfessorOaksLab_EventScript_OakBringDexesToDeskNorth::
-	applymovement LOCALID_OAKS_LAB_PROF_OAK, PalletTown_ProfessorOaksLab_Movement_OakBringDexesToDesk
-	waitmovement 0
-	return
-
-PalletTown_ProfessorOaksLab_EventScript_OakBringDexesToDeskSouth::
-	applymovement LOCALID_OAKS_LAB_PROF_OAK, PalletTown_ProfessorOaksLab_Movement_OakBringDexesToDeskSouth
-	applymovement LOCALID_PLAYER, PalletTown_ProfessorOaksLab_Movement_WatchOakWalkToDesk
-	applymovement LOCALID_OAKS_LAB_RIVAL, PalletTown_ProfessorOaksLab_Movement_WatchOakWalkToDesk
-	waitmovement LOCALID_OAKS_LAB_PROF_OAK
-	return
-
-PalletTown_ProfessorOaksLab_EventScript_OakBringDexesToDeskEast::
-	applymovement LOCALID_OAKS_LAB_PROF_OAK, PalletTown_ProfessorOaksLab_Movement_OakBringDexesToDesk
-	applymovement LOCALID_PLAYER, PalletTown_ProfessorOaksLab_Movement_WatchOakWalkToDeskEast
-	waitmovement LOCALID_OAKS_LAB_PROF_OAK
-	return
-
-PalletTown_ProfessorOaksLab_EventScript_OakBringDexesToDeskWest::
-	applymovement LOCALID_OAKS_LAB_PROF_OAK, PalletTown_ProfessorOaksLab_Movement_OakBringDexesToDesk
-	waitmovement 0
-	return
-
-PalletTown_ProfessorOaksLab_Movement_OakBringDexesToDesk::
-	walk_up
-	walk_left
-	walk_in_place_faster_up
-	delay_16
-	delay_4
-	step_end
-
-PalletTown_ProfessorOaksLab_Movement_OakBringDexesToDeskSouth::
-	walk_left
-	walk_left
-	walk_up
-	delay_16
-	delay_4
-	step_end
 
 PalletTown_ProfessorOaksLab_ChooseStarterScene::
 	lockall
@@ -570,8 +413,6 @@ PalletTown_ProfessorOaksLab_EventScript_ProfOak::
 	faceplayer
 	goto_if_set SHOWED_OAK_COMPLETE_DEX, PalletTown_ProfessorOaksLab_EventScript_OakJustShownCompleteDex
 	goto_if_eq VAR_MAP_SCENE_PALLET_TOWN_PROFESSOR_OAKS_LAB, 9, PalletTown_ProfessorOaksLab_EventScript_RatePokedex
-	goto_if_eq VAR_MAP_SCENE_PALLET_TOWN_PROFESSOR_OAKS_LAB, 8, PalletTown_ProfessorOaksLab_EventScript_MonsAroundWorldWait
-	goto_if_set FLAG_SYS_GAME_CLEAR, PalletTown_ProfessorOaksLab_EventScript_TryStartNationalDexScene
 	goto_if_eq VAR_MAP_SCENE_CERULEAN_CITY_RIVAL, 1, PalletTown_ProfessorOaksLab_EventScript_RatePokedex
 	goto_if_eq VAR_MAP_SCENE_PALLET_TOWN_PROFESSOR_OAKS_LAB, 6, PalletTown_ProfessorOaksLab_EventScript_RatePokedexOrTryGiveBalls
 	goto_if_ge VAR_MAP_SCENE_VIRIDIAN_CITY_MART, 1, PalletTown_ProfessorOaksLab_EventScript_ReceiveDexScene
@@ -865,59 +706,6 @@ PalletTown_ProfessorOaksLab_Movement_OakExcitedWest::
 	step_end
 
 @ Unused
-PalletTown_ProfessorOaksLab_Movement_Search:
-	walk_left
-	walk_in_place_faster_down
-	delay_8
-	walk_in_place_faster_right
-	delay_8
-	walk_in_place_faster_up
-	delay_8
-	walk_in_place_faster_left
-	delay_8
-	walk_in_place_faster_down
-	delay_8
-	walk_right
-	walk_right
-	walk_in_place_faster_up
-	delay_8
-	walk_in_place_faster_left
-	delay_8
-	walk_in_place_faster_down
-	delay_8
-	walk_in_place_faster_right
-	delay_8
-	walk_in_place_faster_up
-	delay_8
-	walk_left
-	step_end
-
-@ Unused
-PalletTown_ProfessorOaksLab_Movement_VerticalPacing:
-	walk_up
-	walk_down
-	walk_down
-	walk_in_place_down
-	walk_up
-	delay_16
-	delay_16
-	delay_16
-	step_end
-
-PalletTown_ProfessorOaksLab_EventScript_TryStartNationalDexScene::
-	call PokedexRating_EventScript_RateInPerson
-	closemessage
-	goto_if_lt VAR_0x8009, 60, PalletTown_ProfessorOaksLab_EventScript_DontStartNationalDexScene
-	goto_if_unset FLAG_WORLD_MAP_ONE_ISLAND, PalletTown_ProfessorOaksLab_EventScript_DontStartNationalDexScene
-	delay 30
-	msgbox PalletTown_ProfessorOaksLab_Text_OakFavorToAskYouPlayer
-	goto PalletTown_ProfessorOaksLab_EventScript_NationalDexScene
-	end
-
-PalletTown_ProfessorOaksLab_EventScript_DontStartNationalDexScene::
-	release
-	end
-
 PalletTown_ProfessorOaksLab_EventScript_CheckIfPlayerNeedsBalls::
 	goto_if_questlog EventScript_ReleaseEnd
 	special QuestLog_CutRecording

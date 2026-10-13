@@ -2,6 +2,7 @@
 #define GUARD_CONSTANTS_EVENT_OBJECTS_H
 
 #include "constants/map_event_ids.h"
+#include "constants/quantum_retired_event_ids.h"
 
 #define OBJ_EVENT_GFX_RED_NORMAL 0
 #define OBJ_EVENT_GFX_RED_BIKE 1

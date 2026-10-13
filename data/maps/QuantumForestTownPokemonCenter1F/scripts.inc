@@ -1,0 +1,18 @@
+QuantumForestTownPokemonCenter1F_MapScripts::
+	map_script MAP_SCRIPT_ON_TRANSITION, QuantumForestTownPokemonCenter1F_OnTransition
+	map_script MAP_SCRIPT_ON_RESUME, CableClub_OnResume
+	.byte 0
+
+QuantumForestTownPokemonCenter1F_OnTransition::
+	goto_if_unset FLAG_QUANTUM_ARRIVED, QuantumForestTownPokemonCenter1F_End
+	setflag FLAG_QUANTUM_FOREST_CENTER
+	setrespawn HEAL_LOCATION_QUANTUM_FOREST_TOWN
+QuantumForestTownPokemonCenter1F_End::
+	end
+
+QuantumForestTownPokemonCenter1F_Nurse::
+	lock
+	faceplayer
+	call EventScript_PkmnCenterNurse
+	release
+	end

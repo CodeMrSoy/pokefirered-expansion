@@ -103,12 +103,10 @@ PokemonLeague_LancesRoom_EventScript_Lance::
 	goto_if_set FLAG_DEFEATED_LANCE, PokemonLeague_LancesRoom_EventScript_PostBattle
 	famechecker FAMECHECKER_LANCE, 0
 	famechecker FAMECHECKER_LANCE, 1
-	call_if_unset FLAG_SYS_GAME_CLEAR, PokemonLeague_LancesRoom_EventScript_Intro
-	call_if_set FLAG_SYS_GAME_CLEAR, PokemonLeague_LancesRoom_EventScript_RematchIntro
+	call PokemonLeague_LancesRoom_EventScript_Intro
 	setflag FLAG_TEMP_3
 	setflag FLAG_TEMP_5
-	call_if_unset FLAG_SYS_CAN_LINK_WITH_RS, PokemonLeague_LancesRoom_EventScript_Battle
-	call_if_set FLAG_SYS_CAN_LINK_WITH_RS, PokemonLeague_LancesRoom_EventScript_Rematch
+	call PokemonLeague_LancesRoom_EventScript_Battle
 	clearflag FLAG_TEMP_5
 	goto PokemonLeague_LancesRoom_EventScript_DefeatedLance
 	end
@@ -117,16 +115,8 @@ PokemonLeague_LancesRoom_EventScript_Intro::
 	msgbox PokemonLeague_LancesRoom_Text_Intro
 	return
 
-PokemonLeague_LancesRoom_EventScript_RematchIntro::
-	msgbox PokemonLeague_LancesRoom_Text_RematchIntro
-	return
-
 PokemonLeague_LancesRoom_EventScript_Battle::
 	trainerbattle_no_intro TRAINER_ELITE_FOUR_LANCE, PokemonLeague_LancesRoom_Text_Defeat
-	return
-
-PokemonLeague_LancesRoom_EventScript_Rematch::
-	trainerbattle_no_intro TRAINER_ELITE_FOUR_LANCE_2, PokemonLeague_LancesRoom_Text_Defeat
 	return
 
 PokemonLeague_LancesRoom_EventScript_PostBattle::
@@ -143,23 +133,3 @@ PokemonLeague_LancesRoom_EventScript_DefeatedLance::
 	closemessage
 	release
 	end
-
-PokemonLeague_LancesRoom_EventScript_LanceMoveOutOfWayLeft::
-	applymovement LOCALID_LANCE, PokemonLeague_LancesRoom_Movement_LanceMoveOutOfWayLeft
-	waitmovement 0
-	return
-
-PokemonLeague_LancesRoom_EventScript_LanceMoveOutOfWayRight::
-	applymovement LOCALID_LANCE, PokemonLeague_LancesRoom_Movement_LanceMoveOutOfWayRight
-	waitmovement 0
-	return
-
-PokemonLeague_LancesRoom_Movement_LanceMoveOutOfWayLeft::
-	walk_left
-	walk_in_place_faster_right
-	step_end
-
-PokemonLeague_LancesRoom_Movement_LanceMoveOutOfWayRight::
-	walk_right
-	walk_in_place_faster_left
-	step_end

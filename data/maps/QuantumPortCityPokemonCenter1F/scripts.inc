@@ -1,0 +1,18 @@
+QuantumPortCityPokemonCenter1F_MapScripts::
+	map_script MAP_SCRIPT_ON_TRANSITION, QuantumPortCityPokemonCenter1F_OnTransition
+	map_script MAP_SCRIPT_ON_RESUME, CableClub_OnResume
+	.byte 0
+
+QuantumPortCityPokemonCenter1F_OnTransition::
+	goto_if_unset FLAG_QUANTUM_ARRIVED, QuantumPortCityPokemonCenter1F_End
+	setflag FLAG_QUANTUM_PORT_CENTER
+	setrespawn HEAL_LOCATION_QUANTUM_PORT_CITY
+QuantumPortCityPokemonCenter1F_End::
+	end
+
+QuantumPortCityPokemonCenter1F_Nurse::
+	lock
+	faceplayer
+	call EventScript_PkmnCenterNurse
+	release
+	end

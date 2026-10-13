@@ -1,0 +1,32 @@
+{
+  "id": "MAP_QUANTUM_WOODLAND_LINK",
+  "name": "QuantumWoodlandLink",
+  "layout": "LAYOUT_QUANTUM_WOODLAND_LINK",
+  "music": "MUS_SEVII_123",
+  "region_map_section": "MAPSEC_QUANTUM_WOODLAND_LINK",
+  "requires_flash": false,
+  "weather": "WEATHER_SUNNY",
+  "map_type": "MAP_TYPE_ROUTE",
+  "allow_cycling": true,
+  "allow_escaping": false,
+  "allow_running": true,
+  "show_map_name": true,
+  "floor_number": 0,
+  "battle_scene": "MAP_BATTLE_SCENE_NORMAL",
+  "connections": [
+    {
+      "direction": "left",
+      "offset": 0,
+      "map": "MAP_QUANTUM_FOREST_TOWN"
+    },
+    {
+      "direction": "right",
+      "offset": 0,
+      "map": "MAP_QUANTUM_LAKE_TOWN"
+    }
+  ],
+  "object_events": [],
+  "warp_events": [],
+  "coord_events": [],
+  "bg_events": []
+}

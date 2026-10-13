@@ -1,0 +1,32 @@
+{
+  "id": "MAP_QUANTUM_HARBOR_ROAD",
+  "name": "QuantumHarborRoad",
+  "layout": "LAYOUT_QUANTUM_HARBOR_ROAD",
+  "music": "MUS_SEVII_123",
+  "region_map_section": "MAPSEC_QUANTUM_HARBOR_ROAD",
+  "requires_flash": false,
+  "weather": "WEATHER_SUNNY",
+  "map_type": "MAP_TYPE_ROUTE",
+  "allow_cycling": true,
+  "allow_escaping": false,
+  "allow_running": true,
+  "show_map_name": true,
+  "floor_number": 0,
+  "battle_scene": "MAP_BATTLE_SCENE_NORMAL",
+  "connections": [
+    {
+      "direction": "right",
+      "offset": 0,
+      "map": "MAP_QUANTUM_PORT_CITY"
+    },
+    {
+      "direction": "left",
+      "offset": 0,
+      "map": "MAP_QUANTUM_COASTAL_CITY"
+    }
+  ],
+  "object_events": [],
+  "warp_events": [],
+  "coord_events": [],
+  "bg_events": []
+}

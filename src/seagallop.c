@@ -7,6 +7,9 @@
 #include "help_system.h"
 #include "overworld.h"
 #include "event_data.h"
+#include "item.h"
+#include "constants/items.h"
+#include "constants/flags.h"
 #include "field_fadetransition.h"
 #include "field_weather.h"
 #include "constants/songs.h"
@@ -71,7 +74,8 @@ static const s8 sSeag[][4] = {
     [SEAGALLOP_SEVEN_ISLAND]    = {MAP(MAP_SEVEN_ISLAND_HARBOR), 0x08, 0x05},
     [SEAGALLOP_CINNABAR_ISLAND] = {MAP(MAP_CINNABAR_ISLAND),     0x15, 0x07},
     [SEAGALLOP_NAVEL_ROCK]      = {MAP(MAP_NAVEL_ROCK_HARBOR),   0x08, 0x05},
-    [SEAGALLOP_BIRTH_ISLAND]    = {MAP(MAP_BIRTH_ISLAND_HARBOR), 0x08, 0x05}
+    [SEAGALLOP_BIRTH_ISLAND]    = {MAP(MAP_BIRTH_ISLAND_HARBOR), 0x08, 0x05},
+    [SEAGALLOP_QUANTUM_PORT]   = {MAP(MAP_QUANTUM_HARBOR), 0x08, 0x05}
 };
 
 // Bitpacked array.  In the commented section, right-most bit is the
@@ -85,7 +89,7 @@ enum TravelDirections
 };
 
 static const u16 sTravelDirectionMatrix[] = {
-    [SEAGALLOP_VERMILION_CITY]  = 0x6fe, // 11011111110
+    [SEAGALLOP_VERMILION_CITY]  = 0xefe, // 11011111110
     [SEAGALLOP_ONE_ISLAND]      = 0x6fc, // 11011111100
     [SEAGALLOP_TWO_ISLAND]      = 0x6f8, // 11011111000
     [SEAGALLOP_THREE_ISLAND]    = 0x6f0, // 11011110000
@@ -95,6 +99,7 @@ static const u16 sTravelDirectionMatrix[] = {
     [SEAGALLOP_SEVEN_ISLAND]    = 0x440, // 10001000000
     [SEAGALLOP_CINNABAR_ISLAND] = 0x7ff, // 11111111111
     [SEAGALLOP_NAVEL_ROCK]      = 0x6e0, // 11011100000
+    [SEAGALLOP_QUANTUM_PORT]   = 0x000,
     [SEAGALLOP_BIRTH_ISLAND]    = 0x000  // 00000000000
 };
 
@@ -306,9 +311,20 @@ static void Task_Seagallop_3(void)
 {
     const s8 * warpInfo;
 
-    if (gSpecialVar_0x8006 >= NELEMS(sSeag))
+    if (gSpecialVar_0x8006 >= NELEMS(sSeag)
+        || (gSpecialVar_0x8006 >= SEAGALLOP_FOUR_ISLAND
+            && gSpecialVar_0x8006 != SEAGALLOP_CINNABAR_ISLAND
+            && gSpecialVar_0x8006 != SEAGALLOP_QUANTUM_PORT))
         gSpecialVar_0x8006 = 0;
 
+    if (gSpecialVar_0x8006 == SEAGALLOP_QUANTUM_PORT)
+    {
+        if (gSpecialVar_0x8004 == SEAGALLOP_VERMILION_CITY
+            && CheckBagHasItem(ITEM_STELLAR_TICKET, 1))
+            FlagSet(FLAG_QUANTUM_ARRIVED);
+        else
+            gSpecialVar_0x8006 = SEAGALLOP_VERMILION_CITY;
+    }
     warpInfo = sSeag[gSpecialVar_0x8006];
     SetWarpDestination(warpInfo[0], warpInfo[1], -1, warpInfo[2], warpInfo[3]);
     PlayRainStoppingSoundEffect();

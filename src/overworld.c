@@ -1,4 +1,5 @@
 #include "global.h"
+#include "quantum_campaign.h"
 #include "text_window.h"
 #include "poke_glass.h"
 #include "gflib.h"
@@ -613,6 +614,9 @@ static void SetPlayerCoordsFromWarp(void)
 
 void WarpIntoMap(void)
 {
+    // Covers saved/dynamic warps that copy a WarpData directly.
+    if (IsQuantumRetiredMap(sWarpDestination.mapGroup, sWarpDestination.mapNum))
+        SetWarpDestination(MAP_GROUP(MAP_PALLET_TOWN), MAP_NUM(MAP_PALLET_TOWN), -1, 6, 8);
     ApplyCurrentWarp();
     LoadCurrentMapData();
     SetPlayerCoordsFromWarp();
@@ -620,6 +624,14 @@ void WarpIntoMap(void)
 
 void SetWarpDestination(s8 mapGroup, s8 mapNum, s8 warpId, s8 x, s8 y)
 {
+    if (IsQuantumRetiredMap(mapGroup, mapNum))
+    {
+        mapGroup = MAP_GROUP(MAP_PALLET_TOWN);
+        mapNum = MAP_NUM(MAP_PALLET_TOWN);
+        warpId = -1;
+        x = 6;
+        y = 8;
+    }
     SetWarpData(&sWarpDestination, mapGroup, mapNum, warpId, x, y);
 }
 
@@ -1880,6 +1892,7 @@ static void FieldCB_ShowMapNameOnContinue(void)
 
 void CB2_ContinueSavedGame(void)
 {
+    SanitizeQuantumCampaignSave();
     #if RANDOMIZER_AVAILABLE == TRUE
     gCachedRandomizerSeed = gSaveBlock2Ptr->randomizerSeed;
     gRandomizerEnabled = gCachedRandomizerSeed != 0;

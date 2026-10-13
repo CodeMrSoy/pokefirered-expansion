@@ -42,7 +42,8 @@
     "gMapGroup_IndoorFiveIslandRoute",
     "gMapGroup_IndoorTwoIslandRoute",
     "gMapGroup_IndoorSixIslandRoute",
-    "gMapGroup_IndoorSevenIslandRoute"
+    "gMapGroup_IndoorSevenIslandRoute",
+    "gMapGroup_QuantumIsland"
   ],
   "gMapGroup_Link": [
     "BattleColosseum_2P",
@@ -554,5 +555,27 @@
   ],
   "gMapGroup_IndoorSevenIslandRoute": [
     "SevenIsland_SevaultCanyon_House"
+  ],
+  "gMapGroup_QuantumIsland": [
+    "QuantumPortCity",
+    "QuantumPortCityPokemonCenter1F",
+    "QuantumPortCityPokemonCenter2F",
+    "QuantumCoastalCity",
+    "QuantumCoastalCityPokemonCenter1F",
+    "QuantumCoastalCityPokemonCenter2F",
+    "QuantumForestTown",
+    "QuantumForestTownPokemonCenter1F",
+    "QuantumForestTownPokemonCenter2F",
+    "QuantumLakeTown",
+    "QuantumLakeTownPokemonCenter1F",
+    "QuantumLakeTownPokemonCenter2F",
+    "QuantumSnowTown",
+    "QuantumSnowTownPokemonCenter1F",
+    "QuantumSnowTownPokemonCenter2F",
+    "QuantumHarborRoad",
+    "QuantumCoastalRoad",
+    "QuantumWoodlandLink",
+    "QuantumMountainPass",
+    "QuantumHarbor"
   ]
 }
