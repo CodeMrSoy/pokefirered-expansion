@@ -1297,7 +1297,7 @@
 #define FLAG_0x4E5               0x4E5
 #define FLAG_0x4E6               0x4E6
 #define FLAG_0x4E7               0x4E7
-#define FLAG_0x4E8               0x4E8
+#define FLAG_CAP_CANDY_GIFT_PENDING               0x4E8
 #define FLAG_0x4E9               0x4E9
 #define FLAG_0x4EA               0x4EA
 #define FLAG_0x4EB               0x4EB

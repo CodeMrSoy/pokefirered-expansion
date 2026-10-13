@@ -972,7 +972,7 @@ void BattleSetup_StartTrainerBattle(void)
         gBattleTypeFlags = (BATTLE_TYPE_TRAINER);
     }
         
-    if (GetTrainerBattleMode() == TRAINER_BATTLE_EARLY_RIVAL && GetRivalBattleFlags() & RIVAL_BATTLE_TUTORIAL)
+    if (GetTrainerBattleMode() == TRAINER_BATTLE_EARLY_RIVAL && GetRivalBattleFlags() & RIVAL_BATTLE_OAK_ADVICE)
         gBattleTypeFlags |= BATTLE_TYPE_FIRST_BATTLE;
 
     sNoOfPossibleTrainerRetScripts = gNoOfApproachingTrainers;

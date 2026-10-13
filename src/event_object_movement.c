@@ -548,10 +548,10 @@ static const struct SpritePalette sObjectEventSpritePalettes[] = {
     {sAvatarBrendanPalette, OBJ_EVENT_PAL_TAG_AVATAR_BRENDAN_REFLECTION},
     {sAvatarMayPalette, OBJ_EVENT_PAL_TAG_AVATAR_MAY},
     {sAvatarMayPalette, OBJ_EVENT_PAL_TAG_AVATAR_MAY_REFLECTION},
-    {sAvatarRSBrendanPalette, OBJ_EVENT_PAL_TAG_AVATAR_RSBRENDAN},
-    {sAvatarRSBrendanPalette, OBJ_EVENT_PAL_TAG_AVATAR_RSBRENDAN_REFLECTION},
-    {sAvatarRSMayPalette, OBJ_EVENT_PAL_TAG_AVATAR_RSMAY},
-    {sAvatarRSMayPalette, OBJ_EVENT_PAL_TAG_AVATAR_RSMAY_REFLECTION},
+    {sAvatarBrendanPalette, OBJ_EVENT_PAL_TAG_AVATAR_RSBRENDAN},
+    {sAvatarBrendanPalette, OBJ_EVENT_PAL_TAG_AVATAR_RSBRENDAN_REFLECTION},
+    {sAvatarMayPalette, OBJ_EVENT_PAL_TAG_AVATAR_RSMAY},
+    {sAvatarMayPalette, OBJ_EVENT_PAL_TAG_AVATAR_RSMAY_REFLECTION},
 #ifdef BUGFIX
     {NULL,                                    OBJ_EVENT_PAL_TAG_NONE},
 #else

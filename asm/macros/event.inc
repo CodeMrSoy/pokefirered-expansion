@@ -769,7 +769,7 @@
 	trainerbattle TRAINER_BATTLE_SINGLE_NO_INTRO_TEXT, OBJ_ID_NONE, \trainer, NULL, \lose_text, NULL, OBJ_ID_NONE, TRAINER_NONE, NULL, NULL, NULL, NULL, NULL, FALSE, TRUE, FALSE, FALSE
 	.endm
 
-	@ Starts a trainer battle with victory text if the player loses. If flags is nonzero, the player will be healed after battle (and its assumed to be the tutorial battle)
+	@ Starts a rival battle with victory text if the player loses. Flags independently enable healing and Oak's tutorial advice.
 	.macro trainerbattle_earlyrival trainer:req, flags:req, lose_text:req, victory_text:req
 	trainerbattle TRAINER_BATTLE_EARLY_RIVAL, OBJ_ID_NONE, \trainer, NULL, \lose_text, NULL, OBJ_ID_NONE, TRAINER_NONE, NULL, NULL, NULL, \victory_text, NULL, FALSE, TRUE, FALSE, FALSE, \flags
 	.endm
