@@ -12,9 +12,10 @@ order. Up/down selects an entry; left/right or L/R moves by a page. A opens an
 entry, and B returns to the list or closes the app to the hub.
 
 Entry pages show a portrait and national number. Caught entries also show
-category, types, metric height/weight, and wrapped description text. Seen-only
-entries keep these details locked. A cycles description pages, SELECT plays the
-cry, and R shows habitat locations. Habitat locations come from actual wild
+category, types, and metric height/weight. Habitat locations appear directly
+on the entry page; L/R cycles through them. Seen-only
+entries keep these details locked. SELECT plays the cry, and A opens the complete
+habitat list. Habitat locations come from actual wild
 encounter tables, across configured seasons/times, and deduplicate map sections.
 No wild listing is represented as no recorded wild habitat, rather than as an
 unobtainable Pokémon. L/R pages through habitat locations; B returns to the entry.
@@ -29,6 +30,11 @@ portrait buffer while browsing. Closing releases its allocation and portrait
 palette, then restores the field window and blending registers.
 
 `tests/pokeglass_pokedex_emulator.py` checks empty filters, numeric/name order,
-seen-only detail locks, habitats, cries, page navigation, species beyond Kanto
+seen-only detail locks, inline habitat paging, cries, navigation, species beyond Kanto
 through Gen 9, exact shell pixels, repeated cleanup, and flash save/Continue.
 The shared shell regression also checks Party and Stats return behavior.
+
+Flavor descriptions have been removed from the species tables and shared text
+data. Their pointers all reference one valid empty string so existing capture
+registration and species-description readers remain safe. Names, statistics,
+category, types, measurements, graphics, and encounter data are unchanged.

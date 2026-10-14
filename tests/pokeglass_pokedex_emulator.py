@@ -22,8 +22,7 @@ class GlassDex(c.Structure):
                 ('count', c.c_uint16), ('cursor', c.c_uint16), ('seen', c.c_uint16),
                 ('caught', c.c_uint16), ('sprite', c.c_uint16), ('areaCount', c.c_uint16),
                 ('areaPage', c.c_uint8), ('view', c.c_uint8), ('filter', c.c_uint8),
-                ('alphabetical', c.c_uint8), ('textPage', c.c_uint8), ('textLines', c.c_uint8),
-                ('text', (c.c_uint8 * 64) * 16)]
+                ('alphabetical', c.c_uint8)]
 
 shell_mask = np.zeros((160, 240), dtype=bool)
 shell_mask[10:150, 12:228] = True
@@ -78,14 +77,11 @@ assert data().count == len(seen) and data().seen == len(seen) and data().caught 
 assert list(data().species[:data().count]) == expected_species
 m.snap('tablet-dex-list')
 m.press(8)
-assert data().view == 1 and data().textLines > 0
+assert data().view == 1
 m.snap('tablet-dex-entry')
-for _ in range((data().textLines + 1) // 2):
-    m.press(8, 20)
-assert data().textPage == 0
 m.press(2)  # SELECT: cry, leaving the entry intact.
 assert data().view == 1
-m.press(11)  # R: habitat.
+m.press(8)  # A: complete habitat list.
 assert data().view == 2
 m.snap('tablet-dex-habitat')
 m.press(0)
@@ -95,13 +91,21 @@ assert data().view == 0
 m.press(5, 20)
 m.press(8)
 assert data().view == 1
-assert data().textLines == 2  # Seen-only entry stays locked.
+assert data().view == 1  # Seen-only species still show their habitat area.
 m.snap('tablet-dex-seen-only')
 m.press(0)
 for _ in range(2):
     m.press(5, 20)
 m.press(8)
+assert data().view == 1 and data().areaCount > 1
+first_area = data().areas[0]
+m.snap('tablet-dex-pikachu-location')
 m.press(11)
+assert data().areaPage == 1 and data().areas[1] != first_area
+m.snap('tablet-dex-pikachu-second-location')
+m.press(10)
+assert data().areaPage == 0
+m.press(8)
 assert data().view == 2 and data().areaCount > 0, 'Pikachu should have wild habitat locations'
 m.snap('tablet-dex-pikachu-habitat')
 m.press(0)
@@ -151,4 +155,7 @@ assert data().count == len(seen)
 m.snap('tablet-dex-save-reload')
 m.press(0)
 m.press(0)
-print('Tablet Dex empty/list/detail/habitat/cry/filter/sort, non-Kanto/Gen9 visibility, cleanup, and real save/reload passed')
+for species in expected_species:
+    pointer = native('GetSpeciesPokedexDescription', species)
+    assert pointer == m.symbols['gEmptyPokedexText'] and m.read(pointer, 1) == b'\xff'
+print('Tablet Dex filters/sort, inline habitat paging, shared shell, empty legacy descriptions, cleanup, and save/reload passed')

@@ -620,7 +620,7 @@ static void DrawStatsPage(void)
     DrawTabletShell((u8 *)GetWindowAttribute(sHubWindow, WINDOW_TILE_DATA));
     GetMonData(mon, MON_DATA_NICKNAME, nickname);
     StringGet_Nickname(nickname);
-    StatsText(17, 18, nickname);
+    StatsText(17, 16, nickname);
     if (!isEgg)
     {
         StatsText(17, 29, sStatsLevel);
@@ -757,7 +757,7 @@ static void DrawWardrobePage(void)
     u8 i, palette;
     u16 pic = GetAvatarFrontPic(sWardrobeLook);
     DrawTabletShell((u8 *)GetWindowAttribute(sHubWindow, WINDOW_TILE_DATA));
-    StatsText(17, 18, COMPOUND_STRING("WARDROBE"));
+    StatsText(17, 16, COMPOUND_STRING("WARDROBE"));
     StatsText(107, 35, GetAvatarLookName(sWardrobeLook));
     StatsText(107, 49, GetAvatarLookStyle(sWardrobeLook));
     StatsText(107, 72, sWardrobeLook == GetCurrentAvatarLook() ? COMPOUND_STRING("Currently worn") : COMPOUND_STRING("Preview"));
@@ -836,7 +836,6 @@ void ShowPokeGlassWardrobe(void)
 
 #define TAG_POKEGLASS_DEX_MON 0xD111
 #define GLASS_DEX_ROWS 6
-#define GLASS_DEX_TEXT_LINES 16
 
 struct GlassDex
 {
@@ -852,9 +851,6 @@ struct GlassDex
     u8 view; // List, entry, or habitat.
     u8 filter; // Seen or caught.
     u8 alphabetical;
-    u8 textPage;
-    u8 textLines;
-    u8 text[GLASS_DEX_TEXT_LINES][64];
 };
 
 static EWRAM_DATA struct GlassDex *sGlassDex = NULL;
@@ -937,57 +933,6 @@ static void BuildGlassDexAreas(u16 species)
     }
 }
 
-static void BuildGlassDexText(u16 species)
-{
-    const u8 *source = gSpeciesInfo[species].description;
-    u8 word[64], candidate[128];
-    u8 line = 0, length;
-    sGlassDex->textPage = 0;
-    sGlassDex->textLines = 1;
-    memset(sGlassDex->text, EOS, sizeof(sGlassDex->text));
-    if (!GetSetPokedexFlag(SpeciesToNationalPokedexNum(species), FLAG_GET_CAUGHT))
-    {
-        StringCopy(sGlassDex->text[0], COMPOUND_STRING("Catch this Pokémon to unlock"));
-        StringCopy(sGlassDex->text[1], COMPOUND_STRING("its full Pokédex entry."));
-        sGlassDex->textLines = 2;
-        return;
-    }
-    if (source == NULL || source[0] == EOS)
-    {
-        StringCopy(sGlassDex->text[0], COMPOUND_STRING("No entry text available."));
-        return;
-    }
-    while (*source != EOS && line < GLASS_DEX_TEXT_LINES)
-    {
-        while (*source == CHAR_SPACE || *source == CHAR_NEWLINE || *source == CHAR_PROMPT_SCROLL || *source == CHAR_PROMPT_CLEAR)
-            source++;
-        if (*source == EOS)
-            break;
-        length = 0;
-        while (*source != EOS && *source != CHAR_SPACE && *source != CHAR_NEWLINE
-            && *source != CHAR_PROMPT_SCROLL && *source != CHAR_PROMPT_CLEAR)
-        {
-            if (length < sizeof(word) - 1)
-                word[length++] = *source;
-            source++;
-        }
-        word[length] = EOS;
-        StringCopy(candidate, sGlassDex->text[line]);
-        if (candidate[0] != EOS)
-            StringAppend(candidate, COMPOUND_STRING(" "));
-        StringAppend(candidate, word);
-        if (StringLength(candidate) >= 64 || GetStringWidth(FONT_SMALL, candidate, 0) > 188)
-        {
-            if (++line == GLASS_DEX_TEXT_LINES)
-                break;
-            StringCopy(sGlassDex->text[line], word);
-        }
-        else
-            StringCopy(sGlassDex->text[line], candidate);
-    }
-    sGlassDex->textLines = line < GLASS_DEX_TEXT_LINES ? line + 1 : GLASS_DEX_TEXT_LINES;
-}
-
 static void DrawGlassDexPortrait(u16 species, s16 x, s16 y)
 {
     u8 palette;
@@ -1035,17 +980,17 @@ static void DrawGlassDexPage(void)
     DrawTabletShell((u8 *)GetWindowAttribute(sHubWindow, WINDOW_TILE_DATA));
     if (sGlassDex->view == 0)
     {
-        StatsText(17, 18, COMPOUND_STRING("POKéDEX"));
-        StatsText(88, 18, COMPOUND_STRING("Seen"));
-        StatsNumber(141, 18, sGlassDex->seen);
-        StatsText(151, 18, COMPOUND_STRING("Own"));
-        StatsNumber(207, 18, sGlassDex->caught);
-        StatsText(18, 31, sGlassDex->filter ? COMPOUND_STRING("Caught") : COMPOUND_STRING("Seen"));
-        StatsText(72, 31, sGlassDex->alphabetical ? COMPOUND_STRING("A-Z") : COMPOUND_STRING("No."));
-        HubRect(6, 17, 41, 103, 66);
+        StatsText(17, 16, COMPOUND_STRING("POKéDEX"));
+        StatsText(88, 16, COMPOUND_STRING("Seen"));
+        StatsNumber(141, 16, sGlassDex->seen);
+        StatsText(151, 16, COMPOUND_STRING("Own"));
+        StatsNumber(207, 16, sGlassDex->caught);
+        StatsText(72, 29, sGlassDex->filter ? COMPOUND_STRING("Caught") : COMPOUND_STRING("Seen"));
+        StatsText(18, 29, sGlassDex->alphabetical ? COMPOUND_STRING("A-Z") : COMPOUND_STRING("No."));
+        HubRect(6, 17, 39, 103, 66);
         for (i = 0; i < GLASS_DEX_ROWS; i++)
         {
-            u16 entry = first + i, y = 42 + i * 11;
+            u16 entry = first + i, y = 40 + i * 11;
             HubRect(entry == sGlassDex->cursor ? 5 : 4, 18, y, 101, 11);
             if (entry < sGlassDex->count)
             {
@@ -1058,8 +1003,8 @@ static void DrawGlassDexPage(void)
         }
         if (species != SPECIES_NONE)
         {
-            StatsText(129, 31, gSpeciesInfo[species].speciesName);
-            StatsText(144, 102, caught ? COMPOUND_STRING("Caught") : COMPOUND_STRING("Seen"));
+            StatsText(129, 29, gSpeciesInfo[species].speciesName);
+            StatsText(144, 100, caught ? COMPOUND_STRING("Caught") : COMPOUND_STRING("Seen"));
             DrawGlassDexPortrait(species, 173, 81);
         }
         else
@@ -1073,36 +1018,46 @@ static void DrawGlassDexPage(void)
     }
     else if (sGlassDex->view == 1)
     {
-        StatsText(18, 18, gSpeciesInfo[species].speciesName);
-        StatsText(142, 18, COMPOUND_STRING("No."));
-        StatsNumber(187, 18, SpeciesToNationalPokedexNum(species));
-        DrawGlassDexPortrait(species, 66, 69);
-        StatsText(98, 34, caught ? gSpeciesInfo[species].categoryName : COMPOUND_STRING("Seen only"));
+        StatsText(18, 16, gSpeciesInfo[species].speciesName);
+        StatsText(142, 16, COMPOUND_STRING("No."));
+        StatsNumber(187, 16, SpeciesToNationalPokedexNum(species));
+        DrawGlassDexPortrait(species, 66, 65);
+        StatsText(98, 32, caught ? gSpeciesInfo[species].categoryName : COMPOUND_STRING("Seen only"));
         if (caught)
         {
-            StatsText(98, 46, gTypesInfo[gSpeciesInfo[species].types[0]].name);
+            StatsText(98, 44, gTypesInfo[gSpeciesInfo[species].types[0]].name);
             if (gSpeciesInfo[species].types[1] != gSpeciesInfo[species].types[0])
-                StatsText(152, 46, gTypesInfo[gSpeciesInfo[species].types[1]].name);
-            GlassDexMeasurement(98, 60, COMPOUND_STRING("Height "), gSpeciesInfo[species].height, COMPOUND_STRING(" m"));
-            GlassDexMeasurement(98, 73, COMPOUND_STRING("Weight "), gSpeciesInfo[species].weight, COMPOUND_STRING(" kg"));
+                StatsText(152, 44, gTypesInfo[gSpeciesInfo[species].types[1]].name);
+            GlassDexMeasurement(98, 58, COMPOUND_STRING("Height "), gSpeciesInfo[species].height, COMPOUND_STRING(" m"));
+            GlassDexMeasurement(98, 71, COMPOUND_STRING("Weight "), gSpeciesInfo[species].weight, COMPOUND_STRING(" kg"));
         }
         else
-            StatsText(98, 52, COMPOUND_STRING("Data incomplete"));
-        HubRect(6, 18, 92, 189, 1);
-        for (i = 0; i < 2 && sGlassDex->textPage * 2 + i < sGlassDex->textLines; i++)
-            StatsText(18, 94 + i * 10, sGlassDex->text[sGlassDex->textPage * 2 + i]);
-        StatsText(18, 114, COMPOUND_STRING("A Text  R Habitat  SELECT Cry  B List"));
+            StatsText(98, 50, COMPOUND_STRING("Data incomplete"));
+        StatsText(98, 83, COMPOUND_STRING("Habitat"));
+        HubRect(6, 18, 94, 189, 1);
+        if (sGlassDex->areaCount != 0)
+        {
+            u8 name[64];
+            GetMapName(name, sGlassDex->areas[sGlassDex->areaPage], 0);
+            StatsText(18, 96, name);
+            StatsNumber(177, 83, sGlassDex->areaPage + 1);
+            StatsText(181, 83, COMPOUND_STRING("/"));
+            StatsNumber(207, 83, sGlassDex->areaCount);
+        }
+        else
+            StatsText(18, 96, COMPOUND_STRING("No wild habitat recorded."));
+        StatsText(18, 114, COMPOUND_STRING("A All  L/R Place  SELECT Cry  B"));
     }
     else
     {
         u8 name[64];
         DestroyGlassDexPortrait();
-        StatsText(18, 18, gSpeciesInfo[species].speciesName);
-        StatsText(133, 18, COMPOUND_STRING("HABITAT"));
+        StatsText(18, 16, gSpeciesInfo[species].speciesName);
+        StatsText(133, 16, COMPOUND_STRING("HABITAT"));
         for (i = 0; i < GLASS_DEX_ROWS && sGlassDex->areaPage * GLASS_DEX_ROWS + i < sGlassDex->areaCount; i++)
         {
             GetMapName(name, sGlassDex->areas[sGlassDex->areaPage * GLASS_DEX_ROWS + i], 0);
-            StatsText(25, 35 + i * 12, name);
+            StatsText(25, 33 + i * 12, name);
         }
         if (sGlassDex->areaCount == 0)
         {
@@ -1128,6 +1083,7 @@ static void Task_PokeGlassPokedex(u8 taskId)
         if (sGlassDex->view != 0)
         {
             sGlassDex->view--;
+            sGlassDex->areaPage = 0;
             DrawGlassDexPage();
         }
         else
@@ -1163,13 +1119,15 @@ static void Task_PokeGlassPokedex(u8 taskId)
     {
         if (JOY_NEW(A_BUTTON))
         {
-            sGlassDex->textPage = (sGlassDex->textPage + 1) % ((sGlassDex->textLines + 1) / 2);
+            sGlassDex->areaPage = 0;
+            sGlassDex->view = 2;
             DrawGlassDexPage();
         }
-        else if (JOY_NEW(R_BUTTON))
+        else if (sGlassDex->areaCount > 1 && JOY_NEW(L_BUTTON | R_BUTTON | DPAD_LEFT | DPAD_RIGHT))
         {
-            BuildGlassDexAreas(sGlassDex->species[sGlassDex->cursor]);
-            sGlassDex->view = 2;
+            sGlassDex->areaPage = JOY_NEW(L_BUTTON | DPAD_LEFT)
+                ? (sGlassDex->areaPage + sGlassDex->areaCount - 1) % sGlassDex->areaCount
+                : (sGlassDex->areaPage + 1) % sGlassDex->areaCount;
             DrawGlassDexPage();
         }
         return;
@@ -1187,7 +1145,7 @@ static void Task_PokeGlassPokedex(u8 taskId)
     {
         if (JOY_NEW(A_BUTTON))
         {
-            BuildGlassDexText(sGlassDex->species[sGlassDex->cursor]);
+            BuildGlassDexAreas(sGlassDex->species[sGlassDex->cursor]);
             sGlassDex->view = 1;
             DrawGlassDexPage();
         }
