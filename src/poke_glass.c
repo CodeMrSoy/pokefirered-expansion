@@ -213,7 +213,6 @@ static EWRAM_DATA u8 sHubCursor = 0;
 static EWRAM_DATA u16 sHubBlend[8] = {0};
 static EWRAM_DATA u16 sHubPalette[32] = {0};
 static const u8 sHubTitle[] = _("POKéGLASS");
-static const u8 sHubHint[] = _("A Open   B Close");
 static const u8 sHubLabels[][16] = {
     _("Pokédex"), _("Party"), _("Storage"), _("Stats"), _("Map"), _("Wardrobe")
 };
@@ -300,7 +299,7 @@ static void DrawHubIcon(u8 app, u16 x, u16 y)
         HubRect(5, x + 7, y + 11, 10, 9);
         HubRect(8, x + 10, y + 13, 4, 2);
         break;
-    case 3: // Existing stats shortcut remains available in the dock.
+    case 3: // Stats: a rising bar chart.
         HubRect(8, x + 2, y + 16, 20, 2);
         HubRect(8, x + 3, y + 10, 4, 6);
         HubRect(8, x + 10, y + 6, 4, 10);
@@ -316,31 +315,32 @@ static void DrawHubIcon(u8 app, u16 x, u16 y)
         HubRect(8, x + 9, y + 13, 6, 3);
         HubRect(8, x + 11, y + 16, 2, 3);
         break;
+    case 5: // Wardrobe: a shirt with sleeves and an inset collar.
+        HubRect(8, x + 6, y + 2, 12, 4);
+        HubRect(8, x + 2, y + 5, 20, 7);
+        HubRect(8, x, y + 7, 24, 4);
+        HubRect(8, x + 6, y + 11, 12, 12);
+        HubRect(5, x + 9, y + 2, 6, 4);
+        break;
     }
 }
 
 static void DrawHubApp(u8 i, bool8 upload)
 {
     static const u8 textColors[] = {0, 8, 4};
-    static const u8 positions[6][2] = {{25,34}, {127,34}, {25,78}, {112,116}, {127,78}, {152,116}};
+    // Preserve script app IDs: Pokédex, Party, Storage / Map, Stats, Wardrobe.
+    static const u8 positions[6][2] = {{18,34}, {82,34}, {146,34}, {82,80}, {18,80}, {146,80}};
     u16 x = positions[i][0], y = positions[i][1];
     bool8 selected = i == sHubCursor;
-    u8 dockWidth = i == 5 ? 54 : 36;
-    if (i == 3 || i == 5)
-    {
-        HubRect(selected ? 8 : 6, x, y, dockWidth, 10);
-        HubRect(4, x + 1, y + 1, dockWidth - 2, 8);
-        AddTextPrinterParameterized3(sHubWindow, FONT_SMALL, x + 4, y - 1, textColors, TEXT_SKIP_DRAW, sHubLabels[i]);
-    }
-    else
-    {
-        HubRect(selected ? 8 : 6, x, y, 72, 38);
-        HubRect(selected ? 5 : 4, x + 2, y + 2, 68, 34);
-        DrawHubIcon(i, x + 8, y + 7);
-        AddTextPrinterParameterized3(sHubWindow, FONT_SMALL, x + 35, y + 13, textColors, TEXT_SKIP_DRAW, sHubLabels[i]);
-    }
+    HubRect(selected ? 8 : 6, x, y, 60, 44);
+    HubRect(selected ? 5 : 4, x + 2, y + 2, 56, 40);
+    DrawHubIcon(i, x + 18, y + 3);
+    AddTextPrinterParameterized3(sHubWindow, FONT_SMALL,
+        x + (60 - GetStringWidth(FONT_SMALL, sHubLabels[i], 0)) / 2,
+        y + 28, textColors, TEXT_SKIP_DRAW, sHubLabels[i]);
     if (upload)
-        CopyWindowRectToVram(sHubWindow, COPYWIN_GFX, x / 8, y / 8, (x + ((i == 3 || i == 5) ? dockWidth : 72) + 7) / 8 - x / 8, (y + (i == 3 ? 10 : 38) + 7) / 8 - y / 8);
+        CopyWindowRectToVram(sHubWindow, COPYWIN_GFX, x / 8, y / 8,
+            (x + 60 + 7) / 8 - x / 8, (y + 44 + 7) / 8 - y / 8);
 }
 
 static void DrawTabletShell(u8 *pixels)
@@ -434,7 +434,6 @@ static void DrawHub(void)
     HubRect(4, 192, 21, 14, 5);
     HubRect(6, 193, 22, 10, 3);
     for (i = 0; i < 6; i++) DrawHubApp(i, FALSE);
-    AddTextPrinterParameterized3(sHubWindow, FONT_SMALL, 24, 114, textColors, TEXT_SKIP_DRAW, sHubHint);
     PutWindowTilemap(sHubWindow);
     CopyWindowToVram(sHubWindow, COPYWIN_FULL);
 }
@@ -495,13 +494,13 @@ static void Task_PokeGlassHub(u8 taskId)
     else
     {
         if (JOY_NEW(DPAD_UP))
-            sHubCursor = sHubCursor == 2 ? 0 : sHubCursor == 4 ? 1 : (sHubCursor == 3 || sHubCursor == 5) ? 4 : sHubCursor;
+            sHubCursor = sHubCursor == 4 ? 0 : sHubCursor == 3 ? 1 : sHubCursor == 5 ? 2 : sHubCursor;
         else if (JOY_NEW(DPAD_DOWN))
-            sHubCursor = sHubCursor == 0 ? 2 : sHubCursor == 1 ? 4 : (sHubCursor == 3 || sHubCursor == 5) ? 5 : 3;
+            sHubCursor = sHubCursor == 0 ? 4 : sHubCursor == 1 ? 3 : sHubCursor == 2 ? 5 : sHubCursor;
         else if (JOY_NEW(DPAD_LEFT))
-            sHubCursor = sHubCursor == 1 ? 0 : sHubCursor == 4 ? 2 : sHubCursor == 5 ? 3 : sHubCursor;
+            sHubCursor = sHubCursor == 1 ? 0 : sHubCursor == 2 ? 1 : sHubCursor == 3 ? 4 : sHubCursor == 5 ? 3 : sHubCursor;
         else if (JOY_NEW(DPAD_RIGHT))
-            sHubCursor = sHubCursor == 0 ? 1 : sHubCursor == 2 ? 4 : sHubCursor == 3 ? 5 : sHubCursor;
+            sHubCursor = sHubCursor == 0 ? 1 : sHubCursor == 1 ? 2 : sHubCursor == 4 ? 3 : sHubCursor == 3 ? 5 : sHubCursor;
         if (oldCursor != sHubCursor)
         {
             PlaySE(SE_SELECT);

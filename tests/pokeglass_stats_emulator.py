@@ -37,7 +37,7 @@ set_fixture_values(0)
 set_fixture_values(2, egg=True)
 original = m.read(m.symbols['gPlayerParty'], 300)
 
-m.press(3); m.press(8); m.press(5); m.press(5); m.press(8)
+m.press(3); m.press(8); m.press(7); m.press(5); m.press(8)
 def slot(): return m.read(m.symbols['sStatsPartySlot'], 1)[0]
 def pic_count():
     return sum(m.read(m.symbols['sSpritePics'] + i*12 + 11, 1)[0] for i in range(8))
