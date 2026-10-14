@@ -1,0 +1,44 @@
+[
+  {
+    "name": "Northwest Cave",
+    "x": 3,
+    "y": 4,
+    "registered_map_section": false
+  },
+  {
+    "name": "Mountain Cave",
+    "x": 9,
+    "y": 5,
+    "registered_map_section": false
+  },
+  {
+    "name": "Lake Cave",
+    "x": 11,
+    "y": 7,
+    "registered_map_section": false
+  },
+  {
+    "name": "West Coast Cave",
+    "x": 1,
+    "y": 8,
+    "registered_map_section": false
+  },
+  {
+    "name": "Lighthouse",
+    "x": 2,
+    "y": 11,
+    "registered_map_section": false
+  },
+  {
+    "name": "Daycare",
+    "x": 16,
+    "y": 10,
+    "registered_map_section": false
+  },
+  {
+    "name": "Southeast Cave",
+    "x": 17,
+    "y": 12,
+    "registered_map_section": false
+  }
+]

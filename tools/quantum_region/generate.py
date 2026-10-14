@@ -3,31 +3,17 @@
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 import json, struct
+import numpy as np
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / 'graphics/region_map'
-COLORS = [(0,0,0),(32,104,176),(64,152,208),(112,200,224),(224,208,144),
-          (112,176,96),(64,136,72),(40,96,64),(80,88,112),(136,144,160),
-          (232,240,248),(176,216,240),(216,88,72),(248,160,88),(248,224,144),(248,248,248)]
-im = Image.new('P',(176,120),1);im.putpalette(sum((list(c) for c in COLORS),[])+[0]*720)
+COLORS = [(0,0,0),(115,189,247),(140,206,255),(24,90,41),
+          (41,140,33),(82,181,41),(140,214,57),(115,123,115),
+          (173,181,198),(247,247,239),(255,247,173),(255,222,82),
+          (222,181,57),(231,41,24),(255,115,82),(66,57,33)]
+im = Image.open(ROOT / 'tools/quantum_region/terrain.png').copy()
+assert im.mode == 'P' and im.size == (176,120)
+im.putpalette(sum((list(c) for c in COLORS),[])+[0]*720)
 d = ImageDraw.Draw(im)
-land = [(32,20),(48,12),(64,8),(80,3),(112,6),(132,14),(146,28),(152,44),
-        (145,64),(157,78),(149,103),(128,112),(106,105),(91,100),(67,99),
-        (49,105),(28,91),(20,74),(22,48)]
-d.polygon(land,fill=3);d.polygon([(x,y-2) for x,y in land],fill=4)
-d.polygon([(x+(1 if x<90 else -1),y-3) for x,y in land],fill=5)
-# Mountain spine, snowy summit and lower forest. Sparse deterministic texture.
-d.polygon([(49,30),(65,13),(81,9),(101,10),(120,20),(138,34),(127,47),(103,35),(84,43),(64,38)],fill=8)
-d.polygon([(55,30),(68,17),(77,25),(86,11),(102,24),(115,17),(128,33),(115,30),(106,31),(92,24),(80,35)],fill=9)
-d.polygon([(63,24),(70,14),(77,22),(85,7),(94,19),(105,16),(118,24),(115,31),(101,28),(84,30),(76,28)],fill=10)
-for x,y in [(39,38),(47,37),(54,42),(31,55),(39,53),(49,52),(56,57),(67,48),(75,58),
-            (29,65),(42,65),(52,66),(63,70),(69,81),(77,84),(120,45),(131,46),(137,52),(139,71),(131,83)]:
- d.rectangle((x-2,y-1,x+2,y+2),fill=7);d.polygon([(x,y-4),(x-3,y),(x+3,y)],fill=6)
-# Lake, meltwater, river, waterfall and southeastern sheltered harbor.
-d.ellipse((99,43,133,67),fill=3);d.ellipse((101,45,131,65),fill=2)
-d.line([(113,29),(113,37),(120,41),(119,48)],fill=11,width=3)
-d.line([(61,37),(54,47),(50,56),(56,68),(65,74),(76,91),(101,102)],fill=3,width=3)
-d.line([(65,72),(66,76)],fill=15,width=3)
-d.ellipse((131,89,159,111),fill=3);d.ellipse((133,90,159,110),fill=1)
 # Route centers share the exact selectable grid coordinates below.
 segments = [([(4,10),(4,9),(5,9),(5,8),(6,8),(6,7)],'COASTAL_ROAD','COASTAL ROAD'),
  ([(6,7),(6,6),(7,6),(8,6),(8,5),(9,5),(9,4),(10,4)],'FOREST_PATH','FOREST PATH'),
@@ -39,46 +25,94 @@ segments = [([(4,10),(4,9),(5,9),(5,8),(6,8),(6,7)],'COASTAL_ROAD','COASTAL ROAD
  ([(6,7),(7,7),(8,7),(9,7),(10,7),(11,7),(12,7),(13,7),(14,7)],'WOODLAND_LINK','WOODLAND LINK')]
 sections = [['MAPSEC_NONE']*22 for _ in range(15)];metadata=[]
 for points,ident,name in segments:
- pix=[(x*8+4,y*8+4) for x,y in points];d.line(pix,fill=8,width=3);d.line(pix,fill=14,width=1)
+ pix=[(x*8+4,y*8+4) for x,y in points];d.line(pix,fill=12,width=3);d.line(pix,fill=11,width=1)
  for x,y in points:sections[y][x]='MAPSEC_QUANTUM_'+ident
  xs=[x for x,y in points];ys=[y for x,y in points]
  metadata.append(dict(id='MAPSEC_QUANTUM_'+ident,name=name,x=min(xs),y=min(ys),width=max(xs)-min(xs)+1,height=max(ys)-min(ys)+1))
 towns=[(15,12,'PORT_CITY','PORT CITY'),(4,10,'COASTAL_CITY','COASTAL CITY'),
        (6,7,'FOREST_TOWN','FOREST TOWN'),(14,7,'LAKE_TOWN','LAKE TOWN'),(10,2,'SNOW_TOWN','SNOW TOWN')]
-# Port's built-up district, piers and market/daycare symbols, around one Fly cell.
-d.rectangle((110,86,129,105),fill=9);d.rectangle((111,87,128,104),fill=10)
-for x,y in [(112,88),(118,88),(124,88),(112,96)]:d.rectangle((x,y,x+3,y+3),fill=12)
-for x in (130,137,145):d.line([(x,101),(x,111)],fill=9,width=2)
-d.rectangle((123,82,129,86),fill=6) # daycare garden
 for x,y,ident,name in towns:
- cx,cy=x*8+4,y*8+4;d.rectangle((cx-3,cy-3,cx+3,cy+3),fill=8);d.rectangle((cx-2,cy-2,cx+2,cy+2),fill=12);d.point((cx-1,cy-1),fill=15)
+ cx,cy=x*8+4,y*8+4;d.ellipse((cx-4,cy-4,cx+4,cy+4),fill=15);d.ellipse((cx-3,cy-3,cx+3,cy+3),fill=10);d.ellipse((cx-2,cy-2,cx+2,cy+2),fill=13);d.point((cx-1,cy-1),fill=14)
  sections[y][x]='MAPSEC_QUANTUM_'+ident
  metadata.append(dict(id='MAPSEC_QUANTUM_'+ident,name=name,x=x,y=y,width=1,height=1))
 # Hot springs: warm pools next to the snow settlement, separate named map area.
-x,y=13,2;cx,cy=x*8+4,y*8+4;d.ellipse((cx-3,cy-2,cx+3,cy+2),fill=8);d.ellipse((cx-2,cy-1,cx+2,cy+1),fill=3);d.point((cx,cy-3),fill=15)
+x,y=13,2;cx,cy=x*8+4,y*8+4;d.rectangle((cx-2,cy-2,cx+2,cy+2),fill=10);d.rectangle((cx-1,cy-1,cx+1,cy+1),fill=7);d.point((cx,cy),fill=9)
 sections[y][x]='MAPSEC_QUANTUM_HOT_SPRINGS';metadata.append(dict(id='MAPSEC_QUANTUM_HOT_SPRINGS',name='HOT SPRINGS',x=x,y=y,width=1,height=1))
-# Ocean waves avoid land and add a small sense of scale.
-for y in range(4,120,16):
- for x in range(4,176,24):
-  if all(im.getpixel((x+k,y))==1 for k in range(4)):d.line((x,y,x+3,y),fill=2)
-im.save(OUT/'quantum_map.png')
+# Planned caves and POIs are artwork markers only until their maps are registered.
+# Existing town/Fly and hot-spring sections stay at their current V2 coordinates.
+planned_pois = [(3,4,'Northwest Cave'),(9,5,'Mountain Cave'),(11,7,'Lake Cave'),
+                (1,8,'West Coast Cave'),(2,11,'Lighthouse'),(16,10,'Daycare'),
+                (17,12,'Southeast Cave')]
+for x,y,label in planned_pois:
+ cx,cy=x*8+4,y*8+4
+ d.rectangle((cx-2,cy-2,cx+2,cy+2),fill=10)
+ d.rectangle((cx-1,cy-1,cx+1,cy+1),fill=7)
+ d.point((cx,cy),fill=9)
+(ROOT/'tools/quantum_region/planned_pois.json').write_text(json.dumps([
+ dict(name=label,x=x,y=y,registered_map_section=False) for x,y,label in planned_pois
+],indent=2)+'\n')
+# Merge the most similar terrain tiles to fit the existing VRAM allocation.
+# Keep every route, town dot and POI tile exact, and never duplicate markers.
+arr=np.array(im,dtype=np.uint8)
+blocks=np.array([arr[y:y+8,x:x+8].reshape(64) for y in range(0,120,8) for x in range(0,176,8)])
+patterns,inverse,counts=np.unique(blocks,axis=0,return_inverse=True,return_counts=True)
+protected=np.isin(patterns,[11,12,13,14,15]).any(axis=1)
+for px,py in [(13,2)]+[(x,y) for x,y,_ in planned_pois]:
+ for yy in range(py*8+2,py*8+7):
+  for xx in range(px*8+2,px*8+7):protected[inverse[(yy//8)*22+xx//8]]=True
+colors=np.array(COLORS,dtype=np.float32)
+rgb=colors[patterns]
+# Strongly discourage moving shorelines and the snow biome.
+classes=np.where(np.isin(patterns,[1,2]),1,np.where(np.isin(patterns,[8,9]),2,0))
+dist=((rgb[:,None,:,:]-rgb[None,:,:,:])**2).sum(axis=(2,3))
+dist+=(classes[:,None,:]!=classes[None,:,:]).sum(axis=2)*200000
+np.fill_diagonal(dist,np.inf)
+dist[:,protected]=np.inf
+active=np.ones(len(patterns),dtype=bool);parent=np.arange(len(patterns))
+while active.sum()>176:
+ scores=dist.copy();scores[:,~active]=np.inf;scores[~active|protected,:]=np.inf
+ scores*=counts[:,None]
+ i,j=np.unravel_index(np.argmin(scores),scores.shape)
+ if not np.isfinite(scores[i,j]):raise ValueError('Too many protected tiles')
+ active[i]=False;parent[parent==i]=j;counts[j]+=counts[i]
+for n,idx in enumerate(inverse):
+ y=(n//22)*8;x=(n%22)*8
+ arr[y:y+8,x:x+8]=patterns[parent[idx]].reshape(8,8)
+assert all(np.array_equal(arr[(n//22)*8:(n//22)*8+8,(n%22)*8:(n%22)*8+8].reshape(64),blocks[n]) for n,idx in enumerate(inverse) if protected[idx])
+im=Image.fromarray(arr);im.putpalette(sum((list(c) for c in COLORS),[])+[0]*720)
+im.save(OUT/'quantum_map.png',bits=4)
 # Native tile packing, deduplication and a hard BG0 16-KiB boundary.
 def tile_bytes(image,x,y):
  pix=[v & 15 for v in image.crop((x,y,x+8,y+8)).get_flattened_data()];return bytes(pix[i] | pix[i+1]<<4 for i in range(0,64,2))
 base=Image.open(OUT/'region_map.png');old=bytearray()
 for y in range(0,base.height,8):
  for x in range(0,base.width,8):old.extend(tile_bytes(base,x,y))
-tiles=[];lookup={};original=list(struct.unpack('<600H',(OUT/'kanto.bin').read_bytes()));mapbuf=original.copy()
+# Reuse patterns, including GBA horizontal/vertical flip variants, across
+# the original atlas and the new map. Original tiles and indices stay intact.
+tiles=[];lookup={}
+def register_tile(b, index):
+ pixels=[[((b[y*4+x//2] >> (4*(x%2))) & 15) for x in range(8)] for y in range(8)]
+ for h,v,flags in ((False,False,0),(True,False,0x400),(False,True,0x800),(True,True,0xc00)):
+  rows=pixels[::-1] if v else pixels
+  rows=[row[::-1] if h else row for row in rows]
+  packed=bytes(row[x] | row[x+1]<<4 for row in rows for x in range(0,8,2))
+  lookup.setdefault(packed,index|flags)
+for i in range(len(old)//32):register_tile(bytes(old[i*32:i*32+32]),i)
+def intern_tile(b):
+ if b not in lookup:
+  index=320+len(tiles);tiles.append(b);register_tile(b,index)
+ return lookup[b]
+original=list(struct.unpack('<600H',(OUT/'kanto.bin').read_bytes()));mapbuf=original.copy()
 for y in range(15):
  for x in range(22):
   b=tile_bytes(im,x*8,y*8)
-  if b not in lookup:lookup[b]=320+len(tiles);tiles.append(b)
+  intern_tile(b)
   if not (x >= 20 and y in (12,13,14)):
    mapbuf[(y+4)*30+(x+4)] = lookup[b] | 5<<12
 # Fill outside the new island with its own ocean; preserve only the UI buttons.
 ocean = bytes([0x11]*32)
 if ocean not in lookup:
- lookup[ocean]=320+len(tiles);tiles.append(ocean)
+ intern_tile(ocean)
 for y in range(20):
  for x in range(30):
   if not (4<=x<26 and 4<=y<19):mapbuf[y*30+x]=lookup[ocean]|5<<12
@@ -99,7 +133,7 @@ for kind in range(2):
   row=[]
   for xx in range(3):
    t=tile_bytes(button,xx*8,yy*8)
-   if t not in lookup:lookup[t]=320+len(tiles);tiles.append(t)
+   intern_tile(t)
    row.append(lookup[t]|5<<12)
   rows.append(row)
  buttons.append(rows)
@@ -140,3 +174,4 @@ if metadata_path.exists():
  updated=json.dumps(data,indent=2)+'\n'
  if updated!=metadata_path.read_text():metadata_path.write_text(updated)
 print('Quantum map:',len(tiles),'new tiles,',320+len(tiles),'total BG0 tiles;',len(metadata),'named locations')
+
