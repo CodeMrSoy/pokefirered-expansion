@@ -439,6 +439,100 @@ void DrawPokeGlassFrame(u8 bg)
     ScheduleBgCopyTilemapToVram(bg);
 }
 
+// A compact, opaque tablet cover survives the field's VRAM/heap reset. Its
+// tiles live above map graphics and below the field tilemaps. Only the glass
+// changes during the handoff; the captured scenery around the bezel stays put.
+// c000-c5ff belongs to field dialogue / the hub window. c600-d7ff holds
+// 144 cover tiles: 46 unique shell tiles plus at most 96 surrounding tiles.
+// d800-dfff holds its map; the field's three maps start at e000.
+#define RETURN_COVER_FIRST_TILE 48
+#define RETURN_COVER_TILES (192 - RETURN_COVER_FIRST_TILE)
+static EWRAM_DATA bool8 sReturnCoverActive = FALSE;
+static EWRAM_DATA bool8 sReturnCoverReady = FALSE;
+static EWRAM_DATA u16 sReturnCoverPalette[32] = {0};
+
+bool8 IsPokeGlassReturnActive(void)
+{
+    return sReturnCoverActive;
+}
+
+void BeginPokeGlassReturn(void)
+{
+    u8 *pixels, *tiles;
+    u16 map[32 * 32] = {0};
+    u32 x, y, tile, count = 0;
+    if (!sTabletActive || !sTabletNative || sFieldBackdrop == NULL)
+        return;
+    pixels = AllocZeroed(28 * 18 * 32);
+    tiles = AllocZeroed(RETURN_COVER_TILES * 32);
+    if (pixels == NULL || tiles == NULL)
+    {
+        Free(pixels);
+        Free(tiles);
+        return;
+    }
+    DrawTabletShell(pixels);
+    for (y = 0; y < 20; y++)
+        for (x = 0; x < 30; x++)
+        {
+            bool8 shell = x > 0 && x < 29 && y > 0 && y < 19;
+            const u8 *source = shell ? pixels + ((y - 1) * 28 + x - 1) * 32
+                : sFieldBackdrop + (y * 30 + x) * 32;
+            for (tile = 0; tile < count; tile++)
+                if (memcmp(source, tiles + tile * 32, 32) == 0)
+                    break;
+            if (tile == count)
+            {
+                if (count == RETURN_COVER_TILES)
+                {
+                    Free(pixels);
+                    Free(tiles);
+                    return;
+                }
+                CpuCopy16(source, tiles + count++ * 32, 32);
+            }
+            map[y * 32 + x] = (RETURN_COVER_FIRST_TILE + tile) | ((shell ? 14 : 13) << 12);
+        }
+    CpuCopy16(sFieldBackdropPalette, sReturnCoverPalette, 32);
+    CpuCopy16(sPalette, sReturnCoverPalette + 16, 32);
+    VBlankIntrWait();
+    CpuCopy16(tiles, (void *)(VRAM + 0xC000 + RETURN_COVER_FIRST_TILE * 32), count * 32);
+    CpuCopy16(map, (void *)(VRAM + 0xD800), sizeof(map));
+    sReturnCoverReady = FALSE;
+    sReturnCoverActive = TRUE;
+    VBlankCB_PokeGlassReturn();
+    Free(pixels);
+    Free(tiles);
+}
+
+// Run after buffered registers and DMA, so field loading can update its normal
+// state without exposing half-loaded graphics. Release only after the tablet
+// window's tile graphics and tilemap have both arrived in VRAM.
+void VBlankCB_PokeGlassReturn(void)
+{
+    if (!sReturnCoverActive)
+        return;
+    if (sReturnCoverReady && WaitDma3Request(-1) == 0)
+    {
+        REG_BG0CNT = GetGpuReg(REG_OFFSET_BG0CNT);
+        REG_BG0HOFS = GetGpuReg(REG_OFFSET_BG0HOFS);
+        REG_BG0VOFS = GetGpuReg(REG_OFFSET_BG0VOFS);
+        REG_BLDCNT = GetGpuReg(REG_OFFSET_BLDCNT);
+        REG_DISPCNT = GetGpuReg(REG_OFFSET_DISPCNT);
+        *(vu16 *)PLTT = gPlttBufferFaded[0];
+        CpuCopy16(&gPlttBufferFaded[BG_PLTT_ID(13)], (void *)(PLTT + 13 * 32), 64);
+        sReturnCoverActive = FALSE;
+        return;
+    }
+    *(vu16 *)PLTT = RGB_BLACK;
+    CpuCopy16(sReturnCoverPalette, (void *)(PLTT + 13 * 32), 64);
+    REG_BG0CNT = BGCNT_CHARBASE(3) | BGCNT_SCREENBASE(27);
+    REG_BG0HOFS = 0;
+    REG_BG0VOFS = 0;
+    REG_BLDCNT = 0;
+    REG_DISPCNT = DISPCNT_BG0_ON;
+}
+
 static void DrawHub(void)
 {
     static const u8 textColors[] = {0, 8, 4};
@@ -453,6 +547,8 @@ static void DrawHub(void)
     for (i = 0; i < 6; i++) DrawHubApp(i, FALSE);
     PutWindowTilemap(sHubWindow);
     CopyWindowToVram(sHubWindow, COPYWIN_FULL);
+    if (sReturnCoverActive)
+        sReturnCoverReady = TRUE;
 }
 
 static void CloseHub(void)

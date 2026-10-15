@@ -2259,11 +2259,24 @@ static void MoveSaveBlocks_ResetHeap_(void)
 
 static void ResetScreenForMapLoad(void)
 {
-    SetGpuReg(REG_OFFSET_DISPCNT, 0);
+    if (!IsPokeGlassReturnActive())
+        SetGpuReg(REG_OFFSET_DISPCNT, 0);
     ScanlineEffect_Stop();
 
-    DmaClear16(3, PLTT + 2, PLTT_SIZE - 2);
-    DmaFillLarge16(3, 0, (void *)(VRAM + 0x0), 0x18000, 0x1000);
+    if (IsPokeGlassReturnActive())
+    {
+        // The return cover owns char block 3 and screen block 27 until the
+        // rebuilt field and tablet window are ready for the same VBlank.
+        DmaClear16(3, PLTT + 2, 13 * 32 - 2);
+        DmaClear16(3, PLTT + 15 * 32, PLTT_SIZE - 15 * 32);
+        DmaFillLarge16(3, 0, (void *)VRAM, 0xC000, 0x1000);
+        DmaFillLarge16(3, 0, (void *)(VRAM + 0xE000), 0xA000, 0x1000);
+    }
+    else
+    {
+        DmaClear16(3, PLTT + 2, PLTT_SIZE - 2);
+        DmaFillLarge16(3, 0, (void *)VRAM, 0x18000, 0x1000);
+    }
     ResetOamRange(0, 128);
     LoadOam();
 }

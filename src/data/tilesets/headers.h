@@ -1,6 +1,6 @@
 const struct Tileset gTileset_General =
 {
-    .lightPalettes = 0x2c, // Glass colors only; roofs retain normal time tint.
+    .lightPalettes = 0x0c, // Building glass; earth, brick and wooden shutters darken normally.
     .isCompressed = TRUE,
     .isSecondary = FALSE,
     .tiles = gTilesetTiles_General,
@@ -12,7 +12,7 @@ const struct Tileset gTileset_General =
 
 const struct Tileset gTileset_PalletTown =
 {
-    .lightPalettes = 0xe, // Glass colors only; roofs retain normal time tint.
+    .lightPalettes = 0xe, // Glass only; shared wall/ground colors are isolated in palette 7.
     .isCompressed = TRUE,
     .isSecondary = TRUE,
     .tiles = gTilesetTiles_PalletTown,
@@ -24,7 +24,7 @@ const struct Tileset gTileset_PalletTown =
 
 const struct Tileset gTileset_ViridianCity =
 {
-    .lightPalettes = 0x20, // Glass colors only; roofs retain normal time tint.
+    .lightPalettes = 0x20, // Glass only; shared wall/ground colors are isolated in palette 7.
     .isCompressed = TRUE,
     .isSecondary = TRUE,
     .tiles = gTilesetTiles_ViridianCity,
@@ -48,7 +48,7 @@ const struct Tileset gTileset_PewterCity =
 
 const struct Tileset gTileset_CeruleanCity =
 {
-    .lightPalettes = 0x20, // Glass colors only; roofs retain normal time tint.
+    .lightPalettes = 0x20, // Glass only; shared wall/ground colors are isolated in palette 7.
     .isCompressed = TRUE,
     .isSecondary = TRUE,
     .tiles = gTilesetTiles_CeruleanCity,
@@ -60,7 +60,7 @@ const struct Tileset gTileset_CeruleanCity =
 
 const struct Tileset gTileset_LavenderTown =
 {
-    .lightPalettes = 0x30, // Glass colors only; roofs retain normal time tint.
+    .lightPalettes = 0x11, // Glass only; shared wall/ground colors are isolated in palette 7.
     .isCompressed = TRUE,
     .isSecondary = TRUE,
     .tiles = gTilesetTiles_LavenderTown,
@@ -72,7 +72,7 @@ const struct Tileset gTileset_LavenderTown =
 
 const struct Tileset gTileset_VermilionCity =
 {
-    .lightPalettes = 0x4, // Glass colors only; roofs retain normal time tint.
+    .lightPalettes = 0x4, // Glass only; shared wall/ground colors are isolated in palette 7.
     .isCompressed = TRUE,
     .isSecondary = TRUE,
     .tiles = gTilesetTiles_VermilionCity,
@@ -131,7 +131,7 @@ const struct Tileset gTileset_IndigoPlateau =
 
 const struct Tileset gTileset_SaffronCity =
 {
-    .lightPalettes = 0x2c, // Glass colors only; roofs retain normal time tint.
+    .lightPalettes = 0x2c, // Glass only; shared wall/ground colors are isolated in palette 7.
     .isCompressed = TRUE,
     .isSecondary = TRUE,
     .tiles = gTilesetTiles_SaffronCity,
@@ -682,7 +682,7 @@ const struct Tileset gTileset_TanobyRuins =
 
 const struct Tileset gTileset_SeviiIslands123 =
 {
-    .lightPalettes = 0x4, // Glass colors only; roofs retain normal time tint.
+    .lightPalettes = 0x4, // Glass only; shared wall/ground colors are isolated in palette 7.
     .isCompressed = TRUE,
     .isSecondary = TRUE,
     .tiles = gTilesetTiles_SeviiIslands123,
@@ -706,7 +706,7 @@ const struct Tileset gTileset_SeviiIslands45 =
 
 const struct Tileset gTileset_SeviiIslands67 =
 {
-    .lightPalettes = 0x4, // Glass colors only; roofs retain normal time tint.
+    .lightPalettes = 0x4, // Glass only; shared wall/ground colors are isolated in palette 7.
     .isCompressed = TRUE,
     .isSecondary = TRUE,
     .tiles = gTilesetTiles_SeviiIslands67,
@@ -763,7 +763,7 @@ const struct Tileset gTileset_HallOfFame =
 
 const struct Tileset gTileset_GeneralWinter =
 {
-    .lightPalettes = 0x2c, // Glass colors only; roofs retain normal time tint.
+    .lightPalettes = 0x0c, // Building glass; earth, brick and wooden shutters darken normally.
     .isCompressed = TRUE,
     .isSecondary = FALSE,
     .tiles = gTilesetTiles_GeneralWinter,
@@ -775,7 +775,7 @@ const struct Tileset gTileset_GeneralWinter =
 
 const struct Tileset gTileset_GeneralAutumn =
 {
-    .lightPalettes = 0x2c, // Glass colors only; roofs retain normal time tint.
+    .lightPalettes = 0x0c, // Building glass; earth, brick and wooden shutters darken normally.
     .isCompressed = TRUE,
     .isSecondary = FALSE,
     .tiles = gTilesetTiles_GeneralAutumn,
@@ -787,7 +787,7 @@ const struct Tileset gTileset_GeneralAutumn =
 
 const struct Tileset gTileset_GeneralSummer =
 {
-    .lightPalettes = 0x2c, // Glass colors only; roofs retain normal time tint.
+    .lightPalettes = 0x0c, // Building glass; earth, brick and wooden shutters darken normally.
     .isCompressed = TRUE,
     .isSecondary = FALSE,
     .tiles = gTilesetTiles_GeneralSummer,
@@ -799,7 +799,7 @@ const struct Tileset gTileset_GeneralSummer =
 
 const struct Tileset gTileset_PalletTownSummer =
 {
-    .lightPalettes = 0xe, // Glass colors only; roofs retain normal time tint.
+    .lightPalettes = 0xe, // Glass only; shared wall/ground colors are isolated in palette 7.
     .isCompressed = TRUE,
     .isSecondary = TRUE,
     .tiles = gTilesetTiles_PalletTownSummer,
@@ -811,7 +811,7 @@ const struct Tileset gTileset_PalletTownSummer =
 
 const struct Tileset gTileset_PalletTownAutumn =
 {
-    .lightPalettes = 0xe, // Glass colors only; roofs retain normal time tint.
+    .lightPalettes = 0xe, // Glass only; shared wall/ground colors are isolated in palette 7.
     .isCompressed = TRUE,
     .isSecondary = TRUE,
     .tiles = gTilesetTiles_PalletTownAutumn,
@@ -823,7 +823,7 @@ const struct Tileset gTileset_PalletTownAutumn =
 
 const struct Tileset gTileset_PalletTownWinter =
 {
-    .lightPalettes = 0xe, // Glass colors only; roofs retain normal time tint.
+    .lightPalettes = 0xe, // Glass only; shared wall/ground colors are isolated in palette 7.
     .isCompressed = TRUE,
     .isSecondary = TRUE,
     .tiles = gTilesetTiles_PalletTownWinter,
@@ -868,7 +868,7 @@ const struct Tileset gTileset_ViridianForestWinter =
 
 const struct Tileset gTileset_LavenderTownSummer =
 {
-    .lightPalettes = 0x30, // Glass colors only; roofs retain normal time tint.
+    .lightPalettes = 0x11, // Glass only; shared wall/ground colors are isolated in palette 7.
     .isCompressed = TRUE,
     .isSecondary = TRUE,
     .tiles = gTilesetTiles_LavenderTownSummer,
@@ -880,7 +880,7 @@ const struct Tileset gTileset_LavenderTownSummer =
 
 const struct Tileset gTileset_LavenderTownAutumn =
 {
-    .lightPalettes = 0x30, // Glass colors only; roofs retain normal time tint.
+    .lightPalettes = 0x11, // Glass only; shared wall/ground colors are isolated in palette 7.
     .isCompressed = TRUE,
     .isSecondary = TRUE,
     .tiles = gTilesetTiles_LavenderTownAutumn,
@@ -892,7 +892,7 @@ const struct Tileset gTileset_LavenderTownAutumn =
 
 const struct Tileset gTileset_LavenderTownWinter =
 {
-    .lightPalettes = 0x30, // Glass colors only; roofs retain normal time tint.
+    .lightPalettes = 0x11, // Glass only; shared wall/ground colors are isolated in palette 7.
     .isCompressed = TRUE,
     .isSecondary = TRUE,
     .tiles = gTilesetTiles_LavenderTownWinter,
@@ -904,7 +904,7 @@ const struct Tileset gTileset_LavenderTownWinter =
 
 const struct Tileset gTileset_SaffronCitySummer =
 {
-    .lightPalettes = 0x2c, // Glass colors only; roofs retain normal time tint.
+    .lightPalettes = 0x2c, // Glass only; shared wall/ground colors are isolated in palette 7.
     .isCompressed = TRUE,
     .isSecondary = TRUE,
     .tiles = gTilesetTiles_SaffronCitySummer,
@@ -916,7 +916,7 @@ const struct Tileset gTileset_SaffronCitySummer =
 
 const struct Tileset gTileset_SaffronCityAutumn =
 {
-    .lightPalettes = 0x2c, // Glass colors only; roofs retain normal time tint.
+    .lightPalettes = 0x2c, // Glass only; shared wall/ground colors are isolated in palette 7.
     .isCompressed = TRUE,
     .isSecondary = TRUE,
     .tiles = gTilesetTiles_SaffronCityAutumn,
@@ -928,7 +928,7 @@ const struct Tileset gTileset_SaffronCityAutumn =
 
 const struct Tileset gTileset_SaffronCityWinter =
 {
-    .lightPalettes = 0x2c, // Glass colors only; roofs retain normal time tint.
+    .lightPalettes = 0x2c, // Glass only; shared wall/ground colors are isolated in palette 7.
     .isCompressed = TRUE,
     .isSecondary = TRUE,
     .tiles = gTilesetTiles_SaffronCityWinter,
@@ -1012,7 +1012,7 @@ const struct Tileset gTileset_FuchsiaCityWinter =
 
 const struct Tileset gTileset_SeviiIslands123Winter =
 {
-    .lightPalettes = 0x4, // Glass colors only; roofs retain normal time tint.
+    .lightPalettes = 0x4, // Glass only; shared wall/ground colors are isolated in palette 7.
     .isCompressed = TRUE,
     .isSecondary = TRUE,
     .tiles = gTilesetTiles_SeviiIslands123Winter,
@@ -1057,7 +1057,7 @@ const struct Tileset gTileset_BerryForestWinter =
 
 const struct Tileset gTileset_SeviiIslands123Summer =
 {
-    .lightPalettes = 0x4, // Glass colors only; roofs retain normal time tint.
+    .lightPalettes = 0x4, // Glass only; shared wall/ground colors are isolated in palette 7.
     .isCompressed = TRUE,
     .isSecondary = TRUE,
     .tiles = gTilesetTiles_SeviiIslands123Summer,
@@ -1069,7 +1069,7 @@ const struct Tileset gTileset_SeviiIslands123Summer =
 
 const struct Tileset gTileset_SeviiIslands123Autumn =
 {
-    .lightPalettes = 0x4, // Glass colors only; roofs retain normal time tint.
+    .lightPalettes = 0x4, // Glass only; shared wall/ground colors are isolated in palette 7.
     .isCompressed = TRUE,
     .isSecondary = TRUE,
     .tiles = gTilesetTiles_SeviiIslands123Autumn,

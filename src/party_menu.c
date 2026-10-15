@@ -1358,6 +1358,10 @@ static void Task_ClosePartyMenuAndSetCB2(u8 taskId)
         else
             SetMainCallback2(gPartyMenu.exitCallback);
 
+        // Keep the tablet visible while the field rebuilds its tiles/palettes.
+        if (IsPokeGlassActive() && gPartyMenu.exitCallback == CB2_ReturnToFieldContinueScript
+         && sPartyMenuInternal->exitCallback == NULL)
+            BeginPokeGlassReturn();
         ResetSpriteData();
         FreePartyPointers();
         DestroyTask(taskId);

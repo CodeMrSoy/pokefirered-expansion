@@ -3,6 +3,9 @@
 
 bool8 IsPokeGlassActive(void);
 void PreparePokeGlassReturn(void);
+void BeginPokeGlassReturn(void);
+bool8 IsPokeGlassReturnActive(void);
+void VBlankCB_PokeGlassReturn(void);
 void EndPokeGlassSession(void);
 void DrawPokeGlassFrame(u8 bg);
 void SetPokeGlassBlend(bool8 field);

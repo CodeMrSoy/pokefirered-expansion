@@ -1,4 +1,5 @@
 #include "global.h"
+#include "poke_glass.h"
 #include "gpu_regs.h"
 
 #define GPU_REG_BUF_SIZE 0x60
@@ -72,8 +73,10 @@ void SetGpuReg(u8 regOffset, u16 value)
 		GPU_REG_BUF(regOffset) = value;
 		vcount = REG_VCOUNT & 0xFF;
 
-		if ((vcount >= 161 && vcount <= 225)
-		 || (REG_DISPCNT & DISPCNT_FORCED_BLANK)) {
+        // Keep the return cover's hardware state until the VBlank handoff.
+        // The field still updates its buffered state underneath it.
+        if (!IsPokeGlassReturnActive() && ((vcount >= 161 && vcount <= 225)
+         || (REG_DISPCNT & DISPCNT_FORCED_BLANK))) {
 			CopyBufferedValueToGpuReg(regOffset);
 		} else {
 			s32 i;
