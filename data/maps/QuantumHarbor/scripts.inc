@@ -15,3 +15,24 @@ QuantumHarbor_Cancel::
 
 QuantumHarbor_Return::
 	.string "Return to VERMILION CITY?$"
+
+QuantumHarbor_Merchant::
+	msgbox QuantumHarbor_Merchant_Text, MSGBOX_NPC
+	end
+
+QuantumHarbor_Merchant_Text::
+	.string "Our stalls trade goods from across\nVIDRA. The city lies to the west!$"
+
+QuantumHarbor_Dockworker::
+	msgbox QuantumHarbor_Dockworker_Text, MSGBOX_NPC
+	end
+
+QuantumHarbor_Dockworker_Text::
+	.string "Mind the seawall!\nThe ferry boards at the west quay.$"
+
+QuantumHarbor_Visitor::
+	msgbox QuantumHarbor_Visitor_Text, MSGBOX_NPC
+	end
+
+QuantumHarbor_Visitor_Text::
+	.string "I came for the market and stayed\nfor the sea air.$"
