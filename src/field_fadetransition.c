@@ -1,4 +1,5 @@
 #include "global.h"
+#include "poke_glass.h"
 #include "gflib.h"
 #include "field_fadetransition.h"
 #include "overworld.h"
@@ -153,7 +154,8 @@ void FieldCB_ContinueScriptHandleMusic(void)
 void FieldCB_ContinueScript(void)
 {
     LockPlayerFieldControls();
-    FadeInFromBlack();
+    if (!IsPokeGlassActive()) FadeInFromBlack();
+    else PreparePokeGlassReturn();
     CreateTask(Task_ContinueScript, 10);
 }
 

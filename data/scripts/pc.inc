@@ -127,7 +127,7 @@ EventScript_PokeGlassPokedex::
 EventScript_PokeGlassStorage::
 	goto_if_set FLAG_SYS_PC_STORAGE_DISABLED, EventScript_PokeGlassStorageDisabled
 	playse SE_PC_LOGIN
-	special ShowPokemonStorageSystemPC
+	special OpenPokeGlassStorage
 	waitstate
 	goto EventScript_PokeGlassMenu
 	end

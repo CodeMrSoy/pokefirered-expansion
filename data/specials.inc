@@ -470,4 +470,5 @@ gSpecials::
 	def_special OpenPokeGlassStats
 	def_special StartPokeGlassIntro
 	def_special OpenPokeGlassWardrobe
+	def_special OpenPokeGlassStorage
 gSpecialsEnd::

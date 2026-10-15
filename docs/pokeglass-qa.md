@@ -1,3 +1,28 @@
+# PokéGlass QA — QOL, 2026-10-15
+
+## Box view, carry-to-party, and screen transitions
+
+Storage opens with a 30-slot box. A picks up and places or swaps a Pokémon.
+Moving a held Pokémon to Party automatically opens the six-slot panel on the
+left. The Party button can also be opened with A when not carrying a Pokémon.
+L/R changes boxes, and B cancels a carry, hides the panel, then returns.
+Selection does not remove a Pokémon from its source until placement succeeds.
+Mail and the last usable party member remain protected.
+
+App changes wipe only the glass, keeping the shell visible. Party prepares its
+shell before switching graphics memory. Map opens inside the tablet; A Guide
+retains access to the native guide/Fly flow and its existing eligibility checks.
+
+Validation: build and whitespace checks passed; frame-by-frame emulator
+comparisons found identical shell pixels and no black frames in all six app
+launches. Storage checks covered deposits, swaps, cross-box cancellation,
+automatic Party opening, all 36 icons, last usable member protection, and a real
+flash save/reset/Continue comparison of all boxes and party data. The existing
+shell/actions/navigation/return regression also passed. These are targeted
+checks, not a complete playthrough.
+
+---
+
 # PokéGlass QA — QOL, 2026-10-10
 
 ## Latest follow-up: glass launcher and app returns

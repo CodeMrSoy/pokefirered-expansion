@@ -5,6 +5,8 @@
 #include "menu.h"
 #include "poke_glass.h"
 #include "pokemon.h"
+#include "pokemon_icon.h"
+#include "pokemon_storage_system.h"
 #include "event_data.h"
 #include "script.h"
 #include "sound.h"
@@ -19,6 +21,7 @@
 #include "overworld.h"
 #include "region_map.h"
 #include "constants/characters.h"
+#include "constants/flags.h"
 #include "constants/pokedex.h"
 #include "constants/region_map_sections.h"
 
@@ -209,6 +212,10 @@ static const u16 sPalette[16] = {
 // player visible through the glass; restore field/weather registers on every exit.
 
 static EWRAM_DATA u8 sHubWindow = 0;
+static EWRAM_DATA bool8 sTabletActive = FALSE;
+static EWRAM_DATA bool8 sTabletNative = FALSE;
+
+bool8 IsPokeGlassActive(void) { return sTabletActive; }
 static EWRAM_DATA u8 sHubCursor = 0;
 static EWRAM_DATA u16 sHubBlend[8] = {0};
 static EWRAM_DATA u16 sHubPalette[32] = {0};
@@ -440,6 +447,8 @@ static void DrawHub(void)
 
 static void CloseHub(void)
 {
+    if (sTabletActive)
+        return; // Task_CloseTablet animates only the screen before the handoff.
     ClearWindowTilemap(sHubWindow);
     RemoveWindow(sHubWindow);
     sHubWindow = WINDOW_NONE;
@@ -465,6 +474,21 @@ static void Task_CloseTablet(u8 taskId)
 {
     // Let the cleared tilemap reach VRAM before restoring its old palette.
     // Capture on the following frame, after both changes have reached VBlank.
+    if (sTabletActive)
+    {
+        u8 step = gTasks[taskId].data[2]++;
+        if (step < 6)
+        {
+            u16 x = 12 + step * 34;
+            HubRect(4, x, 15, step == 5 ? 30 : 34, 113);
+            CopyWindowToVram(sHubWindow, COPYWIN_GFX);
+            return;
+        }
+        if (sTabletNative) sHubWindow = WINDOW_NONE;
+        DestroyTask(taskId);
+        ScriptContext_Enable();
+        return;
+    }
     if (gTasks[taskId].data[2] == 0)
     {
         RestoreTabletAppearance();
@@ -510,9 +534,11 @@ static void Task_PokeGlassHub(u8 taskId)
         return;
     }
     PlaySE(SE_SELECT);
+    sTabletNative = gSpecialVar_Result == 1;
+    if (gSpecialVar_Result == SCR_MENU_CANCEL) sTabletActive = FALSE;
     CloseHub();
     gTasks[taskId].data[2] = 0;
-    gTasks[taskId].data[3] = gSpecialVar_Result == 1 && gPlayerPartyCount != 0;
+    gTasks[taskId].data[3] = FALSE;
     gTasks[taskId].func = Task_CloseTablet;
     if (gSpecialVar_Result == SCR_MENU_CANCEL)
         ReleasePokeGlassBackdrop();
@@ -520,6 +546,9 @@ static void Task_PokeGlassHub(u8 taskId)
 
 static bool8 OpenTabletWindow(void)
 {
+    if (sHubWindow != WINDOW_NONE && sTabletActive && !sTabletNative)
+        return TRUE;
+    sTabletNative = FALSE;
     sHubWindow = AddWindow(&sHubTemplate);
     if (sHubWindow == WINDOW_NONE)
     {
@@ -548,8 +577,10 @@ static bool8 OpenTabletWindow(void)
 void ShowPokeGlassHub(bool8 ignoreBPress)
 {
     u8 taskId;
+    if (!sTabletActive) CapturePokeGlassBackdrop();
     if (!OpenTabletWindow())
         return;
+    sTabletActive = TRUE;
     DrawHub();
     taskId = CreateTask(Task_PokeGlassHub, 80);
     if (taskId == TASK_NONE)
@@ -1194,4 +1225,343 @@ void ShowPokeGlassPokedex(void)
         RestoreTabletAppearance();
         ScriptContext_Enable();
     }
+}
+
+
+// Selection keeps its source intact until a validated placement is committed.
+static EWRAM_DATA struct {
+    u8 box, cursor, sourceBox, sourceSlot;
+    bool8 panel, holding, sourceParty;
+    u8 icons[37];
+} sGlassStorage = {0};
+
+static void StorageClearIcons(void)
+{
+    u8 i;
+    for (i = 0; i < ARRAY_COUNT(sGlassStorage.icons); i++)
+        if (sGlassStorage.icons[i] < MAX_SPRITES)
+            FreeAndDestroyMonIconSprite(&gSprites[sGlassStorage.icons[i]]);
+    memset(sGlassStorage.icons, MAX_SPRITES, sizeof(sGlassStorage.icons));
+}
+
+static void StoragePosition(u8 slot, s16 *x, s16 *y)
+{
+    if (slot < 30)
+    {
+        *x = (sGlassStorage.panel ? 88 : 48) + slot % 6 * (sGlassStorage.panel ? 22 : 30);
+        *y = 36 + slot / 6 * 18;
+    }
+    else if (slot < 36)
+    {
+        *x = 28 + (slot - 30) % 2 * 29;
+        *y = 43 + (slot - 30) / 2 * 27;
+    }
+    else { *x = 43; *y = 119; }
+}
+
+static void StorageRead(u8 box, u8 slot, bool8 party, struct Pokemon *mon)
+{
+    if (party) *mon = gPlayerParty[slot];
+    else
+    {
+        ZeroMonData(mon);
+        mon->box = *GetBoxedMonPtr(box, slot);
+    }
+}
+
+static void StorageIcon(u8 index, struct Pokemon *mon, s16 x, s16 y)
+{
+    u16 species = GetMonData(mon, MON_DATA_SPECIES_OR_EGG);
+    u32 personality = GetMonData(mon, MON_DATA_PERSONALITY);
+    u8 id;
+    if (!species) return;
+    LoadMonIconPalettePersonality(species, personality);
+    id = CreateMonIcon(species, SpriteCallbackDummy, x + 8, y + 8, 0, personality);
+    sGlassStorage.icons[index] = id;
+    if (id < MAX_SPRITES) gSprites[id].oam.priority = 0;
+}
+
+static void DrawGlassStorage(void)
+{
+    u8 i, name[POKEMON_NAME_LENGTH + 1];
+    s16 x, y;
+    struct Pokemon mon;
+    StorageClearIcons();
+    DrawTabletShell((u8 *)GetWindowAttribute(sHubWindow, WINDOW_TILE_DATA));
+    StatsText(18, 15, GetBoxNamePtr(sGlassStorage.box));
+
+    if (sGlassStorage.panel)
+    {
+        HubRect(3, 15, 31, 59, 78);
+
+    }
+    for (i = 0; i < (sGlassStorage.panel ? 36 : 30); i++)
+    {
+        StoragePosition(i, &x, &y);
+        HubRect(6, x - 9, y + 7, 18, 1);
+        StorageRead(sGlassStorage.box, i < 30 ? i : i - 30, i >= 30, &mon);
+        if (!(sGlassStorage.holding && sGlassStorage.sourceParty == (i >= 30)
+         && sGlassStorage.sourceSlot == (i < 30 ? i : i - 30)
+         && (i >= 30 || sGlassStorage.sourceBox == sGlassStorage.box)))
+            StorageIcon(i, &mon, x, y);
+    }
+    HubRect(sGlassStorage.cursor == 36 ? 8 : 6, 16, 113, 54, 14);
+    HubRect(4, 17, 114, 52, 12);
+    StatsText(25, 113, COMPOUND_STRING("Party"));
+    StoragePosition(sGlassStorage.cursor, &x, &y);
+    if (sGlassStorage.cursor < 36)
+    {
+        HubRect(sGlassStorage.holding ? 9 : 8, x - 11, y - 8, 22, 1);
+        HubRect(sGlassStorage.holding ? 9 : 8, x - 11, y + 9, 22, 1);
+        if (sGlassStorage.holding)
+        {
+            StorageRead(sGlassStorage.sourceBox, sGlassStorage.sourceSlot, sGlassStorage.sourceParty, &mon);
+            StorageIcon(36, &mon, x, y - 3);
+        }
+        else StorageRead(sGlassStorage.box, sGlassStorage.cursor < 30 ? sGlassStorage.cursor : sGlassStorage.cursor - 30, sGlassStorage.cursor >= 30, &mon);
+        if (GetMonData(&mon, MON_DATA_SPECIES))
+        {
+            GetMonData(&mon, MON_DATA_NICKNAME, name);
+            StatsText(83, 15, name);
+        }
+    }
+    if (sGlassStorage.cursor == 36 && sGlassStorage.holding)
+    {
+        StorageRead(sGlassStorage.sourceBox, sGlassStorage.sourceSlot, sGlassStorage.sourceParty, &mon);
+        StorageIcon(36, &mon, 66, 112);
+    }
+    PutWindowTilemap(sHubWindow);
+    CopyWindowToVram(sHubWindow, COPYWIN_FULL);
+}
+
+static bool8 StoragePlace(void)
+{
+    struct Pokemon source, target;
+    bool8 party = sGlassStorage.cursor >= 30;
+    u8 slot = party ? sGlassStorage.cursor - 30 : sGlassStorage.cursor;
+    StorageRead(sGlassStorage.sourceBox, sGlassStorage.sourceSlot, sGlassStorage.sourceParty, &source);
+    StorageRead(sGlassStorage.box, slot, party, &target);
+    if (!sGlassStorage.sourceParty && GetMonData(&source, MON_DATA_SPECIES))
+        BoxMonAtToMon(sGlassStorage.sourceBox, sGlassStorage.sourceSlot, &source);
+    if (!party && GetMonData(&target, MON_DATA_SPECIES))
+        BoxMonAtToMon(sGlassStorage.box, slot, &target);
+    // A party member may only leave if a usable member remains or arrives.
+    if (sGlassStorage.sourceParty != party)
+    {
+        u8 removed = party ? slot : sGlassStorage.sourceSlot;
+        struct Pokemon *incoming = party ? &source : &target;
+        struct Pokemon *outgoing = party ? &target : &source;
+        if (GetMonData(outgoing, MON_DATA_SPECIES)
+         && (!CountPartyAliveNonEggMonsExcept(removed)
+          && (!GetMonData(incoming, MON_DATA_SPECIES) || GetMonData(incoming, MON_DATA_IS_EGG) || !GetMonData(incoming, MON_DATA_HP))))
+            return FALSE;
+        if (GetMonData(outgoing, MON_DATA_SPECIES) && GetMonData(outgoing, MON_DATA_MAIL) != 255)
+            return FALSE;
+    }
+    if (sGlassStorage.sourceParty) gPlayerParty[sGlassStorage.sourceSlot] = target;
+    else SetBoxMonAt(sGlassStorage.sourceBox, sGlassStorage.sourceSlot, &target.box);
+    if (party) gPlayerParty[slot] = source;
+    else SetBoxMonAt(sGlassStorage.box, slot, &source.box);
+    CompactPartySlots();
+    CalculatePlayerPartyCount();
+    return TRUE;
+}
+
+static void Task_GlassStorage(u8 taskId)
+{
+    u8 cursor = sGlassStorage.cursor;
+    if (gTasks[taskId].data[0]++ < 2) return;
+    gTasks[taskId].data[0] = 2;
+    if (JOY_NEW(B_BUTTON))
+    {
+        if (sGlassStorage.holding) sGlassStorage.holding = FALSE;
+        else if (sGlassStorage.panel) { sGlassStorage.panel = FALSE; sGlassStorage.cursor = 36; }
+        else
+        {
+            StorageClearIcons();
+            FreeMonIconPalettes();
+            CloseHub();
+            gTasks[taskId].data[2] = 0;
+            gTasks[taskId].data[3] = FALSE;
+            gTasks[taskId].func = Task_CloseTablet;
+            return;
+        }
+    }
+    else if (JOY_NEW(L_BUTTON | R_BUTTON))
+    {
+        sGlassStorage.box = (sGlassStorage.box + (JOY_NEW(L_BUTTON) ? TOTAL_BOXES_COUNT - 1 : 1)) % TOTAL_BOXES_COUNT;
+        gPokemonStoragePtr->currentBox = sGlassStorage.box;
+    }
+    else if (JOY_NEW(A_BUTTON))
+    {
+        if (cursor == 36) { sGlassStorage.panel = TRUE; sGlassStorage.cursor = 30; }
+        else if (sGlassStorage.holding)
+        {
+            if (!StoragePlace()) { PlaySE(SE_FAILURE); return; }
+            sGlassStorage.holding = FALSE;
+        }
+        else
+        {
+            struct Pokemon mon;
+            StorageRead(sGlassStorage.box, cursor < 30 ? cursor : cursor - 30, cursor >= 30, &mon);
+            if (!GetMonData(&mon, MON_DATA_SPECIES)) return;
+            sGlassStorage.holding = TRUE;
+            sGlassStorage.sourceParty = cursor >= 30;
+            sGlassStorage.sourceSlot = cursor < 30 ? cursor : cursor - 30;
+            sGlassStorage.sourceBox = sGlassStorage.box;
+        }
+    }
+    else if (cursor == 36)
+    {
+        if (JOY_NEW(DPAD_UP | DPAD_RIGHT)) sGlassStorage.cursor = sGlassStorage.panel ? 34 : 24;
+        else return;
+    }
+    else if (cursor >= 30)
+    {
+        if (JOY_NEW(DPAD_RIGHT)) sGlassStorage.cursor = cursor % 2 ? (cursor - 30) / 2 * 6 : cursor + 1;
+        else if (JOY_NEW(DPAD_LEFT)) sGlassStorage.cursor = cursor % 2 ? cursor - 1 : 36;
+        else if (JOY_NEW(DPAD_UP)) sGlassStorage.cursor = cursor >= 32 ? cursor - 2 : 36;
+        else if (JOY_NEW(DPAD_DOWN)) sGlassStorage.cursor = cursor < 34 ? cursor + 2 : 36;
+        else return;
+    }
+    else
+    {
+        if (JOY_NEW(DPAD_LEFT)) sGlassStorage.cursor = cursor % 6 ? cursor - 1 : (sGlassStorage.panel ? 30 + (cursor / 6 / 2) * 2 + 1 : 36);
+        else if (JOY_NEW(DPAD_RIGHT)) sGlassStorage.cursor = cursor % 6 < 5 ? cursor + 1 : 36;
+        else if (JOY_NEW(DPAD_UP)) sGlassStorage.cursor = cursor >= 6 ? cursor - 6 : 36;
+        else if (JOY_NEW(DPAD_DOWN)) sGlassStorage.cursor = cursor < 24 ? cursor + 6 : 36;
+        else return;
+    }
+    if (sGlassStorage.holding && sGlassStorage.cursor == 36 && !sGlassStorage.panel)
+    {
+        sGlassStorage.panel = TRUE;
+        sGlassStorage.cursor = 30;
+    }
+    PlaySE(SE_SELECT);
+    DrawGlassStorage();
+}
+
+void ShowPokeGlassStorage(void)
+{
+    u8 taskId;
+    if (!OpenTabletWindow()) return;
+    memset(&sGlassStorage, 0, sizeof(sGlassStorage));
+    memset(sGlassStorage.icons, MAX_SPRITES, sizeof(sGlassStorage.icons));
+    sGlassStorage.box = StorageGetCurrentBox();
+    taskId = CreateTask(Task_GlassStorage, 80);
+    if (taskId == TASK_NONE)
+    {
+        CloseHub(); RestoreTabletAppearance(); ScriptContext_Enable(); return;
+    }
+    DrawGlassStorage();
+}
+
+
+static const u8 sGlassMapKanto[] = INCBIN_U8("graphics/poke_glass_maps/kanto.bin");
+static const u8 sGlassMap123[] = INCBIN_U8("graphics/poke_glass_maps/sevii_123.bin");
+static const u8 sGlassMap45[] = INCBIN_U8("graphics/poke_glass_maps/sevii_45.bin");
+static const u8 sGlassMap67[] = INCBIN_U8("graphics/poke_glass_maps/sevii_67.bin");
+static const u16 sGlassMapPalette[] = INCBIN_U16("graphics/poke_glass_maps/atlas_palette.bin");
+static EWRAM_DATA struct {
+    u8 region, x, y;
+    u16 palette[16];
+} sGlassMap = {0};
+
+static void DrawGlassMap(void)
+{
+    static const u8 *const maps[] = {sGlassMapKanto, sGlassMap123, sGlassMap45, sGlassMap67};
+    u16 section = PokeGlassMapSection(sGlassMap.region, sGlassMap.x, sGlassMap.y);
+    u8 name[64];
+    u16 x = 16 + (sGlassMap.x * 8 + 36) * 192 / 240;
+    u16 y = 32 + (sGlassMap.y * 8 + 36) * 80 / 160;
+    DrawTabletShell((u8 *)GetWindowAttribute(sHubWindow, WINDOW_TILE_DATA));
+    StatsText(18, 15, sGlassMap.region == 0 ? COMPOUND_STRING("KANTO") : COMPOUND_STRING("SEVII ISLANDS"));
+    BlitBitmapToWindow(sHubWindow, maps[sGlassMap.region], 16, 32, 192, 80);
+    // Map tiles use their own palette; the shell keeps its original colors.
+    HubRect(15, x - 2, y - 2, 5, 1);
+    HubRect(15, x - 2, y + 2, 5, 1);
+    HubRect(15, x - 2, y - 1, 1, 3);
+    HubRect(15, x + 2, y - 1, 1, 3);
+    if (section != MAPSEC_NONE)
+    {
+        GetMapName(name, section, 0);
+        StatsText(80, 114, name);
+    }
+    StatsText(18, 114, COMPOUND_STRING("A Guide"));
+    StatsText(143, 15, COMPOUND_STRING("L/R Map"));
+    PutWindowTilemap(sHubWindow);
+    PutWindowRectTilemapOverridePalette(sHubWindow, 2, 4, 24, 10, 9);
+    CopyWindowToVram(sHubWindow, COPYWIN_FULL);
+}
+
+static void Task_GlassMap(u8 taskId)
+{
+    if (gTasks[taskId].data[0]++ < 2) return;
+    gTasks[taskId].data[0] = 2;
+    if (JOY_NEW(B_BUTTON | A_BUTTON))
+    {
+        bool8 native = JOY_NEW(A_BUTTON) != 0;
+        LoadPalette(sGlassMap.palette, BG_PLTT_ID(9), sizeof(sGlassMap.palette));
+        if (native)
+        {
+            // Travel and dungeon guides retain the native eligibility checks.
+            sTabletNative = TRUE;
+            sHubWindow = WINDOW_NONE;
+            DestroyTask(taskId);
+            OpenPokeGlassMapNative();
+            return;
+        }
+        CloseHub();
+        gTasks[taskId].data[2] = 0;
+        gTasks[taskId].data[3] = FALSE;
+        gTasks[taskId].func = Task_CloseTablet;
+        return;
+    }
+    if (JOY_NEW(L_BUTTON | R_BUTTON))
+    {
+        u8 max = FlagGet(FLAG_SYS_SEVII_MAP_4567) ? 4 : FlagGet(FLAG_SYS_SEVII_MAP_123) ? 2 : 1;
+        sGlassMap.region = (sGlassMap.region + (JOY_NEW(L_BUTTON) ? max - 1 : 1)) % max;
+    }
+    else if (JOY_NEW(DPAD_LEFT) && sGlassMap.x) sGlassMap.x--;
+    else if (JOY_NEW(DPAD_RIGHT) && sGlassMap.x < 21) sGlassMap.x++;
+    else if (JOY_NEW(DPAD_UP) && sGlassMap.y) sGlassMap.y--;
+    else if (JOY_NEW(DPAD_DOWN) && sGlassMap.y < 14) sGlassMap.y++;
+    else return;
+    PlaySE(SE_SELECT);
+    DrawGlassMap();
+}
+
+void ShowPokeGlassMap(void)
+{
+    u8 taskId;
+    if (!OpenTabletWindow()) return;
+    taskId = CreateTask(Task_GlassMap, 80);
+    if (taskId == TASK_NONE)
+    {
+        CloseHub(); ScriptContext_Enable(); return;
+    }
+    sGlassMap.region = PokeGlassPlayerRegion();
+    sGlassMap.x = 4;
+    sGlassMap.y = 9;
+    CpuCopy16(&gPlttBufferUnfaded[BG_PLTT_ID(9)], sGlassMap.palette, sizeof(sGlassMap.palette));
+    LoadPalette(sGlassMapPalette, BG_PLTT_ID(9), sizeof(sGlassMapPalette));
+    DrawGlassMap();
+}
+
+void PreparePokeGlassReturn(void)
+{
+    if (!sTabletActive || !sTabletNative) return;
+    CapturePokeGlassBackdrop();
+    if (!OpenTabletWindow()) return;
+    DrawTabletShell((u8 *)GetWindowAttribute(sHubWindow, WINDOW_TILE_DATA));
+    PutWindowTilemap(sHubWindow);
+    CopyWindowToVram(sHubWindow, COPYWIN_FULL);
+}
+
+void EndPokeGlassSession(void)
+{
+    sTabletActive = FALSE;
+    sTabletNative = FALSE;
+    sHubWindow = WINDOW_NONE;
+    ReleasePokeGlassBackdrop();
 }

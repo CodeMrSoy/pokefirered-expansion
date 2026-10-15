@@ -55,12 +55,22 @@
 #include "constants/metatile_labels.h"
 
 // PokéGlass apps share the tablet UI or reuse native screens and map rules.
+void OpenPokeGlassStorage(void)
+{
+    ShowPokeGlassStorage();
+}
+
 void OpenPokeGlassPokedex(void)
 {
     ShowPokeGlassPokedex();
 }
 
 void OpenPokeGlassMap(void)
+{
+    ShowPokeGlassMap();
+}
+
+void OpenPokeGlassMapNative(void)
 {
     u8 i;
     CleanupOverworldWindowsAndTilemaps();

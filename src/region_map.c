@@ -1,4 +1,5 @@
 #include "global.h"
+#include "poke_glass.h"
 #include "avatar.h"
 #include "decompress.h"
 #include "gflib.h"
@@ -1099,7 +1100,7 @@ static void CB2_OpenRegionMap(void)
             SetBg0andBg3Hidden(TRUE);
         break;
     default:
-        BeginNormalPaletteFade(PALETTES_ALL, 0, 16, 0, RGB_BLACK);
+        BeginNormalPaletteFade(PALETTES_ALL, 0, IsPokeGlassActive() ? 0 : 16, 0, RGB_BLACK);
         CreateMainMapTask();
         SetRegionMapVBlankCB();
         break;
@@ -1295,7 +1296,7 @@ static void Task_RegionMap(u8 taskId)
         }
         break;
     case 5:
-        BeginNormalPaletteFade(PALETTES_ALL, 0, 0, 16, RGB_BLACK);
+        BeginNormalPaletteFade(PALETTES_ALL, 0, 0, IsPokeGlassActive() ? 0 : 16, RGB_BLACK);
     INCREMENT_MAIN_STATE_AND_BREAK:
         sRegionMap->mainState++;
         break;
@@ -2365,7 +2366,7 @@ static void Task_MapOpenAnim(u8 taskId)
     case 3:
         CopyBgTilemapBufferToVram(1);
         BlendPalettes(PALETTES_ALL, 16, RGB_BLACK);
-        BeginNormalPaletteFade(PALETTES_ALL, 0, 16, 0, RGB_BLACK);
+        BeginNormalPaletteFade(PALETTES_ALL, 0, IsPokeGlassActive() ? 0 : 16, 0, RGB_BLACK);
         SetRegionMapVBlankCB();
         sMapOpenCloseAnim->openState++;
         break;
@@ -3467,7 +3468,7 @@ static void LoadMapIcons(u8 taskId)
         break;
     case 3:
         BlendPalettes(PALETTES_ALL, 16, RGB_BLACK);
-        BeginNormalPaletteFade(PALETTES_ALL, 0, 16, 0, RGB_BLACK);
+        BeginNormalPaletteFade(PALETTES_ALL, 0, IsPokeGlassActive() ? 0 : 16, 0, RGB_BLACK);
         sMapIcons->state++;
         break;
     case 4:
@@ -3891,7 +3892,7 @@ static void Task_FlyMap(u8 taskId)
     switch (sFlyMap->state)
     {
     case 0:
-        BeginNormalPaletteFade(PALETTES_ALL, 0, 16, 0, RGB_BLACK);
+        BeginNormalPaletteFade(PALETTES_ALL, 0, IsPokeGlassActive() ? 0 : 16, 0, RGB_BLACK);
         InitMapIcons(GetSelectedRegionMap(), taskId, GetMainMapTask());
         CreateMapCursor(0, 0);
         CreatePlayerIcon(1, 1);
@@ -3991,7 +3992,7 @@ static void Task_FlyMap(u8 taskId)
         sFlyMap->state++;
         break;
     case 6:
-        BeginNormalPaletteFade(PALETTES_ALL, 0, 0, 16, RGB_BLACK);
+        BeginNormalPaletteFade(PALETTES_ALL, 0, 0, IsPokeGlassActive() ? 0 : 16, RGB_BLACK);
         sFlyMap->state++;
         break;
     default:
@@ -4027,7 +4028,10 @@ static void FreeFlyMap(u8 taskId)
     DestroyTask(taskId);
     FreeAllWindowBuffers();
     if (sFlyMap->selectedDestination == TRUE)
+    {
+        if (IsPokeGlassActive()) EndPokeGlassSession();
         SetMainCallback2(CB2_ReturnToField);
+    }
     else
         SetMainCallback2(sFlyMap->exitCallback);
     FREE_IF_NOT_NULL(sFlyMap);
@@ -4046,4 +4050,23 @@ static void SetFlyWarpDestination(u16 mapsec)
         SetWarpDestinationToMapWarp(sMapFlyDestinations[idx][0], sMapFlyDestinations[idx][1], -1);
     }
     ReturnToFieldFromFlyMapSelect();
+}
+
+u16 PokeGlassMapSection(u8 region, u8 x, u8 y)
+{
+    u16 section;
+    if (region >= REGIONMAP_COUNT || x >= MAP_WIDTH || y >= MAP_HEIGHT) return MAPSEC_NONE;
+    section = GetSelectedMapSection(region, LAYER_MAP, y, x);
+    if (section == MAPSEC_NONE) section = GetSelectedMapSection(region, LAYER_DUNGEON, y, x);
+    return section;
+}
+
+u8 PokeGlassPlayerRegion(void)
+{
+    u8 region, i;
+    if (gMapHeader.regionMapSectionId < SEVII_MAPSEC_START) return REGIONMAP_KANTO;
+    for (region = 0; region < 3; region++)
+        for (i = 0; sSeviiMapsecs[region][i] != MAPSEC_NONE; i++)
+            if (sSeviiMapsecs[region][i] == gMapHeader.regionMapSectionId) return region + 1;
+    return REGIONMAP_KANTO;
 }

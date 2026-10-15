@@ -546,7 +546,7 @@ static bool8 ShowPartyMenu(void)
     {
     case 0:
         SetVBlankHBlankCallbacksToNull();
-        ResetVramOamAndBgCntRegs();
+        if (!IsPokeGlassActive()) ResetVramOamAndBgCntRegs();
         ClearScheduledBgCopiesToVram();
         ++gMain.state;
         break;
@@ -649,15 +649,16 @@ static bool8 ShowPartyMenu(void)
         ++gMain.state;
         break;
     case 21:
-        BlendPalettes(PALETTES_ALL, 16, RGB_BLACK);
+        if (!IsPokeGlassActive()) BlendPalettes(PALETTES_ALL, 16, RGB_BLACK);
         ++gMain.state;
         break;
     case 22:
-        BeginNormalPaletteFade(PALETTES_ALL, -2, 16, 0, RGB_BLACK);
+        BeginNormalPaletteFade(PALETTES_ALL, -2, IsPokeGlassActive() ? 0 : 16, 0, RGB_BLACK);
         gPaletteFade.bufferTransferDisabled = FALSE;
         ++gMain.state;
         break;
     default:
+        if (IsPokeGlassActive()) { ShowBg(0); ShowBg(2); }
         SetVBlankCallback(VBlankCB_PartyMenu);
         SetMainCallback2(CB2_UpdatePartyMenu);
         return TRUE;
@@ -751,15 +752,16 @@ static bool8 ReloadPartyMenu(void)
         ++gMain.state;
         break;
     case 18:
-        BlendPalettes(PALETTES_ALL, 16, RGB_BLACK);
+        if (!IsPokeGlassActive()) BlendPalettes(PALETTES_ALL, 16, RGB_BLACK);
         ++gMain.state;
         break;
     case 19:
-        BeginNormalPaletteFade(PALETTES_ALL, -2, 16, 0, RGB_BLACK);
+        BeginNormalPaletteFade(PALETTES_ALL, -2, IsPokeGlassActive() ? 0 : 16, 0, RGB_BLACK);
         gPaletteFade.bufferTransferDisabled = FALSE;
         ++gMain.state;
         break;
     default:
+        if (IsPokeGlassActive()) { ShowBg(0); ShowBg(2); }
         SetVBlankCallback(VBlankCB_PartyMenu);
         SetMainCallback2(CB2_UpdatePartyMenu);
         return TRUE;
@@ -769,7 +771,7 @@ static bool8 ReloadPartyMenu(void)
 
 static void ExitPartyMenu(void)
 {
-    BeginNormalPaletteFade(PALETTES_ALL, -2, 0, 16, RGB_BLACK);
+    BeginNormalPaletteFade(PALETTES_ALL, -2, 0, IsPokeGlassActive() ? 0 : 16, RGB_BLACK);
     CreateTask(Task_ExitPartyMenu, 0);
     SetVBlankCallback(VBlankCB_PartyMenu);
     SetMainCallback2(CB2_UpdatePartyMenu);
@@ -799,6 +801,13 @@ static bool8 AllocPartyMenuBg(void)
     if (sPartyBgTilemapBuffer == NULL)
         return FALSE;
     memset(sPartyBgTilemapBuffer, 0, 0x800);
+    // Prepare the shell while the hub is still being displayed. Switching
+    // background registers before generating these tiles exposes a blank frame.
+    if (IsPokeGlassActive())
+    {
+        SetBgTilemapBuffer(1, sPartyBgTilemapBuffer);
+        DrawPokeGlassFrame(1);
+    }
     ResetBgsAndClearDma3BusyFlags(0);
     InitBgsFromTemplates(0, sPartyMenuBgTemplates, ARRAY_COUNT(sPartyMenuBgTemplates));
     if (gPartyMenu.layout == PARTY_LAYOUT_POKEGLASS)
@@ -808,9 +817,20 @@ static bool8 AllocPartyMenuBg(void)
     ScheduleBgCopyTilemapToVram(1);
     SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
     SetGpuReg(REG_OFFSET_BLDCNT, 0);
-    ShowBg(0);
     ShowBg(1);
-    ShowBg(2);
+    if (IsPokeGlassActive())
+    {
+        CpuCopy16(sPartyBgTilemapBuffer,
+            (void *)(VRAM + GetBgAttribute(1, BG_ATTR_MAPBASEINDEX) * 0x800), 0x800);
+        // Commit the shell before reusing the old hub's character memory.
+        VBlankIntrWait();
+        LoadPokeGlassBackdrop();
+    }
+    else
+    {
+        ShowBg(0);
+        ShowBg(2);
+    }
     return TRUE;
 }
 
@@ -1311,7 +1331,7 @@ static void SwapPartyPokemon(struct Pokemon *mon1, struct Pokemon *mon2)
 
 static void Task_ClosePartyMenu(u8 taskId)
 {
-    BeginNormalPaletteFade(PALETTES_ALL, 0, 0, 16, RGB_BLACK);
+    BeginNormalPaletteFade(PALETTES_ALL, 0, 0, IsPokeGlassActive() ? 0 : 16, RGB_BLACK);
     gTasks[taskId].func = Task_ClosePartyMenuAndSetCB2;
 }
 
