@@ -1,5 +1,35 @@
 # PokéGlass QA — QOL, 2026-10-15
 
+## Party text and HP cleanup
+
+The compact card now reserves separate pixel regions for level and HP text,
+right-aligns current/max HP, and draws a bordered 64-pixel HP track. Long names
+use a narrower font when necessary to stay clear of the gender marker.
+Level-up refreshes repaint the full card, rather than tile-rounded legacy
+rectangles that damaged neighboring digits. The tablet stat popup has 96 pixels
+of height so all six stat rows fit.
+
+The new `pokeglass_party_text_emulator.py` fixture covers level 10/100 and
+three-digit HP layouts, full/yellow/red/empty bars, healing, long nicknames,
+and the actual Rare Candy animation, level-up redraw, and both stat pages.
+Incremental HP regions and the real level-up card match a fresh redraw.
+Build, whitespace, and the shell/actions/Summary-return regression pass.
+These changes and the preceding visual fix remain uncommitted on QOL.
+
+## Party visual handoff follow-up
+
+Party loading now clears hardware OAM before reusing object tiles and palettes,
+keeps the captured field palette out of the legacy party palette upload, and
+registers its background with the BG manager so window updates cannot hide it.
+A blue glass tile covers the native background handoff until the app is ready.
+The shell remains visible throughout.
+
+The new `pokeglass_party_visual_emulator.py` regression checks hardware sprites,
+background visibility, palette ownership, and blank screen frames with one and
+six party members. Both fixtures pass. Existing shell/actions/Summary-return
+and all six app-launch transition regressions also pass. Build and whitespace
+checks pass; this follow-up remains uncommitted on QOL.
+
 ## Box view, carry-to-party, and screen transitions
 
 Storage opens with a 30-slot box. A picks up and places or swaps a Pokémon.

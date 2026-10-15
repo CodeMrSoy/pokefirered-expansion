@@ -185,20 +185,30 @@ void CapturePokeGlassBackdrop(void)
 
 void LoadPokeGlassBackdrop(void)
 {
+    static const struct BgTemplate backdropBg = {
+        .bg = 3, .charBaseIndex = 2, .mapBaseIndex = 27,
+        .screenSize = 0, .paletteMode = 0, .priority = 3, .baseTile = 0,
+    };
     u16 map[32 * 32] = {0};
     u32 x, y;
     if (sFieldBackdrop == NULL)
         return;
     CpuCopy16(sFieldBackdrop, (void *)(VRAM + 0x8000), 240 * 160 / 2);
     LoadPalette(sFieldBackdropPalette, BG_PLTT_ID(10), sizeof(sFieldBackdropPalette));
+    // Native app initialization temporarily disables palette transfers. Publish
+    // the captured field colors before its BG is shown, rather than exposing the
+    // old overworld palette in this reserved slot for several loading frames.
+    CpuCopy16(sFieldBackdropPalette, (void *)(PLTT + BG_PLTT_ID(10) * 2), sizeof(sFieldBackdropPalette));
     for (y = 0; y < 20; y++)
         for (x = 0; x < 30; x++)
             map[y * 32 + x] = (10 << 12) | (y * 30 + x);
     CpuCopy16(map, (void *)(VRAM + 27 * 0x800), sizeof(map));
-    SetGpuReg(REG_OFFSET_BG3CNT, (2 << 2) | (27 << 8) | 3);
+    // Register this BG with the manager as well as the hardware. Otherwise
+    // showing party windows silently hides it and exposes the backdrop color.
+    InitBgFromTemplate(&backdropBg);
     SetGpuReg(REG_OFFSET_BG3HOFS, 0);
     SetGpuReg(REG_OFFSET_BG3VOFS, 0);
-    SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_BG3_ON);
+    ShowBg(3);
     SetPokeGlassBlend(FALSE);
 }
 #include "constants/menu.h"
