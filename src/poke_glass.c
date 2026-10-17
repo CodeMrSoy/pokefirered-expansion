@@ -1346,6 +1346,8 @@ static EWRAM_DATA struct {
     u8 actionMode, actionChoice, nameCursor;
     u8 editedName[BOX_NAME_LENGTH + 1];
     const u8 *notice;
+    u16 iconSpecies[37];
+    u32 iconPersonality[37];
 } sGlassStorage = {0};
 
 static void StorageClearIcons(void)
@@ -1357,17 +1359,36 @@ static void StorageClearIcons(void)
     memset(sGlassStorage.icons, MAX_SPRITES, sizeof(sGlassStorage.icons));
 }
 
+// Keep the PC background quiet so species colors carry the visual weight.
+static const u16 sStoragePalette[16] = {
+    RGB(0,0,0), RGB(2,2,3), RGB(5,5,7), RGB(11,12,14),
+    RGB(0,6,11), RGB(3,13,20), RGB(15,23,26), RGB(15,29,31),
+    RGB(26,31,31), RGB(22,2,5), RGB(31,5,7), RGB(31,14,15),
+    RGB(20,21,24), RGB(28,29,30), RGB(17,25,28), RGB(31,31,31)
+};
+#define TAG_POKEGLASS_STORAGE_MON 0xD112
+static EWRAM_DATA u16 sStoragePortrait = 0;
+
+static void StorageDestroyPortrait(void)
+{
+    if (sStoragePortrait != 0xFFFF)
+        FreeAndDestroyMonPicSpriteNoPalette(sStoragePortrait);
+    sStoragePortrait = 0xFFFF;
+    FreeSpritePaletteByTag(TAG_POKEGLASS_STORAGE_MON);
+}
+
 static void StoragePosition(u8 slot, s16 *x, s16 *y)
 {
     if (slot < 30)
     {
-        *x = (sGlassStorage.panel ? 88 : 48) + slot % 6 * (sGlassStorage.panel ? 22 : 30);
-        *y = 36 + slot / 6 * 18;
+        // The box never moves when the party panel opens.
+        *x = 86 + slot % 6 * 22;
+        *y = 35 + slot / 6 * 19;
     }
     else if (slot < 36)
     {
-        *x = 28 + (slot - 30) % 2 * 29;
-        *y = 43 + (slot - 30) / 2 * 27;
+        *x = 29 + (slot - 30) % 2 * 29;
+        *y = 47 + (slot - 30) / 2 * 25;
     }
     else { *x = 43; *y = 119; }
 }
@@ -1382,68 +1403,188 @@ static void StorageRead(u8 box, u8 slot, bool8 party, struct Pokemon *mon)
     }
 }
 
+static void StorageRemoveIcon(u8 index)
+{
+    if (sGlassStorage.icons[index] < MAX_SPRITES)
+        FreeAndDestroyMonIconSprite(&gSprites[sGlassStorage.icons[index]]);
+    sGlassStorage.icons[index] = MAX_SPRITES;
+}
+
 static void StorageIcon(u8 index, struct Pokemon *mon, s16 x, s16 y)
 {
     u16 species = GetMonData(mon, MON_DATA_SPECIES_OR_EGG);
     u32 personality = GetMonData(mon, MON_DATA_PERSONALITY);
-    u8 id;
-    if (!species) return;
-    LoadMonIconPalettePersonality(species, personality);
-    id = CreateMonIcon(species, SpriteCallbackDummy, x + 8, y + 8, 0, personality);
-    sGlassStorage.icons[index] = id;
-    if (id < MAX_SPRITES) gSprites[id].oam.priority = 0;
+    u8 id = sGlassStorage.icons[index];
+    if (!species)
+    {
+        StorageRemoveIcon(index);
+        return;
+    }
+    if (id >= MAX_SPRITES || sGlassStorage.iconSpecies[index] != species
+     || sGlassStorage.iconPersonality[index] != personality)
+    {
+        StorageRemoveIcon(index);
+        LoadMonIconPalettePersonality(species, personality);
+        id = CreateMonIcon(species, SpriteCallbackDummy, x + 8, y + 8, 0, personality);
+        sGlassStorage.icons[index] = id;
+        sGlassStorage.iconSpecies[index] = species;
+        sGlassStorage.iconPersonality[index] = personality;
+    }
+    if (id < MAX_SPRITES)
+    {
+        gSprites[id].x = x + 8;
+        gSprites[id].y = y + 8;
+        gSprites[id].oam.priority = 0;
+        gSprites[id].subpriority = index == 36 ? 0 : 1;
+        gSprites[id].callback = index == sGlassStorage.cursor || index == 36 ? SpriteCB_MonIcon : SpriteCallbackDummy;
+    }
+}
+
+static void StorageTextFit(u16 x, u16 y, u16 width, const u8 *text)
+{
+    u8 fitted[32];
+    u32 len = 0;
+    while (text[len] != EOS && len < sizeof(fitted) - 1)
+    {
+        fitted[len] = text[len];
+        fitted[++len] = EOS;
+        if (GetStringWidth(FONT_SMALL, fitted, 0) > width)
+        {
+            fitted[--len] = EOS;
+            break;
+        }
+    }
+    fitted[len] = EOS;
+    StatsText(x, y, fitted);
+}
+
+static void StoragePreview(struct Pokemon *mon)
+{
+    u8 name[POKEMON_NAME_LENGTH + 1], palette;
+    u16 species = GetMonData(mon, MON_DATA_SPECIES_OR_EGG);
+    u32 personality = GetMonData(mon, MON_DATA_PERSONALITY);
+    bool32 shiny = GetMonData(mon, MON_DATA_IS_SHINY);
+    if (!species)
+    {
+        StorageDestroyPortrait();
+        StatsText(19, 54, COMPOUND_STRING("Choose a"));
+        StatsText(19, 66, COMPOUND_STRING("Pokémon"));
+        return;
+    }
+    GetMonData(mon, MON_DATA_NICKNAME, name);
+    StorageTextFit(15, 29, 61, name);
+    HubRect(6, 15, 43, 61, 55);
+    HubRect(14, 16, 44, 59, 53);
+    if (sStoragePortrait == 0xFFFF)
+    {
+        palette = LoadSpritePaletteWithTag(GetMonSpritePalFromSpeciesAndPersonality(species, shiny, personality), TAG_POKEGLASS_STORAGE_MON);
+        if (palette != 0xFF)
+        {
+            sStoragePortrait = CreateMonPicSprite(species, shiny, personality, TRUE, 52, 78, palette, TAG_NONE);
+            if (sStoragePortrait < MAX_SPRITES) gSprites[sStoragePortrait].oam.priority = 0;
+            else { sStoragePortrait = 0xFFFF; FreeSpritePaletteByTag(TAG_POKEGLASS_STORAGE_MON); }
+        }
+    }
+    else
+    {
+        palette = IndexOfSpritePaletteTag(TAG_POKEGLASS_STORAGE_MON);
+        LoadPalette(GetMonSpritePalFromSpeciesAndPersonality(species, shiny, personality), OBJ_PLTT_ID(palette), PLTT_SIZE_4BPP);
+        LoadSpecialPokePic((void *)gSprites[sStoragePortrait].images[0].data, species, personality, TRUE);
+        StartSpriteAnim(&gSprites[sStoragePortrait], 0);
+    }
+    if (GetMonData(mon, MON_DATA_IS_EGG)) StatsText(27, 100, COMPOUND_STRING("Egg"));
+    else
+    {
+        StatsText(17, 100, COMPOUND_STRING("Lv."));
+        StatsNumber(53, 100, GetLevelFromBoxMonExp(&mon->box));
+        if (GetMonGender(mon) != MON_GENDERLESS)
+            StatsText(61, 100, GetMonGender(mon) == MON_FEMALE ? COMPOUND_STRING("♀") : COMPOUND_STRING("♂"));
+    }
+}
+
+static void StorageCursor(s16 x, s16 y)
+{
+    u8 color = sGlassStorage.holding ? 10 : 4;
+    // Four brackets leave the icon unobscured and stay visible on occupied slots.
+    HubRect(color, x - 10, y - 9, 5, 2);
+    HubRect(color, x - 10, y - 9, 2, 5);
+    HubRect(color, x + 5, y - 9, 5, 2);
+    HubRect(color, x + 8, y - 9, 2, 5);
+    HubRect(color, x - 10, y + 7, 5, 2);
+    HubRect(color, x - 10, y + 4, 2, 5);
+    HubRect(color, x + 5, y + 7, 5, 2);
+    HubRect(color, x + 8, y + 4, 2, 5);
 }
 
 static void DrawGlassStorage(void)
 {
-    u8 i, name[POKEMON_NAME_LENGTH + 1];
+    u8 i, count[8];
     s16 x, y;
-    struct Pokemon mon;
-    StorageClearIcons();
+    struct Pokemon mon, selected;
+    ZeroMonData(&selected);
+    // Storage needs the same contrast as a PC box. Keep the bezel but make
+    // this app's screen opaque; the overworld cannot show through the grid.
+    SetGpuReg(REG_OFFSET_BLDCNT, 0);
+    LoadPalette(sStoragePalette, BG_PLTT_ID(11), sizeof(sStoragePalette));
     DrawTabletShell((u8 *)GetWindowAttribute(sHubWindow, WINDOW_TILE_DATA));
-    StatsText(18, 15, GetBoxNamePtr(sGlassStorage.box));
-
-    if (sGlassStorage.panel)
-    {
-        HubRect(3, 15, 31, 59, 78);
-
-    }
-    for (i = 0; i < (sGlassStorage.panel ? 36 : 30); i++)
+    HubRect(4, 12, 15, 200, 113);
+    HubRect(5, 78, 15, 134, 12);
+    StatsText(16, 15, sGlassStorage.holding ? COMPOUND_STRING("B Cancel") : COMPOUND_STRING("SELECT"));
+    StatsText(81, 15, COMPOUND_STRING("L"));
+    StorageTextFit(98, 15, 62, GetBoxNamePtr(sGlassStorage.box));
+    ConvertIntToDecimalStringN(count, CountMonsInBox(sGlassStorage.box), STR_CONV_MODE_LEFT_ALIGN, 2);
+    StringAppend(count, COMPOUND_STRING("/30"));
+    StatsText(169, 15, count);
+    StatsText(201, 15, COMPOUND_STRING("R"));
+    HubRect(6, 76, 27, 136, 101);
+    for (i = 0; i < 30; i++)
     {
         StoragePosition(i, &x, &y);
-        HubRect(6, x - 9, y + 7, 18, 1);
+        // A quiet checkerboard reads as one box instead of thirty tiny cards.
+        HubRect((i / 6 + i % 6) % 2 ? 14 : 6, x - 10, y - 8, 21, i >= 24 ? 25 : 18);
+    }
+    if (sGlassStorage.panel)
+    {
+        StorageDestroyPortrait();
+        StatsText(25, 29, COMPOUND_STRING("PARTY"));
+        for (i = 30; i < 36; i++)
+        {
+            StoragePosition(i, &x, &y);
+            HubRect(5, x - 12, y - 9, 25, 20);
+        }
+    }
+    for (i = 0; i < 36; i++)
+    {
+        bool8 source = sGlassStorage.holding && sGlassStorage.sourceParty == (i >= 30)
+            && sGlassStorage.sourceSlot == (i < 30 ? i : i - 30)
+            && (i >= 30 || sGlassStorage.sourceBox == sGlassStorage.box);
+        if ((i >= 30 && !sGlassStorage.panel) || source || (sGlassStorage.holding && i == sGlassStorage.cursor))
+        {
+            StorageRemoveIcon(i);
+            continue;
+        }
+        StoragePosition(i, &x, &y);
         StorageRead(sGlassStorage.box, i < 30 ? i : i - 30, i >= 30, &mon);
-        if (!(sGlassStorage.holding && sGlassStorage.sourceParty == (i >= 30)
-         && sGlassStorage.sourceSlot == (i < 30 ? i : i - 30)
-         && (i >= 30 || sGlassStorage.sourceBox == sGlassStorage.box)))
-            StorageIcon(i, &mon, x, y);
+        StorageIcon(i, &mon, x, y);
     }
-    HubRect(sGlassStorage.cursor == 36 ? 8 : 6, 16, 113, 54, 14);
-    HubRect(4, 17, 114, 52, 12);
-    StatsText(25, 113, COMPOUND_STRING("Party"));
+    HubRect(sGlassStorage.cursor == 36 ? 15 : 6, 15, 114, 61, 14);
+    HubRect(5, 16, 115, 59, 12);
+    StatsText(29, 114, COMPOUND_STRING("Party"));
+    if (sGlassStorage.holding)
+        StorageRead(sGlassStorage.sourceBox, sGlassStorage.sourceSlot, sGlassStorage.sourceParty, &selected);
+    else if (sGlassStorage.cursor < 36)
+        StorageRead(sGlassStorage.box, sGlassStorage.cursor < 30 ? sGlassStorage.cursor : sGlassStorage.cursor - 30, sGlassStorage.cursor >= 30, &selected);
+    if (!sGlassStorage.panel) StoragePreview(&selected);
     StoragePosition(sGlassStorage.cursor, &x, &y);
-    if (sGlassStorage.cursor < 36)
+    if (sGlassStorage.cursor < 36) StorageCursor(x, y);
+    if (sGlassStorage.holding)
     {
-        HubRect(sGlassStorage.holding ? 9 : 8, x - 11, y - 8, 22, 1);
-        HubRect(sGlassStorage.holding ? 9 : 8, x - 11, y + 9, 22, 1);
-        if (sGlassStorage.holding)
-        {
-            StorageRead(sGlassStorage.sourceBox, sGlassStorage.sourceSlot, sGlassStorage.sourceParty, &mon);
-            StorageIcon(36, &mon, x, y - 3);
-        }
-        else StorageRead(sGlassStorage.box, sGlassStorage.cursor < 30 ? sGlassStorage.cursor : sGlassStorage.cursor - 30, sGlassStorage.cursor >= 30, &mon);
-        if (GetMonData(&mon, MON_DATA_SPECIES))
-        {
-            GetMonData(&mon, MON_DATA_NICKNAME, name);
-            StatsText(83, 15, name);
-        }
+        StorageIcon(36, &selected, x, y - (sGlassStorage.cursor == 36 ? 8 : 1));
     }
-    if (sGlassStorage.cursor == 36 && sGlassStorage.holding)
+    else
     {
-        StorageRead(sGlassStorage.sourceBox, sGlassStorage.sourceSlot, sGlassStorage.sourceParty, &mon);
-        StorageIcon(36, &mon, 66, 112);
+        StorageRemoveIcon(36);
     }
-    StatsText(100, 114, COMPOUND_STRING("SELECT Options"));
     PutWindowTilemap(sHubWindow);
     CopyWindowToVram(sHubWindow, COPYWIN_FULL);
 }
@@ -1500,6 +1641,7 @@ static void DrawStorageActions(void)
 {
     u8 mark[] = _(">");
     StorageClearIcons();
+    StorageDestroyPortrait();
     HubRect(2, 18, 32, 188, 77);
     HubRect(4, 19, 33, 186, 75);
     if (sGlassStorage.actionMode == 1)
@@ -1644,6 +1786,18 @@ static bool8 StoragePlace(void)
     return TRUE;
 }
 
+static void Task_CloseGlassStorage(u8 taskId)
+{
+    // Restore the hub only after the app's opaque screen has been wiped.
+    // OpenTabletWindow reuses the existing window on app-to-hub returns.
+    if (sTabletActive && gTasks[taskId].data[2] == 6)
+    {
+        LoadPalette(sPalette, BG_PLTT_ID(11), sizeof(sPalette));
+        SetPokeGlassBlend(TRUE);
+    }
+    Task_CloseTablet(taskId);
+}
+
 static void Task_GlassStorage(u8 taskId)
 {
     u8 cursor = sGlassStorage.cursor;
@@ -1664,11 +1818,12 @@ static void Task_GlassStorage(u8 taskId)
         else
         {
             StorageClearIcons();
+            StorageDestroyPortrait();
             FreeMonIconPalettes();
             CloseHub();
             gTasks[taskId].data[2] = 0;
             gTasks[taskId].data[3] = FALSE;
-            gTasks[taskId].func = Task_CloseTablet;
+            gTasks[taskId].func = Task_CloseGlassStorage;
             return;
         }
     }
@@ -1731,6 +1886,7 @@ void ShowPokeGlassStorage(void)
     u8 taskId;
     QuantumRecoverStoredItemsAndPokemon();
     if (!OpenTabletWindow()) return;
+    sStoragePortrait = 0xFFFF;
     memset(&sGlassStorage, 0, sizeof(sGlassStorage));
     memset(sGlassStorage.icons, MAX_SPRITES, sizeof(sGlassStorage.icons));
     sGlassStorage.box = StorageGetCurrentBox();

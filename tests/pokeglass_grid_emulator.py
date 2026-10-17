@@ -33,7 +33,7 @@ for key, expected in ((4, 0), (6, 0), (7, 1), (7, 2), (7, 2),
 for app, path, task in (
     (0, (), 'Task_PokeGlassPokedex'),
     (1, (7,), 'Task_HandleChooseMonInput'),
-    (2, (7,), 'Task_PCMainMenu'),
+    (2, (7,), 'Task_GlassStorage'),
     (5, (5,), 'Task_PokeGlassWardrobe'),
     (3, (6,), 'Task_PokeGlassStats'),
     (4, (6,), None),

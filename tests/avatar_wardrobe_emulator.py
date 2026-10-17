@@ -165,12 +165,11 @@ assert m.read(save2, 9) == identity
 m.snap('avatar-save-reload')
 m.press(3)
 m.press(8)
-m.press(7, 20)
-m.press(5, 20)
+m.press(5, 20)  # Map is the lower-left app in the six-app grid.
 m.press(8)
-map_icon = struct.unpack('<I', m.read(m.symbols['sPlayerIcon'], 4))[0]
-assert m.read(map_icon + 12, 128) == (m.root/'graphics/avatars/may/map.4bpp').read_bytes()
-m.snap('avatar-map-icon')
+wait_task('Task_GlassMap')
+assert native('GetCurrentAvatarLook') == 3
+m.snap('avatar-tablet-map')
 m.press(0)
 m.press(0)
 
@@ -220,4 +219,4 @@ for look in range(2, 4):
     assert m.read(m.symbols['gPlayerAvatar'] + 6, 1) == b'\x00'
     assert native('GetCurrentAvatarLook') == look
     native('UnlockPlayerFieldControls')
-print('Four creation/Wardrobe previews, cancel/confirm, identity, movement, actual battle backs, map icon, Fly landing, and real save/reload passed')
+print('Four creation/Wardrobe previews, cancel/confirm, identity, movement, actual battle backs, tablet map, Fly landing, and real save/reload passed')
