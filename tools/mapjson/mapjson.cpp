@@ -455,6 +455,23 @@ string generate_groups_text(Json groups_data) {
     return text.str();
 }
 
+// Optional project policy leaves numeric map/layout IDs intact for old saves.
+// Source maps remain editable for future regions, without linking retired data.
+static bool quantum_retired(const string &kind, const string &name) {
+    static Json policy = []() {
+        ifstream input("data/quantum/retired_content.json");
+        if (!input.good()) return Json();
+        ostringstream buffer; buffer << input.rdbuf();
+        string error;
+        Json result = Json::parse(buffer.str(), error);
+        if (!error.empty()) FATAL_ERROR("Invalid retired-content policy: %s\n", error.c_str());
+        return result;
+    }();
+    for (const auto &entry : policy[kind].array_items())
+        if (entry.string_value() == name) return true;
+    return false;
+}
+
 string generate_connections_text(Json groups_data, string include_path) {
     vector<Json> map_names;
 
@@ -480,7 +497,10 @@ string generate_connections_text(Json groups_data, string include_path) {
     text << get_generated_warning("data/maps/map_groups.json", true);
 
     for (Json map_name : map_names)
+    {
+        if (quantum_retired("retired_maps", json_to_string(map_name))) continue;
         text << "\t.include \"" << include_path << "/" <<  json_to_string(map_name) << "/connections.inc\"\n";
+    }
 
     return text.str();
 }
@@ -497,7 +517,12 @@ string generate_headers_text(Json groups_data, string include_path) {
     text << get_generated_warning("data/maps/map_groups.json", true);
 
     for (string map_name : map_names)
-        text << "\t.include \"" << include_path << "/" << map_name << "/header.inc\"\n";
+    {
+        if (quantum_retired("retired_maps", map_name))
+            text << "\t.global " << map_name << "\n\t.set " << map_name << ", PalletTown\n";
+        else
+            text << "\t.include \"" << include_path << "/" << map_name << "/header.inc\"\n";
+    }
 
     return text.str();
 }
@@ -514,7 +539,10 @@ string generate_events_text(Json groups_data, string include_path) {
     text << get_generated_warning(include_path + "/map_groups.json", true);
 
     for (string map_name : map_names)
+    {
+        if (quantum_retired("retired_maps", map_name)) continue;
         text << "\t.include \"" << include_path << "/" << map_name << "/events.inc\"\n";
+    }
 
     return text.str();
 }
@@ -608,6 +636,10 @@ string generate_layout_headers_text(Json layouts_data) {
     for (auto &layout : layouts_data["layouts"].array_items()) {
         if (layout == Json::object()) continue;
         string layoutName = json_to_string(layout, "name");
+        if (quantum_retired("retired_layouts", layoutName)) {
+            text << "\t.global " << layoutName << "\n\t.set " << layoutName << ", PalletTown_Layout\n";
+            continue;
+        }
         string border_label = layoutName + "_Border";
         string blockdata_label = layoutName + "_Blockdata";
         text << border_label << "::\n"

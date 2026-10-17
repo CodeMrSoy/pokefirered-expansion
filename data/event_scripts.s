@@ -92,12 +92,11 @@ gStdScripts::
 	.4byte Std_PutItemAway          @ STD_PUT_ITEM_AWAY
 	.4byte Std_ReceivedItem         @ STD_RECEIVED_ITEM
 gStdScriptsEnd::
-
-	.include "data/maps/BattleColosseum_2P/scripts.inc"
-	.include "data/maps/TradeCenter/scripts.inc"
-	.include "data/maps/RecordCorner/scripts.inc"
-	.include "data/maps/BattleColosseum_4P/scripts.inc"
-	.include "data/maps/UnionRoom/scripts.inc"
+@ Retired map payload: BattleColosseum_2P
+@ Retired map payload: TradeCenter
+@ Retired map payload: RecordCorner
+@ Retired map payload: BattleColosseum_4P
+@ Retired map payload: UnionRoom
 	.include "data/maps/ViridianForest/scripts.inc"
 	.include "data/maps/MtMoon_1F/scripts.inc"
 	.include "data/maps/MtMoon_B1F/scripts.inc"
@@ -170,9 +169,9 @@ gStdScriptsEnd::
 	.include "data/maps/SafariZone_North_RestHouse/scripts.inc"
 	.include "data/maps/SafariZone_West_RestHouse/scripts.inc"
 	.include "data/maps/SafariZone_SecretHouse/scripts.inc"
-	.include "data/maps/CeruleanCave_1F/scripts.inc"
-	.include "data/maps/CeruleanCave_2F/scripts.inc"
-	.include "data/maps/CeruleanCave_B1F/scripts.inc"
+@ Retired map payload: CeruleanCave_1F
+@ Retired map payload: CeruleanCave_2F
+@ Retired map payload: CeruleanCave_B1F
 	.include "data/maps/PokemonLeague_LoreleisRoom/scripts.inc"
 	.include "data/maps/PokemonLeague_BrunosRoom/scripts.inc"
 	.include "data/maps/PokemonLeague_AgathasRoom/scripts.inc"
@@ -181,11 +180,11 @@ gStdScriptsEnd::
 	.include "data/maps/PokemonLeague_HallOfFame/scripts.inc"
 	.include "data/maps/RockTunnel_1F/scripts.inc"
 	.include "data/maps/RockTunnel_B1F/scripts.inc"
-	.include "data/maps/SeafoamIslands_1F/scripts.inc"
-	.include "data/maps/SeafoamIslands_B1F/scripts.inc"
-	.include "data/maps/SeafoamIslands_B2F/scripts.inc"
-	.include "data/maps/SeafoamIslands_B3F/scripts.inc"
-	.include "data/maps/SeafoamIslands_B4F/scripts.inc"
+@ Retired map payload: SeafoamIslands_1F
+@ Retired map payload: SeafoamIslands_B1F
+@ Retired map payload: SeafoamIslands_B2F
+@ Retired map payload: SeafoamIslands_B3F
+@ Retired map payload: SeafoamIslands_B4F
 	.include "data/maps/PokemonTower_1F/scripts.inc"
 	.include "data/maps/PokemonTower_2F/scripts.inc"
 	.include "data/maps/PokemonTower_3F/scripts.inc"
@@ -194,93 +193,93 @@ gStdScriptsEnd::
 	.include "data/maps/PokemonTower_6F/scripts.inc"
 	.include "data/maps/PokemonTower_7F/scripts.inc"
 	.include "data/maps/PowerPlant/scripts.inc"
-	.include "data/maps/MtEmber_RubyPath_B4F/scripts.inc"
-	.include "data/maps/MtEmber_Exterior/scripts.inc"
-	.include "data/maps/MtEmber_SummitPath_1F/scripts.inc"
-	.include "data/maps/MtEmber_SummitPath_2F/scripts.inc"
-	.include "data/maps/MtEmber_SummitPath_3F/scripts.inc"
-	.include "data/maps/MtEmber_Summit/scripts.inc"
-	.include "data/maps/MtEmber_RubyPath_B5F/scripts.inc"
-	.include "data/maps/MtEmber_RubyPath_1F/scripts.inc"
-	.include "data/maps/MtEmber_RubyPath_B1F/scripts.inc"
-	.include "data/maps/MtEmber_RubyPath_B2F/scripts.inc"
-	.include "data/maps/MtEmber_RubyPath_B3F/scripts.inc"
-	.include "data/maps/MtEmber_RubyPath_B1F_Stairs/scripts.inc"
-	.include "data/maps/MtEmber_RubyPath_B2F_Stairs/scripts.inc"
-	.include "data/maps/ThreeIsland_BerryForest/scripts.inc"
-	.include "data/maps/FourIsland_IcefallCave_Entrance/scripts.inc"
-	.include "data/maps/FourIsland_IcefallCave_1F/scripts.inc"
-	.include "data/maps/FourIsland_IcefallCave_B1F/scripts.inc"
-	.include "data/maps/FourIsland_IcefallCave_Back/scripts.inc"
-	.include "data/maps/FiveIsland_RocketWarehouse/scripts.inc"
-	.include "data/maps/SixIsland_DottedHole_1F/scripts.inc"
-	.include "data/maps/SixIsland_DottedHole_B1F/scripts.inc"
-	.include "data/maps/SixIsland_DottedHole_B2F/scripts.inc"
-	.include "data/maps/SixIsland_DottedHole_B3F/scripts.inc"
-	.include "data/maps/SixIsland_DottedHole_B4F/scripts.inc"
-	.include "data/maps/SixIsland_DottedHole_SapphireRoom/scripts.inc"
-	.include "data/maps/SixIsland_PatternBush/scripts.inc"
-	.include "data/maps/SixIsland_AlteringCave/scripts.inc"
-	.include "data/maps/NavelRock_Exterior/scripts.inc"
-	.include "data/maps/TrainerTower_1F/scripts.inc"
-	.include "data/maps/TrainerTower_2F/scripts.inc"
-	.include "data/maps/TrainerTower_3F/scripts.inc"
-	.include "data/maps/TrainerTower_4F/scripts.inc"
-	.include "data/maps/TrainerTower_5F/scripts.inc"
-	.include "data/maps/TrainerTower_6F/scripts.inc"
-	.include "data/maps/TrainerTower_7F/scripts.inc"
-	.include "data/maps/TrainerTower_8F/scripts.inc"
-	.include "data/maps/TrainerTower_Roof/scripts.inc"
-	.include "data/maps/TrainerTower_Lobby/scripts.inc"
-	.include "data/maps/TrainerTower_Elevator/scripts.inc"
-	.include "data/maps/FiveIsland_LostCave_Entrance/scripts.inc"
-	.include "data/maps/FiveIsland_LostCave_Room1/scripts.inc"
-	.include "data/maps/FiveIsland_LostCave_Room2/scripts.inc"
-	.include "data/maps/FiveIsland_LostCave_Room3/scripts.inc"
-	.include "data/maps/FiveIsland_LostCave_Room4/scripts.inc"
-	.include "data/maps/FiveIsland_LostCave_Room5/scripts.inc"
-	.include "data/maps/FiveIsland_LostCave_Room6/scripts.inc"
-	.include "data/maps/FiveIsland_LostCave_Room7/scripts.inc"
-	.include "data/maps/FiveIsland_LostCave_Room8/scripts.inc"
-	.include "data/maps/FiveIsland_LostCave_Room9/scripts.inc"
-	.include "data/maps/FiveIsland_LostCave_Room10/scripts.inc"
-	.include "data/maps/FiveIsland_LostCave_Room11/scripts.inc"
-	.include "data/maps/FiveIsland_LostCave_Room12/scripts.inc"
-	.include "data/maps/FiveIsland_LostCave_Room13/scripts.inc"
-	.include "data/maps/FiveIsland_LostCave_Room14/scripts.inc"
-	.include "data/maps/SevenIsland_TanobyRuins_MoneanChamber/scripts.inc"
-	.include "data/maps/SevenIsland_TanobyRuins_LiptooChamber/scripts.inc"
-	.include "data/maps/SevenIsland_TanobyRuins_WeepthChamber/scripts.inc"
-	.include "data/maps/SevenIsland_TanobyRuins_DilfordChamber/scripts.inc"
-	.include "data/maps/SevenIsland_TanobyRuins_ScufibChamber/scripts.inc"
-	.include "data/maps/SevenIsland_TanobyRuins_RixyChamber/scripts.inc"
-	.include "data/maps/SevenIsland_TanobyRuins_ViapoisChamber/scripts.inc"
-	.include "data/maps/ThreeIsland_DunsparceTunnel/scripts.inc"
-	.include "data/maps/SevenIsland_SevaultCanyon_TanobyKey/scripts.inc"
-	.include "data/maps/NavelRock_1F/scripts.inc"
-	.include "data/maps/NavelRock_Summit/scripts.inc"
-	.include "data/maps/NavelRock_Base/scripts.inc"
-	.include "data/maps/NavelRock_SummitPath_2F/scripts.inc"
-	.include "data/maps/NavelRock_SummitPath_3F/scripts.inc"
-	.include "data/maps/NavelRock_SummitPath_4F/scripts.inc"
-	.include "data/maps/NavelRock_SummitPath_5F/scripts.inc"
-	.include "data/maps/NavelRock_BasePath_B1F/scripts.inc"
-	.include "data/maps/NavelRock_BasePath_B2F/scripts.inc"
-	.include "data/maps/NavelRock_BasePath_B3F/scripts.inc"
-	.include "data/maps/NavelRock_BasePath_B4F/scripts.inc"
-	.include "data/maps/NavelRock_BasePath_B5F/scripts.inc"
-	.include "data/maps/NavelRock_BasePath_B6F/scripts.inc"
-	.include "data/maps/NavelRock_BasePath_B7F/scripts.inc"
-	.include "data/maps/NavelRock_BasePath_B8F/scripts.inc"
-	.include "data/maps/NavelRock_BasePath_B9F/scripts.inc"
-	.include "data/maps/NavelRock_BasePath_B10F/scripts.inc"
-	.include "data/maps/NavelRock_BasePath_B11F/scripts.inc"
-	.include "data/maps/NavelRock_B1F/scripts.inc"
-	.include "data/maps/NavelRock_Fork/scripts.inc"
-	.include "data/maps/BirthIsland_Exterior/scripts.inc"
-	.include "data/maps/OneIsland_KindleRoad_EmberSpa/scripts.inc"
-	.include "data/maps/BirthIsland_Harbor/scripts.inc"
-	.include "data/maps/NavelRock_Harbor/scripts.inc"
+@ Retired map payload: MtEmber_RubyPath_B4F
+@ Retired map payload: MtEmber_Exterior
+@ Retired map payload: MtEmber_SummitPath_1F
+@ Retired map payload: MtEmber_SummitPath_2F
+@ Retired map payload: MtEmber_SummitPath_3F
+@ Retired map payload: MtEmber_Summit
+@ Retired map payload: MtEmber_RubyPath_B5F
+@ Retired map payload: MtEmber_RubyPath_1F
+@ Retired map payload: MtEmber_RubyPath_B1F
+@ Retired map payload: MtEmber_RubyPath_B2F
+@ Retired map payload: MtEmber_RubyPath_B3F
+@ Retired map payload: MtEmber_RubyPath_B1F_Stairs
+@ Retired map payload: MtEmber_RubyPath_B2F_Stairs
+@ Retired map payload: ThreeIsland_BerryForest
+@ Retired map payload: FourIsland_IcefallCave_Entrance
+@ Retired map payload: FourIsland_IcefallCave_1F
+@ Retired map payload: FourIsland_IcefallCave_B1F
+@ Retired map payload: FourIsland_IcefallCave_Back
+@ Retired map payload: FiveIsland_RocketWarehouse
+@ Retired map payload: SixIsland_DottedHole_1F
+@ Retired map payload: SixIsland_DottedHole_B1F
+@ Retired map payload: SixIsland_DottedHole_B2F
+@ Retired map payload: SixIsland_DottedHole_B3F
+@ Retired map payload: SixIsland_DottedHole_B4F
+@ Retired map payload: SixIsland_DottedHole_SapphireRoom
+@ Retired map payload: SixIsland_PatternBush
+@ Retired map payload: SixIsland_AlteringCave
+@ Retired map payload: NavelRock_Exterior
+@ Retired map payload: TrainerTower_1F
+@ Retired map payload: TrainerTower_2F
+@ Retired map payload: TrainerTower_3F
+@ Retired map payload: TrainerTower_4F
+@ Retired map payload: TrainerTower_5F
+@ Retired map payload: TrainerTower_6F
+@ Retired map payload: TrainerTower_7F
+@ Retired map payload: TrainerTower_8F
+@ Retired map payload: TrainerTower_Roof
+@ Retired map payload: TrainerTower_Lobby
+@ Retired map payload: TrainerTower_Elevator
+@ Retired map payload: FiveIsland_LostCave_Entrance
+@ Retired map payload: FiveIsland_LostCave_Room1
+@ Retired map payload: FiveIsland_LostCave_Room2
+@ Retired map payload: FiveIsland_LostCave_Room3
+@ Retired map payload: FiveIsland_LostCave_Room4
+@ Retired map payload: FiveIsland_LostCave_Room5
+@ Retired map payload: FiveIsland_LostCave_Room6
+@ Retired map payload: FiveIsland_LostCave_Room7
+@ Retired map payload: FiveIsland_LostCave_Room8
+@ Retired map payload: FiveIsland_LostCave_Room9
+@ Retired map payload: FiveIsland_LostCave_Room10
+@ Retired map payload: FiveIsland_LostCave_Room11
+@ Retired map payload: FiveIsland_LostCave_Room12
+@ Retired map payload: FiveIsland_LostCave_Room13
+@ Retired map payload: FiveIsland_LostCave_Room14
+@ Retired map payload: SevenIsland_TanobyRuins_MoneanChamber
+@ Retired map payload: SevenIsland_TanobyRuins_LiptooChamber
+@ Retired map payload: SevenIsland_TanobyRuins_WeepthChamber
+@ Retired map payload: SevenIsland_TanobyRuins_DilfordChamber
+@ Retired map payload: SevenIsland_TanobyRuins_ScufibChamber
+@ Retired map payload: SevenIsland_TanobyRuins_RixyChamber
+@ Retired map payload: SevenIsland_TanobyRuins_ViapoisChamber
+@ Retired map payload: ThreeIsland_DunsparceTunnel
+@ Retired map payload: SevenIsland_SevaultCanyon_TanobyKey
+@ Retired map payload: NavelRock_1F
+@ Retired map payload: NavelRock_Summit
+@ Retired map payload: NavelRock_Base
+@ Retired map payload: NavelRock_SummitPath_2F
+@ Retired map payload: NavelRock_SummitPath_3F
+@ Retired map payload: NavelRock_SummitPath_4F
+@ Retired map payload: NavelRock_SummitPath_5F
+@ Retired map payload: NavelRock_BasePath_B1F
+@ Retired map payload: NavelRock_BasePath_B2F
+@ Retired map payload: NavelRock_BasePath_B3F
+@ Retired map payload: NavelRock_BasePath_B4F
+@ Retired map payload: NavelRock_BasePath_B5F
+@ Retired map payload: NavelRock_BasePath_B6F
+@ Retired map payload: NavelRock_BasePath_B7F
+@ Retired map payload: NavelRock_BasePath_B8F
+@ Retired map payload: NavelRock_BasePath_B9F
+@ Retired map payload: NavelRock_BasePath_B10F
+@ Retired map payload: NavelRock_BasePath_B11F
+@ Retired map payload: NavelRock_B1F
+@ Retired map payload: NavelRock_Fork
+@ Retired map payload: BirthIsland_Exterior
+@ Retired map payload: OneIsland_KindleRoad_EmberSpa
+@ Retired map payload: BirthIsland_Harbor
+@ Retired map payload: NavelRock_Harbor
 	.include "data/maps/PalletTown/scripts.inc"
 	.include "data/maps/ViridianCity/scripts.inc"
 	.include "data/maps/PewterCity/scripts.inc"
@@ -293,13 +292,13 @@ gStdScriptsEnd::
 	.include "data/maps/IndigoPlateau_Exterior/scripts.inc"
 	.include "data/maps/SaffronCity/scripts.inc"
 	.include "data/maps/SaffronCity_Connection/scripts.inc"
-	.include "data/maps/OneIsland/scripts.inc"
-	.include "data/maps/TwoIsland/scripts.inc"
-	.include "data/maps/ThreeIsland/scripts.inc"
-	.include "data/maps/FourIsland/scripts.inc"
-	.include "data/maps/FiveIsland/scripts.inc"
-	.include "data/maps/SevenIsland/scripts.inc"
-	.include "data/maps/SixIsland/scripts.inc"
+@ Retired map payload: OneIsland
+@ Retired map payload: TwoIsland
+@ Retired map payload: ThreeIsland
+@ Retired map payload: FourIsland
+@ Retired map payload: FiveIsland
+@ Retired map payload: SevenIsland
+@ Retired map payload: SixIsland
 	.include "data/maps/Route1/scripts.inc"
 	.include "data/maps/Route2/scripts.inc"
 	.include "data/maps/Route3/scripts.inc"
@@ -326,27 +325,27 @@ gStdScriptsEnd::
 	.include "data/maps/Route23/scripts.inc"
 	.include "data/maps/Route24/scripts.inc"
 	.include "data/maps/Route25/scripts.inc"
-	.include "data/maps/OneIsland_KindleRoad/scripts.inc"
-	.include "data/maps/OneIsland_TreasureBeach/scripts.inc"
-	.include "data/maps/TwoIsland_CapeBrink/scripts.inc"
-	.include "data/maps/ThreeIsland_BondBridge/scripts.inc"
-	.include "data/maps/ThreeIsland_Port/scripts.inc"
-	.include "data/maps/Prototype_SeviiIsle_6/scripts.inc"
-	.include "data/maps/Prototype_SeviiIsle_7/scripts.inc"
-	.include "data/maps/Prototype_SeviiIsle_8/scripts.inc"
-	.include "data/maps/Prototype_SeviiIsle_9/scripts.inc"
-	.include "data/maps/FiveIsland_ResortGorgeous/scripts.inc"
-	.include "data/maps/FiveIsland_WaterLabyrinth/scripts.inc"
-	.include "data/maps/FiveIsland_Meadow/scripts.inc"
-	.include "data/maps/FiveIsland_MemorialPillar/scripts.inc"
-	.include "data/maps/SixIsland_OutcastIsland/scripts.inc"
-	.include "data/maps/SixIsland_GreenPath/scripts.inc"
-	.include "data/maps/SixIsland_WaterPath/scripts.inc"
-	.include "data/maps/SixIsland_RuinValley/scripts.inc"
-	.include "data/maps/SevenIsland_TrainerTower/scripts.inc"
-	.include "data/maps/SevenIsland_SevaultCanyon_Entrance/scripts.inc"
-	.include "data/maps/SevenIsland_SevaultCanyon/scripts.inc"
-	.include "data/maps/SevenIsland_TanobyRuins/scripts.inc"
+@ Retired map payload: OneIsland_KindleRoad
+@ Retired map payload: OneIsland_TreasureBeach
+@ Retired map payload: TwoIsland_CapeBrink
+@ Retired map payload: ThreeIsland_BondBridge
+@ Retired map payload: ThreeIsland_Port
+@ Retired map payload: Prototype_SeviiIsle_6
+@ Retired map payload: Prototype_SeviiIsle_7
+@ Retired map payload: Prototype_SeviiIsle_8
+@ Retired map payload: Prototype_SeviiIsle_9
+@ Retired map payload: FiveIsland_ResortGorgeous
+@ Retired map payload: FiveIsland_WaterLabyrinth
+@ Retired map payload: FiveIsland_Meadow
+@ Retired map payload: FiveIsland_MemorialPillar
+@ Retired map payload: SixIsland_OutcastIsland
+@ Retired map payload: SixIsland_GreenPath
+@ Retired map payload: SixIsland_WaterPath
+@ Retired map payload: SixIsland_RuinValley
+@ Retired map payload: SevenIsland_TrainerTower
+@ Retired map payload: SevenIsland_SevaultCanyon_Entrance
+@ Retired map payload: SevenIsland_SevaultCanyon
+@ Retired map payload: SevenIsland_TanobyRuins
 	.include "data/maps/PalletTown_PlayersHouse_1F/scripts.inc"
 	.include "data/maps/PalletTown_PlayersHouse_2F/scripts.inc"
 	.include "data/maps/PalletTown_RivalsHouse/scripts.inc"
@@ -356,34 +355,34 @@ gStdScriptsEnd::
 	.include "data/maps/ViridianCity_School/scripts.inc"
 	.include "data/maps/ViridianCity_Mart/scripts.inc"
 	.include "data/maps/ViridianCity_PokemonCenter_1F/scripts.inc"
-	.include "data/maps/ViridianCity_PokemonCenter_2F/scripts.inc"
+@ Retired map payload: ViridianCity_PokemonCenter_2F
 	.include "data/maps/PewterCity_Museum_1F/scripts.inc"
 	.include "data/maps/PewterCity_Museum_2F/scripts.inc"
 	.include "data/maps/PewterCity_Gym/scripts.inc"
 	.include "data/maps/PewterCity_Mart/scripts.inc"
 	.include "data/maps/PewterCity_House1/scripts.inc"
 	.include "data/maps/PewterCity_PokemonCenter_1F/scripts.inc"
-	.include "data/maps/PewterCity_PokemonCenter_2F/scripts.inc"
+@ Retired map payload: PewterCity_PokemonCenter_2F
 	.include "data/maps/PewterCity_House2/scripts.inc"
 	.include "data/maps/CeruleanCity_House1/scripts.inc"
 	.include "data/maps/CeruleanCity_House2/scripts.inc"
 	.include "data/maps/CeruleanCity_House3/scripts.inc"
 	.include "data/maps/CeruleanCity_PokemonCenter_1F/scripts.inc"
-	.include "data/maps/CeruleanCity_PokemonCenter_2F/scripts.inc"
+@ Retired map payload: CeruleanCity_PokemonCenter_2F
 	.include "data/maps/CeruleanCity_Gym/scripts.inc"
 	.include "data/maps/CeruleanCity_BikeShop/scripts.inc"
 	.include "data/maps/CeruleanCity_Mart/scripts.inc"
 	.include "data/maps/CeruleanCity_House4/scripts.inc"
 	.include "data/maps/CeruleanCity_House5/scripts.inc"
 	.include "data/maps/LavenderTown_PokemonCenter_1F/scripts.inc"
-	.include "data/maps/LavenderTown_PokemonCenter_2F/scripts.inc"
+@ Retired map payload: LavenderTown_PokemonCenter_2F
 	.include "data/maps/LavenderTown_VolunteerPokemonHouse/scripts.inc"
 	.include "data/maps/LavenderTown_House1/scripts.inc"
 	.include "data/maps/LavenderTown_House2/scripts.inc"
 	.include "data/maps/LavenderTown_Mart/scripts.inc"
 	.include "data/maps/VermilionCity_House1/scripts.inc"
 	.include "data/maps/VermilionCity_PokemonCenter_1F/scripts.inc"
-	.include "data/maps/VermilionCity_PokemonCenter_2F/scripts.inc"
+@ Retired map payload: VermilionCity_PokemonCenter_2F
 	.include "data/maps/VermilionCity_PokemonFanClub/scripts.inc"
 	.include "data/maps/VermilionCity_House2/scripts.inc"
 	.include "data/maps/VermilionCity_Mart/scripts.inc"
@@ -402,7 +401,7 @@ gStdScriptsEnd::
 	.include "data/maps/CeladonCity_Condominiums_Roof/scripts.inc"
 	.include "data/maps/CeladonCity_Condominiums_RoofRoom/scripts.inc"
 	.include "data/maps/CeladonCity_PokemonCenter_1F/scripts.inc"
-	.include "data/maps/CeladonCity_PokemonCenter_2F/scripts.inc"
+@ Retired map payload: CeladonCity_PokemonCenter_2F
 	.include "data/maps/CeladonCity_GameCorner/scripts.inc"
 	.include "data/maps/CeladonCity_GameCorner_PrizeRoom/scripts.inc"
 	.include "data/maps/CeladonCity_Gym/scripts.inc"
@@ -415,7 +414,7 @@ gStdScriptsEnd::
 	.include "data/maps/FuchsiaCity_Gym/scripts.inc"
 	.include "data/maps/FuchsiaCity_House1/scripts.inc"
 	.include "data/maps/FuchsiaCity_PokemonCenter_1F/scripts.inc"
-	.include "data/maps/FuchsiaCity_PokemonCenter_2F/scripts.inc"
+@ Retired map payload: FuchsiaCity_PokemonCenter_2F
 	.include "data/maps/FuchsiaCity_WardensHouse/scripts.inc"
 	.include "data/maps/FuchsiaCity_House2/scripts.inc"
 	.include "data/maps/FuchsiaCity_House3/scripts.inc"
@@ -425,10 +424,10 @@ gStdScriptsEnd::
 	.include "data/maps/CinnabarIsland_PokemonLab_ResearchRoom/scripts.inc"
 	.include "data/maps/CinnabarIsland_PokemonLab_ExperimentRoom/scripts.inc"
 	.include "data/maps/CinnabarIsland_PokemonCenter_1F/scripts.inc"
-	.include "data/maps/CinnabarIsland_PokemonCenter_2F/scripts.inc"
+@ Retired map payload: CinnabarIsland_PokemonCenter_2F
 	.include "data/maps/CinnabarIsland_Mart/scripts.inc"
 	.include "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.inc"
-	.include "data/maps/IndigoPlateau_PokemonCenter_2F/scripts.inc"
+@ Retired map payload: IndigoPlateau_PokemonCenter_2F
 	.include "data/maps/SaffronCity_CopycatsHouse_1F/scripts.inc"
 	.include "data/maps/SaffronCity_CopycatsHouse_2F/scripts.inc"
 	.include "data/maps/SaffronCity_Dojo/scripts.inc"
@@ -436,7 +435,7 @@ gStdScriptsEnd::
 	.include "data/maps/SaffronCity_House/scripts.inc"
 	.include "data/maps/SaffronCity_Mart/scripts.inc"
 	.include "data/maps/SaffronCity_PokemonCenter_1F/scripts.inc"
-	.include "data/maps/SaffronCity_PokemonCenter_2F/scripts.inc"
+@ Retired map payload: SaffronCity_PokemonCenter_2F
 	.include "data/maps/SaffronCity_MrPsychicsHouse/scripts.inc"
 	.include "data/maps/SaffronCity_PokemonTrainerFanClub/scripts.inc"
 	.include "data/maps/Route2_ViridianForest_SouthEntrance/scripts.inc"
@@ -444,7 +443,7 @@ gStdScriptsEnd::
 	.include "data/maps/Route2_EastBuilding/scripts.inc"
 	.include "data/maps/Route2_ViridianForest_NorthEntrance/scripts.inc"
 	.include "data/maps/Route4_PokemonCenter_1F/scripts.inc"
-	.include "data/maps/Route4_PokemonCenter_2F/scripts.inc"
+@ Retired map payload: Route4_PokemonCenter_2F
 	.include "data/maps/Route5_PokemonDayCare/scripts.inc"
 	.include "data/maps/Route5_SouthEntrance/scripts.inc"
 	.include "data/maps/Route6_NorthEntrance/scripts.inc"
@@ -452,7 +451,7 @@ gStdScriptsEnd::
 	.include "data/maps/Route7_EastEntrance/scripts.inc"
 	.include "data/maps/Route8_WestEntrance/scripts.inc"
 	.include "data/maps/Route10_PokemonCenter_1F/scripts.inc"
-	.include "data/maps/Route10_PokemonCenter_2F/scripts.inc"
+@ Retired map payload: Route10_PokemonCenter_2F
 	.include "data/maps/Route11_EastEntrance_1F/scripts.inc"
 	.include "data/maps/Route11_EastEntrance_2F/scripts.inc"
 	.include "data/maps/Route12_NorthEntrance_1F/scripts.inc"
@@ -469,56 +468,55 @@ gStdScriptsEnd::
 	.include "data/maps/Route22_NorthEntrance/scripts.inc"
 	.include "data/maps/Route23_UnusedHouse/scripts.inc"
 	.include "data/maps/Route25_SeaCottage/scripts.inc"
-	.include "data/maps/SevenIsland_House_Room1/scripts.inc"
-	.include "data/maps/SevenIsland_House_Room2/scripts.inc"
-	.include "data/maps/SevenIsland_Mart/scripts.inc"
-	.include "data/maps/SevenIsland_PokemonCenter_1F/scripts.inc"
-	.include "data/maps/SevenIsland_PokemonCenter_2F/scripts.inc"
-	.include "data/maps/SevenIsland_UnusedHouse/scripts.inc"
-	.include "data/maps/SevenIsland_Harbor/scripts.inc"
-	.include "data/maps/OneIsland_PokemonCenter_1F/scripts.inc"
-	.include "data/maps/OneIsland_PokemonCenter_2F/scripts.inc"
-	.include "data/maps/OneIsland_House1/scripts.inc"
-	.include "data/maps/OneIsland_House2/scripts.inc"
-	.include "data/maps/OneIsland_Harbor/scripts.inc"
-	.include "data/maps/TwoIsland_JoyfulGameCorner/scripts.inc"
-	.include "data/maps/TwoIsland_House/scripts.inc"
-	.include "data/maps/TwoIsland_PokemonCenter_1F/scripts.inc"
-	.include "data/maps/TwoIsland_PokemonCenter_2F/scripts.inc"
-	.include "data/maps/TwoIsland_Harbor/scripts.inc"
-	.include "data/maps/ThreeIsland_House1/scripts.inc"
-	.include "data/maps/ThreeIsland_PokemonCenter_1F/scripts.inc"
-	.include "data/maps/ThreeIsland_PokemonCenter_2F/scripts.inc"
-	.include "data/maps/ThreeIsland_Mart/scripts.inc"
-	.include "data/maps/ThreeIsland_House2/scripts.inc"
-	.include "data/maps/ThreeIsland_House3/scripts.inc"
-	.include "data/maps/ThreeIsland_House4/scripts.inc"
-	.include "data/maps/ThreeIsland_House5/scripts.inc"
-	.include "data/maps/FourIsland_PokemonDayCare/scripts.inc"
-	.include "data/maps/FourIsland_PokemonCenter_1F/scripts.inc"
-	.include "data/maps/FourIsland_PokemonCenter_2F/scripts.inc"
-	.include "data/maps/FourIsland_House1/scripts.inc"
-	.include "data/maps/FourIsland_LoreleisHouse/scripts.inc"
-	.include "data/maps/FourIsland_Harbor/scripts.inc"
-	.include "data/maps/FourIsland_House2/scripts.inc"
-	.include "data/maps/FourIsland_Mart/scripts.inc"
-	.include "data/maps/FiveIsland_PokemonCenter_1F/scripts.inc"
-	.include "data/maps/FiveIsland_PokemonCenter_2F/scripts.inc"
-	.include "data/maps/FiveIsland_Harbor/scripts.inc"
-	.include "data/maps/FiveIsland_House1/scripts.inc"
-	.include "data/maps/FiveIsland_House2/scripts.inc"
-	.include "data/maps/SixIsland_PokemonCenter_1F/scripts.inc"
-	.include "data/maps/SixIsland_PokemonCenter_2F/scripts.inc"
-	.include "data/maps/SixIsland_Harbor/scripts.inc"
-	.include "data/maps/SixIsland_House/scripts.inc"
-	.include "data/maps/SixIsland_Mart/scripts.inc"
-	.include "data/maps/ThreeIsland_Harbor/scripts.inc"
-	.include "data/maps/FiveIsland_ResortGorgeous_House/scripts.inc"
-	.include "data/maps/TwoIsland_CapeBrink_House/scripts.inc"
-	.include "data/maps/SixIsland_WaterPath_House1/scripts.inc"
-	.include "data/maps/SixIsland_WaterPath_House2/scripts.inc"
-	.include "data/maps/SevenIsland_SevaultCanyon_House/scripts.inc"
-
+@ Retired map payload: SevenIsland_House_Room1
+@ Retired map payload: SevenIsland_House_Room2
+@ Retired map payload: SevenIsland_Mart
+@ Retired map payload: SevenIsland_PokemonCenter_1F
+@ Retired map payload: SevenIsland_PokemonCenter_2F
+@ Retired map payload: SevenIsland_UnusedHouse
+@ Retired map payload: SevenIsland_Harbor
+@ Retired map payload: OneIsland_PokemonCenter_1F
+@ Retired map payload: OneIsland_PokemonCenter_2F
+@ Retired map payload: OneIsland_House1
+@ Retired map payload: OneIsland_House2
+@ Retired map payload: OneIsland_Harbor
+@ Retired map payload: TwoIsland_JoyfulGameCorner
+@ Retired map payload: TwoIsland_House
+@ Retired map payload: TwoIsland_PokemonCenter_1F
+@ Retired map payload: TwoIsland_PokemonCenter_2F
+@ Retired map payload: TwoIsland_Harbor
+@ Retired map payload: ThreeIsland_House1
+@ Retired map payload: ThreeIsland_PokemonCenter_1F
+@ Retired map payload: ThreeIsland_PokemonCenter_2F
+@ Retired map payload: ThreeIsland_Mart
+@ Retired map payload: ThreeIsland_House2
+@ Retired map payload: ThreeIsland_House3
+@ Retired map payload: ThreeIsland_House4
+@ Retired map payload: ThreeIsland_House5
+@ Retired map payload: FourIsland_PokemonDayCare
+@ Retired map payload: FourIsland_PokemonCenter_1F
+@ Retired map payload: FourIsland_PokemonCenter_2F
+@ Retired map payload: FourIsland_House1
+@ Retired map payload: FourIsland_LoreleisHouse
+@ Retired map payload: FourIsland_Harbor
+@ Retired map payload: FourIsland_House2
+@ Retired map payload: FourIsland_Mart
+@ Retired map payload: FiveIsland_PokemonCenter_1F
+@ Retired map payload: FiveIsland_PokemonCenter_2F
+@ Retired map payload: FiveIsland_Harbor
+@ Retired map payload: FiveIsland_House1
+@ Retired map payload: FiveIsland_House2
+@ Retired map payload: SixIsland_PokemonCenter_1F
+@ Retired map payload: SixIsland_PokemonCenter_2F
+@ Retired map payload: SixIsland_Harbor
+@ Retired map payload: SixIsland_House
+@ Retired map payload: SixIsland_Mart
+@ Retired map payload: ThreeIsland_Harbor
+@ Retired map payload: FiveIsland_ResortGorgeous_House
+@ Retired map payload: TwoIsland_CapeBrink_House
+@ Retired map payload: SixIsland_WaterPath_House1
+@ Retired map payload: SixIsland_WaterPath_House2
+@ Retired map payload: SevenIsland_SevaultCanyon_House
 	.include "data/maps/ViridianForest/text.inc"
 	.include "data/maps/MtMoon_1F/text.inc"
 	.include "data/maps/MtMoon_B2F/text.inc"
@@ -583,7 +581,7 @@ gStdScriptsEnd::
 	.include "data/maps/SafariZone_North_RestHouse/text.inc"
 	.include "data/maps/SafariZone_West_RestHouse/text.inc"
 	.include "data/maps/SafariZone_SecretHouse/text.inc"
-	.include "data/maps/CeruleanCave_B1F/text.inc"
+@ Retired map payload: CeruleanCave_B1F
 	.include "data/maps/PokemonLeague_LoreleisRoom/text.inc"
 	.include "data/maps/PokemonLeague_BrunosRoom/text.inc"
 	.include "data/maps/PokemonLeague_AgathasRoom/text.inc"
@@ -592,7 +590,7 @@ gStdScriptsEnd::
 	.include "data/maps/PokemonLeague_HallOfFame/text.inc"
 	.include "data/maps/RockTunnel_1F/text.inc"
 	.include "data/maps/RockTunnel_B1F/text.inc"
-	.include "data/maps/SeafoamIslands_B4F/text.inc"
+@ Retired map payload: SeafoamIslands_B4F
 	.include "data/maps/PokemonTower_1F/text.inc"
 	.include "data/maps/PokemonTower_2F/text.inc"
 	.include "data/maps/PokemonTower_3F/text.inc"
@@ -600,20 +598,20 @@ gStdScriptsEnd::
 	.include "data/maps/PokemonTower_5F/text.inc"
 	.include "data/maps/PokemonTower_6F/text.inc"
 	.include "data/maps/PokemonTower_7F/text.inc"
-	.include "data/maps/MtEmber_Exterior/text.inc"
-	.include "data/maps/MtEmber_RubyPath_B3F/text.inc"
-	.include "data/maps/ThreeIsland_BerryForest/text.inc"
-	.include "data/maps/FourIsland_IcefallCave_Back/text.inc"
-	.include "data/maps/FiveIsland_RocketWarehouse/text.inc"
-	.include "data/maps/SixIsland_DottedHole_SapphireRoom/text.inc"
-	.include "data/maps/SixIsland_PatternBush/text.inc"
-	.include "data/maps/TrainerTower_Lobby/text.inc"
-	.include "data/maps/FiveIsland_LostCave_Room1/text.inc"
-	.include "data/maps/FiveIsland_LostCave_Room4/text.inc"
-	.include "data/maps/FiveIsland_LostCave_Room10/text.inc"
-	.include "data/maps/ThreeIsland_DunsparceTunnel/text.inc"
-	.include "data/maps/SevenIsland_SevaultCanyon_TanobyKey/text.inc"
-	.include "data/maps/OneIsland_KindleRoad_EmberSpa/text.inc"
+@ Retired map payload: MtEmber_Exterior
+@ Retired map payload: MtEmber_RubyPath_B3F
+@ Retired map payload: ThreeIsland_BerryForest
+@ Retired map payload: FourIsland_IcefallCave_Back
+@ Retired map payload: FiveIsland_RocketWarehouse
+@ Retired map payload: SixIsland_DottedHole_SapphireRoom
+@ Retired map payload: SixIsland_PatternBush
+@ Retired map payload: TrainerTower_Lobby
+@ Retired map payload: FiveIsland_LostCave_Room1
+@ Retired map payload: FiveIsland_LostCave_Room4
+@ Retired map payload: FiveIsland_LostCave_Room10
+@ Retired map payload: ThreeIsland_DunsparceTunnel
+@ Retired map payload: SevenIsland_SevaultCanyon_TanobyKey
+@ Retired map payload: OneIsland_KindleRoad_EmberSpa
 	.include "data/maps/PalletTown/text.inc"
 	.include "data/maps/ViridianCity/text.inc"
 	.include "data/maps/PewterCity/text.inc"
@@ -624,13 +622,13 @@ gStdScriptsEnd::
 	.include "data/maps/FuchsiaCity/text.inc"
 	.include "data/maps/CinnabarIsland/text.inc"
 	.include "data/maps/SaffronCity/text.inc"
-	.include "data/maps/OneIsland/text.inc"
-	.include "data/maps/TwoIsland/text.inc"
-	.include "data/maps/ThreeIsland/text.inc"
-	.include "data/maps/FourIsland/text.inc"
-	.include "data/maps/FiveIsland/text.inc"
-	.include "data/maps/SevenIsland/text.inc"
-	.include "data/maps/SixIsland/text.inc"
+@ Retired map payload: OneIsland
+@ Retired map payload: TwoIsland
+@ Retired map payload: ThreeIsland
+@ Retired map payload: FourIsland
+@ Retired map payload: FiveIsland
+@ Retired map payload: SevenIsland
+@ Retired map payload: SixIsland
 	.include "data/maps/Route1/text.inc"
 	.include "data/maps/Route2/text.inc"
 	.include "data/maps/Route3/text.inc"
@@ -657,22 +655,22 @@ gStdScriptsEnd::
 	.include "data/maps/Route23/text.inc"
 	.include "data/maps/Route24/text.inc"
 	.include "data/maps/Route25/text.inc"
-	.include "data/maps/OneIsland_KindleRoad/text.inc"
-	.include "data/maps/OneIsland_TreasureBeach/text.inc"
-	.include "data/maps/ThreeIsland_BondBridge/text.inc"
-	.include "data/maps/ThreeIsland_Port/text.inc"
-	.include "data/maps/FiveIsland_ResortGorgeous/text.inc"
-	.include "data/maps/FiveIsland_WaterLabyrinth/text.inc"
-	.include "data/maps/FiveIsland_Meadow/text.inc"
-	.include "data/maps/FiveIsland_MemorialPillar/text.inc"
-	.include "data/maps/SixIsland_OutcastIsland/text.inc"
-	.include "data/maps/SixIsland_GreenPath/text.inc"
-	.include "data/maps/SixIsland_WaterPath/text.inc"
-	.include "data/maps/SixIsland_RuinValley/text.inc"
-	.include "data/maps/SevenIsland_TrainerTower/text.inc"
-	.include "data/maps/SevenIsland_SevaultCanyon_Entrance/text.inc"
-	.include "data/maps/SevenIsland_SevaultCanyon/text.inc"
-	.include "data/maps/SevenIsland_TanobyRuins/text.inc"
+@ Retired map payload: OneIsland_KindleRoad
+@ Retired map payload: OneIsland_TreasureBeach
+@ Retired map payload: ThreeIsland_BondBridge
+@ Retired map payload: ThreeIsland_Port
+@ Retired map payload: FiveIsland_ResortGorgeous
+@ Retired map payload: FiveIsland_WaterLabyrinth
+@ Retired map payload: FiveIsland_Meadow
+@ Retired map payload: FiveIsland_MemorialPillar
+@ Retired map payload: SixIsland_OutcastIsland
+@ Retired map payload: SixIsland_GreenPath
+@ Retired map payload: SixIsland_WaterPath
+@ Retired map payload: SixIsland_RuinValley
+@ Retired map payload: SevenIsland_TrainerTower
+@ Retired map payload: SevenIsland_SevaultCanyon_Entrance
+@ Retired map payload: SevenIsland_SevaultCanyon
+@ Retired map payload: SevenIsland_TanobyRuins
 	.include "data/maps/PalletTown_PlayersHouse_1F/text.inc"
 	.include "data/maps/PalletTown_PlayersHouse_2F/text.inc"
 	.include "data/maps/PalletTown_RivalsHouse/text.inc"
@@ -778,43 +776,44 @@ gStdScriptsEnd::
 	.include "data/maps/Route18_EastEntrance_1F/text.inc"
 	.include "data/maps/Route18_EastEntrance_2F/text.inc"
 	.include "data/maps/Route25_SeaCottage/text.inc"
-	.include "data/maps/SevenIsland_House_Room1/text.inc"
-	.include "data/maps/SevenIsland_Mart/text.inc"
-	.include "data/maps/SevenIsland_PokemonCenter_1F/text.inc"
-	.include "data/maps/OneIsland_PokemonCenter_1F/text.inc"
-	.include "data/maps/OneIsland_House1/text.inc"
-	.include "data/maps/OneIsland_House2/text.inc"
-	.include "data/maps/TwoIsland_JoyfulGameCorner/text.inc"
-	.include "data/maps/TwoIsland_House/text.inc"
-	.include "data/maps/TwoIsland_PokemonCenter_1F/text.inc"
-	.include "data/maps/ThreeIsland_House1/text.inc"
-	.include "data/maps/ThreeIsland_PokemonCenter_1F/text.inc"
-	.include "data/maps/ThreeIsland_Mart/text.inc"
-	.include "data/maps/ThreeIsland_House2/text.inc"
-	.include "data/maps/ThreeIsland_House3/text.inc"
-	.include "data/maps/ThreeIsland_House4/text.inc"
-	.include "data/maps/ThreeIsland_House5/text.inc"
-	.include "data/maps/FourIsland_PokemonCenter_1F/text.inc"
-	.include "data/maps/FourIsland_House1/text.inc"
-	.include "data/maps/FourIsland_LoreleisHouse/text.inc"
-	.include "data/maps/FourIsland_Mart/text.inc"
-	.include "data/maps/FiveIsland_PokemonCenter_1F/text.inc"
-	.include "data/maps/FiveIsland_House1/text.inc"
-	.include "data/maps/FiveIsland_House2/text.inc"
-	.include "data/maps/SixIsland_PokemonCenter_1F/text.inc"
-	.include "data/maps/SixIsland_House/text.inc"
-	.include "data/maps/SixIsland_Mart/text.inc"
-	.include "data/maps/FiveIsland_ResortGorgeous_House/text.inc"
-	.include "data/maps/TwoIsland_CapeBrink_House/text.inc"
-	.include "data/maps/SixIsland_WaterPath_House1/text.inc"
-	.include "data/maps/SixIsland_WaterPath_House2/text.inc"
-	.include "data/maps/SevenIsland_SevaultCanyon_House/text.inc"
-
+@ Retired map payload: SevenIsland_House_Room1
+@ Retired map payload: SevenIsland_Mart
+@ Retired map payload: SevenIsland_PokemonCenter_1F
+@ Retired map payload: OneIsland_PokemonCenter_1F
+@ Retired map payload: OneIsland_House1
+@ Retired map payload: OneIsland_House2
+@ Retired map payload: TwoIsland_JoyfulGameCorner
+@ Retired map payload: TwoIsland_House
+@ Retired map payload: TwoIsland_PokemonCenter_1F
+@ Retired map payload: ThreeIsland_House1
+@ Retired map payload: ThreeIsland_PokemonCenter_1F
+@ Retired map payload: ThreeIsland_Mart
+@ Retired map payload: ThreeIsland_House2
+@ Retired map payload: ThreeIsland_House3
+@ Retired map payload: ThreeIsland_House4
+@ Retired map payload: ThreeIsland_House5
+@ Retired map payload: FourIsland_PokemonCenter_1F
+@ Retired map payload: FourIsland_House1
+@ Retired map payload: FourIsland_LoreleisHouse
+@ Retired map payload: FourIsland_Mart
+@ Retired map payload: FiveIsland_PokemonCenter_1F
+@ Retired map payload: FiveIsland_House1
+@ Retired map payload: FiveIsland_House2
+@ Retired map payload: SixIsland_PokemonCenter_1F
+@ Retired map payload: SixIsland_House
+@ Retired map payload: SixIsland_Mart
+@ Retired map payload: FiveIsland_ResortGorgeous_House
+@ Retired map payload: TwoIsland_CapeBrink_House
+@ Retired map payload: SixIsland_WaterPath_House1
+@ Retired map payload: SixIsland_WaterPath_House2
+@ Retired map payload: SevenIsland_SevaultCanyon_House
 	.include "data/scripts/std_msgbox.inc"
 	.include "data/scripts/trainer_battle.inc"
 	
 	.include "data/scripts/config.inc"
+#if QUANTUM_DEVELOPMENT_BUILD
 	.include "data/scripts/debug.inc"
+#endif
 
 @ Unused
 Text_WouldYouLikeToMixRecords::
@@ -1369,3 +1368,7 @@ Text_TestMsg::
 	.include "data/text/pokedude.inc"
 	.include "data/scripts/follower.inc"
 	.include "data/scripts/dexnav.inc"
+
+	.include "data/quantum/retired_script_aliases.inc"
+
+	.include "data/quantum/relocated_encounters.inc"

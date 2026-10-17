@@ -113,6 +113,8 @@ bool32 IsZMove(u32 move)
 
 bool32 CanUseZMove(u32 battler)
 {
+    // Quantum keeps Mega/Primal mechanics; this retired gimmick cannot activate.
+    return FALSE;
     u32 holdEffect = GetBattlerHoldEffect(battler, FALSE);
 
     // Check if Player has Z-Power Ring.

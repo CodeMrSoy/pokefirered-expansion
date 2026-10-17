@@ -1,4 +1,6 @@
 PokemonMansion_B1F_MapScripts::
+	map_script MAP_SCRIPT_ON_RESUME, QuantumRelocated_OnResume
+	map_script MAP_SCRIPT_ON_TRANSITION, QuantumRelocated_MewtwoOnTransition
 	map_script MAP_SCRIPT_ON_LOAD, PokemonMansion_B1F_OnLoad
 	.byte 0
 

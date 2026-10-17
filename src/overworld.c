@@ -1,4 +1,5 @@
 #include "global.h"
+#include "quantum_cleanup.h"
 #include "text_window.h"
 #include "poke_glass.h"
 #include "gflib.h"
@@ -613,6 +614,7 @@ static void SetPlayerCoordsFromWarp(void)
 
 void WarpIntoMap(void)
 {
+    QuantumRecoverWarpDestination(&sWarpDestination);
     ApplyCurrentWarp();
     LoadCurrentMapData();
     SetPlayerCoordsFromWarp();

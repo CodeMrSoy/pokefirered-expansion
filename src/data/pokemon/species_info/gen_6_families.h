@@ -1118,25 +1118,63 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
     }                                                                                       \
 
     [SPECIES_SCATTERBUG_ICY_SNOW]    = SCATTERBUG_SPECIES_INFO(ICY_SNOW, MON_RANDOMIZER_RANDOM_FORM),
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SCATTERBUG_POLAR]       = SCATTERBUG_SPECIES_INFO(POLAR, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SCATTERBUG_TUNDRA]      = SCATTERBUG_SPECIES_INFO(TUNDRA, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SCATTERBUG_CONTINENTAL] = SCATTERBUG_SPECIES_INFO(CONTINENTAL, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SCATTERBUG_GARDEN]      = SCATTERBUG_SPECIES_INFO(GARDEN, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SCATTERBUG_ELEGANT]     = SCATTERBUG_SPECIES_INFO(ELEGANT, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SCATTERBUG_MEADOW]      = SCATTERBUG_SPECIES_INFO(MEADOW, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SCATTERBUG_MODERN]      = SCATTERBUG_SPECIES_INFO(MODERN, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SCATTERBUG_MARINE]      = SCATTERBUG_SPECIES_INFO(MARINE, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SCATTERBUG_ARCHIPELAGO] = SCATTERBUG_SPECIES_INFO(ARCHIPELAGO, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SCATTERBUG_HIGH_PLAINS] = SCATTERBUG_SPECIES_INFO(HIGH_PLAINS, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SCATTERBUG_SANDSTORM]   = SCATTERBUG_SPECIES_INFO(SANDSTORM, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SCATTERBUG_RIVER]       = SCATTERBUG_SPECIES_INFO(RIVER, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SCATTERBUG_MONSOON]     = SCATTERBUG_SPECIES_INFO(MONSOON, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SCATTERBUG_SAVANNA]     = SCATTERBUG_SPECIES_INFO(SAVANNA, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SCATTERBUG_SUN]         = SCATTERBUG_SPECIES_INFO(SUN, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SCATTERBUG_OCEAN]       = SCATTERBUG_SPECIES_INFO(OCEAN, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SCATTERBUG_JUNGLE]      = SCATTERBUG_SPECIES_INFO(JUNGLE, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SCATTERBUG_FANCY]       = SCATTERBUG_SPECIES_INFO(FANCY, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SCATTERBUG_POKEBALL]    = SCATTERBUG_SPECIES_INFO(POKEBALL, MON_RANDOMIZER_RANDOM_FORM),
+#endif
 
 #define SPEWPA_SPECIES_INFO(evolution, rzMode)                                          \
     {                                                                           \
@@ -1202,25 +1240,63 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
     }
 
     [SPECIES_SPEWPA_ICY_SNOW]    = SPEWPA_SPECIES_INFO(ICY_SNOW, MON_RANDOMIZER_RANDOM_FORM),
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SPEWPA_POLAR]       = SPEWPA_SPECIES_INFO(POLAR, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SPEWPA_TUNDRA]      = SPEWPA_SPECIES_INFO(TUNDRA, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SPEWPA_CONTINENTAL] = SPEWPA_SPECIES_INFO(CONTINENTAL, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SPEWPA_GARDEN]      = SPEWPA_SPECIES_INFO(GARDEN, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SPEWPA_ELEGANT]     = SPEWPA_SPECIES_INFO(ELEGANT, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SPEWPA_MEADOW]      = SPEWPA_SPECIES_INFO(MEADOW, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SPEWPA_MODERN]      = SPEWPA_SPECIES_INFO(MODERN, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SPEWPA_MARINE]      = SPEWPA_SPECIES_INFO(MARINE, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SPEWPA_ARCHIPELAGO] = SPEWPA_SPECIES_INFO(ARCHIPELAGO, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SPEWPA_HIGH_PLAINS] = SPEWPA_SPECIES_INFO(HIGH_PLAINS, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SPEWPA_SANDSTORM]   = SPEWPA_SPECIES_INFO(SANDSTORM, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SPEWPA_RIVER]       = SPEWPA_SPECIES_INFO(RIVER, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SPEWPA_MONSOON]     = SPEWPA_SPECIES_INFO(MONSOON, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SPEWPA_SAVANNA]     = SPEWPA_SPECIES_INFO(SAVANNA, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SPEWPA_SUN]         = SPEWPA_SPECIES_INFO(SUN, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SPEWPA_OCEAN]       = SPEWPA_SPECIES_INFO(OCEAN, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SPEWPA_JUNGLE]      = SPEWPA_SPECIES_INFO(JUNGLE, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SPEWPA_FANCY]       = SPEWPA_SPECIES_INFO(FANCY, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SPEWPA_POKEBALL]   = SPEWPA_SPECIES_INFO(POKEBALL, MON_RANDOMIZER_RANDOM_FORM),
+#endif
 
 #define VIVILLON_MISC_INFO(form, color, iconPal)                                            \
         .baseHP        = 80,                                                                \
@@ -1288,120 +1364,158 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .description = gEmptyPokedexText,
             .randomizerMode = MON_RANDOMIZER_RANDOM_FORM,
     },
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_VIVILLON_POLAR] =
     {
         VIVILLON_MISC_INFO(Polar, BODY_COLOR_BLUE, 0),
         .description = gEmptyPokedexText,
             .randomizerMode = MON_RANDOMIZER_RANDOM_FORM,
     },
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_VIVILLON_TUNDRA] =
     {
         VIVILLON_MISC_INFO(Tundra, BODY_COLOR_BLUE, 0),
         .description = gEmptyPokedexText,
             .randomizerMode = MON_RANDOMIZER_RANDOM_FORM,
     },
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_VIVILLON_CONTINENTAL] =
     {
         VIVILLON_MISC_INFO(Continental, BODY_COLOR_YELLOW, 2),
         .description = gEmptyPokedexText,
             .randomizerMode = MON_RANDOMIZER_RANDOM_FORM,
     },
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_VIVILLON_GARDEN] =
     {
         VIVILLON_MISC_INFO(Garden, BODY_COLOR_GREEN, 1),
         .description = gEmptyPokedexText,
             .randomizerMode = MON_RANDOMIZER_RANDOM_FORM,
     },
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_VIVILLON_ELEGANT] =
     {
         VIVILLON_MISC_INFO(Elegant, BODY_COLOR_PURPLE, 0),
         .description = gEmptyPokedexText,
             .randomizerMode = MON_RANDOMIZER_RANDOM_FORM,
     },
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_VIVILLON_MEADOW] =
     {
         VIVILLON_MISC_INFO(Meadow, BODY_COLOR_PINK, 0),
         .description = gEmptyPokedexText,
             .randomizerMode = MON_RANDOMIZER_RANDOM_FORM,
     },
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_VIVILLON_MODERN] =
     {
         VIVILLON_MISC_INFO(Modern, BODY_COLOR_RED, 2),
         .description = gEmptyPokedexText,
             .randomizerMode = MON_RANDOMIZER_RANDOM_FORM,
     },
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_VIVILLON_MARINE] =
     {
         VIVILLON_MISC_INFO(Marine, BODY_COLOR_BLUE, 0),
         .description = gEmptyPokedexText,
             .randomizerMode = MON_RANDOMIZER_RANDOM_FORM,
     },
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_VIVILLON_ARCHIPELAGO] =
     {
         VIVILLON_MISC_INFO(Archipelago, BODY_COLOR_BROWN, 0),
         .description = gEmptyPokedexText,
             .randomizerMode = MON_RANDOMIZER_RANDOM_FORM,
     },
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_VIVILLON_HIGH_PLAINS] =
     {
         VIVILLON_MISC_INFO(HighPlains, BODY_COLOR_BROWN, 0),
         .description = gEmptyPokedexText,
             .randomizerMode = MON_RANDOMIZER_RANDOM_FORM,
     },
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_VIVILLON_SANDSTORM] =
     {
         VIVILLON_MISC_INFO(Sandstorm, BODY_COLOR_BROWN, 1),
         .description = gEmptyPokedexText,
             .randomizerMode = MON_RANDOMIZER_RANDOM_FORM,
     },
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_VIVILLON_RIVER] =
     {
         VIVILLON_MISC_INFO(River, BODY_COLOR_BROWN, 2),
         .description = gEmptyPokedexText,
             .randomizerMode = MON_RANDOMIZER_RANDOM_FORM,
     },
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_VIVILLON_MONSOON] =
     {
         VIVILLON_MISC_INFO(Monsoon, BODY_COLOR_GRAY, 0),
         .description = gEmptyPokedexText,
             .randomizerMode = MON_RANDOMIZER_RANDOM_FORM,
     },
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_VIVILLON_SAVANNA] =
     {
         VIVILLON_MISC_INFO(Savanna, BODY_COLOR_GREEN, 0),
         .description = gEmptyPokedexText,
             .randomizerMode = MON_RANDOMIZER_RANDOM_FORM,
     },
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_VIVILLON_SUN] =
     {
         VIVILLON_MISC_INFO(Sun, BODY_COLOR_RED, 0),
         .description = gEmptyPokedexText,
             .randomizerMode = MON_RANDOMIZER_RANDOM_FORM,
     },
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_VIVILLON_OCEAN] =
     {
         VIVILLON_MISC_INFO(Ocean, BODY_COLOR_RED, 0),
         .description = gEmptyPokedexText,
             .randomizerMode = MON_RANDOMIZER_RANDOM_FORM,
     },
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_VIVILLON_JUNGLE] =
     {
         VIVILLON_MISC_INFO(Jungle, BODY_COLOR_GREEN, 0),
         .description = gEmptyPokedexText,
             .randomizerMode = MON_RANDOMIZER_RANDOM_FORM,
     },
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_VIVILLON_FANCY] =
     {
         VIVILLON_MISC_INFO(Fancy, BODY_COLOR_PINK, 1),
         .description = gEmptyPokedexText,
             .randomizerMode = MON_RANDOMIZER_RANDOM_FORM,
     },
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_VIVILLON_POKEBALL] =
     {
         VIVILLON_MISC_INFO(PokeBall, BODY_COLOR_RED, 2),
         .description = gEmptyPokedexText,
             .randomizerMode = MON_RANDOMIZER_RANDOM_FORM,
     },
+#endif
 #endif //P_FAMILY_SCATTERBUG
 
 #if P_FAMILY_LITLEO
@@ -2178,15 +2292,33 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
     }
 
     [SPECIES_FURFROU_NATURAL]   = FURFROU_MISC_INFO(Natural,   FALSE, 48, 3, 56, 0, 0),
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_FURFROU_HEART]     = FURFROU_MISC_INFO(Heart,     FALSE, 56, 2, 56, 1, 0),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_FURFROU_STAR]      = FURFROU_MISC_INFO(Star,      FALSE, 56, 2, 64, 1, 0),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_FURFROU_DIAMOND]   = FURFROU_MISC_INFO(Diamond,   FALSE, 48, 2, 56, 1, 0),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_FURFROU_DEBUTANTE] = FURFROU_MISC_INFO(Debutante, TRUE,  48, 2, 56, 1, 2),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_FURFROU_MATRON]    = FURFROU_MISC_INFO(Matron,    FALSE, 48, 2, 56, 1, 2),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_FURFROU_DANDY]     = FURFROU_MISC_INFO(Dandy,     FALSE, 48, 2, 56, 1, 1),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_FURFROU_LA_REINE]  = FURFROU_MISC_INFO(LaReine,   FALSE, 48, 2, 56, 1, 0),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_FURFROU_KABUKI]    = FURFROU_MISC_INFO(Kabuki,    FALSE, 56, 2, 56, 1, 0),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_FURFROU_PHARAOH]   = FURFROU_MISC_INFO(Pharaoh,   FALSE, 48, 2, 56, 1, 0),
+#endif
 #endif //P_FAMILY_FURFROU
 
 #if P_FAMILY_ESPURR

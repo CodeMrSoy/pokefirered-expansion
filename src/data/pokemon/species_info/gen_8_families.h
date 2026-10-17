@@ -187,6 +187,7 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
     },
 
 #if P_GIGANTAMAX_FORMS
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_RILLABOOM_GMAX] =
     {
         .baseHP        = 100,
@@ -240,6 +241,7 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
         .formChangeTable = sRillaboomFormChangeTable,
         .randomizerMode = MON_RANDOMIZER_INVALID,
     },
+#endif
 #endif //P_GIGANTAMAX_FORMS
 #endif //P_FAMILY_GROOKEY
 
@@ -427,6 +429,7 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
     },
 
 #if P_GIGANTAMAX_FORMS
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_CINDERACE_GMAX] =
     {
         .baseHP        = 80,
@@ -480,6 +483,7 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
         .formChangeTable = sCinderaceFormChangeTable,
         .randomizerMode = MON_RANDOMIZER_INVALID,
     },
+#endif
 #endif //P_GIGANTAMAX_FORMS
 #endif //P_FAMILY_SCORBUNNY
 
@@ -668,6 +672,7 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
     },
 
 #if P_GIGANTAMAX_FORMS
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_INTELEON_GMAX] =
     {
         .baseHP        = 70,
@@ -721,6 +726,7 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
         .formChangeTable = sInteleonFormChangeTable,
         .randomizerMode = MON_RANDOMIZER_INVALID,
     },
+#endif
 #endif //P_GIGANTAMAX_FORMS
 #endif //P_FAMILY_SOBBLE
 
@@ -1053,6 +1059,7 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
     },
 
 #if P_GIGANTAMAX_FORMS
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_CORVIKNIGHT_GMAX] =
     {
         .baseHP        = 98,
@@ -1106,6 +1113,7 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
         .formChangeTable = sCorviknightFormChangeTable,
         .randomizerMode = MON_RANDOMIZER_INVALID,
     },
+#endif
 #endif //P_GIGANTAMAX_FORMS
 #endif //P_FAMILY_ROOKIDEE
 
@@ -1297,6 +1305,7 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
     },
 
 #if P_GIGANTAMAX_FORMS
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ORBEETLE_GMAX] =
     {
         .baseHP        = 60,
@@ -1351,6 +1360,7 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
         .formChangeTable = sOrbeetleFormChangeTable,
         .randomizerMode = MON_RANDOMIZER_INVALID,
     },
+#endif
 #endif //P_GIGANTAMAX_FORMS
 #endif //P_FAMILY_BLIPBUG
 
@@ -1852,6 +1862,7 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
     },
 
 #if P_GIGANTAMAX_FORMS
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_DREDNAW_GMAX] =
     {
         .baseHP        = 90,
@@ -1905,6 +1916,7 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
         .formChangeTable = sDrednawFormChangeTable,
         .randomizerMode = MON_RANDOMIZER_INVALID,
     },
+#endif
 #endif //P_GIGANTAMAX_FORMS
 #endif //P_FAMILY_CHEWTLE
 
@@ -2214,6 +2226,7 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
     },
 
 #if P_GIGANTAMAX_FORMS
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_COALOSSAL_GMAX] =
     {
         .baseHP        = 110,
@@ -2267,6 +2280,7 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
         .formChangeTable = sCoalossalFormChangeTable,
         .randomizerMode = MON_RANDOMIZER_INVALID,
     },
+#endif
 #endif //P_GIGANTAMAX_FORMS
 #endif //P_FAMILY_ROLYCOLY
 
@@ -2398,6 +2412,7 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
     },
 
 #if P_GIGANTAMAX_FORMS
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_FLAPPLE_GMAX] =
     {
         .baseHP        = 70,
@@ -2451,6 +2466,7 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
         .formChangeTable = sFlappleFormChangeTable,
         .randomizerMode = MON_RANDOMIZER_INVALID,
     },
+#endif
 #endif //P_GIGANTAMAX_FORMS
 
     [SPECIES_APPLETUN] =
@@ -2516,6 +2532,7 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
     },
 
 #if P_GIGANTAMAX_FORMS
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_APPLETUN_GMAX] =
     {
         .baseHP        = 110,
@@ -2569,6 +2586,7 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
         .formChangeTable = sAppletunFormChangeTable,
         .randomizerMode = MON_RANDOMIZER_INVALID,
     },
+#endif
 #endif //P_GIGANTAMAX_FORMS
 
 #if P_GEN_9_CROSS_EVOS
@@ -2817,6 +2835,7 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
     },
 
 #if P_GIGANTAMAX_FORMS
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SANDACONDA_GMAX] =
     {
         .baseHP        = 72,
@@ -2870,6 +2889,7 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
         .formChangeTable = sSandacondaFormChangeTable,
         .randomizerMode = MON_RANDOMIZER_INVALID,
     },
+#endif
 #endif //P_GIGANTAMAX_FORMS
 #endif //P_FAMILY_SILICOBRA
 
@@ -3293,6 +3313,7 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
     },
 
 #if P_GIGANTAMAX_FORMS
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_TOXTRICITY_AMPED_GMAX] =
     {
         .baseHP        = 75,
@@ -3345,6 +3366,7 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
         .formSpeciesIdTable = sToxtricityFormSpeciesIdTable,
         .formChangeTable = sToxtricityAmpedFormChangeTable,
     },
+#endif
 #endif //P_GIGANTAMAX_FORMS
 
     [SPECIES_TOXTRICITY_LOW_KEY] =
@@ -3409,6 +3431,7 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
     },
 
 #if P_GIGANTAMAX_FORMS
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_TOXTRICITY_LOW_KEY_GMAX] =
     {
         .baseHP        = 75,
@@ -3462,6 +3485,7 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
         .formChangeTable = sToxtricityAmpedFormChangeTable,
         .randomizerMode = MON_RANDOMIZER_INVALID,
     },
+#endif
 #endif //P_GIGANTAMAX_FORMS
 #endif //P_FAMILY_TOXEL
 
@@ -3597,6 +3621,7 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
     },
 
 #if P_GIGANTAMAX_FORMS
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_CENTISKORCH_GMAX] =
     {
         .baseHP        = 100,
@@ -3650,6 +3675,7 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
         .formChangeTable = sCentiskorchFormChangeTable,
         .randomizerMode = MON_RANDOMIZER_INVALID,
     },
+#endif
 #endif //P_GIGANTAMAX_FORMS
 #endif //P_FAMILY_SIZZLIPEDE
 
@@ -4211,6 +4237,7 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
     },
 
 #if P_GIGANTAMAX_FORMS
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_HATTERENE_GMAX] =
     {
         .baseHP        = 57,
@@ -4264,6 +4291,7 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
         .formChangeTable = sHattereneFormChangeTable,
         .randomizerMode = MON_RANDOMIZER_INVALID,
     },
+#endif
 #endif //P_GIGANTAMAX_FORMS
 #endif //P_FAMILY_HATENNA
 
@@ -4451,6 +4479,7 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
     },
 
 #if P_GIGANTAMAX_FORMS
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_GRIMMSNARL_GMAX] =
     {
         .baseHP        = 95,
@@ -4504,6 +4533,7 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
         .formChangeTable = sGrimmsnarlFormChangeTable,
         .randomizerMode = MON_RANDOMIZER_INVALID,
     },
+#endif
 #endif //P_GIGANTAMAX_FORMS
 #endif //P_FAMILY_IMPIDIMP
 
@@ -4644,69 +4674,194 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
     }
 
     [SPECIES_ALCREMIE_STRAWBERRY_VANILLA_CREAM] = ALCREMIE_REGULAR_SPECIES_INFO(Strawberry, VanillaCream, BODY_COLOR_WHITE, MON_RANDOMIZER_RANDOM_FORM),
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_STRAWBERRY_RUBY_CREAM]    = ALCREMIE_REGULAR_SPECIES_INFO(Strawberry, RubyCream,    BODY_COLOR_PINK, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_STRAWBERRY_MATCHA_CREAM]  = ALCREMIE_REGULAR_SPECIES_INFO(Strawberry, MatchaCream,  BODY_COLOR_GREEN, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_STRAWBERRY_MINT_CREAM]    = ALCREMIE_REGULAR_SPECIES_INFO(Strawberry, MintCream,    BODY_COLOR_BLUE, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_STRAWBERRY_LEMON_CREAM]   = ALCREMIE_REGULAR_SPECIES_INFO(Strawberry, LemonCream,   BODY_COLOR_YELLOW, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_STRAWBERRY_SALTED_CREAM]  = ALCREMIE_REGULAR_SPECIES_INFO(Strawberry, SaltedCream,  BODY_COLOR_WHITE, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_STRAWBERRY_RUBY_SWIRL]    = ALCREMIE_REGULAR_SPECIES_INFO(Strawberry, RubySwirl,    BODY_COLOR_YELLOW, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_STRAWBERRY_CARAMEL_SWIRL] = ALCREMIE_REGULAR_SPECIES_INFO(Strawberry, CaramelSwirl, BODY_COLOR_BROWN, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_STRAWBERRY_RAINBOW_SWIRL] = ALCREMIE_REGULAR_SPECIES_INFO(Strawberry, RainbowSwirl, BODY_COLOR_YELLOW, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_BERRY_VANILLA_CREAM]      = ALCREMIE_REGULAR_SPECIES_INFO(Berry,      VanillaCream, BODY_COLOR_WHITE, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_BERRY_RUBY_CREAM]         = ALCREMIE_REGULAR_SPECIES_INFO(Berry,      RubyCream,    BODY_COLOR_PINK, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_BERRY_MATCHA_CREAM]       = ALCREMIE_REGULAR_SPECIES_INFO(Berry,      MatchaCream,  BODY_COLOR_GREEN, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_BERRY_MINT_CREAM]         = ALCREMIE_REGULAR_SPECIES_INFO(Berry,      MintCream,    BODY_COLOR_BLUE, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_BERRY_LEMON_CREAM]        = ALCREMIE_REGULAR_SPECIES_INFO(Berry,      LemonCream,   BODY_COLOR_YELLOW, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_BERRY_SALTED_CREAM]       = ALCREMIE_REGULAR_SPECIES_INFO(Berry,      SaltedCream,  BODY_COLOR_WHITE, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_BERRY_RUBY_SWIRL]         = ALCREMIE_REGULAR_SPECIES_INFO(Berry,      RubySwirl,    BODY_COLOR_YELLOW, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_BERRY_CARAMEL_SWIRL]      = ALCREMIE_REGULAR_SPECIES_INFO(Berry,      CaramelSwirl, BODY_COLOR_BROWN, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_BERRY_RAINBOW_SWIRL]      = ALCREMIE_REGULAR_SPECIES_INFO(Berry,      RainbowSwirl, BODY_COLOR_YELLOW, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_LOVE_VANILLA_CREAM]       = ALCREMIE_REGULAR_SPECIES_INFO(Love,       VanillaCream, BODY_COLOR_WHITE, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_LOVE_RUBY_CREAM]          = ALCREMIE_REGULAR_SPECIES_INFO(Love,       RubyCream,    BODY_COLOR_PINK, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_LOVE_MATCHA_CREAM]        = ALCREMIE_REGULAR_SPECIES_INFO(Love,       MatchaCream,  BODY_COLOR_GREEN, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_LOVE_MINT_CREAM]          = ALCREMIE_REGULAR_SPECIES_INFO(Love,       MintCream,    BODY_COLOR_BLUE, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_LOVE_LEMON_CREAM]         = ALCREMIE_REGULAR_SPECIES_INFO(Love,       LemonCream,   BODY_COLOR_YELLOW, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_LOVE_SALTED_CREAM]        = ALCREMIE_REGULAR_SPECIES_INFO(Love,       SaltedCream,  BODY_COLOR_WHITE, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_LOVE_RUBY_SWIRL]          = ALCREMIE_REGULAR_SPECIES_INFO(Love,       RubySwirl,    BODY_COLOR_YELLOW, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_LOVE_CARAMEL_SWIRL]       = ALCREMIE_REGULAR_SPECIES_INFO(Love,       CaramelSwirl, BODY_COLOR_BROWN, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_LOVE_RAINBOW_SWIRL]       = ALCREMIE_REGULAR_SPECIES_INFO(Love,       RainbowSwirl, BODY_COLOR_YELLOW, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_STAR_VANILLA_CREAM]       = ALCREMIE_REGULAR_SPECIES_INFO(Star,       VanillaCream, BODY_COLOR_WHITE, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_STAR_RUBY_CREAM]          = ALCREMIE_REGULAR_SPECIES_INFO(Star,       RubyCream,    BODY_COLOR_PINK, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_STAR_MATCHA_CREAM]        = ALCREMIE_REGULAR_SPECIES_INFO(Star,       MatchaCream,  BODY_COLOR_GREEN, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_STAR_MINT_CREAM]          = ALCREMIE_REGULAR_SPECIES_INFO(Star,       MintCream,    BODY_COLOR_BLUE, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_STAR_LEMON_CREAM]         = ALCREMIE_REGULAR_SPECIES_INFO(Star,       LemonCream,   BODY_COLOR_YELLOW, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_STAR_SALTED_CREAM]        = ALCREMIE_REGULAR_SPECIES_INFO(Star,       SaltedCream,  BODY_COLOR_WHITE, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_STAR_RUBY_SWIRL]          = ALCREMIE_REGULAR_SPECIES_INFO(Star,       RubySwirl,    BODY_COLOR_YELLOW, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_STAR_CARAMEL_SWIRL]       = ALCREMIE_REGULAR_SPECIES_INFO(Star,       CaramelSwirl, BODY_COLOR_BROWN, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_STAR_RAINBOW_SWIRL]       = ALCREMIE_REGULAR_SPECIES_INFO(Star,       RainbowSwirl, BODY_COLOR_YELLOW, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_CLOVER_VANILLA_CREAM]     = ALCREMIE_REGULAR_SPECIES_INFO(Clover,     VanillaCream, BODY_COLOR_WHITE, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_CLOVER_RUBY_CREAM]        = ALCREMIE_REGULAR_SPECIES_INFO(Clover,     RubyCream,    BODY_COLOR_PINK, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_CLOVER_MATCHA_CREAM]      = ALCREMIE_REGULAR_SPECIES_INFO(Clover,     MatchaCream,  BODY_COLOR_GREEN, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_CLOVER_MINT_CREAM]        = ALCREMIE_REGULAR_SPECIES_INFO(Clover,     MintCream,    BODY_COLOR_BLUE, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_CLOVER_LEMON_CREAM]       = ALCREMIE_REGULAR_SPECIES_INFO(Clover,     LemonCream,   BODY_COLOR_YELLOW, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_CLOVER_SALTED_CREAM]      = ALCREMIE_REGULAR_SPECIES_INFO(Clover,     SaltedCream,  BODY_COLOR_WHITE, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_CLOVER_RUBY_SWIRL]        = ALCREMIE_REGULAR_SPECIES_INFO(Clover,     RubySwirl,    BODY_COLOR_YELLOW, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_CLOVER_CARAMEL_SWIRL]     = ALCREMIE_REGULAR_SPECIES_INFO(Clover,     CaramelSwirl, BODY_COLOR_BROWN, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_CLOVER_RAINBOW_SWIRL]     = ALCREMIE_REGULAR_SPECIES_INFO(Clover,     RainbowSwirl, BODY_COLOR_YELLOW, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_FLOWER_VANILLA_CREAM]     = ALCREMIE_REGULAR_SPECIES_INFO(Flower,     VanillaCream, BODY_COLOR_WHITE, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_FLOWER_RUBY_CREAM]        = ALCREMIE_REGULAR_SPECIES_INFO(Flower,     RubyCream,    BODY_COLOR_PINK, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_FLOWER_MATCHA_CREAM]      = ALCREMIE_REGULAR_SPECIES_INFO(Flower,     MatchaCream,  BODY_COLOR_GREEN, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_FLOWER_MINT_CREAM]        = ALCREMIE_REGULAR_SPECIES_INFO(Flower,     MintCream,    BODY_COLOR_BLUE, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_FLOWER_LEMON_CREAM]       = ALCREMIE_REGULAR_SPECIES_INFO(Flower,     LemonCream,   BODY_COLOR_YELLOW, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_FLOWER_SALTED_CREAM]      = ALCREMIE_REGULAR_SPECIES_INFO(Flower,     SaltedCream,  BODY_COLOR_WHITE, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_FLOWER_RUBY_SWIRL]        = ALCREMIE_REGULAR_SPECIES_INFO(Flower,     RubySwirl,    BODY_COLOR_YELLOW, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_FLOWER_CARAMEL_SWIRL]     = ALCREMIE_REGULAR_SPECIES_INFO(Flower,     CaramelSwirl, BODY_COLOR_BROWN, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_FLOWER_RAINBOW_SWIRL]     = ALCREMIE_REGULAR_SPECIES_INFO(Flower,     RainbowSwirl, BODY_COLOR_YELLOW, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_RIBBON_VANILLA_CREAM]     = ALCREMIE_REGULAR_SPECIES_INFO(Ribbon,     VanillaCream, BODY_COLOR_WHITE, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_RIBBON_RUBY_CREAM]        = ALCREMIE_REGULAR_SPECIES_INFO(Ribbon,     RubyCream,    BODY_COLOR_PINK, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_RIBBON_MATCHA_CREAM]      = ALCREMIE_REGULAR_SPECIES_INFO(Ribbon,     MatchaCream,  BODY_COLOR_GREEN, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_RIBBON_MINT_CREAM]        = ALCREMIE_REGULAR_SPECIES_INFO(Ribbon,     MintCream,    BODY_COLOR_BLUE, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_RIBBON_LEMON_CREAM]       = ALCREMIE_REGULAR_SPECIES_INFO(Ribbon,     LemonCream,   BODY_COLOR_YELLOW, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_RIBBON_SALTED_CREAM]      = ALCREMIE_REGULAR_SPECIES_INFO(Ribbon,     SaltedCream,  BODY_COLOR_WHITE, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_RIBBON_RUBY_SWIRL]        = ALCREMIE_REGULAR_SPECIES_INFO(Ribbon,     RubySwirl,    BODY_COLOR_YELLOW, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_RIBBON_CARAMEL_SWIRL]     = ALCREMIE_REGULAR_SPECIES_INFO(Ribbon,     CaramelSwirl, BODY_COLOR_BROWN, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_RIBBON_RAINBOW_SWIRL]     = ALCREMIE_REGULAR_SPECIES_INFO(Ribbon,     RainbowSwirl, BODY_COLOR_YELLOW, MON_RANDOMIZER_RANDOM_FORM),
+#endif
 #if P_GIGANTAMAX_FORMS
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_ALCREMIE_GMAX] =
     {
         ALCREMIE_MISC_INFO(BODY_COLOR_YELLOW),
@@ -4744,6 +4899,7 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
         .formChangeTable = sAlcremieFormChangeTable,
         .randomizerMode = MON_RANDOMIZER_INVALID,
     },
+#endif
 #endif //P_GIGANTAMAX_FORMS
 #endif //P_FAMILY_MILCERY
 
@@ -5544,6 +5700,7 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
     },
 
 #if P_GIGANTAMAX_FORMS
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_COPPERAJAH_GMAX] =
     {
         .baseHP        = 122,
@@ -5598,6 +5755,7 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
         .formChangeTable = sCopperajahFormChangeTable,
         .randomizerMode = MON_RANDOMIZER_INVALID,
     },
+#endif
 #endif //P_GIGANTAMAX_FORMS
 #endif //P_FAMILY_CUFANT
 
@@ -5914,6 +6072,7 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
     },
 
 #if P_GIGANTAMAX_FORMS
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_DURALUDON_GMAX] =
     {
         .baseHP        = 70,
@@ -5968,6 +6127,7 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
         .formChangeTable = sDuraludonFormChangeTable,
         .randomizerMode = MON_RANDOMIZER_INVALID,
     },
+#endif
 #endif //P_GIGANTAMAX_FORMS
 
 #if P_GEN_9_CROSS_EVOS
@@ -6732,6 +6892,7 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
     },
 
 #if P_GIGANTAMAX_FORMS
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_URSHIFU_SINGLE_STRIKE_GMAX] =
     {
         .baseHP        = 100,
@@ -6786,6 +6947,7 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
         .formSpeciesIdTable = sUrshifuFormSpeciesIdTable,
         .randomizerMode = MON_RANDOMIZER_INVALID,
     },
+#endif
 #endif //P_GIGANTAMAX_FORMS
 
     [SPECIES_URSHIFU_RAPID_STRIKE] =
@@ -6853,6 +7015,7 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
     },
 
 #if P_GIGANTAMAX_FORMS
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_URSHIFU_RAPID_STRIKE_GMAX] =
     {
         .baseHP        = 100,
@@ -6907,6 +7070,7 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
         .formSpeciesIdTable = sUrshifuFormSpeciesIdTable,
         .randomizerMode = MON_RANDOMIZER_INVALID,
     },
+#endif
 #endif //P_GIGANTAMAX_FORMS
 #endif //P_FAMILY_KUBFU
 
@@ -7350,6 +7514,7 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
     },
 
 #if P_FUSION_FORMS
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_CALYREX_ICE] =
     {
         .baseHP        = 100,
@@ -7414,7 +7579,9 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
         .formSpeciesIdTable = sCalyrexFormSpeciesIdTable,
         .randomizerMode = MON_RANDOMIZER_INVALID,
     },
+#endif
 
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_CALYREX_SHADOW] =
     {
         .baseHP        = 100,
@@ -7479,6 +7646,7 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
         .formSpeciesIdTable = sCalyrexFormSpeciesIdTable,
         .randomizerMode = MON_RANDOMIZER_INVALID,
     },
+#endif
 #endif //P_FUSION_FORMS
 #endif //P_FAMILY_CALYREX
 

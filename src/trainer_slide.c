@@ -52,20 +52,11 @@ static bool32 ShouldRunTrainerSlideLastLowHp(u32 firstId, u32 lastId, u32 battle
 static void SetTrainerSlideParamters(u32 battler, u32* firstId, u32* lastId, u32* trainerId, u32* retValue);
 static bool32 IsSlideInitalizedOrPlayed(enum TrainerSlideType slideId);
 
-static const u8* const sTrainerSlides[DIFFICULTY_COUNT][TRAINERS_COUNT][TRAINER_SLIDE_COUNT] =
-{
-    [DIFFICULTY_NORMAL] =
-    {
-    },
-};
-
-#define FRONTIER_TRAINERS_COUNT         300
-static const u8* const sFrontierTrainerSlides[DIFFICULTY_COUNT][FRONTIER_TRAINERS_COUNT][TRAINER_SLIDE_COUNT] =
-{
-    [DIFFICULTY_NORMAL] =
-    {
-    },
-};
+// No production trainer currently defines a slide message. Share one empty
+// row instead of allocating a difficulty x trainer matrix of NULL pointers.
+// Test-defined dialogue keeps its existing full lookup below. Future real
+// dialogue can use a sparse trainer/difficulty lookup before this fallback.
+static const u8 *const sEmptyTrainerSlides[TRAINER_SLIDE_COUNT] = {NULL};
 
 static const u8* const sTestTrainerSlides[DIFFICULTY_COUNT][TRAINERS_COUNT][TRAINER_SLIDE_COUNT] =
 {
@@ -110,12 +101,9 @@ static u32 GetEnemyMonCount(u32 firstId, u32 lastId, bool32 onlyAlive)
 
 static const u8* const *GetTrainerSlideArray(enum DifficultyLevel difficulty, u32 trainerId, u32 slideId)
 {
-    if (gBattleTypeFlags & BATTLE_TYPE_FRONTIER)
-        return sFrontierTrainerSlides[difficulty][trainerId];
-    else if (TESTING)
+    if (TESTING && !(gBattleTypeFlags & BATTLE_TYPE_FRONTIER))
         return sTestTrainerSlides[difficulty][trainerId];
-    else
-        return sTrainerSlides[difficulty][trainerId];
+    return sEmptyTrainerSlides;
 }
 
 static bool32 DoesTrainerHaveSlideMessage(enum DifficultyLevel difficulty, u32 trainerId, u32 slideId)

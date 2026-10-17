@@ -898,7 +898,7 @@ static void VBlankCB_Copyright(void)
 static void CB2_WaitFadeBeforeSetUpIntro(void)
 {
     if (!UpdatePaletteFade())
-        SetMainCallback2(CB2_SetUpIntro);
+        SetMainCallback2(CB2_InitTitleScreen);
 }
 
 static void LoadCopyrightGraphics(u16 charBase, u16 screenBase, u16 palOffset)
@@ -940,17 +940,14 @@ static bool8 SetUpCopyrightScreen(void)
         EnableInterrupts(INTR_FLAG_VBLANK);
         SetVBlankCallback(VBlankCB_Copyright);
         SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_BG0_ON);
-        SetSerialCallback(SerialCB_CopyrightScreen);
-        GameCubeMultiBoot_Init(&sGcmb);
+        SetSerialCallback(SerialCB);
         // fallthrough
     default:
         UpdatePaletteFade();
         gMain.state++;
-        GameCubeMultiBoot_Main(&sGcmb);
         break;
     case 140:
-        GameCubeMultiBoot_Main(&sGcmb);
-        if (sGcmb.gcmb_field_2 != 1)
+        if (TRUE)
         {
             BeginNormalPaletteFade(PALETTES_ALL, 0, 0, 16, RGB_BLACK);
             gMain.state++;
@@ -960,23 +957,7 @@ static bool8 SetUpCopyrightScreen(void)
         if (!UpdatePaletteFade())
         {
             gMain.state++;
-            if (sGcmb.gcmb_field_2 != 0)
-            {
-                if (sGcmb.gcmb_field_2 == 2)
-                {
-                    if (*(u32 *)(EWRAM_START + 0xAC) == COLOSSEUM_GAME_CODE)
-                    {
-                        CpuCopy16(gMultiBootProgram_PokemonColosseum_Start, (void *)EWRAM_START, 0x28000);
-                        *(u32 *)(EWRAM_START + 0xAC) = COLOSSEUM_GAME_CODE;
-                    }
-                    GameCubeMultiBoot_ExecuteProgram(&sGcmb);
-                }
-            }
-            else
-            {
-                GameCubeMultiBoot_Quit();
-                SetSerialCallback(SerialCB);
-            }
+            SetSerialCallback(SerialCB);
             return FALSE;
         }
         break;

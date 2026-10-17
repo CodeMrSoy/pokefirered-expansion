@@ -7235,10 +7235,18 @@ const struct SpeciesInfo gSpeciesInfoGen9[] =
     [SPECIES_OGERPON_HEARTHFLAME]      = OGERPON_SPECIES_INFO(Hearthflame, Hearthflame,     TYPE_FIRE,  ABILITY_MOLD_BREAKER,                   BODY_COLOR_RED,   1, 7, 0, FALSE),
     [SPECIES_OGERPON_CORNERSTONE]      = OGERPON_SPECIES_INFO(Cornerstone, Cornerstone,     TYPE_ROCK,  ABILITY_STURDY,                         BODY_COLOR_GRAY,  1, 7, 0, FALSE),
 #if P_TERA_FORMS
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_OGERPON_TEAL_TERA]        = OGERPON_SPECIES_INFO(Teal,        TealTera,        TYPE_GRASS, ABILITY_EMBODY_ASPECT_TEAL_MASK,        BODY_COLOR_GREEN, 0, 0, 1, TRUE),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_OGERPON_WELLSPRING_TERA]  = OGERPON_SPECIES_INFO(Wellspring,  WellspringTera,  TYPE_WATER, ABILITY_EMBODY_ASPECT_WELLSPRING_MASK,  BODY_COLOR_BLUE,  0, 0, 0, TRUE),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_OGERPON_HEARTHFLAME_TERA] = OGERPON_SPECIES_INFO(Hearthflame, HearthflameTera, TYPE_FIRE,  ABILITY_EMBODY_ASPECT_HEARTHFLAME_MASK, BODY_COLOR_RED,   0, 0, 0, TRUE),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_OGERPON_CORNERSTONE_TERA] = OGERPON_SPECIES_INFO(Cornerstone, CornerstoneTera, TYPE_ROCK,  ABILITY_EMBODY_ASPECT_CORNERSTONE_MASK, BODY_COLOR_GRAY,  0, 0, 0, TRUE),
+#endif
 #endif //P_TERA_FORMS
 
 #endif //P_FAMILY_OGERPON
@@ -7562,6 +7570,7 @@ const struct SpeciesInfo gSpeciesInfoGen9[] =
         .formChangeTable = sTerapagosFormChangeTable,
     },
 
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_TERAPAGOS_TERASTAL] =
     {
         .baseHP        = 95,
@@ -7629,7 +7638,9 @@ const struct SpeciesInfo gSpeciesInfoGen9[] =
         .formChangeTable = sTerapagosFormChangeTable,
         .randomizerMode = MON_RANDOMIZER_INVALID,
     },
+#endif
 
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_TERAPAGOS_STELLAR] =
     {
         .baseHP        = 160,
@@ -7687,6 +7698,7 @@ const struct SpeciesInfo gSpeciesInfoGen9[] =
         .formChangeTable = sTerapagosFormChangeTable,
         .randomizerMode = MON_RANDOMIZER_INVALID,
     },
+#endif
 #endif //P_FAMILY_TERAPAGOS
 
 #if P_FAMILY_PECHARUNT

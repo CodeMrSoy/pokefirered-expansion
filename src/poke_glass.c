@@ -1,10 +1,13 @@
 #include "global.h"
+#include "quantum_cleanup.h"
 #include "avatar.h"
 #include "data.h"
 #include "gflib.h"
 #include "menu.h"
 #include "poke_glass.h"
 #include "pokemon.h"
+#include "item.h"
+#include "mail.h"
 #include "pokemon_icon.h"
 #include "pokemon_storage_system.h"
 #include "event_data.h"
@@ -24,6 +27,7 @@
 #include "constants/flags.h"
 #include "constants/pokedex.h"
 #include "constants/region_map_sections.h"
+#include "constants/moves.h"
 
 static EWRAM_DATA u8 *sFieldBackdrop = NULL;
 static EWRAM_DATA u16 sFieldBackdropPalette[16] = {0};
@@ -1339,6 +1343,9 @@ static EWRAM_DATA struct {
     u8 box, cursor, sourceBox, sourceSlot;
     bool8 panel, holding, sourceParty;
     u8 icons[37];
+    u8 actionMode, actionChoice, nameCursor;
+    u8 editedName[BOX_NAME_LENGTH + 1];
+    const u8 *notice;
 } sGlassStorage = {0};
 
 static void StorageClearIcons(void)
@@ -1436,8 +1443,172 @@ static void DrawGlassStorage(void)
         StorageRead(sGlassStorage.sourceBox, sGlassStorage.sourceSlot, sGlassStorage.sourceParty, &mon);
         StorageIcon(36, &mon, 66, 112);
     }
+    StatsText(100, 114, COMPOUND_STRING("SELECT Options"));
     PutWindowTilemap(sHubWindow);
     CopyWindowToVram(sHubWindow, COPYWIN_FULL);
+}
+
+static const u8 sStorageNameChars[] = _(" ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-.");
+
+static u16 StorageFieldMoves(struct BoxPokemon *mon)
+{
+    static const u16 moves[] = {MOVE_CUT, MOVE_FLY, MOVE_SURF, MOVE_STRENGTH, MOVE_FLASH, MOVE_ROCK_SMASH, MOVE_WATERFALL, MOVE_DIVE};
+    u16 mask = 0;
+    u32 i, j;
+    if (!GetBoxMonData(mon, MON_DATA_SPECIES) || GetBoxMonData(mon, MON_DATA_IS_EGG)) return 0;
+    for (i = 0; i < MAX_MON_MOVES; i++)
+        for (j = 0; j < ARRAY_COUNT(moves); j++)
+            if (GetBoxMonData(mon, MON_DATA_MOVE1 + i) == moves[j]) mask |= 1 << j;
+    return mask;
+}
+
+static const u8 *StorageReleaseSelected(void)
+{
+    u8 slot = sGlassStorage.cursor < 30 ? sGlassStorage.cursor : sGlassStorage.cursor - 30;
+    bool8 party = sGlassStorage.cursor >= 30;
+    struct Pokemon mon;
+    u16 needed, item;
+    u32 i, box;
+    if (sGlassStorage.cursor >= 36) return COMPOUND_STRING("Choose a Pokemon first.");
+    StorageRead(sGlassStorage.box, slot, party, &mon);
+    if (!GetMonData(&mon, MON_DATA_SPECIES)) return COMPOUND_STRING("This slot is empty.");
+    if (GetMonData(&mon, MON_DATA_IS_EGG)) return COMPOUND_STRING("An Egg cannot be released.");
+    if (party && !CountPartyAliveNonEggMonsExcept(slot)) return COMPOUND_STRING("Keep a usable party Pokemon.");
+    if ((party && GetMonData(&mon, MON_DATA_MAIL) != 255) || ItemIsMail(GetMonData(&mon, MON_DATA_HELD_ITEM))) return COMPOUND_STRING("Remove its Mail first.");
+    needed = StorageFieldMoves(&mon.box);
+    for (i = 0; needed && i < PARTY_SIZE; i++)
+        if (!(party && i == slot)) needed &= ~StorageFieldMoves(&gPlayerParty[i].box);
+    for (box = 0; needed && box < TOTAL_BOXES_COUNT; box++)
+        for (i = 0; needed && i < IN_BOX_COUNT; i++)
+            if (!(!party && box == sGlassStorage.box && i == slot))
+                needed &= ~StorageFieldMoves(GetBoxedMonPtr(box, i));
+    if (needed) return COMPOUND_STRING("Keep another field-move user.");
+    item = GetMonData(&mon, MON_DATA_HELD_ITEM);
+    if (item && !AddBagItem(item, 1)) return COMPOUND_STRING("Make room for its held item.");
+    if (party)
+    {
+        ZeroMonData(&gPlayerParty[slot]);
+        CompactPartySlots();
+        CalculatePlayerPartyCount();
+    }
+    else ZeroBoxMonAt(sGlassStorage.box, slot);
+    QuantumRecoverStoredItemsAndPokemon();
+    return item ? COMPOUND_STRING("Released. Item sent to Bag.") : COMPOUND_STRING("Pokemon released.");
+}
+
+static void DrawStorageActions(void)
+{
+    u8 mark[] = _(">");
+    StorageClearIcons();
+    HubRect(2, 18, 32, 188, 77);
+    HubRect(4, 19, 33, 186, 75);
+    if (sGlassStorage.actionMode == 1)
+    {
+        StatsText(34, 44, COMPOUND_STRING("Release Pokemon"));
+        StatsText(34, 64, COMPOUND_STRING("Rename box"));
+        StatsText(22, 44 + sGlassStorage.actionChoice * 20, mark);
+        StatsText(25, 89, COMPOUND_STRING("A Choose   B Back"));
+    }
+    else if (sGlassStorage.actionMode == 2)
+    {
+        StatsText(25, 42, COMPOUND_STRING("Release this Pokemon?"));
+        StatsText(40, 65, sGlassStorage.actionChoice ? COMPOUND_STRING("No    >Yes") : COMPOUND_STRING(">No    Yes"));
+        StatsText(25, 89, COMPOUND_STRING("A Confirm   B Cancel"));
+    }
+    else if (sGlassStorage.actionMode == 3)
+    {
+        StatsText(25, 40, COMPOUND_STRING("Rename box"));
+        StatsText(45, 59, sGlassStorage.editedName);
+        // Fixed-width character cells let the cursor track narrow glyphs too.
+        HubRect(4, 43, 58, 140, 20);
+        for (u32 i = 0; i < BOX_NAME_LENGTH; i++)
+        {
+            u8 letter[] = {sGlassStorage.editedName[i], EOS};
+            StatsText(45 + i * 16, 59, letter);
+        }
+        HubRect(8, 45 + sGlassStorage.nameCursor * 16, 73, 10, 1);
+        StatsText(25, 81, COMPOUND_STRING("Up/Down Letter  Left/Right"));
+        StatsText(25, 94, COMPOUND_STRING("A Save   B Cancel"));
+    }
+    else StatsText(23, 60, sGlassStorage.notice);
+    PutWindowTilemap(sHubWindow);
+    CopyWindowToVram(sHubWindow, COPYWIN_FULL);
+}
+
+static bool8 HandleStorageActions(void)
+{
+    u8 mode = sGlassStorage.actionMode;
+    if (!mode) return FALSE;
+    if (!JOY_NEW(A_BUTTON | B_BUTTON | DPAD_LEFT | DPAD_RIGHT | DPAD_UP | DPAD_DOWN)
+     && !(mode == 3 && JOY_REPEAT(DPAD_UP | DPAD_DOWN))) return TRUE;
+    if (JOY_NEW(B_BUTTON)) sGlassStorage.actionMode = 0;
+    else if (mode == 1)
+    {
+        if (JOY_NEW(DPAD_UP | DPAD_DOWN)) sGlassStorage.actionChoice ^= 1;
+        if (JOY_NEW(A_BUTTON))
+        {
+            if (!sGlassStorage.actionChoice)
+            {
+                sGlassStorage.actionMode = 2;
+                sGlassStorage.actionChoice = 0; // Never default to a destructive action.
+            }
+            else
+            {
+                u8 *name = GetBoxNamePtr(sGlassStorage.box);
+                u32 i;
+                bool8 ended = FALSE;
+                for (i = 0; i < BOX_NAME_LENGTH; i++)
+                {
+                    if (name[i] == EOS) ended = TRUE;
+                    sGlassStorage.editedName[i] = ended ? CHAR_SPACE : name[i];
+                }
+                sGlassStorage.editedName[BOX_NAME_LENGTH] = EOS;
+                sGlassStorage.nameCursor = 0;
+                sGlassStorage.actionMode = 3;
+            }
+        }
+    }
+    else if (mode == 2)
+    {
+        if (JOY_NEW(DPAD_LEFT | DPAD_RIGHT)) sGlassStorage.actionChoice ^= 1;
+        if (JOY_NEW(A_BUTTON))
+        {
+            if (!sGlassStorage.actionChoice) sGlassStorage.actionMode = 0;
+            else
+            {
+                sGlassStorage.notice = StorageReleaseSelected();
+                sGlassStorage.actionMode = 4;
+            }
+        }
+    }
+    else if (mode == 3)
+    {
+        u8 *letter = &sGlassStorage.editedName[sGlassStorage.nameCursor];
+        u32 i, len = ARRAY_COUNT(sStorageNameChars) - 1;
+        if (JOY_NEW(DPAD_LEFT)) sGlassStorage.nameCursor = (sGlassStorage.nameCursor + BOX_NAME_LENGTH - 1) % BOX_NAME_LENGTH;
+        else if (JOY_NEW(DPAD_RIGHT)) sGlassStorage.nameCursor = (sGlassStorage.nameCursor + 1) % BOX_NAME_LENGTH;
+        else if (JOY_REPEAT(DPAD_UP | DPAD_DOWN))
+        {
+            for (i = 0; i < len && sStorageNameChars[i] != *letter; i++);
+            if (i == len) i = 0;
+            *letter = sStorageNameChars[(i + (JOY_REPEAT(DPAD_UP) ? 1 : len - 1)) % len];
+        }
+        else if (JOY_NEW(A_BUTTON))
+        {
+            u8 *name = GetBoxNamePtr(sGlassStorage.box);
+            s32 end = BOX_NAME_LENGTH;
+            while (end && sGlassStorage.editedName[end - 1] == CHAR_SPACE) end--;
+            if (!end) { PlaySE(SE_FAILURE); return TRUE; }
+            memcpy(name, sGlassStorage.editedName, end);
+            name[end] = EOS;
+            sGlassStorage.actionMode = 0;
+        }
+    }
+    else if (JOY_NEW(A_BUTTON)) sGlassStorage.actionMode = 0;
+    PlaySE(SE_SELECT);
+    if (sGlassStorage.actionMode) DrawStorageActions();
+    else DrawGlassStorage();
+    return TRUE;
 }
 
 static bool8 StoragePlace(void)
@@ -1478,6 +1649,14 @@ static void Task_GlassStorage(u8 taskId)
     u8 cursor = sGlassStorage.cursor;
     if (gTasks[taskId].data[0]++ < 2) return;
     gTasks[taskId].data[0] = 2;
+    if (HandleStorageActions()) return;
+    if (JOY_NEW(SELECT_BUTTON) && !sGlassStorage.holding)
+    {
+        sGlassStorage.actionMode = 1;
+        sGlassStorage.actionChoice = 0;
+        DrawStorageActions();
+        return;
+    }
     if (JOY_NEW(B_BUTTON))
     {
         if (sGlassStorage.holding) sGlassStorage.holding = FALSE;
@@ -1550,6 +1729,7 @@ static void Task_GlassStorage(u8 taskId)
 void ShowPokeGlassStorage(void)
 {
     u8 taskId;
+    QuantumRecoverStoredItemsAndPokemon();
     if (!OpenTabletWindow()) return;
     memset(&sGlassStorage, 0, sizeof(sGlassStorage));
     memset(sGlassStorage.icons, MAX_SPRITES, sizeof(sGlassStorage.icons));

@@ -3048,6 +3048,7 @@ void DexScreen_DrawMonFootprint(u8 windowId, u16 species, u8 x, u8 y)
         return;
 #if P_FOOTPRINTS
     footprint = (u8 *)(gSpeciesInfo[species].footprint);
+    if (footprint == NULL) return;
 #else
     return;
 #endif

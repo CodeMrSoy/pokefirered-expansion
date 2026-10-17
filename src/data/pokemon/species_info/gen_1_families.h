@@ -288,6 +288,7 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
 #endif //P_MEGA_EVOLUTIONS
 
 #if P_GIGANTAMAX_FORMS
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_VENUSAUR_GMAX] =
     {
         .baseHP        = 80,
@@ -342,6 +343,7 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
         .formChangeTable = sVenusaurFormChangeTable,
         .randomizerMode = MON_RANDOMIZER_INVALID
     },
+#endif
 #endif //P_GIGANTAMAX_FORMS
 #endif //P_FAMILY_BULBASAUR
 
@@ -679,6 +681,7 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
 #endif //P_MEGA_EVOLUTIONS
 
 #if P_GIGANTAMAX_FORMS
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_CHARIZARD_GMAX] =
     {
         .baseHP        = 78,
@@ -732,6 +735,7 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
         .formChangeTable = sCharizardFormChangeTable,
         .randomizerMode = MON_RANDOMIZER_INVALID
     },
+#endif
 #endif //P_GIGANTAMAX_FORMS
 #endif //P_FAMILY_CHARMANDER
 
@@ -1008,6 +1012,7 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
 #endif //P_MEGA_EVOLUTIONS
 
 #if P_GIGANTAMAX_FORMS
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_BLASTOISE_GMAX] =
     {
         .baseHP        = 79,
@@ -1061,6 +1066,7 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
         .formChangeTable = sBlastoiseFormChangeTable,
         .randomizerMode = MON_RANDOMIZER_INVALID
     },
+#endif
 #endif //P_GIGANTAMAX_FORMS
 #endif //P_FAMILY_SQUIRTLE
 
@@ -1302,6 +1308,7 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
     },
 
 #if P_GIGANTAMAX_FORMS
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_BUTTERFREE_GMAX] =
     {
         .baseHP        = 60,
@@ -1358,6 +1365,7 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
         .formChangeTable = sButterfreeFormChangeTable,
         .randomizerMode = MON_RANDOMIZER_INVALID
     },
+#endif
 #endif //P_GIGANTAMAX_FORMS
 #endif //P_FAMILY_CATERPIE
 
@@ -2830,6 +2838,7 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
     },
 
 #if P_COSPLAY_PIKACHU_FORMS
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_PIKACHU_COSPLAY]   =
     {
         .baseHP        = 35,
@@ -2882,7 +2891,9 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
         .formSpeciesIdTable = sPikachuFormSpeciesIdTable,
         .randomizerMode = MON_RANDOMIZER_INVALID
     },
+#endif
 
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_PIKACHU_ROCK_STAR] =
     {
         .baseHP        = 35,
@@ -2935,7 +2946,9 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
         .formSpeciesIdTable = sPikachuFormSpeciesIdTable,
         .randomizerMode = MON_RANDOMIZER_INVALID
     },
+#endif
 
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_PIKACHU_BELLE] =
     {
         .baseHP        = 35,
@@ -2989,7 +3002,9 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
         .formSpeciesIdTable = sPikachuFormSpeciesIdTable,
         .randomizerMode = MON_RANDOMIZER_INVALID
     },
+#endif
 
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_PIKACHU_POP_STAR] =
     {
         .baseHP        = 35,
@@ -3043,7 +3058,9 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
         .formSpeciesIdTable = sPikachuFormSpeciesIdTable,
         .randomizerMode = MON_RANDOMIZER_INVALID
     },
+#endif
 
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_PIKACHU_PHD] =
     {
         .baseHP        = 35,
@@ -3096,7 +3113,9 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
         .formSpeciesIdTable = sPikachuFormSpeciesIdTable,
         .randomizerMode = MON_RANDOMIZER_INVALID
     },
+#endif
 
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_PIKACHU_LIBRE] =
     {
         .baseHP        = 35,
@@ -3149,10 +3168,12 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
         .formSpeciesIdTable = sPikachuFormSpeciesIdTable,
         .randomizerMode = MON_RANDOMIZER_INVALID
     },
+#endif
 
 #endif //P_COSPLAY_PIKACHU_FORMS
 
 #if P_CAP_PIKACHU_FORMS
+#if 0 // Quantum: retired cap form; ID reserved for old saves.
     [SPECIES_PIKACHU_ORIGINAL] =
     {
         .baseHP        = 35,
@@ -3206,7 +3227,9 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
         .formSpeciesIdTable = sPikachuFormSpeciesIdTable,
         .randomizerMode = MON_RANDOMIZER_INVALID
     },
+#endif
 
+#if 0 // Quantum: retired cap form; ID reserved for old saves.
     [SPECIES_PIKACHU_HOENN] =
     {
         .baseHP        = 35,
@@ -3259,7 +3282,9 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
         .formSpeciesIdTable = sPikachuFormSpeciesIdTable,
         .randomizerMode = MON_RANDOMIZER_INVALID
     },
+#endif
 
+#if 0 // Quantum: retired cap form; ID reserved for old saves.
     [SPECIES_PIKACHU_SINNOH] =
     {
         .baseHP        = 35,
@@ -3312,7 +3337,9 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
         .formSpeciesIdTable = sPikachuFormSpeciesIdTable,
         .randomizerMode = MON_RANDOMIZER_INVALID
     },
+#endif
 
+#if 0 // Quantum: retired cap form; ID reserved for old saves.
     [SPECIES_PIKACHU_UNOVA] =
     {
         .baseHP        = 35,
@@ -3365,7 +3392,9 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
         .formSpeciesIdTable = sPikachuFormSpeciesIdTable,
         .randomizerMode = MON_RANDOMIZER_INVALID
     },
+#endif
 
+#if 0 // Quantum: retired cap form; ID reserved for old saves.
     [SPECIES_PIKACHU_KALOS] =
     {
         .baseHP        = 35,
@@ -3418,7 +3447,9 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
         .formSpeciesIdTable = sPikachuFormSpeciesIdTable,
         .randomizerMode = MON_RANDOMIZER_INVALID
     },
+#endif
 
+#if 0 // Quantum: retired cap form; ID reserved for old saves.
     [SPECIES_PIKACHU_ALOLA] =
     {
         .baseHP        = 35,
@@ -3471,7 +3502,9 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
         .formSpeciesIdTable = sPikachuFormSpeciesIdTable,
         .randomizerMode = MON_RANDOMIZER_INVALID
     },
+#endif
 
+#if 0 // Quantum: retired cap form; ID reserved for old saves.
     [SPECIES_PIKACHU_PARTNER] =
     {
         .baseHP        = 35,
@@ -3525,7 +3558,9 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
         .formSpeciesIdTable = sPikachuFormSpeciesIdTable,
         .randomizerMode = MON_RANDOMIZER_INVALID
     },
+#endif
 
+#if 0 // Quantum: retired cap form; ID reserved for old saves.
     [SPECIES_PIKACHU_WORLD] =
     {
         .baseHP        = 35,
@@ -3578,10 +3613,12 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
         .formSpeciesIdTable = sPikachuFormSpeciesIdTable,
         .randomizerMode = MON_RANDOMIZER_INVALID
     },
+#endif
 
 #endif //P_CAP_PIKACHU_FORMS
 
 #if P_GIGANTAMAX_FORMS
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_PIKACHU_GMAX] =
     {
         .baseHP        = 35,
@@ -3636,6 +3673,7 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
         .formChangeTable = sPikachuFormChangeTable,
         .randomizerMode = MON_RANDOMIZER_INVALID
     },
+#endif
 #endif //P_GIGANTAMAX_FORMS
 
     [SPECIES_PIKACHU_STARTER] =
@@ -6908,6 +6946,7 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
 #endif //P_GALARIAN_FORMS
 
 #if P_GIGANTAMAX_FORMS
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_MEOWTH_GMAX] =
     {
         .baseHP        = 40,
@@ -6963,6 +7002,7 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
         .formChangeTable = sMeowthFormChangeTable,
         .randomizerMode = MON_RANDOMIZER_INVALID,
     },
+#endif
 #endif //P_GIGANTAMAX_FORMS
 #endif //P_FAMILY_MEOWTH
 
@@ -8423,6 +8463,7 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
     },
 
 #if P_GIGANTAMAX_FORMS
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_MACHAMP_GMAX] =
     {
         .baseHP        = 90,
@@ -8481,6 +8522,7 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
         .formChangeTable = sMachampFormChangeTable,
         .randomizerMode = MON_RANDOMIZER_INVALID
     },
+#endif
 #endif //P_GIGANTAMAX_FORMS
 #endif //P_FAMILY_MACHOP
 
@@ -11417,6 +11459,7 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
 #endif //P_MEGA_EVOLUTIONS
 
 #if P_GIGANTAMAX_FORMS
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_GENGAR_GMAX] =
     {
         .baseHP        = 60,
@@ -11470,6 +11513,7 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
         .formChangeTable = sGengarFormChangeTable,
         .randomizerMode = MON_RANDOMIZER_INVALID
     },
+#endif
 #endif //P_GIGANTAMAX_FORMS
 #endif //P_FAMILY_GASTLY
 
@@ -11988,6 +12032,7 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
     },
 
 #if P_GIGANTAMAX_FORMS
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_KINGLER_GMAX] =
     {
         .baseHP        = 55,
@@ -12042,6 +12087,7 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
         .formChangeTable = sKinglerFormChangeTable,
         .randomizerMode = MON_RANDOMIZER_INVALID,
     },
+#endif
 #endif //P_GIGANTAMAX_FORMS
 #endif //P_FAMILY_KRABBY
 
@@ -16558,6 +16604,7 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
     },
 
 #if P_GIGANTAMAX_FORMS
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_LAPRAS_GMAX] =
     {
         .baseHP        = 130,
@@ -16614,6 +16661,7 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
         .formChangeTable = sLaprasFormChangeTable,
         .randomizerMode = MON_RANDOMIZER_INVALID,
     },
+#endif
 #endif //P_GIGANTAMAX_FORMS
 #endif //P_FAMILY_LAPRAS
 
@@ -16780,6 +16828,7 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
     },
 
 #if P_GIGANTAMAX_FORMS
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_EEVEE_GMAX] =
     {
         .baseHP        = 55,
@@ -16834,6 +16883,7 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
         .formChangeTable = sEeveeFormChangeTable,
         .randomizerMode = MON_RANDOMIZER_INVALID,
     },
+#endif
 #endif //P_GIGANTAMAX_FORMS
 
     [SPECIES_EEVEE_STARTER] =
@@ -18208,6 +18258,7 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
     },
 
 #if P_GIGANTAMAX_FORMS
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SNORLAX_GMAX] =
     {
         .baseHP        = 160,
@@ -18264,6 +18315,7 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
         .formChangeTable = sSnorlaxFormChangeTable,
         .randomizerMode = MON_RANDOMIZER_INVALID,
     },
+#endif
 #endif //P_GIGANTAMAX_FORMS
 #endif //P_FAMILY_SNORLAX
 

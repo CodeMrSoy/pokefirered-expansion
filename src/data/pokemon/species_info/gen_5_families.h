@@ -6048,6 +6048,7 @@ const struct SpeciesInfo gSpeciesInfoGen5[] =
     },
 
 #if P_GIGANTAMAX_FORMS
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_GARBODOR_GMAX] =
     {
         .baseHP        = 80,
@@ -6104,6 +6105,7 @@ const struct SpeciesInfo gSpeciesInfoGen5[] =
         .formChangeTable = sGarbodorFormChangeTable,
         .randomizerMode = MON_RANDOMIZER_INVALID
     },
+#endif
 #endif //P_GIGANTAMAX_FORMS
 #endif //P_FAMILY_TRUBBISH
 
@@ -12346,6 +12348,7 @@ const struct SpeciesInfo gSpeciesInfoGen5[] =
     },
 
 #if P_FUSION_FORMS
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_KYUREM_WHITE] =
     {
         .baseHP        = 125,
@@ -12420,7 +12423,9 @@ const struct SpeciesInfo gSpeciesInfoGen5[] =
         .formSpeciesIdTable = sKyuremFormSpeciesIdTable,
         .randomizerMode = MON_RANDOMIZER_INVALID
     },
+#endif
 
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_KYUREM_BLACK] =
     {
         .baseHP        = 125,
@@ -12495,6 +12500,7 @@ const struct SpeciesInfo gSpeciesInfoGen5[] =
         .formSpeciesIdTable = sKyuremFormSpeciesIdTable,
         .randomizerMode = MON_RANDOMIZER_INVALID
     },
+#endif
 #endif //P_FUSION_FORMS
 #endif //P_FAMILY_KYUREM
 

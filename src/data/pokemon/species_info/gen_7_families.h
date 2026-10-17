@@ -6381,6 +6381,7 @@ const struct SpeciesInfo gSpeciesInfoGen7[] =
     },
 
 #if P_FUSION_FORMS
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_NECROZMA_DUSK_MANE] =
     {
         .baseHP        = 97,
@@ -6447,7 +6448,9 @@ const struct SpeciesInfo gSpeciesInfoGen7[] =
         .formChangeTable = sNecrozmaDuskManeFormChangeTable,
         .randomizerMode = MON_RANDOMIZER_INVALID,
     },
+#endif
 
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_NECROZMA_DAWN_WINGS] =
     {
         .baseHP        = 97,
@@ -6515,8 +6518,10 @@ const struct SpeciesInfo gSpeciesInfoGen7[] =
         .formChangeTable = sNecrozmaDawnWingsFormChangeTable,
         .randomizerMode = MON_RANDOMIZER_INVALID,
     },
+#endif
 
 #if P_ULTRA_BURST_FORMS
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_NECROZMA_ULTRA] =
     {
         .baseHP        = 97,
@@ -6588,6 +6593,7 @@ const struct SpeciesInfo gSpeciesInfoGen7[] =
         .formSpeciesIdTable = sNecrozmaFormSpeciesIdTable,
         .randomizerMode = MON_RANDOMIZER_INVALID,
     },
+#endif
 #endif //P_ULTRA_BURST_FORMS
 #endif //P_FUSION_FORMS
 #endif //P_FAMILY_NECROZMA
@@ -7237,6 +7243,7 @@ const struct SpeciesInfo gSpeciesInfoGen7[] =
     },
 
 #if P_GIGANTAMAX_FORMS
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_MELMETAL_GMAX] =
     {
         .baseHP        = 135,
@@ -7293,6 +7300,7 @@ const struct SpeciesInfo gSpeciesInfoGen7[] =
         .formChangeTable = sMelmetalFormChangeTable,
         .randomizerMode = MON_RANDOMIZER_INVALID,
     },
+#endif
 #endif //P_GIGANTAMAX_FORMS
 #endif //P_FAMILY_MELTAN
 

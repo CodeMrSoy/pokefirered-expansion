@@ -1,4 +1,5 @@
 #include "randomizer.h"
+#include "mail.h"
 
 #if RANDOMIZER_AVAILABLE == TRUE
 #include "main.h"
@@ -355,7 +356,8 @@ static inline bool32 IsKeyItem(u16 itemId)
 // ITEM_NONE also should not be randomized as it is invalid.
 static inline bool32 ShouldRandomizeItem(u16 itemId)
 {
-    return !(IsItemHM(itemId) || IsKeyItem(itemId) || itemId == ITEM_NONE);
+    return !(IsItemHM(itemId) || IsKeyItem(itemId) || itemId == ITEM_NONE
+        || ItemIsMail(itemId) || (itemId >= ITEM_NORMALIUM_Z && itemId <= ITEM_ULTRANECROZIUM_Z));
 }
 
 #include "data/randomizer/item_whitelist.h"

@@ -194,8 +194,8 @@
       "local_id": "LOCALID_CERULEAN_CAVE_GUARD",
       "type": "object",
       "graphics_id": "OBJ_EVENT_GFX_COOLTRAINER_M",
-      "x": 1,
-      "y": 13,
+      "x": 32760,
+      "y": 0,
       "elevation": 3,
       "movement_type": "MOVEMENT_TYPE_FACE_DOWN",
       "movement_range_x": 1,
@@ -257,11 +257,11 @@
       "dest_warp_id": "1"
     },
     {
-      "x": 1,
-      "y": 12,
+      "x": 32760,
+      "y": 7,
       "elevation": 0,
-      "dest_map": "MAP_CERULEAN_CAVE_1F",
-      "dest_warp_id": "0"
+      "dest_map": "MAP_PALLET_TOWN",
+      "dest_warp_id": "255"
     },
     {
       "x": 10,

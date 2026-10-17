@@ -15825,23 +15825,23 @@ const u32 gObjectEventPic_Substitute[] = INCBIN_COMP("graphics/pokemon/question_
 #endif //P_ARCEUS_UNIQUE_FORM_ICONS
 #if OW_POKEMON_OBJECT_EVENTS
     const u32 gObjectEventPic_ArceusNormal[] = INCBIN_COMP("graphics/pokemon/arceus/overworld.4bpp");
-    const u32 gObjectEventPic_ArceusFighting[] = INCBIN_COMP("graphics/pokemon/arceus/overworld.4bpp");
-    const u32 gObjectEventPic_ArceusFlying[] = INCBIN_COMP("graphics/pokemon/arceus/overworld.4bpp");
-    const u32 gObjectEventPic_ArceusPoison[] = INCBIN_COMP("graphics/pokemon/arceus/overworld.4bpp");
-    const u32 gObjectEventPic_ArceusGround[] = INCBIN_COMP("graphics/pokemon/arceus/overworld.4bpp");
-    const u32 gObjectEventPic_ArceusRock[] = INCBIN_COMP("graphics/pokemon/arceus/overworld.4bpp");
-    const u32 gObjectEventPic_ArceusBug[] = INCBIN_COMP("graphics/pokemon/arceus/overworld.4bpp");
-    const u32 gObjectEventPic_ArceusGhost[] = INCBIN_COMP("graphics/pokemon/arceus/overworld.4bpp");
-    const u32 gObjectEventPic_ArceusSteel[] = INCBIN_COMP("graphics/pokemon/arceus/overworld.4bpp");
-    const u32 gObjectEventPic_ArceusFire[] = INCBIN_COMP("graphics/pokemon/arceus/overworld.4bpp");
-    const u32 gObjectEventPic_ArceusWater[] = INCBIN_COMP("graphics/pokemon/arceus/overworld.4bpp");
-    const u32 gObjectEventPic_ArceusGrass[] = INCBIN_COMP("graphics/pokemon/arceus/overworld.4bpp");
-    const u32 gObjectEventPic_ArceusElectric[] = INCBIN_COMP("graphics/pokemon/arceus/overworld.4bpp");
-    const u32 gObjectEventPic_ArceusPsychic[] = INCBIN_COMP("graphics/pokemon/arceus/overworld.4bpp");
-    const u32 gObjectEventPic_ArceusIce[] = INCBIN_COMP("graphics/pokemon/arceus/overworld.4bpp");
-    const u32 gObjectEventPic_ArceusDragon[] = INCBIN_COMP("graphics/pokemon/arceus/overworld.4bpp");
-    const u32 gObjectEventPic_ArceusDark[] = INCBIN_COMP("graphics/pokemon/arceus/overworld.4bpp");
-    const u32 gObjectEventPic_ArceusFairy[] = INCBIN_COMP("graphics/pokemon/arceus/overworld.4bpp");
+    extern const u32 gObjectEventPic_ArceusFighting[638] __attribute__((alias("gObjectEventPic_ArceusNormal")));
+    extern const u32 gObjectEventPic_ArceusFlying[638] __attribute__((alias("gObjectEventPic_ArceusNormal")));
+    extern const u32 gObjectEventPic_ArceusPoison[638] __attribute__((alias("gObjectEventPic_ArceusNormal")));
+    extern const u32 gObjectEventPic_ArceusGround[638] __attribute__((alias("gObjectEventPic_ArceusNormal")));
+    extern const u32 gObjectEventPic_ArceusRock[638] __attribute__((alias("gObjectEventPic_ArceusNormal")));
+    extern const u32 gObjectEventPic_ArceusBug[638] __attribute__((alias("gObjectEventPic_ArceusNormal")));
+    extern const u32 gObjectEventPic_ArceusGhost[638] __attribute__((alias("gObjectEventPic_ArceusNormal")));
+    extern const u32 gObjectEventPic_ArceusSteel[638] __attribute__((alias("gObjectEventPic_ArceusNormal")));
+    extern const u32 gObjectEventPic_ArceusFire[638] __attribute__((alias("gObjectEventPic_ArceusNormal")));
+    extern const u32 gObjectEventPic_ArceusWater[638] __attribute__((alias("gObjectEventPic_ArceusNormal")));
+    extern const u32 gObjectEventPic_ArceusGrass[638] __attribute__((alias("gObjectEventPic_ArceusNormal")));
+    extern const u32 gObjectEventPic_ArceusElectric[638] __attribute__((alias("gObjectEventPic_ArceusNormal")));
+    extern const u32 gObjectEventPic_ArceusPsychic[638] __attribute__((alias("gObjectEventPic_ArceusNormal")));
+    extern const u32 gObjectEventPic_ArceusIce[638] __attribute__((alias("gObjectEventPic_ArceusNormal")));
+    extern const u32 gObjectEventPic_ArceusDragon[638] __attribute__((alias("gObjectEventPic_ArceusNormal")));
+    extern const u32 gObjectEventPic_ArceusDark[638] __attribute__((alias("gObjectEventPic_ArceusNormal")));
+    extern const u32 gObjectEventPic_ArceusFairy[638] __attribute__((alias("gObjectEventPic_ArceusNormal")));
 #if OW_PKMN_OBJECTS_SHARE_PALETTES == FALSE
     const u16 gOverworldPalette_ArceusNormal[] = INCBIN_U16("graphics/pokemon/arceus/overworld_normal.gbapal");
     const u16 gOverworldPalette_ArceusFighting[] = INCBIN_U16("graphics/pokemon/arceus/fighting/overworld_normal.gbapal");

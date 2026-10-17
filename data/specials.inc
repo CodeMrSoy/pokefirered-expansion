@@ -1,11 +1,13 @@
 @ 'requests_effects' should be set to 1 if the special contains a call
 @ to 'Script_RequestEffects', which allows it to be analyzed with
 @ 'RunScriptImmediatelyUntilEffect'.
-.macro def_special ptr:req, requests_effects=0
+.macro def_special ptr:req, requests_effects=0, retired=0
 .global SPECIAL_\ptr
 .set SPECIAL_\ptr, __special__
 .set __special__, __special__ + 1
-	.if \requests_effects == 0
+	.if \retired == 1
+	.4byte NullFieldSpecial
+	.elseif \requests_effects == 0
 	.4byte \ptr
 	.else
 	.4byte \ptr + ROM_SIZE
@@ -43,13 +45,13 @@ gSpecials::
 	def_special NullFieldSpecial
 	def_special ObjectEventInteractionWaterBerryTree
 	def_special PlayerHasBerries
-	def_special TryBattleLinkup
-	def_special TryTradeLinkup
-	def_special TryRecordMixLinkup
+	def_special TryBattleLinkup, retired=TRUE
+	def_special TryTradeLinkup, retired=TRUE
+	def_special TryRecordMixLinkup, retired=TRUE
 	def_special CloseLink
 	def_special EnterColosseumPlayerSpot
-	def_special EnterTradeSeat
-	def_special StartWiredCableClubTrade
+	def_special EnterTradeSeat, retired=TRUE
+	def_special StartWiredCableClubTrade, retired=TRUE
 	def_special CableClub_AskSaveTheGame
 	def_special NullFieldSpecial
 	def_special NullFieldSpecial
@@ -57,7 +59,7 @@ gSpecials::
 	def_special SavePlayerParty
 	def_special LoadPlayerParty
 	def_special ChooseHalfPartyForBattle
-	def_special Script_ShowLinkTrainerCard
+	def_special Script_ShowLinkTrainerCard, retired=TRUE
 	def_special ObjectEventInteractionGetBerryTreeData
 	def_special ObjectEventInteractionGetBerryName
 	def_special ObjectEventInteractionGetBerryCountString
@@ -75,7 +77,7 @@ gSpecials::
 	def_special ShouldTryRematchBattle
 	def_special IsTrainerReadyForRematch
 	def_special BattleSetup_StartRematchBattle
-	def_special ShowPokemonStorageSystemPC
+	def_special ShowPokemonStorageSystemPC, retired=TRUE
 	def_special HasEnoughMonsForDoubleBattle
 	def_special NullFieldSpecial  @ Hoenn TV specials
 	def_special NullFieldSpecial
@@ -107,11 +109,11 @@ gSpecials::
 	def_special NullFieldSpecial
 	def_special NullFieldSpecial
 	def_special NullFieldSpecial
-	def_special TryContestLinkup
+	def_special TryContestLinkup, retired=TRUE
 	def_special Field_AskSaveTheGame
 	def_special DoWateringBerryTreeAnim
-	def_special ShowEasyChatScreen
-	def_special ShowEasyChatMessage
+	def_special ShowEasyChatScreen, retired=TRUE
+	def_special ShowEasyChatMessage, retired=TRUE
 	def_special NullFieldSpecial  @ Mauville Man specials
 	def_special NullFieldSpecial
 	def_special NullFieldSpecial
@@ -172,7 +174,7 @@ gSpecials::
 	def_special StartWallClock
 	def_special Special_ViewWallClock
 	def_special NullFieldSpecial
-	def_special StartOldManTutorialBattle
+	def_special StartOldManTutorialBattle, retired=TRUE
 	def_special ChangePokemonNickname
 	def_special ChoosePartyMon
 	def_special NullFieldSpecial  @ Berry Blender/Roulette specials
@@ -211,7 +213,7 @@ gSpecials::
 	def_special ScriptHatchMon
 	def_special EggHatch
 	def_special DaycareMonReceivedMail
-	def_special ShowBattleRecords
+	def_special ShowBattleRecords, retired=TRUE
 	def_special IsEnoughForCostInVar0x8005
 	def_special SubtractMoneyFromVar0x8005
 	def_special TryFieldPoisonWhiteOut
@@ -246,26 +248,26 @@ gSpecials::
 	def_special NullFieldSpecial
 	def_special NullFieldSpecial
 	def_special GetLeadMonFriendship
-	def_special BattleTowerMapScript2
-	def_special ChooseNextBattleTowerTrainer
-	def_special CheckPartyBattleTowerBanlist
-	def_special PrintBattleTowerTrainerGreeting
+	def_special BattleTowerMapScript2, retired=TRUE
+	def_special ChooseNextBattleTowerTrainer, retired=TRUE
+	def_special CheckPartyBattleTowerBanlist, retired=TRUE
+	def_special PrintBattleTowerTrainerGreeting, retired=TRUE
 	def_special BufferEReaderTrainerGreeting
 	def_special StartSpecialBattle
-	def_special SetBattleTowerProperty
-	def_special BattleTowerUtil
-	def_special SetBattleTowerParty
-	def_special SaveBattleTowerProgress
-	def_special BattleTower_SoftReset
-	def_special DetermineBattleTowerPrize
-	def_special GiveBattleTowerPrize
-	def_special AwardBattleTowerRibbons
-	def_special ChooseBattleTowerPlayerParty
+	def_special SetBattleTowerProperty, retired=TRUE
+	def_special BattleTowerUtil, retired=TRUE
+	def_special SetBattleTowerParty, retired=TRUE
+	def_special SaveBattleTowerProgress, retired=TRUE
+	def_special BattleTower_SoftReset, retired=TRUE
+	def_special DetermineBattleTowerPrize, retired=TRUE
+	def_special GiveBattleTowerPrize, retired=TRUE
+	def_special AwardBattleTowerRibbons, retired=TRUE
+	def_special ChooseBattleTowerPlayerParty, retired=TRUE
 	def_special ValidateEReaderTrainer
 	def_special NullFieldSpecial
 	def_special ReducePlayerPartyToSelectedMons
-	def_special BedroomPC
-	def_special PlayerPC
+	def_special BedroomPC, retired=TRUE
+	def_special PlayerPC, retired=TRUE
 	def_special ShowTownMap
 	def_special GetInGameTradeSpeciesInfo
 	def_special CreateInGameTradePokemon
@@ -277,9 +279,9 @@ gSpecials::
 	def_special NullFieldSpecial
 	def_special NullFieldSpecial
 	def_special NullFieldSpecial
-	def_special CreatePCMenu
+	def_special CreatePCMenu, retired=TRUE
 	def_special HallOfFamePCBeginFade
-	def_special ShowDiploma
+	def_special ShowDiploma, retired=TRUE
 	def_special NullFieldSpecial  @ Check lead mon Contest strength specials
 	def_special NullFieldSpecial
 	def_special NullFieldSpecial
@@ -312,7 +314,7 @@ gSpecials::
 	def_special AreLeadMonEVsMaxedOut
 	def_special Script_FacePlayer
 	def_special Script_ClearHeldMovement
-	def_special InitRoamer
+	def_special InitRoamer, retired=TRUE
 	def_special NullFieldSpecial
 	def_special PlayerHasGrassPokemonInParty
 	def_special NullFieldSpecial
@@ -353,7 +355,7 @@ gSpecials::
 	def_special HasAllKantoMons
 	def_special IsMonOTNameNotPlayers
 	def_special NullFieldSpecial
-	def_special Dummy_TryEnableBravoTrainerBattleTower
+	def_special Dummy_TryEnableBravoTrainerBattleTower, retired=TRUE
 	def_special DoesPartyHaveEnigmaBerry
 	def_special DoSpecialTrainerBattle
 	def_special SetPostgameFlags
@@ -377,11 +379,11 @@ gSpecials::
 	def_special UpdateTrainerCardPhotoIcons
 	def_special StickerManGetBragFlags
 	def_special SetUsedPkmnCenterQuestLogEvent
-	def_special IsWirelessAdapterConnected
-	def_special TryBecomeLinkLeader
-	def_special TryJoinLinkGroup
-	def_special RunUnionRoom
-	def_special ShowWirelessCommunicationScreen
+	def_special IsWirelessAdapterConnected, retired=TRUE
+	def_special TryBecomeLinkLeader, retired=TRUE
+	def_special TryJoinLinkGroup, retired=TRUE
+	def_special RunUnionRoom, retired=TRUE
+	def_special ShowWirelessCommunicationScreen, retired=TRUE
 	def_special EnableNationalPokedex
 	def_special SetWalkingIntoSignVars
 	def_special DisableMsgBoxWalkaway
@@ -401,8 +403,8 @@ gSpecials::
 	def_special RestoreHelpContext
 	def_special ValidateSavedWonderCard
 	def_special SetUnlockedPokedexFlags
-	def_special InitUnionRoom
-	def_special BufferUnionRoomPlayerName
+	def_special InitUnionRoom, retired=TRUE
+	def_special BufferUnionRoomPlayerName, retired=TRUE
 	def_special QuestLog_StartRecordingInputsAfterDeferredEvent
 	def_special GetMartClerkObjectId
 	def_special GetMysteryGiftCardStat
@@ -413,14 +415,14 @@ gSpecials::
 	def_special OpenMuseumFossilPic
 	def_special CloseMuseumFossilPic
 	def_special ChooseMonForMoveTutor
-	def_special ChooseMonForWirelessMinigame
+	def_special ChooseMonForWirelessMinigame, retired=TRUE
 	def_special SetBattledTrainerFlag
 	def_special SetHelpContextForMap
 	def_special DoSSAnneDepartureCutscene
-	def_special IsPokemonJumpSpeciesInParty
+	def_special IsPokemonJumpSpeciesInParty, retired=TRUE
 	def_special IsNationalPokedexEnabled
-	def_special CallTrainerTowerFunc
-	def_special ShowPokemonJumpRecords
+	def_special CallTrainerTowerFunc, retired=TRUE
+	def_special ShowPokemonJumpRecords, retired=TRUE
 	def_special BufferTMHMMoveName
 	def_special DaisyMassageServices
 	def_special HelpSystem_Disable
@@ -433,11 +435,11 @@ gSpecials::
 	def_special Script_TakeBerryPowder
 	def_special PrintPlayerBerryPowderAmount
 	def_special DoPokemonLeagueLightingEffect
-	def_special ShowBerryCrushRankings
+	def_special ShowBerryCrushRankings, retired=TRUE
 	def_special CapeBrinkGetMoveToTeachLeadPokemon
 	def_special HasLearnedAllMovesFromCapeBrinkTutor
 	def_special DoCredits
-	def_special ShowDodrioBerryPickingRecords
+	def_special ShowDodrioBerryPickingRecords, retired=TRUE
 	def_special DrawSeagallopDestinationMenu
 	def_special GetSelectedSeagallopDestination
 	def_special GetSeagallopNumber
@@ -446,14 +448,14 @@ gSpecials::
 	def_special SetDeoxysTrianglePalette
 	def_special IsPlayerLeftOfVermilionSailor
 	def_special IsBadEggInParty
-	def_special ReadTrainerTowerAndValidate
+	def_special ReadTrainerTowerAndValidate, retired=TRUE
 	def_special HasAllMons
-	def_special IsPlayerNotInTrainerTowerLobby
+	def_special IsPlayerNotInTrainerTowerLobby, retired=TRUE
 	def_special BrailleCursorToggle
-	def_special Script_ResetUnionRoomTrade
+	def_special Script_ResetUnionRoomTrade, retired=TRUE
 	def_special PlayerPartyContainsSpeciesWithPlayerID
 	def_special AnimateTeleporterHousing
-	def_special IsDodrioInParty
+	def_special IsDodrioInParty, retired=TRUE
 	def_special AnimateTeleporterCable
 	def_special InitElevatorFloorSelectMenuPos
 	def_special UpdateLoreleiDollCollection
