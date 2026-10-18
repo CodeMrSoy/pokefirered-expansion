@@ -578,6 +578,13 @@
     "QuantumMountainPass",
     "QuantumHarbor",
     "QuantumHavoraWestQuay",
-    "QuantumHavoraNorthQuay"
+    "QuantumHavoraNorthQuay",
+    "QuantumHavoraShipwrightHouse",
+    "QuantumHavoraWeaverHouse",
+    "QuantumHavoraFisherHouse",
+    "QuantumHavoraTraderHouse",
+    "QuantumHavoraTradeHall",
+    "QuantumHavoraOutfitters",
+    "QuantumHavoraProvisions"
   ]
 }

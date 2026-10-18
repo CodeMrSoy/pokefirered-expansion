@@ -242,6 +242,9 @@ def build_assets():
     data={'style':'emerald_harbor','floors':floors,'assets':info,'tiles':max(tiles)+1,'custom_tiles':len(specs),'reserved_primary_tiles':sorted(reserved),'secondary_tiles':max(1,max(tiles)-639),'metatiles':len(secondary),'total_metatiles':len(metas),'primary_custom_metatiles':[mid for mid in meta_ids if mid<640],'catalog':catalog,'animation':{'start':animation_start,'slots':animation_slots,'active_tiles':len(animated),'frames':8},'quantized_color_sets':quantized,'palette_banks':sorted(palettes),'map_metatiles':grid,'map_collision':blocks}
     if (R/'tools/havora/layout.json').exists():data.update(json.loads((R/'tools/havora/layout.json').read_text()))
     savejson(R/'tools/havora/assets.json',data)
+    # City entrances reuse existing pixels and have their own warp behavior.
+    from build_market_district import install_thresholds
+    install_thresholds()
     # Keep the approved unoccupied source composition for exact rendered-art checks.
     preview=Image.new('RGB',(640,512))
     for y,row in enumerate(data['map_metatiles']):

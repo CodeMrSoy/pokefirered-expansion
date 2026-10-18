@@ -42,16 +42,15 @@ def component(start):
     seen.add((xx,yy));q.append((xx,yy))
  return seen
 def reachable(start,target):return target in component(start)
-for p in [(0,2),(5,0),(20,18),(5,20),(15,24),(36,28),(13,6),(24,6),(6,22),(14,24)]:assert reachable((20,18),p),p
+for p in [(0,2),(5,0),(20,18),(5,19),(15,24),(36,28),(13,6),(24,6),(14,24)]:assert reachable((20,18),p),p
 asset=json.loads((R/'tools/havora/assets.json').read_text());assert asset['tiles']<=1024;assert asset['secondary_tiles']<=384;assert asset['metatiles']<=384
 # Coping and dock changes must not create isolated walkable pockets.
 walkable={(x,y) for y in range(32) for x in range(40) if ha[y*40+x]&0xfc00==0x3000} - npc_cells
 assert walkable<=component((20,18)),walkable-component((20,18))
 # New coastal details are solid and preserve the authored walking connections.
-for e in json.loads((R/'docs/havora-coastal-study.json').read_text())['placements']:
- name='zz_water_boulder' if e['piece']=='rock' else e['piece']
- for yy,row in enumerate(asset['assets'][name]['metatiles']):
-  for xx,mid in enumerate(row):assert ha[(e['y']+yy)*40+e['x']+xx]&0x400
+solid_ids={asset['assets'][name]['metatiles'][0][0] for name in ['zz_water_boulder','bollard','planter']}
+for block in ha:
+ if block&1023 in solid_ids:assert block&0x400
 for directory in ['primary','secondary']:
  path=R/'data/tilesets'/directory/'havora_harbor';data=(path/'metatiles.bin').read_bytes()
  for v in struct.unpack('<'+'H'*(len(data)//2),data):

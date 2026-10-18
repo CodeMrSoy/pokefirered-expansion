@@ -1,0 +1,44 @@
+{
+  "dimensions": [
+    40,
+    40
+  ],
+  "buildings": [
+    {
+      "name": "ShipwrightHouse",
+      "x": 6,
+      "y": 8
+    },
+    {
+      "name": "WeaverHouse",
+      "x": 33,
+      "y": 9
+    },
+    {
+      "name": "FisherHouse",
+      "x": 6,
+      "y": 17
+    },
+    {
+      "name": "TraderHouse",
+      "x": 33,
+      "y": 16
+    },
+    {
+      "name": "TradeHall",
+      "x": 20,
+      "y": 7
+    },
+    {
+      "name": "Outfitters",
+      "x": 7,
+      "y": 24
+    },
+    {
+      "name": "Provisions",
+      "x": 32,
+      "y": 25
+    }
+  ],
+  "harbor_unchanged": true
+}

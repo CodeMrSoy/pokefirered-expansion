@@ -489,7 +489,7 @@
   ],
   "secondary_tiles": 384,
   "metatiles": 384,
-  "total_metatiles": 526,
+  "total_metatiles": 528,
   "primary_custom_metatiles": [
     0,
     1,
@@ -632,7 +632,9 @@
     139,
     140,
     141,
-    142
+    142,
+    143,
+    144
   ],
   "catalog": [
     {
@@ -7357,5 +7359,9 @@
       1024,
       1024
     ]
-  ]
+  ],
+  "city_thresholds": {
+    "blue": 143,
+    "orange": 144
+  }
 }

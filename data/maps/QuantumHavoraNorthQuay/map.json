@@ -10,13 +10,13 @@
   "allow_cycling": true,
   "allow_escaping": false,
   "allow_running": true,
-  "show_map_name": false,
+  "show_map_name": true,
   "floor_number": 0,
   "battle_scene": "MAP_BATTLE_SCENE_NORMAL",
   "connections": [
     {
       "map": "MAP_QUANTUM_HAVORA_WEST_QUAY",
-      "offset": 0,
+      "offset": 27,
       "direction": "left"
     },
     {
@@ -25,8 +25,199 @@
       "direction": "down"
     }
   ],
-  "object_events": [],
-  "warp_events": [],
+  "object_events": [
+    {
+      "type": "object",
+      "graphics_id": "OBJ_EVENT_GFX_MAN",
+      "x": 20,
+      "y": 10,
+      "elevation": 3,
+      "movement_type": "MOVEMENT_TYPE_FACE_DOWN",
+      "movement_range_x": 0,
+      "movement_range_y": 0,
+      "trainer_type": "TRAINER_TYPE_NONE",
+      "trainer_sight_or_berry_tree_id": "0",
+      "script": "QuantumHavoraNorthQuay_Guide",
+      "flag": "0"
+    },
+    {
+      "type": "object",
+      "graphics_id": "OBJ_EVENT_GFX_WOMAN_1",
+      "x": 11,
+      "y": 15,
+      "elevation": 3,
+      "movement_type": "MOVEMENT_TYPE_FACE_DOWN",
+      "movement_range_x": 0,
+      "movement_range_y": 0,
+      "trainer_type": "TRAINER_TYPE_NONE",
+      "trainer_sight_or_berry_tree_id": "0",
+      "script": "QuantumHavoraNorthQuay_Resident",
+      "flag": "0"
+    },
+    {
+      "type": "object",
+      "graphics_id": "OBJ_EVENT_GFX_SAILOR",
+      "x": 26,
+      "y": 36,
+      "elevation": 3,
+      "movement_type": "MOVEMENT_TYPE_FACE_DOWN",
+      "movement_range_x": 0,
+      "movement_range_y": 0,
+      "trainer_type": "TRAINER_TYPE_NONE",
+      "trainer_sight_or_berry_tree_id": "0",
+      "script": "QuantumHavoraNorthQuay_Harbor",
+      "flag": "0"
+    },
+    {
+      "type": "object",
+      "graphics_id": "OBJ_EVENT_GFX_FISHER",
+      "x": 23,
+      "y": 16,
+      "elevation": 3,
+      "movement_type": "MOVEMENT_TYPE_FACE_DOWN",
+      "movement_range_x": 0,
+      "movement_range_y": 0,
+      "trainer_type": "TRAINER_TYPE_NONE",
+      "trainer_sight_or_berry_tree_id": "0",
+      "script": "QuantumHavoraNorthQuay_Fisher",
+      "flag": "0"
+    },
+    {
+      "type": "object",
+      "graphics_id": "OBJ_EVENT_GFX_MAN",
+      "x": 5,
+      "y": 31,
+      "elevation": 3,
+      "movement_type": "MOVEMENT_TYPE_FACE_UP",
+      "movement_range_x": 0,
+      "movement_range_y": 0,
+      "trainer_type": "TRAINER_TYPE_NONE",
+      "trainer_sight_or_berry_tree_id": "0",
+      "script": "QuantumHavoraNorthQuay_Supplies",
+      "flag": "0"
+    },
+    {
+      "type": "object",
+      "graphics_id": "OBJ_EVENT_GFX_WOMAN_1",
+      "x": 28,
+      "y": 31,
+      "elevation": 3,
+      "movement_type": "MOVEMENT_TYPE_FACE_UP",
+      "movement_range_x": 0,
+      "movement_range_y": 0,
+      "trainer_type": "TRAINER_TYPE_NONE",
+      "trainer_sight_or_berry_tree_id": "0",
+      "script": "QuantumHavoraNorthQuay_Supplies",
+      "flag": "0"
+    },
+    {
+      "type": "object",
+      "graphics_id": "OBJ_EVENT_GFX_MAN",
+      "x": 10,
+      "y": 36,
+      "elevation": 3,
+      "movement_type": "MOVEMENT_TYPE_FACE_UP",
+      "movement_range_x": 0,
+      "movement_range_y": 0,
+      "trainer_type": "TRAINER_TYPE_NONE",
+      "trainer_sight_or_berry_tree_id": "0",
+      "script": "QuantumHavoraNorthQuay_Supplies",
+      "flag": "0"
+    },
+    {
+      "type": "object",
+      "graphics_id": "OBJ_EVENT_GFX_WOMAN_1",
+      "x": 33,
+      "y": 36,
+      "elevation": 3,
+      "movement_type": "MOVEMENT_TYPE_FACE_UP",
+      "movement_range_x": 0,
+      "movement_range_y": 0,
+      "trainer_type": "TRAINER_TYPE_NONE",
+      "trainer_sight_or_berry_tree_id": "0",
+      "script": "QuantumHavoraNorthQuay_Supplies",
+      "flag": "0"
+    },
+    {
+      "type": "object",
+      "graphics_id": "OBJ_EVENT_GFX_MAN",
+      "x": 18,
+      "y": 31,
+      "elevation": 3,
+      "movement_type": "MOVEMENT_TYPE_FACE_UP",
+      "movement_range_x": 0,
+      "movement_range_y": 0,
+      "trainer_type": "TRAINER_TYPE_NONE",
+      "trainer_sight_or_berry_tree_id": "0",
+      "script": "QuantumHavoraNorthQuay_Supplies",
+      "flag": "0"
+    },
+    {
+      "type": "object",
+      "graphics_id": "OBJ_EVENT_GFX_WOMAN_1",
+      "x": 23,
+      "y": 36,
+      "elevation": 3,
+      "movement_type": "MOVEMENT_TYPE_FACE_UP",
+      "movement_range_x": 0,
+      "movement_range_y": 0,
+      "trainer_type": "TRAINER_TYPE_NONE",
+      "trainer_sight_or_berry_tree_id": "0",
+      "script": "QuantumHavoraNorthQuay_Supplies",
+      "flag": "0"
+    }
+  ],
+  "warp_events": [
+    {
+      "x": 6,
+      "y": 8,
+      "elevation": 3,
+      "dest_map": "MAP_QUANTUM_HAVORA_SHIPWRIGHT_HOUSE",
+      "dest_warp_id": "0"
+    },
+    {
+      "x": 33,
+      "y": 9,
+      "elevation": 3,
+      "dest_map": "MAP_QUANTUM_HAVORA_WEAVER_HOUSE",
+      "dest_warp_id": "0"
+    },
+    {
+      "x": 6,
+      "y": 17,
+      "elevation": 3,
+      "dest_map": "MAP_QUANTUM_HAVORA_FISHER_HOUSE",
+      "dest_warp_id": "0"
+    },
+    {
+      "x": 33,
+      "y": 16,
+      "elevation": 3,
+      "dest_map": "MAP_QUANTUM_HAVORA_TRADER_HOUSE",
+      "dest_warp_id": "0"
+    },
+    {
+      "x": 20,
+      "y": 7,
+      "elevation": 3,
+      "dest_map": "MAP_QUANTUM_HAVORA_TRADE_HALL",
+      "dest_warp_id": "0"
+    },
+    {
+      "x": 7,
+      "y": 24,
+      "elevation": 3,
+      "dest_map": "MAP_QUANTUM_HAVORA_OUTFITTERS",
+      "dest_warp_id": "0"
+    },
+    {
+      "x": 32,
+      "y": 25,
+      "elevation": 3,
+      "dest_map": "MAP_QUANTUM_HAVORA_PROVISIONS",
+      "dest_warp_id": "0"
+    }
+  ],
   "coord_events": [],
   "bg_events": []
 }

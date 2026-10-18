@@ -1401,3 +1401,17 @@ Text_TestMsg::
 	.include "data/maps/QuantumHavoraWestQuay/scripts.inc"
 
 	.include "data/maps/QuantumHavoraNorthQuay/scripts.inc"
+
+	.include "data/maps/QuantumHavoraShipwrightHouse/scripts.inc"
+
+	.include "data/maps/QuantumHavoraWeaverHouse/scripts.inc"
+
+	.include "data/maps/QuantumHavoraFisherHouse/scripts.inc"
+
+	.include "data/maps/QuantumHavoraTraderHouse/scripts.inc"
+
+	.include "data/maps/QuantumHavoraTradeHall/scripts.inc"
+
+	.include "data/maps/QuantumHavoraOutfitters/scripts.inc"
+
+	.include "data/maps/QuantumHavoraProvisions/scripts.inc"
