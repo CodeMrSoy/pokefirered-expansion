@@ -1,0 +1,614 @@
+[
+  {
+    "alias": "gFontMaleLatinGlyphs",
+    "target": "gFontFemaleLatinGlyphs",
+    "bytes": 32768,
+    "source": "src/fonts.c"
+  },
+  {
+    "alias": "gFontNormalLatinGlyphs",
+    "target": "gFontFemaleLatinGlyphs",
+    "bytes": 32768,
+    "source": "src/fonts.c"
+  },
+  {
+    "alias": "gFontNormalCopy1LatinGlyphs",
+    "target": "gFontFemaleLatinGlyphs",
+    "bytes": 32768,
+    "source": "src/fonts.c"
+  },
+  {
+    "alias": "gFontNormalJapaneseGlyphs",
+    "target": "gFontShortJapaneseGlyphs",
+    "bytes": 32768,
+    "source": "src/fonts.c"
+  },
+  {
+    "alias": "gMetatiles_GeneralAutumn",
+    "target": "gMetatiles_GeneralSummer",
+    "bytes": 10240,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gMetatiles_GeneralWinter",
+    "target": "gMetatiles_GeneralSummer",
+    "bytes": 10240,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gMetatiles_General",
+    "target": "gMetatiles_GeneralSummer",
+    "bytes": 10240,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gTilesetTiles_GeneralAutumn",
+    "target": "gTilesetTiles_GeneralSummer",
+    "bytes": 10456,
+    "source": "src/data/tilesets/graphics.h"
+  },
+  {
+    "alias": "gTilesetTiles_GeneralWinter",
+    "target": "gTilesetTiles_GeneralSummer",
+    "bytes": 10456,
+    "source": "src/data/tilesets/graphics.h"
+  },
+  {
+    "alias": "gMetatiles_SeviiIslands123Summer",
+    "target": "gMetatiles_SeviiIslands123Autumn",
+    "bytes": 4560,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gMetatiles_SeviiIslands123Winter",
+    "target": "gMetatiles_SeviiIslands123Autumn",
+    "bytes": 4560,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gMetatiles_SeviiIslands123",
+    "target": "gMetatiles_SeviiIslands123Autumn",
+    "bytes": 4560,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gMetatiles_CeladonCityAutumn",
+    "target": "gMetatiles_CeladonCityWinter",
+    "bytes": 3840,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gMetatiles_CeladonCitySummer",
+    "target": "gMetatiles_CeladonCityWinter",
+    "bytes": 3840,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gMetatiles_CeladonCity",
+    "target": "gMetatiles_CeladonCityWinter",
+    "bytes": 3840,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gMetatiles_LavenderTownAutumn",
+    "target": "gMetatiles_LavenderTownWinter",
+    "bytes": 3488,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gMetatiles_LavenderTownSummer",
+    "target": "gMetatiles_LavenderTownWinter",
+    "bytes": 3488,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gMetatiles_LavenderTown",
+    "target": "gMetatiles_LavenderTownWinter",
+    "bytes": 3488,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gTilesetTiles_LavenderTownAutumn",
+    "target": "gTilesetTiles_LavenderTownWinter",
+    "bytes": 3456,
+    "source": "src/data/tilesets/graphics.h"
+  },
+  {
+    "alias": "gTilesetTiles_LavenderTownSummer",
+    "target": "gTilesetTiles_LavenderTownWinter",
+    "bytes": 3456,
+    "source": "src/data/tilesets/graphics.h"
+  },
+  {
+    "alias": "gTilesetTiles_LavenderTown",
+    "target": "gTilesetTiles_LavenderTownWinter",
+    "bytes": 3456,
+    "source": "src/data/tilesets/graphics.h"
+  },
+  {
+    "alias": "gMetatiles_SaffronCityAutumn",
+    "target": "gMetatiles_SaffronCityWinter",
+    "bytes": 3200,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gMetatiles_SaffronCitySummer",
+    "target": "gMetatiles_SaffronCityWinter",
+    "bytes": 3200,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gMetatiles_SaffronCity",
+    "target": "gMetatiles_SaffronCityWinter",
+    "bytes": 3200,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gMetatiles_FuchsiaCityAutumn",
+    "target": "gMetatiles_FuchsiaCityWinter",
+    "bytes": 3072,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gMetatiles_FuchsiaCitySummer",
+    "target": "gMetatiles_FuchsiaCityWinter",
+    "bytes": 3072,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gMetatiles_FuchsiaCity",
+    "target": "gMetatiles_FuchsiaCityWinter",
+    "bytes": 3072,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gMetatiles_IndigoPlateauAutumn",
+    "target": "gMetatiles_IndigoPlateauWinter",
+    "bytes": 2816,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gMetatiles_IndigoPlateauSummer",
+    "target": "gMetatiles_IndigoPlateauWinter",
+    "bytes": 2816,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gMetatiles_IndigoPlateau",
+    "target": "gMetatiles_IndigoPlateauWinter",
+    "bytes": 2816,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gTilesetTiles_SeviiIslands123Summer",
+    "target": "gTilesetTiles_SeviiIslands123Autumn",
+    "bytes": 3940,
+    "source": "src/data/tilesets/graphics.h"
+  },
+  {
+    "alias": "gTilesetTiles_SeviiIslands123Winter",
+    "target": "gTilesetTiles_SeviiIslands123Autumn",
+    "bytes": 3940,
+    "source": "src/data/tilesets/graphics.h"
+  },
+  {
+    "alias": "gTilesetTiles_IndigoPlateauAutumn",
+    "target": "gTilesetTiles_IndigoPlateauWinter",
+    "bytes": 3480,
+    "source": "src/data/tilesets/graphics.h"
+  },
+  {
+    "alias": "gTilesetTiles_IndigoPlateauSummer",
+    "target": "gTilesetTiles_IndigoPlateauWinter",
+    "bytes": 3480,
+    "source": "src/data/tilesets/graphics.h"
+  },
+  {
+    "alias": "gTilesetTiles_CeladonCityAutumn",
+    "target": "gTilesetTiles_CeladonCityWinter",
+    "bytes": 3328,
+    "source": "src/data/tilesets/graphics.h"
+  },
+  {
+    "alias": "gTilesetTiles_CeladonCitySummer",
+    "target": "gTilesetTiles_CeladonCityWinter",
+    "bytes": 3328,
+    "source": "src/data/tilesets/graphics.h"
+  },
+  {
+    "alias": "gTilesetTiles_FuchsiaCityAutumn",
+    "target": "gTilesetTiles_FuchsiaCityWinter",
+    "bytes": 3052,
+    "source": "src/data/tilesets/graphics.h"
+  },
+  {
+    "alias": "gTilesetTiles_FuchsiaCitySummer",
+    "target": "gTilesetTiles_FuchsiaCityWinter",
+    "bytes": 3052,
+    "source": "src/data/tilesets/graphics.h"
+  },
+  {
+    "alias": "gTilesetTiles_SaffronCityAutumn",
+    "target": "gTilesetTiles_SaffronCityWinter",
+    "bytes": 3048,
+    "source": "src/data/tilesets/graphics.h"
+  },
+  {
+    "alias": "gTilesetTiles_SaffronCitySummer",
+    "target": "gTilesetTiles_SaffronCityWinter",
+    "bytes": 3048,
+    "source": "src/data/tilesets/graphics.h"
+  },
+  {
+    "alias": "gMetatileAttributes_GeneralAutumn",
+    "target": "gMetatileAttributes_GeneralSummer",
+    "bytes": 2560,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gMetatileAttributes_General",
+    "target": "gMetatileAttributes_GeneralSummer",
+    "bytes": 2560,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gMetatiles_PalletTownAutumn",
+    "target": "gMetatiles_PalletTownWinter",
+    "bytes": 1424,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gMetatiles_PalletTownSummer",
+    "target": "gMetatiles_PalletTownWinter",
+    "bytes": 1424,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gMetatiles_PalletTown",
+    "target": "gMetatiles_PalletTownWinter",
+    "bytes": 1424,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gMetatileAttributes_SeviiIslands123Summer",
+    "target": "gMetatileAttributes_SeviiIslands123Autumn",
+    "bytes": 1140,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gMetatileAttributes_SeviiIslands123Winter",
+    "target": "gMetatileAttributes_SeviiIslands123Autumn",
+    "bytes": 1140,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gMetatileAttributes_SeviiIslands123",
+    "target": "gMetatileAttributes_SeviiIslands123Autumn",
+    "bytes": 1140,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gMetatileAttributes_CeladonCityAutumn",
+    "target": "gMetatileAttributes_CeladonCityWinter",
+    "bytes": 960,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gMetatileAttributes_CeladonCitySummer",
+    "target": "gMetatileAttributes_CeladonCityWinter",
+    "bytes": 960,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gMetatileAttributes_CeladonCity",
+    "target": "gMetatileAttributes_CeladonCityWinter",
+    "bytes": 960,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gMetatileAttributes_LavenderTownAutumn",
+    "target": "gMetatileAttributes_LavenderTownWinter",
+    "bytes": 872,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gMetatileAttributes_LavenderTownSummer",
+    "target": "gMetatileAttributes_LavenderTownWinter",
+    "bytes": 872,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gMetatileAttributes_LavenderTown",
+    "target": "gMetatileAttributes_LavenderTownWinter",
+    "bytes": 872,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gMetatileAttributes_SaffronCityAutumn",
+    "target": "gMetatileAttributes_SaffronCityWinter",
+    "bytes": 800,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gMetatileAttributes_SaffronCitySummer",
+    "target": "gMetatileAttributes_SaffronCityWinter",
+    "bytes": 800,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gMetatileAttributes_SaffronCity",
+    "target": "gMetatileAttributes_SaffronCityWinter",
+    "bytes": 800,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gTilesetTiles_ViridianForestSummer",
+    "target": "gTilesetTiles_ViridianForestWinter",
+    "bytes": 1196,
+    "source": "src/data/tilesets/graphics.h"
+  },
+  {
+    "alias": "gTilesetTiles_ViridianForestAutumn",
+    "target": "gTilesetTiles_ViridianForestWinter",
+    "bytes": 1196,
+    "source": "src/data/tilesets/graphics.h"
+  },
+  {
+    "alias": "gMetatileAttributes_FuchsiaCityAutumn",
+    "target": "gMetatileAttributes_FuchsiaCityWinter",
+    "bytes": 768,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gMetatileAttributes_FuchsiaCitySummer",
+    "target": "gMetatileAttributes_FuchsiaCityWinter",
+    "bytes": 768,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gMetatileAttributes_FuchsiaCity",
+    "target": "gMetatileAttributes_FuchsiaCityWinter",
+    "bytes": 768,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gTilesetTiles_PalletTownAutumn",
+    "target": "gTilesetTiles_PalletTownWinter",
+    "bytes": 1112,
+    "source": "src/data/tilesets/graphics.h"
+  },
+  {
+    "alias": "gTilesetTiles_PalletTownSummer",
+    "target": "gTilesetTiles_PalletTownWinter",
+    "bytes": 1112,
+    "source": "src/data/tilesets/graphics.h"
+  },
+  {
+    "alias": "gMetatileAttributes_IndigoPlateauAutumn",
+    "target": "gMetatileAttributes_IndigoPlateauWinter",
+    "bytes": 704,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gMetatileAttributes_IndigoPlateauSummer",
+    "target": "gMetatileAttributes_IndigoPlateauWinter",
+    "bytes": 704,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gMetatileAttributes_IndigoPlateau",
+    "target": "gMetatileAttributes_IndigoPlateauWinter",
+    "bytes": 704,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gMetatiles_ViridianForestSummer",
+    "target": "gMetatiles_ViridianForestWinter",
+    "bytes": 688,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gMetatiles_ViridianForestAutumn",
+    "target": "gMetatiles_ViridianForestWinter",
+    "bytes": 688,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gMetatiles_ViridianForest",
+    "target": "gMetatiles_ViridianForestWinter",
+    "bytes": 688,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gMetatiles_UnusedGatehouse1",
+    "target": "gMetatiles_UnusedGatehouse2",
+    "bytes": 1824,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gTilesetTiles_UnusedGatehouse1",
+    "target": "gTilesetTiles_UnusedGatehouse2",
+    "bytes": 1564,
+    "source": "src/data/tilesets/graphics.h"
+  },
+  {
+    "alias": "gMetatiles_BerryForestAutumn",
+    "target": "gMetatiles_BerryForestWinter",
+    "bytes": 672,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gMetatiles_BerryForestSummer",
+    "target": "gMetatiles_BerryForestWinter",
+    "bytes": 672,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gTilesetTiles_BerryForestAutumn",
+    "target": "gTilesetTiles_BerryForestWinter",
+    "bytes": 1208,
+    "source": "src/data/tilesets/graphics.h"
+  },
+  {
+    "alias": "gMetatileAttributes_PalletTownAutumn",
+    "target": "gMetatileAttributes_PalletTownWinter",
+    "bytes": 356,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gMetatileAttributes_PalletTownSummer",
+    "target": "gMetatileAttributes_PalletTownWinter",
+    "bytes": 356,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gMetatileAttributes_PalletTown",
+    "target": "gMetatileAttributes_PalletTownWinter",
+    "bytes": 356,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gMetatileAttributes_ViridianForestSummer",
+    "target": "gMetatileAttributes_ViridianForestWinter",
+    "bytes": 172,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gMetatileAttributes_ViridianForestAutumn",
+    "target": "gMetatileAttributes_ViridianForestWinter",
+    "bytes": 172,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gMetatileAttributes_ViridianForest",
+    "target": "gMetatileAttributes_ViridianForestWinter",
+    "bytes": 172,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gMetatileAttributes_BerryForestAutumn",
+    "target": "gMetatileAttributes_BerryForestWinter",
+    "bytes": 168,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gMetatileAttributes_BerryForestSummer",
+    "target": "gMetatileAttributes_BerryForestWinter",
+    "bytes": 168,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gMetatileAttributes_BerryForest",
+    "target": "gMetatileAttributes_BerryForestWinter",
+    "bytes": 168,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gMetatileAttributes_UnusedGatehouse1",
+    "target": "gMetatileAttributes_UnusedGatehouse2",
+    "bytes": 456,
+    "source": "src/data/tilesets/metatiles.h"
+  },
+  {
+    "alias": "gObjectEventPic_ArceusFighting",
+    "target": "gObjectEventPic_ArceusNormal",
+    "bytes": 2552,
+    "source": "src/data/graphics/pokemon.h"
+  },
+  {
+    "alias": "gObjectEventPic_ArceusFlying",
+    "target": "gObjectEventPic_ArceusNormal",
+    "bytes": 2552,
+    "source": "src/data/graphics/pokemon.h"
+  },
+  {
+    "alias": "gObjectEventPic_ArceusPoison",
+    "target": "gObjectEventPic_ArceusNormal",
+    "bytes": 2552,
+    "source": "src/data/graphics/pokemon.h"
+  },
+  {
+    "alias": "gObjectEventPic_ArceusGround",
+    "target": "gObjectEventPic_ArceusNormal",
+    "bytes": 2552,
+    "source": "src/data/graphics/pokemon.h"
+  },
+  {
+    "alias": "gObjectEventPic_ArceusRock",
+    "target": "gObjectEventPic_ArceusNormal",
+    "bytes": 2552,
+    "source": "src/data/graphics/pokemon.h"
+  },
+  {
+    "alias": "gObjectEventPic_ArceusBug",
+    "target": "gObjectEventPic_ArceusNormal",
+    "bytes": 2552,
+    "source": "src/data/graphics/pokemon.h"
+  },
+  {
+    "alias": "gObjectEventPic_ArceusGhost",
+    "target": "gObjectEventPic_ArceusNormal",
+    "bytes": 2552,
+    "source": "src/data/graphics/pokemon.h"
+  },
+  {
+    "alias": "gObjectEventPic_ArceusSteel",
+    "target": "gObjectEventPic_ArceusNormal",
+    "bytes": 2552,
+    "source": "src/data/graphics/pokemon.h"
+  },
+  {
+    "alias": "gObjectEventPic_ArceusFire",
+    "target": "gObjectEventPic_ArceusNormal",
+    "bytes": 2552,
+    "source": "src/data/graphics/pokemon.h"
+  },
+  {
+    "alias": "gObjectEventPic_ArceusWater",
+    "target": "gObjectEventPic_ArceusNormal",
+    "bytes": 2552,
+    "source": "src/data/graphics/pokemon.h"
+  },
+  {
+    "alias": "gObjectEventPic_ArceusGrass",
+    "target": "gObjectEventPic_ArceusNormal",
+    "bytes": 2552,
+    "source": "src/data/graphics/pokemon.h"
+  },
+  {
+    "alias": "gObjectEventPic_ArceusElectric",
+    "target": "gObjectEventPic_ArceusNormal",
+    "bytes": 2552,
+    "source": "src/data/graphics/pokemon.h"
+  },
+  {
+    "alias": "gObjectEventPic_ArceusPsychic",
+    "target": "gObjectEventPic_ArceusNormal",
+    "bytes": 2552,
+    "source": "src/data/graphics/pokemon.h"
+  },
+  {
+    "alias": "gObjectEventPic_ArceusIce",
+    "target": "gObjectEventPic_ArceusNormal",
+    "bytes": 2552,
+    "source": "src/data/graphics/pokemon.h"
+  },
+  {
+    "alias": "gObjectEventPic_ArceusDragon",
+    "target": "gObjectEventPic_ArceusNormal",
+    "bytes": 2552,
+    "source": "src/data/graphics/pokemon.h"
+  },
+  {
+    "alias": "gObjectEventPic_ArceusDark",
+    "target": "gObjectEventPic_ArceusNormal",
+    "bytes": 2552,
+    "source": "src/data/graphics/pokemon.h"
+  },
+  {
+    "alias": "gObjectEventPic_ArceusFairy",
+    "target": "gObjectEventPic_ArceusNormal",
+    "bytes": 2552,
+    "source": "src/data/graphics/pokemon.h"
+  }
+]

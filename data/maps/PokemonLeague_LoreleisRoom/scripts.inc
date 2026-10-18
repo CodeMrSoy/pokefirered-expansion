@@ -70,6 +70,10 @@ PokemonLeague_LoreleisRoom_EventScript_Battle::
 	trainerbattle_no_intro TRAINER_ELITE_FOUR_LORELEI, PokemonLeague_LoreleisRoom_Text_Defeat
 	return
 
+PokemonLeague_LoreleisRoom_EventScript_Rematch::
+	trainerbattle_no_intro TRAINER_ELITE_FOUR_LORELEI, PokemonLeague_LoreleisRoom_Text_Defeat
+	return
+
 PokemonLeague_LoreleisRoom_EventScript_PostBattle::
 	msgbox PokemonLeague_LoreleisRoom_Text_PostBattle
 	release

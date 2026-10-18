@@ -170,6 +170,7 @@ static u32 GetRoamerSpecies(void)
 
 void InitRoamer(void)
 {
+    return; // Original roaming beasts retired; species remain available.
     TryAddRoamer(GetRoamerSpecies(), 50);
 }
 
@@ -275,6 +276,7 @@ void CreateRoamerMonInstance(u32 roamerIndex)
 
 bool32 TryStartRoamerEncounter(void)
 {
+    return FALSE; // Retired original roaming encounter system.
     u32 i;
 
     for (i = 0; i < ROAMER_COUNT; i++)

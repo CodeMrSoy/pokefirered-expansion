@@ -15,3 +15,12 @@ QuantumHarbor_Cancel::
 
 QuantumHarbor_Return::
 	.string "Return to VERMILION CITY?$"
+
+@ The in-progress harbor art uses a walkable water tile at the city exit.
+@ Preserve the painted tilemap and make its existing warp respond to a step.
+QuantumHarbor_ExitToCity::
+	lockall
+	warp MAP_QUANTUM_PORT_CITY, 1
+	waitstate
+	releaseall
+	end

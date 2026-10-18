@@ -546,7 +546,7 @@ static bool8 ShowPartyMenu(void)
     {
     case 0:
         SetVBlankHBlankCallbacksToNull();
-        ResetVramOamAndBgCntRegs();
+        if (!IsPokeGlassActive()) ResetVramOamAndBgCntRegs();
         ClearScheduledBgCopiesToVram();
         ++gMain.state;
         break;
@@ -561,6 +561,9 @@ static bool8 ShowPartyMenu(void)
         break;
     case 3:
         ResetSpriteData();
+        // The field OAM must be hidden before its tiles and palettes are reused.
+        // Without the normal black fade those old objects otherwise remain live.
+        if (IsPokeGlassActive()) LoadOam();
         ++gMain.state;
         break;
     case 4:
@@ -649,15 +652,16 @@ static bool8 ShowPartyMenu(void)
         ++gMain.state;
         break;
     case 21:
-        BlendPalettes(PALETTES_ALL, 16, RGB_BLACK);
+        if (!IsPokeGlassActive()) BlendPalettes(PALETTES_ALL, 16, RGB_BLACK);
         ++gMain.state;
         break;
     case 22:
-        BeginNormalPaletteFade(PALETTES_ALL, -2, 16, 0, RGB_BLACK);
+        BeginNormalPaletteFade(PALETTES_ALL, -2, IsPokeGlassActive() ? 0 : 16, 0, RGB_BLACK);
         gPaletteFade.bufferTransferDisabled = FALSE;
         ++gMain.state;
         break;
     default:
+        if (IsPokeGlassActive()) { ShowBg(0); ShowBg(2); }
         SetVBlankCallback(VBlankCB_PartyMenu);
         SetMainCallback2(CB2_UpdatePartyMenu);
         return TRUE;
@@ -751,15 +755,16 @@ static bool8 ReloadPartyMenu(void)
         ++gMain.state;
         break;
     case 18:
-        BlendPalettes(PALETTES_ALL, 16, RGB_BLACK);
+        if (!IsPokeGlassActive()) BlendPalettes(PALETTES_ALL, 16, RGB_BLACK);
         ++gMain.state;
         break;
     case 19:
-        BeginNormalPaletteFade(PALETTES_ALL, -2, 16, 0, RGB_BLACK);
+        BeginNormalPaletteFade(PALETTES_ALL, -2, IsPokeGlassActive() ? 0 : 16, 0, RGB_BLACK);
         gPaletteFade.bufferTransferDisabled = FALSE;
         ++gMain.state;
         break;
     default:
+        if (IsPokeGlassActive()) { ShowBg(0); ShowBg(2); }
         SetVBlankCallback(VBlankCB_PartyMenu);
         SetMainCallback2(CB2_UpdatePartyMenu);
         return TRUE;
@@ -769,7 +774,7 @@ static bool8 ReloadPartyMenu(void)
 
 static void ExitPartyMenu(void)
 {
-    BeginNormalPaletteFade(PALETTES_ALL, -2, 0, 16, RGB_BLACK);
+    BeginNormalPaletteFade(PALETTES_ALL, -2, 0, IsPokeGlassActive() ? 0 : 16, RGB_BLACK);
     CreateTask(Task_ExitPartyMenu, 0);
     SetVBlankCallback(VBlankCB_PartyMenu);
     SetMainCallback2(CB2_UpdatePartyMenu);
@@ -799,6 +804,17 @@ static bool8 AllocPartyMenuBg(void)
     if (sPartyBgTilemapBuffer == NULL)
         return FALSE;
     memset(sPartyBgTilemapBuffer, 0, 0x800);
+    // Prepare the shell while the hub is still being displayed. Switching
+    // background registers before generating these tiles exposes a blank frame.
+    if (IsPokeGlassActive())
+    {
+        SetBgTilemapBuffer(1, sPartyBgTilemapBuffer);
+        DrawPokeGlassFrame(1);
+        // Keep a blue screen over the captured field while the backgrounds
+        // switch. Reuse the same shell tiles so its bezel never changes.
+        CpuFill32(0x44444444, (void *)(VRAM + 0x6FE0), 32);
+        FillBgTilemapBufferRect(1, 0x17F, 3, 3, 24, 14, 11);
+    }
     ResetBgsAndClearDma3BusyFlags(0);
     InitBgsFromTemplates(0, sPartyMenuBgTemplates, ARRAY_COUNT(sPartyMenuBgTemplates));
     if (gPartyMenu.layout == PARTY_LAYOUT_POKEGLASS)
@@ -808,9 +824,20 @@ static bool8 AllocPartyMenuBg(void)
     ScheduleBgCopyTilemapToVram(1);
     SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
     SetGpuReg(REG_OFFSET_BLDCNT, 0);
-    ShowBg(0);
     ShowBg(1);
-    ShowBg(2);
+    if (IsPokeGlassActive())
+    {
+        CpuCopy16(sPartyBgTilemapBuffer,
+            (void *)(VRAM + GetBgAttribute(1, BG_ATTR_MAPBASEINDEX) * 0x800), 0x800);
+        // Commit the shell before reusing the old hub's character memory.
+        VBlankIntrWait();
+        LoadPokeGlassBackdrop();
+    }
+    else
+    {
+        ShowBg(0);
+        ShowBg(2);
+    }
     return TRUE;
 }
 
@@ -822,19 +849,23 @@ static bool8 AllocPartyMenuBgGfx(void)
     {
     case 0:
         sPartyBgGfxTilemap = malloc_and_decompress(gPartyMenuBg_Gfx, &sizeout);
-        LoadBgTiles(1, sPartyBgGfxTilemap, sizeout, 0);
+        if (gPartyMenu.layout != PARTY_LAYOUT_POKEGLASS)
+            LoadBgTiles(1, sPartyBgGfxTilemap, sizeout, 0);
         ++sPartyMenuInternal->data[0];
         break;
     case 1:
         if (!IsDma3ManagerBusyWithBgCopy())
         {
-            DecompressDataWithHeaderWram(gPartyMenuBg_Tilemap, sPartyBgTilemapBuffer);
+            if (gPartyMenu.layout != PARTY_LAYOUT_POKEGLASS)
+                DecompressDataWithHeaderWram(gPartyMenuBg_Tilemap, sPartyBgTilemapBuffer);
             ++sPartyMenuInternal->data[0];
         }
         break;
     case 2:
-        LoadPalette(gPartyMenuBg_Pal, BG_PLTT_ID(0), 11 * PLTT_SIZE_4BPP);
-        CpuCopy16(gPlttBufferUnfaded, sPartyMenuInternal->palBuffer, 11 * PLTT_SIZE_4BPP);
+        // Palette 10 belongs to the captured field on the tablet layout.
+        LoadPalette(gPartyMenuBg_Pal, BG_PLTT_ID(0),
+            (gPartyMenu.layout == PARTY_LAYOUT_POKEGLASS ? 10 : 11) * PLTT_SIZE_4BPP);
+        CpuCopy16(gPartyMenuBg_Pal, sPartyMenuInternal->palBuffer, 11 * PLTT_SIZE_4BPP);
         ++sPartyMenuInternal->data[0];
         break;
     case 3:
@@ -980,8 +1011,8 @@ static void DisplayPartyPokemonData(u8 slot)
     }
 }
 
-// Compact tablet cards show enough detail to identify a Pokémon; its full HP
-// and stats remain available after choosing it.
+// Tablet cards keep the level, HP track, and HP values in separate regions
+// so updates can replace old digits without erasing their neighboring field.
 static void DisplayPartyPokemonDataForPokeGlass(u8 slot)
 {
     struct Pokemon *mon = &gPlayerParty[slot];
@@ -1311,7 +1342,7 @@ static void SwapPartyPokemon(struct Pokemon *mon1, struct Pokemon *mon2)
 
 static void Task_ClosePartyMenu(u8 taskId)
 {
-    BeginNormalPaletteFade(PALETTES_ALL, 0, 0, 16, RGB_BLACK);
+    BeginNormalPaletteFade(PALETTES_ALL, 0, 0, IsPokeGlassActive() ? 0 : 16, RGB_BLACK);
     gTasks[taskId].func = Task_ClosePartyMenuAndSetCB2;
 }
 
@@ -1327,6 +1358,10 @@ static void Task_ClosePartyMenuAndSetCB2(u8 taskId)
         else
             SetMainCallback2(gPartyMenu.exitCallback);
 
+        // Keep the tablet visible while the field rebuilds its tiles/palettes.
+        if (IsPokeGlassActive() && gPartyMenu.exitCallback == CB2_ReturnToFieldContinueScript
+         && sPartyMenuInternal->exitCallback == NULL)
+            BeginPokeGlassReturn();
         ResetSpriteData();
         FreePartyPointers();
         DestroyTask(taskId);
@@ -2677,7 +2712,15 @@ static void DisplayPartyPokemonNickname(struct Pokemon *mon, struct PartyMenuBox
         if (drawMenuBoxOrText == DRAW_MENU_BOX_AND_TEXT)
             menuBox->infoRects->blitFunc(menuBox->windowId, menuBox->infoRects->dimensions[0] / 8, menuBox->infoRects->dimensions[1] / 8, menuBox->infoRects->dimensions[2] / 8, menuBox->infoRects->dimensions[3] / 8, FALSE);
         GetMonNickname(mon, nickname);
-        DisplayPartyPokemonBarDetail(menuBox->windowId, nickname, 0, menuBox->infoRects->dimensions);
+        if (gPartyMenu.layout == PARTY_LAYOUT_POKEGLASS)
+        {
+            u8 font = GetStringWidth(FONT_SMALL, nickname, 0) > 54 ? FONT_SMALL_NARROW : FONT_SMALL;
+            FillWindowPixelRect(menuBox->windowId, PIXEL_FILL(5), 30, 2, 55, 12);
+            AddTextPrinterParameterized3(menuBox->windowId, font, 30, font == FONT_SMALL ? 1 : 4,
+                sFontColorTable[0], 0, nickname);
+        }
+        else
+            DisplayPartyPokemonBarDetail(menuBox->windowId, nickname, 0, menuBox->infoRects->dimensions);
     }
 }
 
@@ -2690,7 +2733,12 @@ static void DisplayPartyPokemonLevelCheck(struct Pokemon *mon, struct PartyMenuB
         if (ailment == AILMENT_NONE || ailment == AILMENT_PKRS)
         {
             if (drawMenuBoxOrText != DRAW_TEXT_ONLY)
-                menuBox->infoRects->blitFunc(menuBox->windowId, menuBox->infoRects->dimensions[4] / 8, (menuBox->infoRects->dimensions[5] / 8) + 1, menuBox->infoRects->dimensions[6] / 8, menuBox->infoRects->dimensions[7] / 8, FALSE);
+            {
+                if (gPartyMenu.layout == PARTY_LAYOUT_POKEGLASS)
+                    FillWindowPixelRect(menuBox->windowId, PIXEL_FILL(5), 28, 18, 28, 12);
+                else
+                    menuBox->infoRects->blitFunc(menuBox->windowId, menuBox->infoRects->dimensions[4] / 8, (menuBox->infoRects->dimensions[5] / 8) + 1, menuBox->infoRects->dimensions[6] / 8, menuBox->infoRects->dimensions[7] / 8, FALSE);
+            }
             if (drawMenuBoxOrText != DRAW_MENU_BOX_ONLY)
                 DisplayPartyPokemonLevel(GetMonData(mon, MON_DATA_LEVEL), menuBox);
         }
@@ -2743,7 +2791,7 @@ static void DisplayPartyPokemonHPCheck(struct Pokemon *mon, struct PartyMenuBox 
     if (GetMonData(mon, MON_DATA_SPECIES) != SPECIES_NONE)
     {
         if (gPartyMenu.layout == PARTY_LAYOUT_POKEGLASS && drawMenuBoxOrText != DRAW_TEXT_ONLY)
-            FillWindowPixelRect(menuBox->windowId, PIXEL_FILL(5), 40, 19, 54, 12);
+            FillWindowPixelRect(menuBox->windowId, PIXEL_FILL(5), 56, 18, 38, 12);
         if (gPartyMenu.layout != PARTY_LAYOUT_POKEGLASS && drawMenuBoxOrText != DRAW_TEXT_ONLY)
             menuBox->infoRects->blitFunc(menuBox->windowId, menuBox->infoRects->dimensions[12] / 8, (menuBox->infoRects->dimensions[13] / 8) + 1, menuBox->infoRects->dimensions[14] / 8, menuBox->infoRects->dimensions[15] / 8, FALSE);
         if (drawMenuBoxOrText != DRAW_MENU_BOX_ONLY)
@@ -2753,15 +2801,21 @@ static void DisplayPartyPokemonHPCheck(struct Pokemon *mon, struct PartyMenuBox 
 
 static void DisplayPartyPokemonHP(u16 hp, struct PartyMenuBox *menuBox)
 {
-    u8 *strOut = ConvertIntToDecimalStringN(gStringVar1, hp, STR_CONV_MODE_RIGHT_ALIGN, 3);
-
-    strOut[0] = CHAR_SLASH;
-    strOut[1] = EOS;
+    u8 *strOut;
     if (gPartyMenu.layout == PARTY_LAYOUT_POKEGLASS)
     {
         u32 slot = menuBox - sPartyMenuBoxes;
-        ConvertIntToDecimalStringN(strOut + 1, GetMonData(&gPlayerParty[slot], MON_DATA_MAX_HP), STR_CONV_MODE_LEFT_ALIGN, 3);
+        u16 width;
+        strOut = ConvertIntToDecimalStringN(gStringVar1, hp, STR_CONV_MODE_LEFT_ALIGN, 3);
+        *strOut++ = CHAR_SLASH;
+        ConvertIntToDecimalStringN(strOut, GetMonData(&gPlayerParty[slot], MON_DATA_MAX_HP), STR_CONV_MODE_LEFT_ALIGN, 3);
+        width = GetStringWidth(FONT_SMALL, gStringVar1, 0);
+        AddTextPrinterParameterized3(menuBox->windowId, FONT_SMALL, 94 - width, 18, sFontColorTable[0], 0, gStringVar1);
+        return;
     }
+    strOut = ConvertIntToDecimalStringN(gStringVar1, hp, STR_CONV_MODE_RIGHT_ALIGN, 3);
+    strOut[0] = CHAR_SLASH;
+    strOut[1] = EOS;
     DisplayPartyPokemonBarDetail(menuBox->windowId, gStringVar1, 0, &menuBox->infoRects->dimensions[12]);
 }
 
@@ -2812,6 +2866,19 @@ static void DisplayPartyPokemonHPBar(u16 hp, u16 maxhp, struct PartyMenuBox *men
         LoadPalette(GetPartyMenuPalBufferPtr(sHPBarRedPalIds[0]), sHPBarPalOffsets[0] + palOffset, PLTT_SIZEOF(1));
         LoadPalette(GetPartyMenuPalBufferPtr(sHPBarRedPalIds[1]), sHPBarPalOffsets[1] + palOffset, PLTT_SIZEOF(1));
         break;
+    }
+    if (gPartyMenu.layout == PARTY_LAYOUT_POKEGLASS)
+    {
+        hpFraction = maxhp == 0 ? 0 : GetScaledHPFraction(hp, maxhp, 62);
+        FillWindowPixelRect(menuBox->windowId, PIXEL_FILL(4), 30, 14, 64, 4);
+        FillWindowPixelRect(menuBox->windowId, PIXEL_FILL(2), 31, 15, 62, 2);
+        if (hpFraction)
+        {
+            FillWindowPixelRect(menuBox->windowId, sHPBarPalOffsets[1], 31, 15, hpFraction, 1);
+            FillWindowPixelRect(menuBox->windowId, sHPBarPalOffsets[0], 31, 16, hpFraction, 1);
+        }
+        CopyWindowToVram(menuBox->windowId, COPYWIN_GFX);
+        return;
     }
     hpFraction = GetScaledHPFraction(hp, maxhp, menuBox->infoRects->dimensions[22]);
     FillWindowPixelRect(menuBox->windowId, sHPBarPalOffsets[1], menuBox->infoRects->dimensions[20], menuBox->infoRects->dimensions[21], hpFraction, 1);
@@ -2999,6 +3066,7 @@ static u8 CreateLevelUpStatsWindow(void)
         window.baseBlock = 0x211;
         window.tilemapLeft = 16;
         window.tilemapTop = 4;
+        window.height = 12; // Six 15-pixel stat rows need more than 88 pixels.
     }
     sPartyMenuInternal->windowId[0] = AddWindow(&window);
     DrawStdFrameWithCustomTileAndPalette(sPartyMenuInternal->windowId[0], FALSE, 0x4F, 13);
@@ -6096,6 +6164,16 @@ static void ItemUseCB_RareCandyStep(u8 taskId, TaskFunc func)
 static void UpdateMonDisplayInfoAfterRareCandy(u8 slot, struct Pokemon *mon)
 {
     SetPartyMonAilmentGfx(mon, &sPartyMenuBoxes[slot]);
+    if (gPartyMenu.layout == PARTY_LAYOUT_POKEGLASS)
+    {
+        // Level and HP can both grow in width. Repaint the entire compact card
+        // so no old digits survive and the adjacent field is never erased.
+        DisplayPartyPokemonDataForPokeGlass(slot);
+        UpdatePartyMonHPBar(sPartyMenuBoxes[slot].monSpriteId, mon);
+        AnimatePartySlot(slot, 1);
+        ScheduleBgCopyTilemapToVram(0);
+        return;
+    }
     if (gSprites[sPartyMenuBoxes[slot].statusSpriteId].invisible)
         DisplayPartyPokemonLevelCheck(mon, &sPartyMenuBoxes[slot], DRAW_MENU_BOX_AND_TEXT);
     DisplayPartyPokemonHPCheck(mon, &sPartyMenuBoxes[slot], DRAW_MENU_BOX_AND_TEXT);

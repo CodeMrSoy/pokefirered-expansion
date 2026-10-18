@@ -10,7 +10,6 @@ m.__file__ = str(harness)
 source = harness.read_text().split('run(360);press(3);press(8);snap(\'boot\')')[0]
 exec(compile(source, str(harness), 'exec'), m.__dict__)
 m.run(360)
-m.press(3)
 
 def sprites(callback):
     expected = m.symbols[callback] | 1

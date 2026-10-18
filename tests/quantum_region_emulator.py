@@ -21,6 +21,11 @@ def selected_region():
 def text(address):
     return m.read(address, 24).split(b'\xff')[0]
 
+entries=json.loads((m.root/'src/data/region_map/region_map_sections.json').read_text())['map_sections']
+def expected_name(name):
+    label=next(e['name'] for e in entries if e['id']=='MAPSEC_QUANTUM_'+name)
+    return bytes(0 if c==' ' else ord(c)-ord('A')+0xbb for c in label)
+
 def move_to(x, y):
     for _ in range(50):
         cx, cy = struct.unpack('<hh', m.read(ptr('sMapCursor'), 4))
@@ -37,14 +42,14 @@ def choose_quantum():
     m.press(5, 30)
     m.press(8)
     assert selected_region() == 2
-    assert text(ptr('sRegionMap')) == text(m.symbols['sMapName_PORT_CITY'])
+    assert text(ptr('sRegionMap')) == expected_name('PORT_CITY')
 
 m.inject(b'\x44' + struct.pack('<HH', 717, 1) + b'\x02')
 m.press(3)
 m.press(8)
-m.press(7, 20)
 m.press(5, 20)
 m.press(8)
+m.press(8)  # Open the native travel guide from the tablet map.
 assert selected_region() == 0
 m.snap('quantum-kanto-preserved')
 choose_quantum()
@@ -56,7 +61,7 @@ points = [('PORT_CITY',15,12),('COASTAL_CITY',4,10),('FOREST_TOWN',6,7),
           ('RIVER_ROAD',9,10),('WOODLAND_LINK',11,7)]
 for name,x,y in points:
     move_to(x,y)
-    assert text(ptr('sRegionMap')) == text(m.symbols['sMapName_'+name]), name
+    assert text(ptr('sRegionMap')) == expected_name(name), name
     if name in ('SNOW_TOWN','HOT_SPRINGS'):
         m.snap('quantum-'+name.lower())
 # Previewing another page and cancelling retains the chosen island page.
@@ -86,7 +91,7 @@ native('InitRegionMapWithExitCB',0,m.symbols['CB2_ReturnToField']|1)
 m.run(240)
 assert selected_region()==2
 assert struct.unpack('<hh',m.read(ptr('sMapCursor'),4))==(10,2)
-assert text(ptr('sRegionMap'))==text(m.symbols['sMapName_SNOW_TOWN'])
+assert text(ptr('sRegionMap'))==expected_name('SNOW_TOWN')
 m.snap('quantum-current-location')
 m.write(m.symbols['gMapHeader'],header)
 m.press(0)

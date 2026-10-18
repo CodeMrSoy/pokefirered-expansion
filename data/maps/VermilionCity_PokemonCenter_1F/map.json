@@ -138,11 +138,11 @@
       "dest_warp_id": "4"
     },
     {
-      "x": 1,
-      "y": 6,
+      "x": 32760,
+      "y": 3,
       "elevation": 4,
-      "dest_map": "MAP_VERMILION_CITY_POKEMON_CENTER_2F",
-      "dest_warp_id": "0"
+      "dest_map": "MAP_PALLET_TOWN",
+      "dest_warp_id": "255"
     }
   ],
   "coord_events": [],

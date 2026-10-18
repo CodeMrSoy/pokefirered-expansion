@@ -5109,6 +5109,7 @@ IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 - Double Slap
 - Encore
 
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_JUGGLER_EDWARD ===
 Name: EDWARD
 Class: Juggler
@@ -5149,6 +5150,8 @@ IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 - Role Play
 - Reflect
 - Encore
+
+#endif
 
 === TRAINER_JUGGLER_KAYDEN ===
 Name: KAYDEN
@@ -10565,6 +10568,7 @@ Ekans
 Level: 5
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_TEAM_ROCKET_GRUNT_42 ===
 Name: GRUNT
 Class: Team Rocket
@@ -10582,6 +10586,9 @@ Houndour
 Level: 49
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_PSYCHIC_JACLYN ===
 Name: JACLYN
 Class: Psychic
@@ -10615,6 +10622,9 @@ IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
 - Recover
 - Reflect
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_CRUSH_GIRL_SHARON ===
 Name: SHARON
 Class: Crush Girl
@@ -10632,6 +10642,9 @@ Primeape @ Black Belt
 Level: 37
 IVs: 6 HP / 6 Atk / 6 Def / 6 SpA / 6 SpD / 6 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_TUBER_AMIRA ===
 Name: AMIRA
 Class: Tuber
@@ -10653,6 +10666,9 @@ Poliwag
 Level: 34
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_PKMN_BREEDER_ALIZE ===
 Name: ALIZE
 Class: Pkmn Breeder
@@ -10674,6 +10690,9 @@ Marill
 Level: 48
 IVs: 3 HP / 3 Atk / 3 Def / 3 SpA / 3 SpD / 3 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_PKMN_RANGER_NICOLAS ===
 Name: NICOLAS
 Class: Pkmn Ranger
@@ -10700,6 +10719,9 @@ IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
 - Sleep Powder
 - Stun Spore
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_PKMN_RANGER_MADELINE ===
 Name: MADELINE
 Class: Pkmn Ranger
@@ -10726,6 +10748,9 @@ IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
 - Acid
 - Stun Spore
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_AROMA_LADY_NIKKI ===
 Name: NIKKI
 Class: Aroma Lady
@@ -10743,6 +10768,9 @@ Weepinbell
 Level: 37
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_RUIN_MANIAC_STANLY ===
 Name: STANLY
 Class: Ruin Maniac
@@ -10764,6 +10792,9 @@ Graveler
 Level: 48
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_LADY_JACKI ===
 Name: JACKI
 Class: Lady
@@ -10782,6 +10813,9 @@ Skiploom @ Stardust
 Level: 50
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_PAINTER_DAISY ===
 Name: DAISY
 Class: Painter
@@ -10799,6 +10833,9 @@ IVs: 6 HP / 6 Atk / 6 Def / 6 SpA / 6 SpD / 6 Spe
 - Focus Punch
 - Mega Punch
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_BIKER_GOON ===
 Name: GOON
 Class: Biker
@@ -10824,6 +10861,9 @@ IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 - Minimize
 - Sludge
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_BIKER_GOON_2 ===
 Name: GOON
 Class: Biker
@@ -10841,6 +10881,9 @@ IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 - Sludge
 - Tackle
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_BIKER_GOON_3 ===
 Name: GOON
 Class: Biker
@@ -10853,6 +10896,8 @@ AI: Check Bad Move
 Grimer
 Level: 38
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+
+#endif
 
 === TRAINER_BIKER_2 ===
 Name: PH
@@ -10993,6 +11038,7 @@ Grimer
 Level: 24
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_TEAM_ROCKET_GRUNT_43 ===
 Name: GRUNT
 Class: Team Rocket
@@ -11010,6 +11056,9 @@ Marowak
 Level: 37
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_TEAM_ROCKET_GRUNT_44 ===
 Name: GRUNT
 Class: Team Rocket
@@ -11035,6 +11084,9 @@ Sandslash
 Level: 35
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_TEAM_ROCKET_GRUNT_45 ===
 Name: GRUNT
 Class: Team Rocket
@@ -11056,6 +11108,9 @@ Golbat
 Level: 38
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_TEAM_ROCKET_GRUNT_46 ===
 Name: GRUNT
 Class: Team Rocket
@@ -11077,6 +11132,9 @@ Raticate
 Level: 48
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_TEAM_ROCKET_GRUNT_47 ===
 Name: GRUNT
 Class: Team Rocket
@@ -11098,6 +11156,9 @@ Machoke
 Level: 48
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_TEAM_ROCKET_GRUNT_48 ===
 Name: GRUNT
 Class: Team Rocket
@@ -11115,6 +11176,9 @@ Hypno
 Level: 49
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_TEAM_ROCKET_ADMIN ===
 Name: ADMIN
 Class: Team Rocket
@@ -11149,6 +11213,9 @@ IVs: 18 HP / 18 Atk / 18 Def / 18 SpA / 18 SpD / 18 Spe
 - Sleep Powder
 - Stun Spore
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_TEAM_ROCKET_ADMIN_2 ===
 Name: ADMIN
 Class: Team Rocket
@@ -11183,6 +11250,9 @@ IVs: 24 HP / 24 Atk / 24 Def / 24 SpA / 24 SpD / 24 Spe
 - Iron Tail
 - Shadow Ball
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_SCIENTIST_GIDEON ===
 Name: GIDEON
 Class: Scientist
@@ -11232,6 +11302,9 @@ IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 - Recover
 - Psybeam
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_SWIMMER_FEMALE_AMARA ===
 Name: AMARA
 Class: Swimmer F
@@ -11253,6 +11326,9 @@ Dewgong
 Level: 36
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_SWIMMER_FEMALE_MARIA ===
 Name: MARIA
 Class: Swimmer F
@@ -11270,6 +11346,9 @@ Seadra
 Level: 37
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_SWIMMER_FEMALE_ABIGAIL ===
 Name: ABIGAIL
 Class: Swimmer F
@@ -11291,6 +11370,9 @@ Golduck
 Level: 37
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_SWIMMER_MALE_FINN ===
 Name: FINN
 Class: Swimmer M
@@ -11304,6 +11386,9 @@ Starmie
 Level: 38
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_SWIMMER_MALE_GARRETT ===
 Name: GARRETT
 Class: Swimmer M
@@ -11325,6 +11410,9 @@ Wartortle
 Level: 38
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_FISHERMAN_TOMMY ===
 Name: TOMMY
 Class: Fisherman
@@ -11354,6 +11442,9 @@ Seaking
 Level: 35
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_CRUSH_GIRL_TANYA ===
 Name: TANYA
 Class: Crush Girl
@@ -11371,6 +11462,9 @@ Hitmonchan @ Black Belt
 Level: 38
 IVs: 6 HP / 6 Atk / 6 Def / 6 SpA / 6 SpD / 6 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_BLACK_BELT_SHEA ===
 Name: SHEA
 Class: Black Belt
@@ -11388,6 +11482,9 @@ Machoke @ Black Belt
 Level: 38
 IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_BLACK_BELT_HUGH ===
 Name: HUGH
 Class: Black Belt
@@ -11405,6 +11502,9 @@ Machoke @ Black Belt
 Level: 37
 IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_CAMPER_BRYCE ===
 Name: BRYCE
 Class: Camper
@@ -11426,6 +11526,9 @@ Sandslash
 Level: 36
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_PICNICKER_CLAIRE ===
 Name: CLAIRE
 Class: Picnicker
@@ -11451,6 +11554,9 @@ Clefairy
 Level: 35
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_CRUSH_KIN_MIK_KIA ===
 Name: MIK & KIA
 Class: Crush Kin
@@ -11468,6 +11574,9 @@ Primeape @ Black Belt
 Level: 39
 IVs: 6 HP / 6 Atk / 6 Def / 6 SpA / 6 SpD / 6 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_AROMA_LADY_VIOLET ===
 Name: VIOLET
 Class: Aroma Lady
@@ -11489,6 +11598,9 @@ Ivysaur
 Level: 36
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_TUBER_ALEXIS ===
 Name: ALEXIS
 Class: Tuber
@@ -11514,6 +11626,9 @@ Krabby
 Level: 34
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_TWINS_JOY_MEG ===
 Name: JOY & MEG
 Class: Twins
@@ -11531,6 +11646,9 @@ Clefairy
 Level: 37
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_SWIMMER_FEMALE_TISHA ===
 Name: TISHA
 Class: Swimmer F
@@ -11544,6 +11662,9 @@ Kingler
 Level: 38
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_PAINTER_CELINA ===
 Name: CELINA
 Class: Painter
@@ -11561,6 +11682,9 @@ IVs: 6 HP / 6 Atk / 6 Def / 6 SpA / 6 SpD / 6 Spe
 - Dive
 - Bounce
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_PAINTER_RAYNA ===
 Name: RAYNA
 Class: Painter
@@ -11578,6 +11702,9 @@ IVs: 6 HP / 6 Atk / 6 Def / 6 SpA / 6 SpD / 6 Spe
 - Double Edge
 - Self Destruct
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_LADY_GILLIAN ===
 Name: GILLIAN
 Class: Lady
@@ -11600,6 +11727,9 @@ Flaaffy @ Nugget
 Level: 49
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_YOUNGSTER_DESTIN ===
 Name: DESTIN
 Class: Youngster
@@ -11617,6 +11747,9 @@ Pidgeotto
 Level: 48
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_SWIMMER_MALE_TOBY ===
 Name: TOBY
 Class: Swimmer M
@@ -11638,6 +11771,9 @@ Tentacruel
 Level: 48
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_TEAM_ROCKET_GRUNT_49 ===
 Name: GRUNT
 Class: Team Rocket
@@ -11659,6 +11795,9 @@ Muk
 Level: 48
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_TEAM_ROCKET_GRUNT_50 ===
 Name: GRUNT
 Class: Team Rocket
@@ -11684,6 +11823,9 @@ IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 - Sludge
 - Self Destruct
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_TEAM_ROCKET_GRUNT_51 ===
 Name: GRUNT
 Class: Team Rocket
@@ -11705,6 +11847,9 @@ Gloom
 Level: 48
 IVs: 6 HP / 6 Atk / 6 Def / 6 SpA / 6 SpD / 6 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_BIRD_KEEPER_MILO ===
 Name: MILO
 Class: Bird Keeper
@@ -11722,6 +11867,9 @@ Pidgeotto
 Level: 49
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_BIRD_KEEPER_CHAZ ===
 Name: CHAZ
 Class: Bird Keeper
@@ -11739,6 +11887,9 @@ Fearow
 Level: 49
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_BIRD_KEEPER_HAROLD ===
 Name: HAROLD
 Class: Bird Keeper
@@ -11756,6 +11907,9 @@ Noctowl
 Level: 49
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_FISHERMAN_TYLOR ===
 Name: TYLOR
 Class: Fisherman
@@ -11773,6 +11927,9 @@ Qwilfish
 Level: 49
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_SWIMMER_MALE_MYMO ===
 Name: MYMO
 Class: Swimmer M
@@ -11790,6 +11947,9 @@ Wartortle
 Level: 49
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_SWIMMER_FEMALE_NICOLE ===
 Name: NICOLE
 Class: Swimmer F
@@ -11803,6 +11963,9 @@ Marill
 Level: 50
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_SIS_AND_BRO_AVA_GEB ===
 Name: AVA & GEB
 Class: Sis And Bro
@@ -11820,6 +11983,9 @@ Starmie
 Level: 50
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_AROMA_LADY_ROSE ===
 Name: ROSE
 Class: Aroma Lady
@@ -11837,6 +12003,9 @@ Sunflora
 Level: 49
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_SWIMMER_MALE_SAMIR ===
 Name: SAMIR
 Class: Swimmer M
@@ -11850,6 +12019,9 @@ Gyarados
 Level: 50
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_SWIMMER_FEMALE_DENISE ===
 Name: DENISE
 Class: Swimmer F
@@ -11867,6 +12039,9 @@ Lanturn
 Level: 49
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_TWINS_MIU_MIA ===
 Name: MIU & MIA
 Class: Twins
@@ -11884,6 +12059,9 @@ Pikachu
 Level: 50
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_HIKER_EARL ===
 Name: EARL
 Class: Hiker
@@ -11901,6 +12079,9 @@ Machoke
 Level: 49
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_RUIN_MANIAC_FOSTER ===
 Name: FOSTER
 Class: Ruin Maniac
@@ -11914,6 +12095,9 @@ Golem
 Level: 50
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_RUIN_MANIAC_LARRY ===
 Name: LARRY
 Class: Ruin Maniac
@@ -11931,6 +12115,9 @@ Machoke
 Level: 49
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_HIKER_DARYL ===
 Name: DARYL
 Class: Hiker
@@ -11944,6 +12131,9 @@ Sudowoodo
 Level: 50
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_POKEMANIAC_HECTOR ===
 Name: HECTOR
 Class: Pokemaniac
@@ -11961,6 +12151,9 @@ Kangaskhan
 Level: 49
 IVs: 3 HP / 3 Atk / 3 Def / 3 SpA / 3 SpD / 3 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_PSYCHIC_DARIO ===
 Name: DARIO
 Class: Psychic
@@ -11978,6 +12171,9 @@ IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
 - Odor Sleuth
 - Agility
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_PSYCHIC_RODETTE ===
 Name: RODETTE
 Class: Psychic
@@ -12011,6 +12207,9 @@ IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
 - Psych Up
 - Future Sight
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_AROMA_LADY_MIAH ===
 Name: MIAH
 Class: Aroma Lady
@@ -12028,6 +12227,9 @@ Bellossom
 Level: 50
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_YOUNG_COUPLE_EVE_JON ===
 Name: EVE & JON
 Class: Young Couple
@@ -12045,6 +12247,9 @@ Psyduck
 Level: 50
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_JUGGLER_MASON ===
 Name: MASON
 Class: Juggler
@@ -12086,6 +12291,9 @@ IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 - Rapid Spin
 - Explosion
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_CRUSH_GIRL_CYNDY ===
 Name: CYNDY
 Class: Crush Girl
@@ -12107,6 +12315,9 @@ Machoke @ Black Belt
 Level: 48
 IVs: 6 HP / 6 Atk / 6 Def / 6 SpA / 6 SpD / 6 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_CRUSH_GIRL_JOCELYN ===
 Name: JOCELYN
 Class: Crush Girl
@@ -12124,6 +12335,9 @@ Hitmonchan @ Black Belt
 Level: 38
 IVs: 6 HP / 6 Atk / 6 Def / 6 SpA / 6 SpD / 6 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_TAMER_EVAN ===
 Name: EVAN
 Class: Tamer
@@ -12145,6 +12359,8 @@ Ursaring
 Level: 49
 IVs: 4 HP / 4 Atk / 4 Def / 4 SpA / 4 SpD / 4 Spe
 
+#endif
+
 === TRAINER_POKEMANIAC_MARK_2 ===
 Name: MARK
 Class: Pokemaniac
@@ -12162,6 +12378,7 @@ Lickitung
 Level: 33
 IVs: 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe
 
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_PKMN_RANGER_LOGAN ===
 Name: LOGAN
 Class: Pkmn Ranger
@@ -12188,6 +12405,9 @@ IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
 - Confusion
 - Hypnosis
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_PKMN_RANGER_JACKSON ===
 Name: JACKSON
 Class: Pkmn Ranger
@@ -12222,6 +12442,9 @@ IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
 - Sleep Powder
 - Stomp
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_PKMN_RANGER_BETH ===
 Name: BETH
 Class: Pkmn Ranger
@@ -12244,6 +12467,9 @@ Gloom
 Level: 38
 IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_PKMN_RANGER_KATELYN ===
 Name: KATELYN
 Class: Pkmn Ranger
@@ -12262,6 +12488,9 @@ IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
 - Minimize
 - Soft Boiled
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_COOLTRAINER_LEROY ===
 Name: LEROY
 Class: Cooltrainer
@@ -12312,6 +12541,9 @@ IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
 - Snore
 - Rest
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_COOLTRAINER_MICHELLE ===
 Name: MICHELLE
 Class: Cooltrainer
@@ -12362,6 +12594,9 @@ IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
 - Stomp
 - Odor Sleuth
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_COOL_COUPLE_LEX_NYA ===
 Name: LEX & NYA
 Class: Cool Couple
@@ -12388,6 +12623,9 @@ IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
 - Pursuit
 - Swagger
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_RUIN_MANIAC_BRANDON ===
 Name: BRANDON
 Class: Ruin Maniac
@@ -12401,6 +12639,9 @@ Onix
 Level: 50
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_RUIN_MANIAC_BENJAMIN ===
 Name: BENJAMIN
 Class: Ruin Maniac
@@ -12434,6 +12675,9 @@ IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 - Rock Throw
 - Self Destruct
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_PAINTER_EDNA ===
 Name: EDNA
 Class: Painter
@@ -12451,6 +12695,9 @@ IVs: 6 HP / 6 Atk / 6 Def / 6 SpA / 6 SpD / 6 Spe
 - Protect
 - Quick Attack
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_GENTLEMAN_CLIFFORD ===
 Name: CLIFFORD
 Class: Gentleman
@@ -12468,6 +12715,9 @@ Golduck
 Level: 49
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_LADY_SELPHY ===
 Name: SELPHY
 Class: Lady
@@ -12494,6 +12744,9 @@ IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 - Torment
 - Taunt
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_RUIN_MANIAC_LAWSON ===
 Name: LAWSON
 Class: Ruin Maniac
@@ -12515,6 +12768,9 @@ Marowak
 Level: 49
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_PSYCHIC_LAURA ===
 Name: LAURA
 Class: Psychic
@@ -12536,6 +12792,9 @@ Xatu
 Level: 49
 IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_PKMN_BREEDER_BETHANY ===
 Name: BETHANY
 Class: Pkmn Breeder
@@ -12549,6 +12808,9 @@ Chansey
 Level: 50
 IVs: 3 HP / 3 Atk / 3 Def / 3 SpA / 3 SpD / 3 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_PKMN_BREEDER_ALLISON ===
 Name: ALLISON
 Class: Pkmn Breeder
@@ -12570,6 +12832,9 @@ Clefable
 Level: 48
 IVs: 3 HP / 3 Atk / 3 Def / 3 SpA / 3 SpD / 3 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_BUG_CATCHER_GARRET ===
 Name: GARRET
 Class: Bug Catcher
@@ -12583,6 +12848,9 @@ Heracross
 Level: 49
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_BUG_CATCHER_JONAH ===
 Name: JONAH
 Class: Bug Catcher
@@ -12608,6 +12876,9 @@ Beedrill
 Level: 47
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_BUG_CATCHER_VANCE ===
 Name: VANCE
 Class: Bug Catcher
@@ -12625,6 +12896,9 @@ Venomoth
 Level: 48
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_YOUNGSTER_NASH ===
 Name: NASH
 Class: Youngster
@@ -12646,6 +12920,9 @@ Victreebel
 Level: 49
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_YOUNGSTER_CORDELL ===
 Name: CORDELL
 Class: Youngster
@@ -12663,6 +12940,9 @@ Farfetchd
 Level: 48
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_LASS_DALIA ===
 Name: DALIA
 Class: Lass
@@ -12688,6 +12968,9 @@ Skiploom
 Level: 48
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_LASS_JOANA ===
 Name: JOANA
 Class: Lass
@@ -12701,6 +12984,9 @@ Snubbull
 Level: 49
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_CAMPER_RILEY ===
 Name: RILEY
 Class: Camper
@@ -12718,6 +13004,9 @@ Heracross
 Level: 50
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_PICNICKER_MARCY ===
 Name: MARCY
 Class: Picnicker
@@ -12739,6 +13028,9 @@ Parasect
 Level: 49
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_RUIN_MANIAC_LAYTON ===
 Name: LAYTON
 Class: Ruin Maniac
@@ -12759,6 +13051,8 @@ IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 Sandslash
 Level: 48
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+
+#endif
 
 === TRAINER_PICNICKER_KELSEY_2 ===
 Name: KELSEY
@@ -15017,6 +15311,7 @@ Seaking
 Level: 49
 IVs: 9 HP / 9 Atk / 9 Def / 9 SpA / 9 SpD / 9 Spe
 
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_ELITE_FOUR_LORELEI_2 ===
 Name: LORELEI
 Class: Elite Four
@@ -15068,6 +15363,9 @@ IVs: 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
 - Psychic
 - Thunder
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_ELITE_FOUR_BRUNO_2 ===
 Name: BRUNO
 Class: Elite Four
@@ -15119,6 +15417,9 @@ IVs: 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
 - Brick Break
 - Rock Slide
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_ELITE_FOUR_AGATHA_2 ===
 Name: AGATHA
 Class: Elite Four
@@ -15170,6 +15471,9 @@ IVs: 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
 - Thunderbolt
 - Sludge Bomb
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_ELITE_FOUR_LANCE_2 ===
 Name: LANCE
 Class: Elite Four
@@ -15221,6 +15525,9 @@ IVs: 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
 - Thunderbolt
 - Ice Beam
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_CHAMPION_REMATCH_SQUIRTLE ===
 Name: TERRY
 Class: Champion
@@ -15280,6 +15587,9 @@ IVs: 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
 - Earthquake
 - Rain Dance
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_CHAMPION_REMATCH_BULBASAUR ===
 Name: TERRY
 Class: Champion
@@ -15339,6 +15649,9 @@ IVs: 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
 - Earthquake
 - Sunny Day
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_CHAMPION_REMATCH_CHARMANDER ===
 Name: TERRY
 Class: Champion
@@ -15398,6 +15711,9 @@ IVs: 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
 - Aerial Ace
 - Earthquake
 
+#endif
+
+#if 0 /* Retired trainer ID remains reserved. */
 === TRAINER_CUE_BALL_PAXTON ===
 Name: PAXTON
 Class: Cue Ball
@@ -15414,3 +15730,4 @@ IVs: 6 HP / 6 Atk / 6 Def / 6 SpA / 6 SpD / 6 Spe
 Muk
 Level: 39
 IVs: 6 HP / 6 Atk / 6 Def / 6 SpA / 6 SpD / 6 Spe
+#endif

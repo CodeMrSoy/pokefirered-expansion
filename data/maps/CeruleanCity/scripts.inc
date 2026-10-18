@@ -55,8 +55,6 @@ CeruleanCity_EventScript_Rival::
 	msgbox CeruleanCity_Text_OhRightLittlePresentAsFavor
 	setvar VAR_MAP_SCENE_CERULEAN_CITY_RIVAL, 1
 	setflag FLAG_GOT_FAME_CHECKER
-	giveitem ITEM_FAME_CHECKER
-	msgbox CeruleanCity_Text_ExplainFameCheckerSmellYa
 	closemessage
 	applymovement LOCALID_CERULEAN_RIVAL, CeruleanCity_Movement_RivalExit
 	waitmovement 0

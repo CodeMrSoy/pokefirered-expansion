@@ -1,47 +1,15 @@
 # Quantum V2 campaign scope
 
-The campaign retains Kanto, the first Elite Four and Champion battles, the Hall
-of Fame, credits, Continue, and ordinary exploration of the retained world.
-The Bill/Lostelle trip to Islands 1–3, Berry Forest, and Mt. Ember/Moltres remain.
-Quantum's existing National PokéGlass support remains available from new game;
-Oak's separate post-League National Dex ceremony is removed.
+V2 inherits the current QOL branch through `f3a842cdf`: the tablet and PC-style storage, Party rendering and exit fixes, glass-only night lighting, National Pokédex, save compatibility, and ROM cleanup. Kanto, its first Elite Four/Champion teams, Hall of Fame, credits, and normal exploration remain.
 
-Removed playable content:
+The authoritative cleanup manifest is `data/quantum/retired_content.json`. It retires the same 189 legacy maps as QOL, including the old Sevii trips, caves and multiplayer rooms. Numeric map/species IDs and save structures remain stable. Mewtwo, Articuno and Moltres use QOL's Kanto replacement encounters. `docs/quantum-retired-maps.json` records the earlier 127-map V2 cleanup; it is a historical subset, not the current full retirement list.
 
-- Islands 4–7, including Icefall Cave, Rocket Warehouse, Dotted Hole, Lost Cave,
-  Pattern Bush, Altering Cave, Trainer Tower, and the Tanoby chambers.
-- Celio's Ruby/Sapphire quest, Rainbow Pass travel, and the Ruby Path under
-  Mt. Ember. The Ruby cave entrance stays sealed.
-- Cerulean Cave/Mewtwo and the Navel Rock/Birth Island event destinations.
-- The dug-out Dunsparce tunnel expansion and roaming-beast unlock.
-- Upgraded Elite Four/Champion teams and their rematch introductions.
-- The automatic post-League Oak scene and postgame gossipers.
+All 20 V2 island maps remain, including the 40×32 Havora harbor, 80×80 city layout, five towns and their Centers, and four connecting routes. The Stellar Ticket quest, original Seagallop sailing/return interaction, healing, visit flags and native Fly eligibility remain. Painted island layouts and the original regional artwork are preserved. This is still an island foundation under active map development.
 
-`quantum-retired-maps.json` lists 127 retired map slots and 119 exclusive layout
-slots. Their scripts, text, objects, items, encounters, connections, and original
-layout binaries are deleted. Inert map headers and tiny layout entries retain
-the original numeric IDs; shared layouts are preserved. Engine ABI labels and
-event-ID constants remain inert where shared C code still references them.
-Shared graphics, Pokémon data, battle systems, and other reusable engine code
-remain. V1 on GitHub preserves the original content.
+The tablet Map app previews Kanto and Quantum Island using L/R; A opens the native travel guide. Visiting a preview does not unlock travel. The existing native island map, region picker, location names and Fly behavior remain available.
 
-Incoming warp indices in retained maps remain stable. Late ferry and Fly
-destinations are unavailable, and the warp loader redirects retired destinations
-to Pallet Town. Retired healing slots also resolve to Pallet Town. Continue
-relocates a V1 save from a retired map through a fresh map load, repairs stored
-return/escape/healing warps, clears late unlocks and map visibility, and disables
-roamers. It preserves name, gender, party, bag, and the selected character look.
-Oak's starter scene values 0/1 are preserved.
+V2 campaign sanitation delegates map/warp recovery to QOL's expanded predicate and safe Pallet destination (10,9), then clears its obsolete story/travel flags. Early Oak starter states are preserved. The campaign retains its removal of the separate post-League Oak ceremony and upgraded rematch introductions.
 
-## Verification
+The QOL Center layout seals obsolete multiplayer stairs. The island's upstairs layout is retained because V2 maps and older V2 saves still reference it; upstairs return stairs remain available for those saves. Entrances to the retired Union/Trade rooms are disabled without renumbering warp slots. A coordinate trigger makes the harbor's existing city exit work with the in-progress painted tile while preserving the tilemap.
 
-The ARM build uses 23,807,428 bytes of the 32 MiB ROM, down 194,128 bytes
-(about 190 KiB) from the V1 Wardrobe build. Approximately 9.3 MiB remains.
-The physical `.gba` is padded to 32 MiB; the linker reports actual used space.
-
-`tests/quantum_campaign_emulator.py` checks retired and retained map boundaries,
-early starter state, save migration through reset/Continue, movement, identity,
-party and character-look preservation, end-of-League flags, Hall of Fame, and
-credits. The retained encounter records, map-group IDs, early-island maps,
-and ending maps were compared with V1. Existing QOL, PokéGlass shell, and
-Stats regression checks are also used. No full campaign playthrough was run.
+See `qol-branch-integration.md` for merge parents, checks and current ROM usage. An uninterrupted campaign playthrough is still outside this automated validation.

@@ -257,7 +257,7 @@ static void Task_QuantumTitle(u8 taskId)
         {
         case 1: SetMainCallback2(CB2_SaveClearScreen_Init); break;
         case 2: SetMainCallback2(CB2_InitResetRtcScreen); break;
-        case 3: SetMainCallback2(CB2_InitBerryFixProgram); break;
+        case 3: SetMainCallback2(CB2_InitMainMenu); break;
         case 4: SetMainCallback2(CB2_InitCopyrightScreenAfterTitleScreen); break;
         default: SetMainCallback2(CB2_InitMainMenu); break;
         }

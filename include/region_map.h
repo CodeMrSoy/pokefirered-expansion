@@ -20,6 +20,8 @@ struct RegionMapLocation
     const u8 *name;
 };
 
+u16 PokeGlassMapSection(u8 region, u8 x, u8 y);
+u8 PokeGlassPlayerRegion(void);
 u8 *GetMapName(u8 *dest, u16 mapsec, u16 fill);
 u8 *GetMapNameGeneric(u8 *dest, u16 mapsec);
 u8 *GetMapNameGeneric_(u8 *dest, u16 mapsec);

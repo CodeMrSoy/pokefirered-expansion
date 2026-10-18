@@ -105,7 +105,7 @@ ViridianCity_EventScript_OldManGymLeaderReturned::
 ViridianCity_EventScript_TutorialOldMan::
 	lock
 	faceplayer
-	goto_if_ge VAR_MAP_SCENE_VIRIDIAN_CITY_OLD_MAN, 2, ViridianCity_EventScript_TutorialCompleted
+	goto_if_ge VAR_MAP_SCENE_VIRIDIAN_CITY_OLD_MAN, 1, ViridianCity_EventScript_TutorialCompleted
 	goto_if_eq VAR_MAP_SCENE_VIRIDIAN_CITY_OLD_MAN, 1, ViridianCity_EventScript_TutorialStart
 	goto_if_eq VAR_MAP_SCENE_VIRIDIAN_CITY_OLD_MAN, 0, ViridianCity_EventScript_TutorialNotReady
 	end
@@ -143,8 +143,6 @@ ViridianCity_EventScript_TutorialUnused::
 	msgbox ViridianCity_Text_ThatWasEducationalTakeThis
 	goto_if_questlog EventScript_ReleaseEnd
 	special QuestLog_CutRecording
-	special StartOldManTutorialBattle
-	waitstate
 	release
 	end
 
@@ -229,16 +227,6 @@ ViridianCity_EventScript_TutorialTriggerRight::
 	end
 
 ViridianCity_EventScript_DoTutorialBattle::
-	msgbox ViridianCity_Text_ShowYouHowToCatchMons
-	closemessage
-	goto_if_questlog EventScript_ReleaseEnd
-	special QuestLog_CutRecording
-	special StartOldManTutorialBattle
-	waitstate
-	lock
-	faceplayer
-	msgbox ViridianCity_Text_ThatWasEducationalTakeThis
+	msgbox ViridianCity_Text_WeakenMonsFirstToCatch
 	setvar VAR_MAP_SCENE_VIRIDIAN_CITY_OLD_MAN, 2
-	giveitem ITEM_TEACHY_TV
-	msgbox ViridianCity_Text_WatchThatToLearnBasics
 	return

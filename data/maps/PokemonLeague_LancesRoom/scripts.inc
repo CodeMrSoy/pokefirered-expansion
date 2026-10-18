@@ -119,6 +119,10 @@ PokemonLeague_LancesRoom_EventScript_Battle::
 	trainerbattle_no_intro TRAINER_ELITE_FOUR_LANCE, PokemonLeague_LancesRoom_Text_Defeat
 	return
 
+PokemonLeague_LancesRoom_EventScript_Rematch::
+	trainerbattle_no_intro TRAINER_ELITE_FOUR_LANCE, PokemonLeague_LancesRoom_Text_Defeat
+	return
+
 PokemonLeague_LancesRoom_EventScript_PostBattle::
 	msgbox PokemonLeague_LancesRoom_Text_PostBattle
 	release

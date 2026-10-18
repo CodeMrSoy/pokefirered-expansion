@@ -1,18 +1,18 @@
 # Quantum character looks and Wardrobe
 
-Six looks are available during character creation and in the PokéGlass Wardrobe:
-Red, Leaf, Emerald Brendan, Emerald May, Ruby/Sapphire Brendan, and Ruby/Sapphire
-May. Left/right previews a look. A wears it; B cancels. Appearance does not
+Four looks are available during character creation and in the PokéGlass Wardrobe:
+Red, Leaf, Emerald Brendan, and Emerald May. Left/right previews a look. A wears it; B cancels. Appearance does not
 change the player's name, gender, Pokémon OT data, or story flags.
 
 `VAR_PLAYER_AVATAR` uses the previously unused permanent variable `0x40FD`.
 Zero and invalid values retain the original gender-based appearance for older
-saves. Values 1–6 encode the selected look. Character creation chooses a default
+saves. Values 1–4 encode the selected look. Legacy values 5 and 6 migrate to Emerald
+Brendan and May respectively. Character creation chooses a default
 after gender selection; `NewGameInitData` preserves the look across clearing
 SaveBlock1. The save structures and sector layout are unchanged.
 
-Hoenn looks use separate object graphics IDs 157–184 and palette/reflection tags
-0x11E0–0x11E7. They include walking, running, bike, surf, fishing, field-move,
+Emerald looks use object graphics IDs 157–170 and their palette/reflection tags.
+Legacy Ruby/Sapphire graphics IDs 171–184 now alias the matching Emerald sprites. They include walking, running, bike, surf, fishing, field-move,
 and Vs. Seeker states. FRLG animation tables address adapted frame lists;
 Vs. Seeker uses the character's field-move poses and bicycle idle poses.
 Other player lookups remain separate from link guests and NPC graphics.
@@ -40,7 +40,7 @@ map palettes were extracted from their indexed PNG palettes.
 
 ## Verification
 
-The ARM ROM build passes. `tests/avatar_wardrobe_emulator.py` checks all six
+The ARM ROM build passes. `tests/avatar_wardrobe_emulator.py` checks all four
 creation and Wardrobe previews, cancellation, applying a look, preservation of
 name/gender, movement graphics, actual battle back portraits, map artwork,
 Fly landing, and a real flash save followed by reset and Continue. Existing

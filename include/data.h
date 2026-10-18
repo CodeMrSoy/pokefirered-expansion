@@ -175,7 +175,7 @@ extern const union AnimCmd *const gAnims_Trainer[];
 extern const struct TrainerSprite gTrainerSprites[];
 extern const struct TrainerBacksprite gTrainerBacksprites[];
 
-extern const struct Trainer gTrainers[DIFFICULTY_COUNT][TRAINERS_COUNT];
+extern const struct Trainer *const gTrainers[DIFFICULTY_COUNT];
 extern const struct Trainer gBattlePartners[DIFFICULTY_COUNT][PARTNER_COUNT];
 
 extern const struct TrainerClass gTrainerClasses[TRAINER_CLASS_COUNT];

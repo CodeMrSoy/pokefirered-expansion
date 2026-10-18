@@ -34,11 +34,10 @@ for name in retired['maps']:
     assert not (m.root / 'data/maps' / name / 'scripts.inc').exists()
     assert not (m.root / 'data/maps' / name / 'text.inc').exists()
     group, index = map_ids[name]
-    assert native('IsQuantumRetiredMap', group, index) == 1, name
+    assert native('QuantumIsRetiredMap', group, index) == 1, name
 for name in ('PalletTown', 'PokemonLeague_ChampionsRoom', 'PokemonLeague_HallOfFame',
-             'IndigoPlateau_Exterior', 'OneIsland', 'TwoIsland', 'ThreeIsland',
-             'MtEmber_Summit', 'ThreeIsland_BerryForest'):
-    assert native('IsQuantumRetiredMap', *map_ids[name]) == 0, name
+             'IndigoPlateau_Exterior', 'QuantumPortCity', 'QuantumHarbor'):
+    assert native('QuantumIsRetiredMap', *map_ids[name]) == 0, name
 
 def constant(name, header):
     # Let the project preprocessor resolve flags/vars and expansion constants.
@@ -53,7 +52,7 @@ save = struct.unpack('<I', m.read(m.symbols['gSaveBlock1Ptr'], 4))[0]
 save2 = struct.unpack('<I', m.read(m.symbols['gSaveBlock2Ptr'], 4))[0]
 identity = m.read(save2, 9)
 party = m.read(m.symbols['gPlayerParty'], 600)
-native('SetCurrentAvatarLook', 5)
+native('SetCurrentAvatarLook', 2)
 # Saving before Oak's starter sequence must not suppress its grass triggers.
 oak_var = constant('VAR_MAP_SCENE_PALLET_TOWN_OAK', 'vars.h')
 for early_scene in (0, 1):
@@ -73,7 +72,7 @@ for var, value in (('VAR_MAP_SCENE_PALLET_TOWN_OAK', 2),
 native('SanitizeQuantumCampaignSave')
 for flag in late_flags:
     assert native('FlagGet', constant(flag, 'flags.h')) == 0, flag
-assert native('GetCurrentAvatarLook') == 5
+assert native('GetCurrentAvatarLook') == 2
 assert m.read(save2, 9) == identity
 assert m.read(m.symbols['gPlayerParty'], 600) == party
 
@@ -91,15 +90,15 @@ m.press(8)
 m.run(360)
 save = struct.unpack('<I', m.read(m.symbols['gSaveBlock1Ptr'], 4))[0]
 assert tuple(m.read(save + 4, 2)) == map_ids['PalletTown']
-assert struct.unpack('<hh', m.read(save, 4)) == (6, 8)
-assert native('GetCurrentAvatarLook') == 5
+assert struct.unpack('<hh', m.read(save, 4)) == (10, 9)
+assert native('GetCurrentAvatarLook') == 2
 assert m.read(m.symbols['gPlayerParty'], 600) == party
 m.snap('campaign-v1-save-relocated')
 m.keys.add(7)
 m.run(24)
 m.keys.clear()
 m.run(30)
-assert struct.unpack('<hh', m.read(save, 4)) != (6, 8), 'Player cannot move after migration'
+assert struct.unpack('<hh', m.read(save, 4)) != (10, 9), 'Player cannot move after migration'
 
 # Run the end-of-League script, then the real Hall of Fame and credits flow.
 m.inject(b'\x04' + struct.pack('<I', m.symbols['EventScript_SetDefeatedEliteFourFlagsVars'])
@@ -107,7 +106,10 @@ m.inject(b'\x04' + struct.pack('<I', m.symbols['EventScript_SetDefeatedEliteFour
 assert native('VarGet', constant('VAR_MAP_SCENE_PALLET_TOWN_OAK', 'vars.h')) == 3
 assert native('FlagGet', constant('FLAG_HIDE_POSTGAME_GOSSIPERS', 'flags.h')) == 1
 game_clear = constant('FLAG_SYS_GAME_CLEAR', 'flags.h')
-game_clear_pointer = native('GetFlagAddr', game_clear)
+# Flags immediately precede vars in the stable SaveBlock1 layout.
+# GetFlagAddr may be inlined by the release compiler.
+flag_bytes = (constant('FLAGS_COUNT', 'flags.h') + 7) // 8
+game_clear_pointer = native('GetVarPointer', 0x4000) - flag_bytes + game_clear // 8
 native('EnterHallOfFame')
 assert m.read(game_clear_pointer, 1)[0] & (1 << (game_clear & 7))
 for _ in range(110):
@@ -119,4 +121,4 @@ for _ in range(110):
     m.press(8, 5)
 else:
     raise AssertionError('Ending did not reach credits')
-print('127 retired map boundaries, main/early-island preservation, V1 save relocation, movement, identity/party/skin preservation, Hall of Fame, and credits passed')
+print('127 retired map boundaries, Kanto/new-island preservation, V1 save relocation, movement, identity/party/skin preservation, Hall of Fame, and credits passed')

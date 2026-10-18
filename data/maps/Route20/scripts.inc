@@ -1,10 +1,10 @@
 Route20_MapScripts::
+	map_script MAP_SCRIPT_ON_RESUME, QuantumRelocated_OnResume
 	map_script MAP_SCRIPT_ON_TRANSITION, Route20_OnTransition
 	.byte 0
 
 Route20_OnTransition::
-	call_if_unset FLAG_STOPPED_SEAFOAM_B3F_CURRENT, Route20_EventScript_ResetSeafoamBouldersForB3F
-	call_if_unset FLAG_STOPPED_SEAFOAM_B4F_CURRENT, Route20_EventScript_ResetSeafoamBouldersForB4F
+	call QuantumRelocated_Show_ARTICUNO
 	end
 
 Route20_EventScript_ResetSeafoamBouldersForB3F::

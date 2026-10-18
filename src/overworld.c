@@ -1,5 +1,6 @@
 #include "global.h"
 #include "quantum_campaign.h"
+#include "quantum_cleanup.h"
 #include "text_window.h"
 #include "poke_glass.h"
 #include "gflib.h"
@@ -614,9 +615,7 @@ static void SetPlayerCoordsFromWarp(void)
 
 void WarpIntoMap(void)
 {
-    // Covers saved/dynamic warps that copy a WarpData directly.
-    if (IsQuantumRetiredMap(sWarpDestination.mapGroup, sWarpDestination.mapNum))
-        SetWarpDestination(MAP_GROUP(MAP_PALLET_TOWN), MAP_NUM(MAP_PALLET_TOWN), -1, 6, 8);
+    QuantumRecoverWarpDestination(&sWarpDestination);
     ApplyCurrentWarp();
     LoadCurrentMapData();
     SetPlayerCoordsFromWarp();
@@ -624,15 +623,8 @@ void WarpIntoMap(void)
 
 void SetWarpDestination(s8 mapGroup, s8 mapNum, s8 warpId, s8 x, s8 y)
 {
-    if (IsQuantumRetiredMap(mapGroup, mapNum))
-    {
-        mapGroup = MAP_GROUP(MAP_PALLET_TOWN);
-        mapNum = MAP_NUM(MAP_PALLET_TOWN);
-        warpId = -1;
-        x = 6;
-        y = 8;
-    }
     SetWarpData(&sWarpDestination, mapGroup, mapNum, warpId, x, y);
+    QuantumRecoverWarpDestination(&sWarpDestination);
 }
 
 void SetWarpDestinationToMapWarp(s8 mapGroup, s8 mapNum, s8 warpId)
@@ -2272,11 +2264,24 @@ static void MoveSaveBlocks_ResetHeap_(void)
 
 static void ResetScreenForMapLoad(void)
 {
-    SetGpuReg(REG_OFFSET_DISPCNT, 0);
+    if (!IsPokeGlassReturnActive())
+        SetGpuReg(REG_OFFSET_DISPCNT, 0);
     ScanlineEffect_Stop();
 
-    DmaClear16(3, PLTT + 2, PLTT_SIZE - 2);
-    DmaFillLarge16(3, 0, (void *)(VRAM + 0x0), 0x18000, 0x1000);
+    if (IsPokeGlassReturnActive())
+    {
+        // The return cover owns char block 3 and screen block 27 until the
+        // rebuilt field and tablet window are ready for the same VBlank.
+        DmaClear16(3, PLTT + 2, 13 * 32 - 2);
+        DmaClear16(3, PLTT + 15 * 32, PLTT_SIZE - 15 * 32);
+        DmaFillLarge16(3, 0, (void *)VRAM, 0xC000, 0x1000);
+        DmaFillLarge16(3, 0, (void *)(VRAM + 0xE000), 0xA000, 0x1000);
+    }
+    else
+    {
+        DmaClear16(3, PLTT + 2, PLTT_SIZE - 2);
+        DmaFillLarge16(3, 0, (void *)VRAM, 0x18000, 0x1000);
+    }
     ResetOamRange(0, 128);
     LoadOam();
 }

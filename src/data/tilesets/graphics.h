@@ -86,7 +86,8 @@ const u16 gTilesetPalettes_CeruleanCity[][16] =
 	INCBIN_U16("data/tilesets/secondary/cerulean_city/palettes/15.gbapal"),
 };
 
-const u32 gTilesetTiles_LavenderTown[] = INCBIN_U32("data/tilesets/secondary/lavender_town/tiles.4bpp.lz");
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u32 gTilesetTiles_LavenderTown[864] __attribute__((alias("gTilesetTiles_LavenderTownWinter")));
 
 const u16 gTilesetPalettes_LavenderTown[][16] =
 {
@@ -724,7 +725,8 @@ const u16 gTilesetPalettes_ViridianForest[][16] =
 	INCBIN_U16("data/tilesets/secondary/viridian_forest/palettes/15.gbapal"),
 };
 
-const u32 gTilesetTiles_UnusedGatehouse1[] = INCBIN_U32("data/tilesets/secondary/unused_gatehouse_1/tiles.4bpp.lz");
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u32 gTilesetTiles_UnusedGatehouse1[391] __attribute__((alias("gTilesetTiles_UnusedGatehouse2")));
 
 const u16 gTilesetPalettes_UnusedGatehouse1[][16] =
 {
@@ -1425,7 +1427,8 @@ const u16 gTilesetPalettes_GeneralWinter[][16] =
     INCBIN_U16("data/tilesets/primary/general_winter/palettes/12.gbapal"),
 };
 
-const u32 gTilesetTiles_GeneralWinter[] = INCBIN_U32("data/tilesets/primary/general_winter/tiles.4bpp.lz");
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u32 gTilesetTiles_GeneralWinter[2614] __attribute__((alias("gTilesetTiles_GeneralSummer")));
 
 const u16 gTilesetPalettes_GeneralAutumn[][16] =
 {
@@ -1444,7 +1447,8 @@ const u16 gTilesetPalettes_GeneralAutumn[][16] =
     INCBIN_U16("data/tilesets/primary/general_autumn/palettes/12.gbapal"),
 };
 
-const u32 gTilesetTiles_GeneralAutumn[] = INCBIN_U32("data/tilesets/primary/general_autumn/tiles.4bpp.lz");
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u32 gTilesetTiles_GeneralAutumn[2614] __attribute__((alias("gTilesetTiles_GeneralSummer")));
 
 const u16 gTilesetPalettes_GeneralSummer[][16] =
 {
@@ -1482,7 +1486,8 @@ const u16 gTilesetPalettes_PalletTownSummer[][16] =
     INCBIN_U16("data/tilesets/secondary/pallet_town_summer/palettes/12.gbapal"),
 };
 
-const u32 gTilesetTiles_PalletTownSummer[] = INCBIN_U32("data/tilesets/secondary/pallet_town_summer/tiles.4bpp.lz");
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u32 gTilesetTiles_PalletTownSummer[278] __attribute__((alias("gTilesetTiles_PalletTownWinter")));
 
 const u16 gTilesetPalettes_PalletTownAutumn[][16] =
 {
@@ -1501,7 +1506,8 @@ const u16 gTilesetPalettes_PalletTownAutumn[][16] =
     INCBIN_U16("data/tilesets/secondary/pallet_town_autumn/palettes/12.gbapal"),
 };
 
-const u32 gTilesetTiles_PalletTownAutumn[] = INCBIN_U32("data/tilesets/secondary/pallet_town_autumn/tiles.4bpp.lz");
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u32 gTilesetTiles_PalletTownAutumn[278] __attribute__((alias("gTilesetTiles_PalletTownWinter")));
 
 const u16 gTilesetPalettes_PalletTownWinter[][16] =
 {
@@ -1539,7 +1545,8 @@ const u16 gTilesetPalettes_ViridianForestAutumn[][16] =
     INCBIN_U16("data/tilesets/secondary/viridian_forest_autumn/palettes/12.gbapal"),
 };
 
-const u32 gTilesetTiles_ViridianForestAutumn[] = INCBIN_U32("data/tilesets/secondary/viridian_forest_autumn/tiles.4bpp.lz");
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u32 gTilesetTiles_ViridianForestAutumn[299] __attribute__((alias("gTilesetTiles_ViridianForestWinter")));
 
 const u16 gTilesetPalettes_ViridianForestSummer[][16] =
 {
@@ -1558,7 +1565,8 @@ const u16 gTilesetPalettes_ViridianForestSummer[][16] =
     INCBIN_U16("data/tilesets/secondary/viridian_forest_summer/palettes/12.gbapal"),
 };
 
-const u32 gTilesetTiles_ViridianForestSummer[] = INCBIN_U32("data/tilesets/secondary/viridian_forest_summer/tiles.4bpp.lz");
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u32 gTilesetTiles_ViridianForestSummer[299] __attribute__((alias("gTilesetTiles_ViridianForestWinter")));
 
 const u16 gTilesetPalettes_ViridianForestWinter[][16] =
 {
@@ -1596,7 +1604,8 @@ const u16 gTilesetPalettes_LavenderTownSummer[][16] =
     INCBIN_U16("data/tilesets/secondary/lavender_town_summer/palettes/12.gbapal"),
 };
 
-const u32 gTilesetTiles_LavenderTownSummer[] = INCBIN_U32("data/tilesets/secondary/lavender_town_summer/tiles.4bpp.lz");
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u32 gTilesetTiles_LavenderTownSummer[864] __attribute__((alias("gTilesetTiles_LavenderTownWinter")));
 
 const u16 gTilesetPalettes_LavenderTownAutumn[][16] =
 {
@@ -1615,7 +1624,8 @@ const u16 gTilesetPalettes_LavenderTownAutumn[][16] =
     INCBIN_U16("data/tilesets/secondary/lavender_town_autumn/palettes/12.gbapal"),
 };
 
-const u32 gTilesetTiles_LavenderTownAutumn[] = INCBIN_U32("data/tilesets/secondary/lavender_town_autumn/tiles.4bpp.lz");
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u32 gTilesetTiles_LavenderTownAutumn[864] __attribute__((alias("gTilesetTiles_LavenderTownWinter")));
 
 const u16 gTilesetPalettes_LavenderTownWinter[][16] =
 {
@@ -1653,7 +1663,8 @@ const u16 gTilesetPalettes_SaffronCitySummer[][16] =
     INCBIN_U16("data/tilesets/secondary/saffron_city_summer/palettes/12.gbapal"),
 };
 
-const u32 gTilesetTiles_SaffronCitySummer[] = INCBIN_U32("data/tilesets/secondary/saffron_city_summer/tiles.4bpp.lz");
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u32 gTilesetTiles_SaffronCitySummer[762] __attribute__((alias("gTilesetTiles_SaffronCityWinter")));
 
 const u16 gTilesetPalettes_SaffronCityAutumn[][16] =
 {
@@ -1672,7 +1683,8 @@ const u16 gTilesetPalettes_SaffronCityAutumn[][16] =
     INCBIN_U16("data/tilesets/secondary/saffron_city_autumn/palettes/12.gbapal"),
 };
 
-const u32 gTilesetTiles_SaffronCityAutumn[] = INCBIN_U32("data/tilesets/secondary/saffron_city_autumn/tiles.4bpp.lz");
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u32 gTilesetTiles_SaffronCityAutumn[762] __attribute__((alias("gTilesetTiles_SaffronCityWinter")));
 
 const u16 gTilesetPalettes_SaffronCityWinter[][16] =
 {
@@ -1710,7 +1722,8 @@ const u16 gTilesetPalettes_CeladonCitySummer[][16] =
     INCBIN_U16("data/tilesets/secondary/celadon_city_summer/palettes/12.gbapal"),
 };
 
-const u32 gTilesetTiles_CeladonCitySummer[] = INCBIN_U32("data/tilesets/secondary/celadon_city_summer/tiles.4bpp.lz");
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u32 gTilesetTiles_CeladonCitySummer[832] __attribute__((alias("gTilesetTiles_CeladonCityWinter")));
 
 const u16 gTilesetPalettes_CeladonCityAutumn[][16] =
 {
@@ -1729,7 +1742,8 @@ const u16 gTilesetPalettes_CeladonCityAutumn[][16] =
     INCBIN_U16("data/tilesets/secondary/celadon_city_autumn/palettes/12.gbapal"),
 };
 
-const u32 gTilesetTiles_CeladonCityAutumn[] = INCBIN_U32("data/tilesets/secondary/celadon_city_autumn/tiles.4bpp.lz");
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u32 gTilesetTiles_CeladonCityAutumn[832] __attribute__((alias("gTilesetTiles_CeladonCityWinter")));
 
 const u16 gTilesetPalettes_CeladonCityWinter[][16] =
 {
@@ -1767,7 +1781,8 @@ const u16 gTilesetPalettes_FuchsiaCitySummer[][16] =
     INCBIN_U16("data/tilesets/secondary/fuchsia_city_summer/palettes/12.gbapal"),
 };
 
-const u32 gTilesetTiles_FuchsiaCitySummer[] = INCBIN_U32("data/tilesets/secondary/fuchsia_city_summer/tiles.4bpp.lz");
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u32 gTilesetTiles_FuchsiaCitySummer[763] __attribute__((alias("gTilesetTiles_FuchsiaCityWinter")));
 
 const u16 gTilesetPalettes_FuchsiaCityAutumn[][16] =
 {
@@ -1786,7 +1801,8 @@ const u16 gTilesetPalettes_FuchsiaCityAutumn[][16] =
     INCBIN_U16("data/tilesets/secondary/fuchsia_city_autumn/palettes/12.gbapal"),
 };
 
-const u32 gTilesetTiles_FuchsiaCityAutumn[] = INCBIN_U32("data/tilesets/secondary/fuchsia_city_autumn/tiles.4bpp.lz");
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u32 gTilesetTiles_FuchsiaCityAutumn[763] __attribute__((alias("gTilesetTiles_FuchsiaCityWinter")));
 
 const u16 gTilesetPalettes_FuchsiaCityWinter[][16] =
 {
@@ -1824,7 +1840,8 @@ const u16 gTilesetPalettes_SeviiIslands123Winter[][16] =
     INCBIN_U16("data/tilesets/secondary/sevii_islands_123winter/palettes/12.gbapal"),
 };
 
-const u32 gTilesetTiles_SeviiIslands123Winter[] = INCBIN_U32("data/tilesets/secondary/sevii_islands_123winter/tiles.4bpp.lz");
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u32 gTilesetTiles_SeviiIslands123Winter[985] __attribute__((alias("gTilesetTiles_SeviiIslands123Autumn")));
 
 const u16 gTilesetPalettes_BerryForestSummer[][16] =
 {
@@ -1862,7 +1879,8 @@ const u16 gTilesetPalettes_BerryForestAutumn[][16] =
     INCBIN_U16("data/tilesets/secondary/berry_forest_autumn/palettes/12.gbapal"),
 };
 
-const u32 gTilesetTiles_BerryForestAutumn[] = INCBIN_U32("data/tilesets/secondary/berry_forest_autumn/tiles.4bpp.lz");
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u32 gTilesetTiles_BerryForestAutumn[302] __attribute__((alias("gTilesetTiles_BerryForestWinter")));
 
 const u16 gTilesetPalettes_BerryForestWinter[][16] =
 {
@@ -1900,7 +1918,8 @@ const u16 gTilesetPalettes_SeviiIslands123Summer[][16] =
     INCBIN_U16("data/tilesets/secondary/sevii_islands_123summer/palettes/12.gbapal"),
 };
 
-const u32 gTilesetTiles_SeviiIslands123Summer[] = INCBIN_U32("data/tilesets/secondary/sevii_islands_123summer/tiles.4bpp.lz");
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u32 gTilesetTiles_SeviiIslands123Summer[985] __attribute__((alias("gTilesetTiles_SeviiIslands123Autumn")));
 
 const u16 gTilesetPalettes_SeviiIslands123Autumn[][16] =
 {
@@ -1938,7 +1957,8 @@ const u16 gTilesetPalettes_IndigoPlateauSummer[][16] =
     INCBIN_U16("data/tilesets/secondary/indigo_plateau_summer/palettes/12.gbapal"),
 };
 
-const u32 gTilesetTiles_IndigoPlateauSummer[] = INCBIN_U32("data/tilesets/secondary/indigo_plateau_summer/tiles.4bpp.lz");
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u32 gTilesetTiles_IndigoPlateauSummer[870] __attribute__((alias("gTilesetTiles_IndigoPlateauWinter")));
 
 const u16 gTilesetPalettes_IndigoPlateauAutumn[][16] =
 {
@@ -1957,7 +1977,8 @@ const u16 gTilesetPalettes_IndigoPlateauAutumn[][16] =
     INCBIN_U16("data/tilesets/secondary/indigo_plateau_autumn/palettes/12.gbapal"),
 };
 
-const u32 gTilesetTiles_IndigoPlateauAutumn[] = INCBIN_U32("data/tilesets/secondary/indigo_plateau_autumn/tiles.4bpp.lz");
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u32 gTilesetTiles_IndigoPlateauAutumn[870] __attribute__((alias("gTilesetTiles_IndigoPlateauWinter")));
 
 const u16 gTilesetPalettes_IndigoPlateauWinter[][16] =
 {

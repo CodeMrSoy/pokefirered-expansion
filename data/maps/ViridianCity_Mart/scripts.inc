@@ -29,7 +29,8 @@ ViridianCity_Mart_EventScript_ParcelScene::
 	msgbox ViridianCity_Mart_Text_TakeThisToProfOak
 	setvar VAR_MAP_SCENE_VIRIDIAN_CITY_MART, 1
 	giveitem_msg ViridianCity_Mart_Text_ReceivedOaksParcelFromClerk, ITEM_OAKS_PARCEL, 1, MUS_OBTAIN_KEY_ITEM
-	giveitem_msg ViridianCity_Mart_Text_ReceivedLevelCapCandyFromClerk, ITEM_LEVEL_CAP_CANDY, 1, MUS_OBTAIN_KEY_ITEM
+	setflag FLAG_CAP_CANDY_GIFT_PENDING
+	call ViridianCity_Mart_EventScript_GiveCapCandy
 	setvar VAR_MAP_SCENE_PALLET_TOWN_PROFESSOR_OAKS_LAB, 5
 	releaseall
 	end
@@ -53,6 +54,7 @@ ViridianCity_Mart_Movement_FacePlayer::
 ViridianCity_Mart_EventScript_Clerk::
 	lock
 	faceplayer
+	goto_if_set FLAG_CAP_CANDY_GIFT_PENDING, ViridianCity_Mart_EventScript_RetryCapCandy
 	goto_if_eq VAR_MAP_SCENE_VIRIDIAN_CITY_MART, 1, ViridianCity_Mart_EventScript_SayHiToOak
 	goto_if_questlog EventScript_ReleaseEnd
 	message Text_MayIHelpYou
@@ -83,4 +85,22 @@ ViridianCity_Mart_EventScript_Woman::
 
 ViridianCity_Mart_EventScript_Youngster::
 	msgbox ViridianCity_Mart_Text_GotToBuySomePotions, MSGBOX_NPC
+	end
+
+ViridianCity_Mart_EventScript_GiveCapCandy::
+	checkitemspace ITEM_LEVEL_CAP_CANDY
+	goto_if_eq VAR_RESULT, FALSE, ViridianCity_Mart_EventScript_NoRoomForCapCandy
+	msgbox ViridianCity_Mart_Text_CapCandyGift
+	giveitem_msg ViridianCity_Mart_Text_ReceivedLevelCapCandyFromClerk, ITEM_LEVEL_CAP_CANDY, 1, MUS_OBTAIN_KEY_ITEM
+	clearflag FLAG_CAP_CANDY_GIFT_PENDING
+	msgbox ViridianCity_Mart_Text_ExplainCapCandy
+	return
+
+ViridianCity_Mart_EventScript_NoRoomForCapCandy::
+	msgbox ViridianCity_Mart_Text_NoRoomForCapCandy
+	return
+
+ViridianCity_Mart_EventScript_RetryCapCandy::
+	call ViridianCity_Mart_EventScript_GiveCapCandy
+	release
 	end

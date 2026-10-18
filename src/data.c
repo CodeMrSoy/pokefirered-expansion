@@ -241,9 +241,19 @@ const union AnimCmd *const gAnims_Trainer[] ={
 
 #include "data/trainer_parties.h"
 
-const struct Trainer gTrainers[DIFFICULTY_COUNT][TRAINERS_COUNT] =
+// Easy and Hard contain no custom rows today. Share their empty fallback
+// row while keeping difficulty.c's NULL-party fallback to Normal unchanged.
+// Adding custom Hard data will require a separate row (the initializer fails
+// at compile time rather than silently discarding it).
+static const struct Trainer sTrainerData[DIFFICULTY_NORMAL + 1][TRAINERS_COUNT] =
 {
 #include "data/trainers.h"
+};
+const struct Trainer *const gTrainers[DIFFICULTY_COUNT] =
+{
+    [DIFFICULTY_EASY] = sTrainerData[DIFFICULTY_EASY],
+    [DIFFICULTY_NORMAL] = sTrainerData[DIFFICULTY_NORMAL],
+    [DIFFICULTY_HARD] = sTrainerData[DIFFICULTY_EASY],
 };
 
 #include "data/partner_parties.h"

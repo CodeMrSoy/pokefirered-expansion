@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Giovanni quest, bag-full recovery, real ferry/Center/Fly and save persistence."""
-import json, os, struct, subprocess
+import json, os, pathlib, struct, subprocess
 import quantum_qol_emulator as m
 m.d = m.d / 'quantum_stellar_emulator'
 m.d.mkdir(exist_ok=True)
@@ -79,6 +79,10 @@ assert current()==ids['QuantumPortCityPokemonCenter1F'],current()
 assert flag('QUANTUM_PORT_CENTER')==1
 assert flag('QUANTUM_COASTAL_CENTER')==0
 m.snap('stellar-port-center')
+# The city door returns to the same harbor without bouncing through its exit.
+warp('QuantumPortCity',19,22);walk(4,40);assert current()==ids['QuantumHarbor'],current()
+walk(5,16);assert current()==ids['QuantumHarbor'],current()
+walk(4,24);assert current()==ids['QuantumPortCity'],current()
 # Every Center has independent flags, a valid healing location, and working exits.
 sections=['PORT_CITY','COASTAL_CITY','FOREST_TOWN','LAKE_TOWN','SNOW_TOWN']
 towns=['PortCity','CoastalCity','ForestTown','LakeTown','SnowTown']
@@ -94,15 +98,20 @@ for town,sec in zip(towns,sections):
  assert m.read(m.symbols['sWarpDestination'],8)==expected
  walk(5,40);assert current()==ids[n],(n,current())
  m.snap('stellar-'+sec.lower())
- # Actual Center staircase also returns to its own Center, not Viridian.
- warp(center,2,6);walk(6,40);m.snap('stellar-stairs-'+sec.lower());assert current()==ids[n+'PokemonCenter2F'],current()
- walk(6,40);assert current()==ids[center],current()
+ # QOL's shared Center layout seals obsolete multiplayer stairs.
+ warp(center,2,6);walk(6,40);m.snap('stellar-stairs-retired-'+sec.lower());assert current()==ids[center],current()
+ # An older V2 save already upstairs can still return to its own Center.
+ warp(n+'PokemonCenter2F',2,6);walk(6,40);m.run(360);m.snap('stellar-upstairs-return-'+sec.lower());assert current()==ids[center],current()
 # Connected routes must actually cross both ways without an unintended Kanto exit.
 for a,b,route,key in [('PortCity','CoastalCity','HarborRoad',6),('CoastalCity','ForestTown','CoastalRoad',4),('ForestTown','LakeTown','WoodlandLink',7),('LakeTown','SnowTown','MountainPass',4)]:
  x,y=(1,11) if key==6 else (22,11) if key==7 else (11,1)
  warp('Quantum'+a,x,y);walk(key,55);assert current()==ids['Quantum'+route],(a,current())
  x,y=(1,11) if key==6 else (22,11) if key==7 else (11,1)
  warp('Quantum'+route,x,y);walk(key,55);assert current()==ids['Quantum'+b],(b,current())
+ reverse={6:7,7:6,4:5}[key]
+ rx,ry=(22,11) if reverse==7 else (1,11) if reverse==6 else (11,22)
+ warp('Quantum'+b,rx,ry);walk(reverse,55);assert current()==ids['Quantum'+route],(b,'reverse',current())
+ warp('Quantum'+route,rx,ry);walk(reverse,55);assert current()==ids['Quantum'+a],(a,'reverse',current())
 # The return boat works and does not consume the Stellar Ticket.
 warp('QuantumHarbor',8,5);ferry(11,0);assert current()==ids['VermilionCity']
 assert native('CheckBagHasItem',829,1)==1

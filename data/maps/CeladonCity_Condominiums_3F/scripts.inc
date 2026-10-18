@@ -31,8 +31,6 @@ CeladonCity_Condominiums_3F_EventScript_ShowDiploma::
 	waitmessage
 	delay 60
 	goto_if_questlog EventScript_ReleaseEnd
-	special ShowDiploma
-	waitstate
 	release
 	end
 

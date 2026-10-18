@@ -668,6 +668,7 @@ void VsSeekerResetObjectMovementAfterChargeComplete(void)
 
 bool8 UpdateVsSeekerStepCounter(void)
 {
+    return FALSE; // Retired field gadget.
 #if FREE_MATCH_CALL == FALSE
     u8 x = 0;
 
@@ -1019,6 +1020,7 @@ static u8 GetRematchTrainerIdGivenGameState(const u16 *trainerIdxs, u8 rematchId
 
 bool8 ShouldTryRematchBattle(void)
 {
+    return FALSE;
     if (ShouldTryRematchBattleInternal(sRematches, TRAINER_BATTLE_PARAM.opponentA))
     {
         return TRUE;

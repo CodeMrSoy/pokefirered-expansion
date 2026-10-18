@@ -174,7 +174,7 @@ PalletTown_ProfessorOaksLab_EventScript_RivalApproachForBattleSquirtleRight::
 	end
 
 PalletTown_ProfessorOaksLab_EventScript_RivalBattleSquirtle::
-	trainerbattle_earlyrival TRAINER_RIVAL_OAKS_LAB_SQUIRTLE, RIVAL_BATTLE_TUTORIAL, PalletTown_ProfessorOaksLab_Text_RivalDefeat, Text_RivalVictory
+	trainerbattle_earlyrival TRAINER_RIVAL_OAKS_LAB_SQUIRTLE, RIVAL_BATTLE_HEAL_AFTER, PalletTown_ProfessorOaksLab_Text_RivalDefeat, Text_RivalVictory
 	goto PalletTown_ProfessorOaksLab_EventScript_EndRivalBattle
 	end
 
@@ -227,7 +227,7 @@ PalletTown_ProfessorOaksLab_EventScript_RivalApproachForBattleCharmanderRight::
 	end
 
 PalletTown_ProfessorOaksLab_EventScript_RivalBattleCharmander::
-	trainerbattle_earlyrival TRAINER_RIVAL_OAKS_LAB_CHARMANDER, RIVAL_BATTLE_TUTORIAL, PalletTown_ProfessorOaksLab_Text_RivalDefeat, Text_RivalVictory
+	trainerbattle_earlyrival TRAINER_RIVAL_OAKS_LAB_CHARMANDER, RIVAL_BATTLE_HEAL_AFTER, PalletTown_ProfessorOaksLab_Text_RivalDefeat, Text_RivalVictory
 	goto PalletTown_ProfessorOaksLab_EventScript_EndRivalBattle
 	end
 
@@ -283,7 +283,7 @@ PalletTown_ProfessorOaksLab_EventScript_RivalApproachForBattleBulbasaurRight::
 	end
 
 PalletTown_ProfessorOaksLab_EventScript_RivalBattleBulbasaur::
-	trainerbattle_earlyrival TRAINER_RIVAL_OAKS_LAB_BULBASAUR, RIVAL_BATTLE_TUTORIAL, PalletTown_ProfessorOaksLab_Text_RivalDefeat, Text_RivalVictory
+	trainerbattle_earlyrival TRAINER_RIVAL_OAKS_LAB_BULBASAUR, RIVAL_BATTLE_HEAL_AFTER, PalletTown_ProfessorOaksLab_Text_RivalDefeat, Text_RivalVictory
 	goto PalletTown_ProfessorOaksLab_EventScript_EndRivalBattle
 	end
 
@@ -496,6 +496,7 @@ PalletTown_ProfessorOaksLab_EventScript_ReceiveDexScene::
 	waitfanfare
 	call EventScript_RestorePrevTextColor
 	setflag FLAG_SYS_POKEDEX_GET
+	special EnableNationalPokedex
 	special SetUnlockedPokedexFlags
 	@ Oak gives the player the PokéGlass with the Pokédex so storage is available from anywhere.
 	giveitem_msg PalletTown_ProfessorOaksLab_Text_ReceivedPokeGlassFromOak, ITEM_POKEGLASS, 1

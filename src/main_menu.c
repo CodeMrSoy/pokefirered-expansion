@@ -265,7 +265,7 @@ static void Task_SetWin0BldRegsAndCheckSaveFile(u8 taskId)
             LoadUserFrameToBg(0);
             gCachedRandomizerSeed = gSaveBlock2Ptr->randomizerSeed;
             RandomizerSetEnabled(gCachedRandomizerSeed != 0);
-            if (IsMysteryGiftEnabled() == TRUE)
+            if (FALSE)
             {
                 gTasks[taskId].tMenuType = MAIN_MENU_MYSTERYGIFT;
             }
@@ -285,7 +285,7 @@ static void Task_SetWin0BldRegsAndCheckSaveFile(u8 taskId)
             SetStdFrame0OnBg(0);
             gTasks[taskId].tMenuType = MAIN_MENU_CONTINUE;
             PrintSaveErrorStatus(taskId, gText_SaveFileCorrupted);
-            if (IsMysteryGiftEnabled() == TRUE)
+            if (FALSE)
             {
                 gTasks[taskId].tMenuType = MAIN_MENU_MYSTERYGIFT;
             }
@@ -639,7 +639,7 @@ static void Task_ExecuteMainMenuSelection(u8 taskId)
             TryStartQuestLogPlayback(taskId);
             break;
         case MAIN_MENU_MYSTERYGIFT:
-            SetMainCallback2(CB2_InitMysteryGift);
+            SetMainCallback2(CB2_InitMainMenu);
             HelpSystem_Disable();
             FreeAllWindowBuffers();
             DestroyTask(taskId);
