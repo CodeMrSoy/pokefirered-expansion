@@ -54,8 +54,16 @@ for x,y in [(0,18),(12,20),(25,21),(33,24),(38,0),(8,16),(8,20),(35,20)]:
 top={asset['assets']['quay_south']['metatiles'][0][0]}
 for y,xs in [(23,range(10,29)),(27,range(32,39))]:
  for x in xs:assert ha[y*40+x]&1023 in top and ha[y*40+x]&0x400,(x,y)
-path=R/'data/tilesets/secondary/havora_harbor';data=(path/'metatiles.bin').read_bytes()
-for v in struct.unpack('<'+'H'*(len(data)//2),data):assert (v&1023)<max(640,asset['tiles']);assert (v>>12)<13
+for directory in ['primary','secondary']:
+ path=R/'data/tilesets'/directory/'havora_harbor';data=(path/'metatiles.bin').read_bytes()
+ for v in struct.unpack('<'+'H'*(len(data)//2),data):
+  assert (v&1023)<max(640,asset['tiles']);assert (v>>12)<13
+assert len(asset['catalog'])>=500
+pacific={e['source_id'] for e in asset['catalog'] if e['town']=='pacifidlog'}
+assert set(range(0x208,0x22f))<=pacific
+assert set(range(0x250,0x254))|set(range(0x258,0x264))<=pacific
+assert asset['animation']['frames']==8
+assert asset['animation']['start']+asset['animation']['slots']==1024
 print('PASS: graphics budget, native tile references, 40x32 blocks, event bounds, no harbor warps, all reciprocal seams and walking routes')
 
 # Native compatibility: animation destinations, pavement, water and shrub tiles

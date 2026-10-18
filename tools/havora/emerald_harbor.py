@@ -1,7 +1,7 @@
 """Pack the approved Emerald harbor into editable FireRed primary/secondary tilesets.
 
 No external checkout is needed: native cutouts and provenance live in source_art.
-All pixels are encoded exactly at GBA color depth; palettes are shared per 8x8 tile.
+Core art is preserved at GBA depth; catalog extras share material palettes per 8x8 tile.
 General animation destinations and seam graphics stay reserved in the primary.
 """
 from pathlib import Path
@@ -22,12 +22,16 @@ def rgba(im):
     return Image.fromarray(a)
 
 def build_assets():
-    art={p.stem:rgba(Image.open(p)) for p in sorted(SOURCE.glob('*.png'))}
-    metas=[]; attrs=[]; images=[]; lookup={}; info={}
-    def register(im,attribute=0):
-        im=rgba(im).convert('RGB'); key=(im.tobytes(),attribute)
+    art={p.stem:rgba(Image.open(p)) for p in sorted(SOURCE.glob('*.png')) if p.stem!='catalog'}
+    metas=[]; attrs=[]; images=[]; lookup={}; info={}; meta_ids=[]; id_to_index={}; image_animated=[]
+    primary_slots=[i for i in range(640) if i not in [5,0x1c1,0x1d9]]
+    def register(im,attribute=0,animated=True):
+        im=rgba(im).convert('RGB')
+        has_water=any(tuple(c) in [(80,104,208),(104,128,208)] for c in np.array(im).reshape(-1,3))
+        animated=animated and has_water;key=(im.tobytes(),attribute,animated)
         if key not in lookup:
-            lookup[key]=640+len(images);images.append(im);attrs.append(attribute)
+            index=len(images);mid=640+index if index<384 else primary_slots[index-384]
+            lookup[key]=mid;meta_ids.append(mid);id_to_index[mid]=index;images.append(im);attrs.append(attribute);image_animated.append(animated)
         return lookup[key]
     # Stable first IDs retain the north approach's paving reference.
     floors={n:register(art[n],0x22000415 if n=='water' else 0) for n in ['stone','wood','water']}
@@ -81,57 +85,140 @@ def build_assets():
         for yy in range(im.height//16):
             for xx in range(im.width//16):
                 patch=im.crop((xx*16,yy*16,xx*16+16,yy*16+16))
-                base=images[grid[y+yy][x+xx]-640].convert('RGBA');base.alpha_composite(patch)
+                base=images[id_to_index[grid[y+yy][x+xx]]].convert('RGBA');base.alpha_composite(patch)
                 grid[y+yy][x+xx]=register(base)
                 if not behind or yy==im.height//16-1:blocks[y+yy][x+xx]|=0x400
-    for n,x,y in [('warehouse',1,4),('house',1,13),('house',11,16),('crane',6,8),('lighthouse',35,22)]:place(n,x,y,n=='crane')
+    for n,x,y in [('warehouse',1,4),('house',1,13),('house',11,16),('crane',6,8),('lighthouse',35,22),('market_stall',7,17)]:place(n,x,y,n=='crane')
     blocks[11][9]|=0x400
     for x,y in [(4,1),(5,18),(13,22),(24,22),(32,24),(38,5)]:place('planter',x,y)
     for x,y in [(27,11),(34,13)]:place('sailboat',x,y)
     for x,y in [(30,27),(32,29),(34,29),(36,29),(38,29)]:
         for xx in [x,x+1]:place('rock',xx,y)
-    # Keep original Emerald material palettes. A flattened patch can use two
-    # banks (lower/upper hardware layer), preserving every approved GBA color.
-    patches=[]; chunks=[]
-    for im in images:
+    # Append the full editing catalog after the established placed pieces.
+    catalog_start=len(images)
+    catalog=json.loads((SOURCE/'catalog.json').read_text());sheet=rgba(Image.open(SOURCE/'catalog.png'))
+    grass={(112,192,160),(96,184,144),(144,208,176)}
+    for entry in catalog:
+        i=entry['index'];im=sheet.crop((i%16*16,i//16*16,i%16*16+16,i//16*16+16)).convert('RGB')
+        ar=np.array(im);floor=np.array(art['stone'].convert('RGB'))
+        # Exterior building corners sit on harbor paving rather than grass.
+        if entry['town']=='lilycove':
+            for color in grass:ar[np.all(ar==color,axis=2)]=floor[np.all(ar==color,axis=2)]
+        entry['havora_id']=register(Image.fromarray(ar),animated=entry['water_background'])
+    # Original sea frames. Replace only pixels using Emerald's two ocean hues;
+    # dock timber, sails, foam, roof pixels and shoreline masonry stay fixed.
+    frames=[np.array(rgba(Image.open(SOURCE/'water_anim'/f'{i}.png')).convert('RGB')) for i in range(8)]
+    water_colors={(80,104,208),(104,128,208)}
+    patches=[];chunks=[];patch_single=[]
+    for image_index,im in enumerate(images):
         ch=[]
         for y in [0,8]:
             for x in [0,8]:
-                ar=np.array(im.crop((x,y,x+8,y+8)))
-                ch.append(len(patches));patches.append((ar,frozenset(tuple(v) for v in ar.reshape(-1,3))))
+                ar=np.array(im.crop((x,y,x+8,y+8)));seq=np.repeat(ar[None,:,:,:],8,axis=0)
+                mask=np.zeros((8,8),bool)
+                for c in water_colors:mask|=np.all(ar==c,axis=2)
+                if image_animated[image_index] and np.any(mask):
+                    options=[]
+                    for yy in [0,8]:
+                        for xx in [0,8]:
+                            for fy in [False,True]:
+                                for fx in [False,True]:
+                                    sample=frames[0][yy:yy+8,xx:xx+8]
+                                    if fy:sample=sample[::-1]
+                                    if fx:sample=sample[:,::-1]
+                                    score=np.count_nonzero(np.all(ar==sample,axis=2)&mask)
+                                    options.append((score,yy,xx,fy,fx))
+                    _,yy,xx,fy,fx=max(options,key=lambda t:t[0])
+                    for f in range(8):
+                        sample=frames[f][yy:yy+8,xx:xx+8]
+                        if fy:sample=sample[::-1]
+                        if fx:sample=sample[:,::-1]
+                        seq[f][mask]=sample[mask]
+                ch.append(len(patches));patches.append(seq);patch_single.append(image_index>=catalog_start)
         chunks.append(ch)
-    general=R/'data/tilesets/primary/general'
-    palettes={}
-    for bank in [0,1,6]:palettes[bank]=[tuple(map(int,s.split())) for s in (general/'palettes'/f'{bank:02}.pal').read_text().splitlines()[3:19]]
-    bins={bank:frozenset(v[1:]) for bank,v in palettes.items()}
-    # Committed palette plan keeps regeneration deterministic and solver-free.
+    general=R/'data/tilesets/primary/general';palettes={}
+    for bank in [0,1,6]:palettes[bank]=[tuple(map(int,t.split())) for t in (general/'palettes'/f'{bank:02}.pal').read_text().splitlines()[3:19]]
+    bins={b:set(v[1:]) for b,v in palettes.items()}
     for bank,cs in zip([2,3,4,5,7,8,9,10,11,12],json.loads((SOURCE/'packed_palettes.json').read_text())):
-        colors=[tuple(c) for c in cs];assert len(colors)<=15
-        bins[bank]=frozenset(colors)
+        colors=[tuple(c) for c in cs];bins[bank]=set(colors)
         palettes[bank]=[(0,0,0)]+colors+[(0,0,0)]*(15-len(colors))
+    # Use the spare bank for the most important missing catalog colors. Imported
+    # extras share the harbor material ramps when original palettes exceed 13.
+    from collections import Counter
+    histogram=Counter(tuple(c) for seq in patches for c in seq[0].reshape(-1,3))
+    selected=set.union(*bins.values());new=[]
+    for _ in range(15):
+        def distance(c):return min(sum((int(a)-int(b))**2 for a,b in zip(c,d)) for d in selected)
+        c=max(histogram,key=lambda c:histogram[c]*distance(c))
+        if distance(c)==0:break
+        new.append(c);selected.add(c)
+    assert 12 not in bins
+    bins[12]=set(new);palettes[12]=[(0,0,0)]+new+[(0,0,0)]*(15-len(new))
     # FireRed uses a 640/384 tile split. General animation slots are never reused.
     raw=words(general/'metatiles.bin');keep=[5,0x1c1,0x1d9]
     reserved={0}|set(range(416,482))|set(range(508,512))
     for mid in keep:reserved|={w&1023 for w in raw[mid*8:mid*8+8]}
-    original=Image.open(general/'tiles.png');tiles={};tilekeys={}
+    original=Image.open(general/'tiles.png');tiles={}
     for tid in sorted(reserved):tiles[tid]=np.array(original.crop((tid%16*8,tid//16*8,tid%16*8+8,tid//16*8+8)),dtype=np.uint8)
-    free=iter(i for i in range(1024) if i not in reserved)
-    def pack(ar):
-        for a,flip in [(ar,0),(ar[:,::-1],0x400),(ar[::-1,:],0x800),(ar[::-1,::-1],0xc00)]:
-            if a.tobytes() in tilekeys:return tilekeys[a.tobytes()]|flip
-        tid=next(free);tiles[tid]=ar.copy();tilekeys[ar.tobytes()]=tid;return tid
+    specs=[];spec_keys={};cache={};quantized=0
+    def pack(seq):
+        for a,flip in [(seq,0),(seq[:,:,::-1],0x400),(seq[:,::-1,:],0x800),(seq[:,::-1,::-1],0xc00)]:
+            if a.tobytes() in spec_keys:return (spec_keys[a.tobytes()],flip)
+        key=len(specs);specs.append(seq);spec_keys[seq.tobytes()]=key;return (key,0)
     packed=[]
-    for ar,colors in patches:
-        pairs=[(a,b) for a in bins for b in bins if colors<=bins[a]|bins[b]]
-        a,b=min(pairs,key=lambda p:(not colors<=bins[p[0]],p[0]!=p[1],p))
-        layers=[]
-        for bank,cs in [(a,colors&bins[a]),(b,colors-bins[a])]:
-            indices={c:palettes[bank].index(c,1) for c in cs}
-            image=np.array([[indices.get(tuple(c),0) for c in row] for row in ar],dtype=np.uint8)
-            layers.append(pack(image)|(bank<<12))
+    for patch_index,seq in enumerate(patches):
+        single=patch_single[patch_index]
+        colors,counts=np.unique(seq.reshape(-1,3),axis=0,return_counts=True);cs=set(map(tuple,colors));key=(single,tuple(sorted(cs)))
+        if key not in cache:
+            pairs=[(a,b) for a in bins for b in bins if cs<=bins[a]|bins[b] and (not single or a==b)]
+            if pairs:
+                a,b=min(pairs,key=lambda p:(not cs<=bins[p[0]],p[0]!=p[1],p));mapping={c:c for c in cs}
+            else:
+                candidates=[]
+                for a in bins:
+                    for b in bins:
+                        if single and a!=b:continue
+                        union=bins[a]|bins[b]
+                        if cs&water_colors and not water_colors<=union:continue
+                        values=np.array(sorted(union));dist=((colors.astype(int)[:,None,:]-values[None,:,:])**2).sum(2);index=dist.argmin(1)
+                        error=int((dist[np.arange(len(colors)),index]*counts).sum());candidates.append((error,a,b,values,index))
+                _,a,b,values,index=min(candidates,key=lambda t:(t[0],t[1],t[2]))
+                mapping={tuple(c):tuple(values[i]) for c,i in zip(colors,index)};quantized+=1
+            cache[key]=(a,b,mapping)
+        a,b,mapping=cache[key];layers=[]
+        for bank,allowed in [(a,bins[a]),(b,bins[b]-bins[a])]:
+            index={c:palettes[bank].index(c,1) for c in allowed}
+            arr=np.array([[[index.get(mapping[tuple(c)],0) for c in row] for row in frame] for frame in seq],dtype=np.uint8)
+            layers.append((pack(arr),bank))
         packed.append(layers)
-    metas=[[packed[i][layer] for layer in [0,1] for i in ch] for ch in chunks]
-    assert len(metas)<=384
+    animated=[i for i,a in enumerate(specs) if not np.all(a==a[0])]
+    animation_slots=((len(animated)+15)//16)*16;animation_start=1024-animation_slots
+    print('Graphics budget:',len(specs),'unique,',len(animated),'animated,',animation_slots,'reserved animation slots,',len(reserved),'General slots');assert animation_start>=640
+    free=iter(i for i in range(animation_start) if i not in reserved);tile_ids={}
+    for i,seq in enumerate(specs):
+        if i in animated:tid=animation_start+animated.index(i)
+        else:
+            try:tid=next(free)
+            except StopIteration:raise AssertionError('Expanded catalog exceeds the 1024-tile graphics budget')
+        tile_ids[i]=tid;tiles[tid]=seq[0]
+    for tid in range(animation_start,1024):tiles.setdefault(tid,np.zeros((8,8),dtype=np.uint8))
+    metas=[]
+    for ch in chunks:
+        meta=[]
+        for layer in [0,1]:
+            for i in ch:
+                (key,flip),bank=packed[i][layer];meta.append(tile_ids[key]|flip|(bank<<12))
+        metas.append(meta)
+    assert len(metas)<=1024
+    animation_dir=SECONDARY/'anim/water';animation_dir.mkdir(parents=True,exist_ok=True)
+    for frame in range(8):
+        im=Image.new('P',(128,(animation_slots//16)*8));im.putpalette(sum((list(c) for c in palettes[2]),[])+[0]*720)
+        for i,key in enumerate(animated):im.paste(Image.fromarray(specs[key][frame]),(i%16*8,i//16*8))
+        im.save(animation_dir/f'{frame}.png')
+    header=['/* Generated by tools/havora/build_assets.py. */',f'#define HAVORA_WATER_ANIM_START {animation_start}',f'#define HAVORA_WATER_ANIM_TILES {animation_slots}']
+    for f in range(8):header.append(f'static const u16 sHavoraWaterFrame{f}[] = INCBIN_U16("data/tilesets/secondary/havora_harbor/anim/water/{f}.4bpp");')
+    header.append('static const u16 *const sHavoraWaterFrames[] = {'+', '.join(f'sHavoraWaterFrame{f}' for f in range(8))+'};')
+    (R/'src/data/havora_water_anim.h').write_text('\n'.join(header)+'\n')
     for p in [PRIMARY,SECONDARY]:
         (p/'palettes').mkdir(parents=True,exist_ok=True)
         for b in range(16):
@@ -144,16 +231,19 @@ def build_assets():
         im.save(p/'tiles.png')
     primary=[0]*5120;pa=bytearray(2560);ga=(general/'metatile_attributes.bin').read_bytes()
     for mid in keep:primary[mid*8:mid*8+8]=raw[mid*8:mid*8+8];pa[mid*4:mid*4+4]=ga[mid*4:mid*4+4]
+    for i,mid in enumerate(meta_ids):
+        if mid<640:primary[mid*8:mid*8+8]=metas[i];pa[mid*4:mid*4+4]=struct.pack('<I',attrs[i])
     (PRIMARY/'metatiles.bin').write_bytes(struct.pack('<5120H',*primary));(PRIMARY/'metatile_attributes.bin').write_bytes(pa)
-    (SECONDARY/'metatiles.bin').write_bytes(struct.pack('<'+'H'*(8*len(metas)),*sum(metas,[])));(SECONDARY/'metatile_attributes.bin').write_bytes(struct.pack('<'+'I'*len(attrs),*attrs))
-    data={'style':'emerald_harbor','floors':floors,'assets':info,'tiles':max(tiles)+1,'custom_tiles':len(tilekeys),'reserved_primary_tiles':sorted(reserved),'secondary_tiles':max(1,max(tiles)-639),'metatiles':len(metas),'palette_banks':sorted(palettes),'map_metatiles':grid,'map_collision':blocks}
+    secondary=metas[:384];secondary_attrs=attrs[:384]
+    (SECONDARY/'metatiles.bin').write_bytes(struct.pack('<'+'H'*(8*len(secondary)),*sum(secondary,[])));(SECONDARY/'metatile_attributes.bin').write_bytes(struct.pack('<'+'I'*len(secondary_attrs),*secondary_attrs))
+    data={'style':'emerald_harbor','floors':floors,'assets':info,'tiles':max(tiles)+1,'custom_tiles':len(specs),'reserved_primary_tiles':sorted(reserved),'secondary_tiles':max(1,max(tiles)-639),'metatiles':len(secondary),'total_metatiles':len(metas),'primary_custom_metatiles':[mid for mid in meta_ids if mid<640],'catalog':catalog,'animation':{'start':animation_start,'slots':animation_slots,'active_tiles':len(animated),'frames':8},'quantized_color_sets':quantized,'palette_banks':sorted(palettes),'map_metatiles':grid,'map_collision':blocks}
     savejson(R/'tools/havora/assets.json',data)
     # Keep the approved unoccupied source composition for exact rendered-art checks.
     preview=Image.new('RGB',(640,512))
     for y,row in enumerate(grid):
-        for x,mid in enumerate(row):preview.paste(images[mid-640],(x*16,y*16))
+        for x,mid in enumerate(row):preview.paste(images[id_to_index[mid]],(x*16,y*16))
     (R/'build').mkdir(exist_ok=True);preview.save(R/'build/havora-approved-emerald.png')
-    print(f'Packed {len(metas)} metatiles, {len(tilekeys)} custom graphics, {len(palettes)} palette banks')
+    print(f'Packed {len(metas)} metatiles, {len(specs)} custom graphics, {len(palettes)} palette banks')
 
 def build_map():
     data=json.loads((R/'tools/havora/assets.json').read_text())

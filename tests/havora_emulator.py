@@ -24,7 +24,11 @@ def ferry_to(target):
  m.run(180)
  assert loc()[0]==target
 def crossing(name,start,key,frames,target):
- warp(*start);walk(key,frames);print(name,loc(),flush=True);assert loc()[0]==target;m.snap(name)
+ warp(*start);walk(key,frames);print(name,loc(),flush=True);assert loc()[0]==target
+ active=struct.unpack('<I',m.read(m.symbols['sSecondaryTilesetAnimCallback'],4))[0]
+ havora=m.symbols['TilesetAnim_HavoraHarbor']
+ assert ((active&~1)==(havora&~1))==(target in [(43,19),(43,20),(43,21)]),(name,'animation callback',hex(active))
+ m.snap(name)
 warp(43,19,20,16);m.snap('havora-ferry-arrival')
 for name,start,key,frames,target in [
  ('west-out',(43,19,1,2),6,35,(43,20)),('west-in',(43,20,6,10),7,35,(43,19)),
@@ -59,3 +63,25 @@ m.snap('havora-ferry-free-control')
 assert loc()==((43,19),(20,14));walk(4,20);assert loc()==((43,19),(20,14))
 warp(43,19,19,15);walk(6,20);assert loc()==((43,19),(19,15));m.snap('havora-dock-rails')
 print('PASS: lighthouse coping loop and solid pier end/side boundaries',flush=True)
+# Verify eight real DMA animation phases and keep a gameplay GIF for review.
+import json
+from PIL import Image
+asset=json.loads((m.root/'tools/havora/assets.json').read_text())
+anim=asset['animation'];address=0x06000000+anim['start']*32
+warp(43,19,20,16);m.run(160)
+# A house's actual graphics must remain fixed while the sea changes.
+mid=asset['assets']['house']['metatiles'][1][1]
+source=m.root/('data/tilesets/primary/havora_harbor/metatiles.bin' if mid<640 else 'data/tilesets/secondary/havora_harbor/metatiles.bin')
+index=mid if mid<640 else mid-640
+words=struct.unpack_from('<8H',source.read_bytes(),index*16)
+roof=next(w&1023 for w in words if w&1023 not in asset['reserved_primary_tiles'] and w&1023<anim['start'])
+roof_before=m.read(0x06000000+roof*32,32)
+phases=[];screens=[]
+for _ in range(8):
+ m.run(16);phases.append(m.read(address,anim['slots']*32));screens.append(m.screen.copy().resize((720,480),Image.Resampling.NEAREST))
+assert len(set(phases))==8,('water animation stalled',len(set(phases)))
+assert len({s.tobytes() for s in screens})==8,'water animation not visible'
+assert m.read(0x06000000+roof*32,32)==roof_before,'water animation overwrote a building'
+screens[0].save(m.d/'havora-water-animation.gif',save_all=True,append_images=screens[1:],duration=267,loop=0,disposal=2)
+m.snap('havora-expanded-waterfront')
+print('PASS: eight water animation phases in VRAM and on screen; roof graphics unchanged',flush=True)

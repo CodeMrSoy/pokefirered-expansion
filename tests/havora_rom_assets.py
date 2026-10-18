@@ -32,3 +32,6 @@ for suffix,directory in [('HavoraPrimary','primary'),('HavoraHarbor','secondary'
     for x in range(0,8,2):expected.append(im.getpixel((tx+x,ty+y))|(im.getpixel((tx+x+1,ty+y))<<4))
  assert out==expected[:len(out)],('PNG/ROM graphics mismatch',suffix)
 print('PASS: ROM blocks/borders, metatile tables, attributes and decompressed native graphics match the current source')
+for frame in range(8):
+ check('sHavoraWaterFrame'+str(frame),'data/tilesets/secondary/havora_harbor/anim/water/'+str(frame)+'.4bpp')
+print('PASS: all eight current water DMA frames are embedded in the ROM')
