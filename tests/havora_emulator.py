@@ -33,6 +33,13 @@ for name,start,key,frames,target in [
  ('approach-corner-north',(43,20,6,3),7,35,(43,21)),('north-corner-west',(43,21,1,3),6,35,(43,20))]:crossing(name,start,key,frames,target)
 warp(43,19,6,6);m.snap('havora-warehouses');warp(43,19,34,24);m.snap('havora-lighthouse')
 warp(43,19,36,26);walk(4,1);m.press(8);m.snap('havora-lighthouse-sign');assert loc()[0]==(43,19);m.press(0)
+# The lighthouse coping remains a continuous walking loop, including the new corners.
+warp(43,19,36,26)
+for _ in range(2):step(7)
+for _ in range(7):step(4)
+for _ in range(4):step(6)
+for _ in range(2):step(5)
+assert loc()==((43,19),(34,21));m.snap('havora-cape-coping')
 # Walk the entire south promenade to the open-air boarding gate, without setup warps.
 warp(43,19,15,21);step(4)
 for _ in range(5):step(7)
@@ -48,3 +55,7 @@ print('PASS: eight seamless crossings, harbor loading and original Stellar Ticke
 m.press(0);m.press(0);walk(4,18)
 print('After disembarking:',loc(),flush=True);assert loc()[0]==(43,19) and loc()[1][1]<16
 m.snap('havora-ferry-free-control')
+# Solid end rails and side rails must stop the player at the deck boundary.
+assert loc()==((43,19),(20,14));walk(4,20);assert loc()==((43,19),(20,14))
+warp(43,19,19,15);walk(6,20);assert loc()==((43,19),(19,15));m.snap('havora-dock-rails')
+print('PASS: lighthouse coping loop and solid pier end/side rails',flush=True)

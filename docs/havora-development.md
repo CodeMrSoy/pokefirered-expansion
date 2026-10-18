@@ -1,4 +1,4 @@
-# Havora harbor — Nordic architecture at FireRed resolution
+# Havora harbor — Nordic buildings and completed waterfront
 
 The initial native harbor compressed the buildings, reduced the seawalls to
 thin rails, and placed the main pier too far south. This revision measures the
@@ -17,13 +17,38 @@ timber palettes (secondary banks 02 and 10). Window clusters come from General
 metatile 0x006; the closed door is based on Vermilion 0x29e. Detail colors are
 mapped into the same small building palette. Broad roof courses, restrained
 shingle joints and one-pixel contours replace the earlier fine texture. The
-lantern has a small peaked cap and the same native material shades.
+building materials use a small palette shared with native FireRed graphics.
 
-A pixel comparison against the preceding native overview verified that every
-pixel outside the three building footprints and seven lantern footprints is
-unchanged, including paving, rocks, seawalls, docks, lighthouse and objects.
-Ferry scripts, events, boarding path and map connections remain unchanged.
-Buildings remain exterior scenery, with no new door warps or interiors.
+Ferry scripts, events and map connections remain unchanged. Buildings remain
+exterior scenery, with no new door warps or interiors.
+
+## Docks, lanterns and continuous seawall
+
+`firered_waterfront.py` supplies native-pixel timber boards, continuous side
+rails, banded posts, pier end caps, rope coils, netting and mooring bollards.
+The eight lanterns use a compact hooked iron silhouette and warm glass. Their
+feet block movement; the upper tile retains the underlying walking behavior.
+A short visual gangplank aligns the main pier with Seagallop. It does not
+replace the original sailor boarding script or add a warp.
+
+The approved south-facing masonry and rock artwork retain palette bank 09.
+New coping variants are quantized against that original palette rather than
+changing it. Front corners take priority over side edges, so vertical coping
+cannot erase the wall face. Thin north/west/east coping leaves paving walkable;
+adjacent water remains impassable. Front wall faces and dock rails block walking.
+
+The office, crane and lighthouse now have complete stone footings and room for
+perimeter coping. The isolated crane-plinth ledge is blocked. The planter that
+covered the promenade wall moves one tile inward; foundation rocks sit below
+the lighthouse wall, not over its face. The main promenade and lighthouse front
+have continuous two-row masonry. Buildings and the original ferry/NPC events
+retain their positions and graphics.
+
+Static checks require every unoccupied walkable tile to connect to the ferry
+arrival. They also protect the long promenade/lighthouse wall fronts from
+being replaced by prop backgrounds. Emulator checks walk the lighthouse coping
+loop, test the main pier's end and side rails, traverse all eight map seams,
+and complete the original ferry round trip.
 
 ## Visible changes
 
@@ -47,7 +72,7 @@ primary/secondary pair. This uses the engine's existing 1024-tile graphics
 address space; no graphics limit is raised. The prior design unnecessarily
 confined all new art to the 384 secondary slots and therefore shrank it.
 
-There are 362 unique custom graphics tiles and 137 secondary metatiles.
+There are 381 unique custom graphics tiles and 155 secondary metatiles.
 The primary PNG occupies its normal 640 slots; the secondary PNG contains a
 minimal blank row. All referenced graphics IDs are below 624. The remaining
 slots are available for future harbor art.
@@ -126,7 +151,7 @@ to Vermilion, Stellar Ticket return to (20,16), and movement after disembarking.
 Injected warps are test setup; the connection checks use directional controls.
 The lighthouse plaque and native building/terrain views are also captured.
 
-ARM GNU 13.2.1 ROM build passed, with ROM region usage 21,455,596 bytes / 32 MiB
+ARM GNU 13.2.1 ROM build passed, with ROM region usage 21,455,296 bytes / 32 MiB
 (63.94%). There is no new dynamic RAM allocation for the artwork. Emulator
 captures use normal game lighting; the overview renders native palettes
 without time-of-day tint. No Porymap UI testing or full campaign playthrough

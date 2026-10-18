@@ -33,17 +33,24 @@ for mid,(m,l,a) in maps.items():
    if aa&0xc00==0 and bb&0xc00==0:assert aa&0xf000==bb&0xf000==0x3000;seams.append(n)
   assert seams,(mid,co)
 npc_cells={(o['x'],o['y']) for o in h['object_events']}
-def reachable(start,target):
+def component(start):
  q=deque([start]);seen={start}
  while q:
   x,y=q.popleft()
-  if (x,y)==target:return True
   for xx,yy in [(x-1,y),(x+1,y),(x,y-1),(x,y+1)]:
    if 0<=xx<40 and 0<=yy<32 and (xx,yy) not in seen and (xx,yy) not in npc_cells and ha[yy*40+xx]&0xc00==0:
     seen.add((xx,yy));q.append((xx,yy))
- return False
+ return seen
+def reachable(start,target):return target in component(start)
 for p in [(0,2),(5,0),(20,18),(5,20),(15,22),(36,26),(13,5),(24,6),(10,9),(9,13)]:assert reachable((20,16),p),p
 asset=json.loads((R/'tools/havora/assets.json').read_text());assert asset['tiles']<=1024;assert asset['secondary_tiles']<=384;assert asset['metatiles']<=384
+# Coping and dock changes must not create isolated walkable pockets.
+walkable={(x,y) for y in range(32) for x in range(40) if ha[y*40+x]&0xfc00==0x3000} - npc_cells
+assert walkable<=component((20,16)),walkable-component((20,16))
+# The promenade and lighthouse fronts must remain masonry, not prop backgrounds.
+top=set(asset['assets']['wall']['metatiles'][0])|{asset['assets'][n]['metatiles'][0][0] for n in ['wall_corner_left','wall_corner_right']}
+for y,xs in [(23,range(10,29)),(27,range(32,39))]:
+ for x in xs:assert ha[y*40+x]&1023 in top and ha[y*40+x]&0x400,(x,y)
 path=R/'data/tilesets/secondary/havora_harbor';data=(path/'metatiles.bin').read_bytes()
 for v in struct.unpack('<'+'H'*(len(data)//2),data):assert (v&1023)<max(640,asset['tiles']);assert (v>>12)<13
 print('PASS: graphics budget, native tile references, 40x32 blocks, event bounds, no harbor warps, all reciprocal seams and walking routes')

@@ -405,10 +405,208 @@
         1
       ],
       "bank": 10
+    },
+    "dock_rail_left": {
+      "metatiles": [
+        [
+          777
+        ]
+      ],
+      "size": [
+        1,
+        1
+      ],
+      "bank": 11
+    },
+    "dock_rail_right": {
+      "metatiles": [
+        [
+          778
+        ]
+      ],
+      "size": [
+        1,
+        1
+      ],
+      "bank": 11
+    },
+    "dock_boarding_gate": {
+      "metatiles": [
+        [
+          779
+        ]
+      ],
+      "size": [
+        1,
+        1
+      ],
+      "bank": 11
+    },
+    "boarding_ramp": {
+      "metatiles": [
+        [
+          780
+        ]
+      ],
+      "size": [
+        1,
+        1
+      ],
+      "bank": 11
+    },
+    "dock_head": {
+      "metatiles": [
+        [
+          781
+        ]
+      ],
+      "size": [
+        1,
+        1
+      ],
+      "bank": 11
+    },
+    "dock_post_left": {
+      "metatiles": [
+        [
+          782
+        ]
+      ],
+      "size": [
+        1,
+        1
+      ],
+      "bank": 11
+    },
+    "dock_post_right": {
+      "metatiles": [
+        [
+          783
+        ]
+      ],
+      "size": [
+        1,
+        1
+      ],
+      "bank": 11
+    },
+    "dock_tip_left": {
+      "metatiles": [
+        [
+          784
+        ]
+      ],
+      "size": [
+        1,
+        1
+      ],
+      "bank": 11
+    },
+    "dock_tip_right": {
+      "metatiles": [
+        [
+          785
+        ]
+      ],
+      "size": [
+        1,
+        1
+      ],
+      "bank": 11
+    },
+    "wall_corner_left": {
+      "metatiles": [
+        [
+          786
+        ],
+        [
+          787
+        ]
+      ],
+      "size": [
+        1,
+        2
+      ],
+      "bank": 9
+    },
+    "wall_corner_right": {
+      "metatiles": [
+        [
+          788
+        ],
+        [
+          789
+        ]
+      ],
+      "size": [
+        1,
+        2
+      ],
+      "bank": 9
+    },
+    "wall_north": {
+      "metatiles": [
+        [
+          790
+        ]
+      ],
+      "size": [
+        1,
+        1
+      ],
+      "bank": 9
+    },
+    "wall_west": {
+      "metatiles": [
+        [
+          791
+        ]
+      ],
+      "size": [
+        1,
+        1
+      ],
+      "bank": 9
+    },
+    "wall_east": {
+      "metatiles": [
+        [
+          792
+        ]
+      ],
+      "size": [
+        1,
+        1
+      ],
+      "bank": 9
+    },
+    "wall_north_west": {
+      "metatiles": [
+        [
+          793
+        ]
+      ],
+      "size": [
+        1,
+        1
+      ],
+      "bank": 9
+    },
+    "wall_north_east": {
+      "metatiles": [
+        [
+          794
+        ]
+      ],
+      "size": [
+        1,
+        1
+      ],
+      "bank": 9
     }
   },
   "tiles": 624,
-  "custom_tiles": 362,
+  "custom_tiles": 381,
   "reserved_primary_tiles": [
     0,
     12,
@@ -496,7 +694,7 @@
   ],
   "blank_tile": 1,
   "secondary_tiles": 1,
-  "metatiles": 137,
+  "metatiles": 155,
   "palette_banks": [
     0,
     1,

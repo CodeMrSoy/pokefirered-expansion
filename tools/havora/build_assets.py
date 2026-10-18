@@ -8,6 +8,7 @@ this avoids shrinking buildings just to fit a single 384-tile secondary bank.
 from pathlib import Path
 from PIL import Image
 from firered_buildings import exteriors
+from firered_waterfront import waterfront_assets
 import numpy as np,struct,json,shutil
 ROOT=Path(__file__).resolve().parents[2];OUT=ROOT/'data/tilesets/secondary/havora_harbor';PRIMARY=ROOT/'data/tilesets/primary/havora_harbor'
 SPECS=[
@@ -45,12 +46,15 @@ def main():
   assets[name]=(a,bank)
  # Native FireRed architecture overrides the earlier resampled concept exteriors.
  for name,a in exteriors().items():assets[name]=(a,assets[name][1])
+ assets.update(waterfront_assets(assets))
  palettes={}
  for bank in range(13):
   if bank in [0,1,6]:
    palettes[bank]=[tuple(map(int,s.split())) for s in (originals/'palettes'/f'{bank:02}.pal').read_text().splitlines()[3:19]];continue
   rgb=[]
-  for a,b in assets.values():
+  for name,(a,b) in assets.items():
+   # New coping variants must not shift the approved rock/masonry palette.
+   if bank==9 and name not in ['wall','wall_side','rock']:continue
    if b==bank:rgb.extend([tuple(p[:3]) for p in np.array(a).reshape(-1,4) if p[3]])
   train=Image.new('RGB',(len(rgb),1));train.putdata(rgb);q=train.quantize(15,method=Image.Quantize.MEDIANCUT)
   # Native-style assets can use fewer than 15 colors; pad the fixed GBA bank.
@@ -92,7 +96,9 @@ def main():
   for y in range(0,h,16):
    row=[]
    for x in range(0,w,16):
-    base=water if name in ['wall','wall_side','rock','dock_face'] or (name=='pile' and y>0) else metas[floors['wood' if name in ['pile','bollard','rope','net'] else 'stone']-640][:4]
+    water_backed=name in ['wall','wall_side','rock','dock_face','wall_corner_left','wall_corner_right','dock_tip_left','dock_tip_right','boarding_ramp'] or (name=='pile' and y>0)
+    wood_backed=name in ['pile','bollard','rope','net','dock_rail_left','dock_rail_right','dock_head','dock_post_left','dock_post_right','dock_boarding_gate']
+    base=water if water_backed else metas[floors['wood' if wood_backed else 'stone']-640][:4]
     row.append(640+len(metas));metas.append(list(base)+pixels4(ar[y:y+16,x:x+16],bank));attrs.append(0)
    ids.append(row)
   info[name]={'metatiles':ids,'size':[w//16,h//16],'bank':bank}
