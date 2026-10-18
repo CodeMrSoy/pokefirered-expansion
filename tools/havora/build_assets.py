@@ -9,6 +9,7 @@ from pathlib import Path
 from PIL import Image
 from firered_buildings import exteriors
 from firered_waterfront import waterfront_assets
+from firered_props import harbor_props
 import numpy as np,struct,json,shutil
 ROOT=Path(__file__).resolve().parents[2];OUT=ROOT/'data/tilesets/secondary/havora_harbor';PRIMARY=ROOT/'data/tilesets/primary/havora_harbor'
 SPECS=[
@@ -47,6 +48,7 @@ def main():
  # Native FireRed architecture overrides the earlier resampled concept exteriors.
  for name,a in exteriors().items():assets[name]=(a,assets[name][1])
  assets.update(waterfront_assets(assets))
+ assets.update(harbor_props())
  palettes={}
  for bank in range(13):
   if bank in [0,1,6]:

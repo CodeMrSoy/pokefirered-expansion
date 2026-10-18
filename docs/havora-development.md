@@ -22,6 +22,21 @@ building materials use a small palette shared with native FireRed graphics.
 Ferry scripts, events and map connections remain unchanged. Buildings remain
 exterior scenery, with no new door warps or interiors.
 
+## Native FireRed harbor props
+
+`firered_props.py` replaces the concept-derived crane, crates, stacked cargo,
+barrels and lighthouse at native resolution. It uses the same blue-grey outline,
+Vermilion timber and General window colors as the Nordic buildings. The crane
+has a pulley, brace, hand winch and suspended net; cargo uses clear cross braces
+and metal barrel hoops. The lighthouse has a tapered white tower, red gallery,
+stepped roof and blue windows. Lanterns retain their hook with a wider framed
+light and highlighted iron base.
+
+All six footprints and palette banks remain unchanged. Map block data, collision,
+events, ferry scripts and connections are byte-identical to the waterfront revision.
+The ROM was rebuilt and its embedded graphics checked against source. mGBA tests
+passed all eight crossings, lighthouse walkway, pier barriers and ferry round trip.
+
 ## Docks, lanterns and continuous seawall
 
 `firered_waterfront.py` supplies native-pixel timber boards, continuous side
@@ -151,7 +166,7 @@ to Vermilion, Stellar Ticket return to (20,16), and movement after disembarking.
 Injected warps are test setup; the connection checks use directional controls.
 The lighthouse plaque and native building/terrain views are also captured.
 
-ARM GNU 13.2.1 ROM build passed, with ROM region usage 21,455,296 bytes / 32 MiB
+ARM GNU 13.2.1 ROM build passed, with ROM region usage 21,453,672 bytes / 32 MiB
 (63.94%). There is no new dynamic RAM allocation for the artwork. Emulator
 captures use normal game lighting; the overview renders native palettes
 without time-of-day tint. No Porymap UI testing or full campaign playthrough
