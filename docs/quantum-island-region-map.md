@@ -1,14 +1,16 @@
 # Quantum Island regional map
 
 The new island is a native GBA region-map page, available through PokéGlass Map
-and the Fly map's region switch icon. The picker lists Kanto, Sevii Islands
-(Islands 1–3), and Quantum Island. Viewing a map does not unlock travel.
+and the Fly map's region switch icon. The tablet preview switches between Kanto and Quantum Island with L/R; A
+opens the native guide. The native picker retains its historical Sevii preview,
+but retired destinations cannot be used for travel. Viewing a map does not
+unlock travel.
 
 The accepted concept becomes a 176×120-pixel map on the 22×15 cursor grid:
 
 | Location | Grid position |
 | --- | --- |
-| Port City | 15, 12 |
+| Havora City | 15, 12 |
 | Coastal City | 4, 10 |
 | Forest Town | 6, 7 |
 | Lake Town | 14, 7 |
@@ -28,8 +30,8 @@ The new palette uses BG palette bank 5. Existing section IDs, including
 The shared name lookup and current-location projection support the new IDs.
 
 The Stellar Ticket quest adds a playable harbor, five starter town layouts,
-four connecting route layouts, and individual Pokémon Centers with working
-upstairs rooms. The field layouts are travel foundations using existing native
+four connecting route layouts, and individual Pokémon Centers. QOL seals the obsolete multiplayer
+stairs; upstairs maps remain for compatibility with older V2 saves. The field layouts are travel foundations using existing native
 Kanto tiles; the finished port market, daycare, snowy terrain, hot springs and
 island story are future work. The regional artwork remains the accepted concept.
 

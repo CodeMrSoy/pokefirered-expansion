@@ -42,6 +42,7 @@ static const u16 sPals[] = INCBIN_U16("graphics/help_system/bg_tiles.gbapal");
 
 u8 RunHelpSystemCallback(void)
 {
+    return 0; // Retired L/R Help overlay.
     s32 i;
 
     switch (sVideoState.state)

@@ -1,14 +1,5 @@
 EventScript_PC::
-	goto_if_questlog EventScript_ReleaseEnd
-	lockall
-	goto_if_set FLAG_SYS_PC_STORAGE_DISABLED, EventScript_PCDisabled
-	setvar VAR_0x8004, HELPCONTEXT_PC
-	special Script_SetHelpContext
-	setvar VAR_0x8004, 0
-	special AnimatePcTurnOn
-	playse SE_PC_ON
-	msgbox Text_BootedUpPC
-	goto EventScript_PCMainMenu
+	releaseall
 	end
 
 @ For when the player first arrives on One Island
@@ -127,7 +118,7 @@ EventScript_PokeGlassPokedex::
 EventScript_PokeGlassStorage::
 	goto_if_set FLAG_SYS_PC_STORAGE_DISABLED, EventScript_PokeGlassStorageDisabled
 	playse SE_PC_LOGIN
-	special ShowPokemonStorageSystemPC
+	special OpenPokeGlassStorage
 	waitstate
 	goto EventScript_PokeGlassMenu
 	end

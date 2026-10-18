@@ -71,11 +71,11 @@ static const struct PartyMenuBoxInfoRects sPartyBoxInfoRects[] =
         BlitBitmapToPartyWindow_PokeGlass,
         {
             30, 1, 56, 13, // Nickname
-            28, 19, 24, 8, // Level
+            28, 18, 28, 12, // Level
             86, 1, 8, 8, // Gender
-            52, 19, 42, 8, // Current/max HP
+            56, 18, 38, 12, // Current/max HP (right aligned)
             65, 19, 29, 8,
-            40, 16, 52, 3 // HP bar
+            31, 15, 62, 2 // HP fill inside its 64 x 4 track
         },
         28, 10, 64, 16
     },

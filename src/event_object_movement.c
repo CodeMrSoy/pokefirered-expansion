@@ -1,4 +1,5 @@
 #include "global.h"
+#include "quantum_cleanup.h"
 #include "gflib.h"
 #include "battle_anim.h"
 #include "battle_util.h"
@@ -548,10 +549,10 @@ static const struct SpritePalette sObjectEventSpritePalettes[] = {
     {sAvatarBrendanPalette, OBJ_EVENT_PAL_TAG_AVATAR_BRENDAN_REFLECTION},
     {sAvatarMayPalette, OBJ_EVENT_PAL_TAG_AVATAR_MAY},
     {sAvatarMayPalette, OBJ_EVENT_PAL_TAG_AVATAR_MAY_REFLECTION},
-    {sAvatarRSBrendanPalette, OBJ_EVENT_PAL_TAG_AVATAR_RSBRENDAN},
-    {sAvatarRSBrendanPalette, OBJ_EVENT_PAL_TAG_AVATAR_RSBRENDAN_REFLECTION},
-    {sAvatarRSMayPalette, OBJ_EVENT_PAL_TAG_AVATAR_RSMAY},
-    {sAvatarRSMayPalette, OBJ_EVENT_PAL_TAG_AVATAR_RSMAY_REFLECTION},
+    {sAvatarBrendanPalette, OBJ_EVENT_PAL_TAG_AVATAR_RSBRENDAN},
+    {sAvatarBrendanPalette, OBJ_EVENT_PAL_TAG_AVATAR_RSBRENDAN_REFLECTION},
+    {sAvatarMayPalette, OBJ_EVENT_PAL_TAG_AVATAR_RSMAY},
+    {sAvatarMayPalette, OBJ_EVENT_PAL_TAG_AVATAR_RSMAY_REFLECTION},
 #ifdef BUGFIX
     {NULL,                                    OBJ_EVENT_PAL_TAG_NONE},
 #else
@@ -1955,7 +1956,7 @@ static void CopyObjectGraphicsInfoToSpriteTemplate_WithMovementType(u16 graphics
 // also can write palette tag to the template
 static u32 LoadDynamicFollowerPaletteFromGraphicsId(u16 graphicsId, struct SpriteTemplate *template)
 {
-    u16 species = graphicsId & OBJ_EVENT_MON_SPECIES_MASK;
+    u16 species = QuantumCanonicalSpecies(graphicsId & OBJ_EVENT_MON_SPECIES_MASK);
     bool32 shiny = graphicsId & OBJ_EVENT_MON_SHINY;
     bool32 female = graphicsId & OBJ_EVENT_MON_FEMALE;
     u8 paletteNum = LoadDynamicFollowerPalette(species, shiny, female);
@@ -2096,6 +2097,7 @@ struct ObjectEvent *GetFollowerObject(void)
 // Return graphicsInfo for a pokemon species & form
 static const struct ObjectEventGraphicsInfo *SpeciesToGraphicsInfo(u32 species, bool32 shiny, bool32 female)
 {
+    species = QuantumCanonicalSpecies(species);
     const struct ObjectEventGraphicsInfo *graphicsInfo = NULL;
 #if OW_POKEMON_OBJECT_EVENTS
     switch (species)
@@ -2131,6 +2133,7 @@ static const struct ObjectEventGraphicsInfo *SpeciesToGraphicsInfo(u32 species, 
 // Find, or load, the palette for the specified pokemon info
 static u32 LoadDynamicFollowerPalette(u32 species, bool32 shiny, bool32 female)
 {
+    species = QuantumCanonicalSpecies(species);
     u32 paletteNum;
     // Use standalone palette, unless entry is OOB or NULL (fallback to front-sprite-based)
 #if OW_POKEMON_OBJECT_EVENTS == TRUE && OW_PKMN_OBJECTS_SHARE_PALETTES == FALSE
@@ -11614,6 +11617,7 @@ static void DoRippleFieldEffect(struct ObjectEvent *objectEvent, struct Sprite *
 
 static u16 GetGraphicsIdForMon(u32 species, bool32 shiny, bool32 female)
 {
+    species = QuantumCanonicalSpecies(species);
     u16 graphicsId = species + OBJ_EVENT_MON;
     if (shiny)
         graphicsId += OBJ_EVENT_MON_SHINY;

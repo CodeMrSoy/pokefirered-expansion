@@ -1,4 +1,5 @@
 #include "randomizer.h"
+#include "mail.h"
 
 #if RANDOMIZER_AVAILABLE == TRUE
 #include "main.h"
@@ -355,7 +356,8 @@ static inline bool32 IsKeyItem(u16 itemId)
 // ITEM_NONE also should not be randomized as it is invalid.
 static inline bool32 ShouldRandomizeItem(u16 itemId)
 {
-    return !(IsItemHM(itemId) || IsKeyItem(itemId) || itemId == ITEM_NONE);
+    return !(IsItemHM(itemId) || IsKeyItem(itemId) || itemId == ITEM_NONE
+        || ItemIsMail(itemId) || (itemId >= ITEM_NORMALIUM_Z && itemId <= ITEM_ULTRANECROZIUM_Z));
 }
 
 #include "data/randomizer/item_whitelist.h"
@@ -1169,11 +1171,50 @@ static u16 GetSpeciesBaseStatTotal(u16 species)
         + info->baseSpeed + info->baseSpAttack + info->baseSpDefense;
 }
 
+static u16 GetEvolutionLineBaseStatTotal(u16 species, u8 *visited)
+{
+    const struct Evolution *evolutions;
+    u16 bestTotal;
+    u16 total;
+    u32 i;
+
+    species = SanitizeSpeciesId(species);
+    if (species == SPECIES_NONE || species >= NUM_SPECIES
+        || (visited[species / 8] & (1 << (species % 8))))
+        return 0;
+    visited[species / 8] |= 1 << (species % 8);
+
+    bestTotal = GetSpeciesBaseStatTotal(species);
+    evolutions = GetSpeciesEvolutions(species);
+    if (evolutions == NULL)
+        return bestTotal;
+
+    for (i = 0; evolutions[i].method != EVOLUTIONS_END; i++)
+    {
+        // EVO_NONE describes form/breeding relationships, not an evolution.
+        if (evolutions[i].method == EVO_NONE)
+            continue;
+        total = GetEvolutionLineBaseStatTotal(evolutions[i].targetSpecies, visited);
+        if (total > bestTotal)
+            bestTotal = total;
+    }
+    return bestTotal;
+}
+
+static u16 GetRivalStarterBaseStatTotal(u16 species)
+{
+    u8 visited[(NUM_SPECIES + 7) / 8] = {0};
+
+    // Compare each starter's full potential, including every evolution branch.
+    // Track visited species so shared targets and cycles are safe.
+    return GetEvolutionLineBaseStatTotal(species, visited);
+}
+
 u16 GetRivalStarterSlot(u16 playerStarterSlot)
 {
-    u16 bestSpecies;
+    u16 bestTotal;
     u16 bestSlot;
-    u16 candidateSpecies;
+    u16 candidateTotal;
     u16 candidateSlot;
 
     if (playerStarterSlot >= ARRAY_COUNT(sPlayerStarterSpecies))
@@ -1183,18 +1224,17 @@ u16 GetRivalStarterSlot(u16 playerStarterSlot)
     if (!RandomizerFeatureEnabled(RANDOMIZE_STARTER_AND_GIFT_MON))
         return (playerStarterSlot == 0) ? 2 : (playerStarterSlot == 1 ? 0 : 1);
 
-    bestSpecies = SPECIES_NONE;
-    bestSlot = 0;
+    bestTotal = 0;
+    bestSlot = (playerStarterSlot == 0) ? 1 : 0;
     for (candidateSlot = 0; candidateSlot < ARRAY_COUNT(sPlayerStarterSpecies); candidateSlot++)
     {
         if (candidateSlot == playerStarterSlot)
             continue;
 
-        candidateSpecies = GetRandomizedStarterSpecies(candidateSlot);
-        if (bestSpecies == SPECIES_NONE
-            || GetSpeciesBaseStatTotal(candidateSpecies) > GetSpeciesBaseStatTotal(bestSpecies))
+        candidateTotal = GetRivalStarterBaseStatTotal(GetRandomizedStarterSpecies(candidateSlot));
+        if (candidateTotal > bestTotal)
         {
-            bestSpecies = candidateSpecies;
+            bestTotal = candidateTotal;
             bestSlot = candidateSlot;
         }
     }

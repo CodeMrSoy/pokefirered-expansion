@@ -115,7 +115,7 @@ __attribute__((section(".text.header_gf"))) USED const struct GFRomHeader sGFRom
     .monIconPalettes = gMonIconPaletteTable,
     //.monSpeciesNames = gSpeciesNames, // Handled in gSpeciesInfo
     //.moveNames = gMoveNames, // Handled in gMovesInfo
-    .decorations = gDecorations,
+    .decorations = NULL,
     .flagsOffset = offsetof(struct SaveBlock1, flags),
     .varsOffset = offsetof(struct SaveBlock1, vars),
     .pokedexOffset = offsetof(struct SaveBlock2, pokedex),

@@ -136,16 +136,16 @@ static void InitBtlControllersInternal(void)
     if (gBattleTypeFlags & BATTLE_TYPE_POKEDUDE)
     {
         gBattleMainFunc = BeginBattleIntro;
-        gBattlerControllerFuncs[0] = SetControllerToPokedude;
+        gBattlerControllerFuncs[0] = SetControllerToPlayer;
         gBattlerPositions[0] = B_POSITION_PLAYER_LEFT;
-        gBattlerControllerFuncs[1] = SetControllerToPokedude;
+        gBattlerControllerFuncs[1] = SetControllerToPlayer;
         gBattlerPositions[1] = B_POSITION_OPPONENT_LEFT;
         gBattlersCount = 2;
         if (gBattleTypeFlags & BATTLE_TYPE_DOUBLE)
         {
-            gBattlerControllerFuncs[2] = SetControllerToPokedude;
+            gBattlerControllerFuncs[2] = SetControllerToPlayer;
             gBattlerPositions[2] = B_POSITION_PLAYER_RIGHT;
-            gBattlerControllerFuncs[3] = SetControllerToPokedude;
+            gBattlerControllerFuncs[3] = SetControllerToPlayer;
             gBattlerPositions[3] = B_POSITION_OPPONENT_RIGHT;
             gBattlersCount = MAX_BATTLERS_COUNT;
         }

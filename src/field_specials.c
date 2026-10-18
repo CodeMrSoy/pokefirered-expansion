@@ -54,14 +54,23 @@
 #include "constants/event_objects.h"
 #include "constants/metatile_labels.h"
 
-// PokéGlass shortcuts reuse the same screens and map rules as the normal menus.
+// PokéGlass apps share the tablet UI or reuse native screens and map rules.
+void OpenPokeGlassStorage(void)
+{
+    ShowPokeGlassStorage();
+}
+
 void OpenPokeGlassPokedex(void)
 {
-    CleanupOverworldWindowsAndTilemaps();
-    CB2_OpenPokedexWithExitCB(CB2_ReturnToFieldContinueScript);
+    ShowPokeGlassPokedex();
 }
 
 void OpenPokeGlassMap(void)
+{
+    ShowPokeGlassMap();
+}
+
+void OpenPokeGlassMapNative(void)
 {
     u8 i;
     CleanupOverworldWindowsAndTilemaps();

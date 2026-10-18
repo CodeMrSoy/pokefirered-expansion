@@ -2122,7 +2122,7 @@ static void Task_ItemContext_GiveToParty(u8 taskId)
         ItemMenu_SetExitCallback(GoToBerryPouch_Give);
         Task_FadeAndCloseBagMenu(taskId);
     }
-    else if (gBagPosition.pocket != POCKET_KEY_ITEMS && GetItemImportance(gSpecialVar_ItemId) == 0)
+    else if (gBagPosition.pocket != POCKET_KEY_ITEMS && GetItemImportance(gSpecialVar_ItemId) == 0 && !ItemIsMail(gSpecialVar_ItemId))
     {
         gTasks[taskId].func = Task_FadeAndCloseBagMenu;
     }
@@ -2148,7 +2148,7 @@ static void Task_ItemContext_GiveToPC(u8 taskId)
         ItemMenu_SetExitCallback(GoToBerryPouch_PCBox);
         Task_FadeAndCloseBagMenu(taskId);
     }
-    else if (gBagPosition.pocket != POCKET_KEY_ITEMS && GetItemImportance(gSpecialVar_ItemId) == 0)
+    else if (gBagPosition.pocket != POCKET_KEY_ITEMS && GetItemImportance(gSpecialVar_ItemId) == 0 && !ItemIsMail(gSpecialVar_ItemId))
     {
         gTasks[taskId].func = Task_FadeAndCloseBagMenu;
     }

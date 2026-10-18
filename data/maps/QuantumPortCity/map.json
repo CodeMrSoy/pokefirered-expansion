@@ -20,7 +20,7 @@
       "direction": "left"
     },
     {
-      "map": "MAP_QUANTUM_HARBOR",
+      "map": "MAP_QUANTUM_HAVORA_WEST_QUAY",
       "offset": 0,
       "direction": "right"
     }
@@ -62,13 +62,6 @@
       "elevation": 0,
       "dest_map": "MAP_QUANTUM_PORT_CITY_POKEMON_CENTER1_F",
       "dest_warp_id": "1"
-    },
-    {
-      "x": 19,
-      "y": 21,
-      "elevation": 0,
-      "dest_map": "MAP_QUANTUM_HARBOR",
-      "dest_warp_id": "0"
     }
   ],
   "coord_events": [],

@@ -8,25 +8,29 @@
 #include "constants/vars.h"
 
 static const u8 sNames[AVATAR_LOOK_COUNT][12] = {
-    _("Red"), _("Leaf"), _("Brendan"), _("May"), _("Brendan"), _("May")
+    _("Red"), _("Leaf"), _("Brendan"), _("May")
 };
 static const u8 sStyles[AVATAR_LOOK_COUNT][20] = {
-    _("FireRed"), _("LeafGreen"), _("Emerald"), _("Emerald"),
-    _("Ruby / Sapphire"), _("Ruby / Sapphire")
+    _("FireRed"), _("LeafGreen"), _("Emerald"), _("Emerald")
 };
 static const u16 sFrontPics[AVATAR_LOOK_COUNT] = {
     TRAINER_PIC_RED, TRAINER_PIC_LEAF, TRAINER_PIC_QUANTUM_BRENDAN,
-    TRAINER_PIC_QUANTUM_MAY, TRAINER_PIC_RS_BRENDAN_1, TRAINER_PIC_RS_MAY_1
+    TRAINER_PIC_QUANTUM_MAY
 };
 static const u16 sBackPics[AVATAR_LOOK_COUNT] = {
     TRAINER_BACK_PIC_RED, TRAINER_BACK_PIC_LEAF, TRAINER_BACK_PIC_QUANTUM_BRENDAN,
-    TRAINER_BACK_PIC_QUANTUM_MAY, TRAINER_BACK_PIC_RUBY_SAPPHIRE_BRENDAN,
-    TRAINER_BACK_PIC_RUBY_SAPPHIRE_MAY
+    TRAINER_BACK_PIC_QUANTUM_MAY
 };
 
 u8 GetCurrentAvatarLook(void)
 {
     u16 saved = VarGet(VAR_PLAYER_AVATAR);
+    // Values 5 and 6 were Ruby/Sapphire looks; migrate to Emerald counterparts.
+    if (saved == 5 || saved == 6)
+    {
+        saved -= 2;
+        VarSet(VAR_PLAYER_AVATAR, saved);
+    }
     // Zero is the legacy-save default. Gender and OT data stay independent.
     if (saved == 0 || saved > AVATAR_LOOK_COUNT)
         return gSaveBlock2Ptr->playerGender == FEMALE ? AVATAR_LEAF : AVATAR_RED;

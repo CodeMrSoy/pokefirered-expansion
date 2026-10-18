@@ -1,4 +1,5 @@
 #include "global.h"
+#include "quantum_cleanup.h"
 #include "malloc.h"
 // #include "apprentice.h"
 #include "battle.h"
@@ -1292,6 +1293,7 @@ void CreateBoxMon(struct BoxPokemon *boxMon, u16 species, u8 level, u8 fixedIV, 
     u8 selectedIvs[NUM_STATS];
     bool32 isShiny;
 
+    species = QuantumCanonicalSpecies(species);
     ZeroBoxMonData(boxMon);
 
     // Determine original trainer ID
@@ -3192,6 +3194,7 @@ void SetBoxMonData(struct BoxPokemon *boxMon, s32 field, const void *dataArg)
         case MON_DATA_SPECIES:
         {
             SET16(substruct0->species);
+            substruct0->species = QuantumCanonicalSpecies(substruct0->species);
             if (substruct0->species)
                 boxMon->hasSpecies = TRUE;
             else
@@ -5215,7 +5218,7 @@ u32 GetEvolutionTargetSpecies(struct Pokemon *mon, enum EvolutionMode mode, u16 
         return SPECIES_NONE;
     }
 
-    return targetSpecies;
+    return QuantumCanonicalSpecies(targetSpecies);
 }
 
 bool8 IsMonPastEvolutionLevel(struct Pokemon *mon)
@@ -6968,7 +6971,7 @@ u32 GetFormChangeTargetSpeciesBoxMon(struct BoxPokemon *boxMon, enum FormChanges
         }
     }
 
-    return targetSpecies;
+    return QuantumCanonicalSpecies(targetSpecies);
 }
 
 void TrySetDayLimitToFormChange(struct Pokemon *mon)

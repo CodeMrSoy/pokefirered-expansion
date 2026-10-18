@@ -16,6 +16,7 @@ QuantumHarbor_Cancel::
 QuantumHarbor_Return::
 	.string "Return to VERMILION CITY?$"
 
+
 QuantumHarbor_Merchant::
 	msgbox QuantumHarbor_Merchant_Text, MSGBOX_NPC
 	end
@@ -28,7 +29,7 @@ QuantumHarbor_Dockworker::
 	end
 
 QuantumHarbor_Dockworker_Text::
-	.string "Mind the seawall!\nThe ferry boards at the west quay.$"
+	.string "Mind the seawall!\nThe ferry boards at the main pier.$"
 
 QuantumHarbor_Visitor::
 	msgbox QuantumHarbor_Visitor_Text, MSGBOX_NPC
@@ -36,3 +37,10 @@ QuantumHarbor_Visitor::
 
 QuantumHarbor_Visitor_Text::
 	.string "I came for the market and stayed\nfor the sea air.$"
+
+QuantumHarbor_LighthouseSign::
+	msgbox QuantumHarbor_LighthouseSign_Text, MSGBOX_SIGN
+	end
+
+QuantumHarbor_LighthouseSign_Text::
+	.string "HAVORA HARBOR LIGHT\nA welcome home for every sailor.$"

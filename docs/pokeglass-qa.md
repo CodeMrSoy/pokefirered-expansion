@@ -1,3 +1,58 @@
+# PokéGlass QA — QOL, 2026-10-15
+
+## Party text and HP cleanup
+
+The compact card now reserves separate pixel regions for level and HP text,
+right-aligns current/max HP, and draws a bordered 64-pixel HP track. Long names
+use a narrower font when necessary to stay clear of the gender marker.
+Level-up refreshes repaint the full card, rather than tile-rounded legacy
+rectangles that damaged neighboring digits. The tablet stat popup has 96 pixels
+of height so all six stat rows fit.
+
+The new `pokeglass_party_text_emulator.py` fixture covers level 10/100 and
+three-digit HP layouts, full/yellow/red/empty bars, healing, long nicknames,
+and the actual Rare Candy animation, level-up redraw, and both stat pages.
+Incremental HP regions and the real level-up card match a fresh redraw.
+Build, whitespace, and the shell/actions/Summary-return regression pass.
+These changes and the preceding visual fix remain uncommitted on QOL.
+
+## Party visual handoff follow-up
+
+Party loading now clears hardware OAM before reusing object tiles and palettes,
+keeps the captured field palette out of the legacy party palette upload, and
+registers its background with the BG manager so window updates cannot hide it.
+A blue glass tile covers the native background handoff until the app is ready.
+The shell remains visible throughout.
+
+The new `pokeglass_party_visual_emulator.py` regression checks hardware sprites,
+background visibility, palette ownership, and blank screen frames with one and
+six party members. Both fixtures pass. Existing shell/actions/Summary-return
+and all six app-launch transition regressions also pass. Build and whitespace
+checks pass; this follow-up remains uncommitted on QOL.
+
+## Box view, carry-to-party, and screen transitions
+
+Storage opens with a 30-slot box. A picks up and places or swaps a Pokémon.
+Moving a held Pokémon to Party automatically opens the six-slot panel on the
+left. The Party button can also be opened with A when not carrying a Pokémon.
+L/R changes boxes, and B cancels a carry, hides the panel, then returns.
+Selection does not remove a Pokémon from its source until placement succeeds.
+Mail and the last usable party member remain protected.
+
+App changes wipe only the glass, keeping the shell visible. Party prepares its
+shell before switching graphics memory. Map opens inside the tablet; A Guide
+retains access to the native guide/Fly flow and its existing eligibility checks.
+
+Validation: build and whitespace checks passed; frame-by-frame emulator
+comparisons found identical shell pixels and no black frames in all six app
+launches. Storage checks covered deposits, swaps, cross-box cancellation,
+automatic Party opening, all 36 icons, last usable member protection, and a real
+flash save/reset/Continue comparison of all boxes and party data. The existing
+shell/actions/navigation/return regression also passed. These are targeted
+checks, not a complete playthrough.
+
+---
+
 # PokéGlass QA — QOL, 2026-10-10
 
 ## Latest follow-up: glass launcher and app returns

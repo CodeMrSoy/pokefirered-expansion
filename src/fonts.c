@@ -152,7 +152,8 @@ ALIGNED(4) const u8 gFontShortLatinGlyphWidths[] = {
 
 ALIGNED(4) const u16 gFontSmallJapaneseGlyphs[] = INCBIN_U16("graphics/fonts/japanese_small.fwjpnfont");
 
-ALIGNED(4) const u16 gFontNormalCopy1LatinGlyphs[] = INCBIN_U16("graphics/fonts/latin_normal.latfont");
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u16 gFontNormalCopy1LatinGlyphs[16384] __attribute__((alias("gFontFemaleLatinGlyphs")));
 ALIGNED(4) const u8 gFontNormalCopy1LatinGlyphWidths[] =
 {
      6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,
@@ -195,7 +196,8 @@ ALIGNED(4) const u8 gFontNormalCopy1LatinGlyphWidths[] =
 };
 ALIGNED(4) const u16 gFontTallJapaneseGlyphs[] = INCBIN_U16("graphics/fonts/japanese_tall.fwjpnfont");
 
-ALIGNED(4) const u16 gFontNormalLatinGlyphs[] = INCBIN_U16("graphics/fonts/latin_normal.latfont");
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u16 gFontNormalLatinGlyphs[16384] __attribute__((alias("gFontFemaleLatinGlyphs")));
 ALIGNED(4) const u8 gFontNormalLatinGlyphWidths[] =
 {
      6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,
@@ -236,7 +238,8 @@ ALIGNED(4) const u8 gFontNormalLatinGlyphWidths[] =
      8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,
      8,  8,  8,  8,  8,  8,  8,  6
 };
-ALIGNED(4) const u16 gFontNormalJapaneseGlyphs[] = INCBIN_U16("graphics/fonts/japanese_normal.fwjpnfont");
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u16 gFontNormalJapaneseGlyphs[16384] __attribute__((alias("gFontShortJapaneseGlyphs")));
 ALIGNED(4) const u8 gFontNormalJapaneseGlyphWidths[] =
 {
      0, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
@@ -261,7 +264,8 @@ ALIGNED(4) const u8 gFontNormalJapaneseGlyphWidths[] =
     10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,  0
 };
 
-ALIGNED(4) const u16 gFontMaleLatinGlyphs[] = INCBIN_U16("graphics/fonts/latin_male.latfont");
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u16 gFontMaleLatinGlyphs[16384] __attribute__((alias("gFontFemaleLatinGlyphs")));
 ALIGNED(4) const u8 gFontMaleLatinGlyphWidths[] =
 {
      6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,

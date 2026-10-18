@@ -29,3 +29,22 @@ ViridianCity_Mart_Text_GotToBuySomePotions::
     .string "You never know when your POKéMON\n"
     .string "will need quick healing.$"
 
+
+ViridianCity_Mart_Text_CapCandyGift::
+    .string "GIOVANNI ordered this CAP CANDY,\n"
+    .string "but he never picked it up.\p"
+    .string "As thanks for taking OAK's parcel,\n"
+    .string "I'd like you to have it!$"
+
+ViridianCity_Mart_Text_ExplainCapCandy::
+    .string "CAP CANDY raises a POKéMON to\n"
+    .string "your current level cap.\p"
+    .string "Use it from the BAG or register\n"
+    .string "it to the item wheel.\p"
+    .string "It's reusable, so hang on to it!$"
+
+ViridianCity_Mart_Text_NoRoomForCapCandy::
+    .string "I've got a gift for helping me,\n"
+    .string "but your KEY ITEMS pocket is full.\p"
+    .string "Make room and talk to me again.\n"
+    .string "I'll keep it here for you!$"

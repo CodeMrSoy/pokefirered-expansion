@@ -576,6 +576,8 @@
     "QuantumCoastalRoad",
     "QuantumWoodlandLink",
     "QuantumMountainPass",
-    "QuantumHarbor"
+    "QuantumHarbor",
+    "QuantumHavoraWestQuay",
+    "QuantumHavoraNorthQuay"
   ]
 }

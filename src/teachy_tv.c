@@ -420,27 +420,12 @@ static void TeachyTvVblankHandler(void)
 
 void InitTeachyTvController(u8 mode, MainCallback cb)
 {
-    sStaticResources.mode = mode;
-    sStaticResources.callback = cb;
-    if (mode == 0)
-    {
-        sStaticResources.scrollOffset = 0;
-        sStaticResources.selectedRow = 0;
-        sStaticResources.whichScript = TTVSCR_BATTLE;
-    }
-    if (mode == 1)
-    {
-        sStaticResources.mode = 0;
-    }
-    SetMainCallback2(TeachyTvMainCallback);
+    SetMainCallback2(cb); // Retired tutorial interface.
 }
 
 void CB2_ReturnToTeachyTV(void)
 {
-    if (sStaticResources.mode == 1)
-        InitTeachyTvController(1, sStaticResources.callback);
-    else
-        InitTeachyTvController(2, sStaticResources.callback);
+    SetMainCallback2(CB2_ReturnToField);
 }
 
 void SetTeachyTvControllerModeToResume(void)

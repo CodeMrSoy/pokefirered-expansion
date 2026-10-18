@@ -29,11 +29,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Spiny Nut"),
         .height = 4,
         .weight = 90,
-        .description = COMPOUND_STRING(
-            "The quills on its head are usually soft.\n"
-            "When it flexes them, the points become\n"
-            "so hard and sharp that they can pierce\n"
-            "rock without any effort."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 491,
         .pokemonOffset = 12,
         .trainerScale = 256,
@@ -100,11 +96,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Spiny Armor"),
         .height = 7,
         .weight = 290,
-        .description = COMPOUND_STRING(
-            "They strengthen the sturdy shell covering\n"
-            "their bodies by running into one another.\n"
-            "They are very kind and won't start fights,\n"
-            "but will counterattack with sharp quills."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 365,
         .pokemonOffset = 12,
         .trainerScale = 256,
@@ -170,11 +162,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Spiny Armor"),
         .height = 16,
         .weight = 900,
-        .description = COMPOUND_STRING(
-            "It shields its allies from danger with\n"
-            "its own body. When it takes a defensive\n"
-            "posture with its fists guarding its face,\n"
-            "it can withstand a bomb blast."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 259,
         .pokemonOffset = 1,
         .trainerScale = 296,
@@ -239,11 +227,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Fox"),
         .height = 4,
         .weight = 94,
-        .description = COMPOUND_STRING(
-            "As it walks, it munches on a twig to fill\n"
-            "itself with energy in place of a snack.\n"
-            "It intimidates opponents by puffing hot\n"
-            "air out of its roomy ears."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 491,
         .pokemonOffset = 12,
         .trainerScale = 256,
@@ -312,11 +296,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Fox"),
         .height = 10,
         .weight = 145,
-        .description = COMPOUND_STRING(
-            "Braixen has a twig stuck in its tail.\n"
-            "When the twig is plucked from its tail,\n"
-            "friction sets the twig alight. The flame\n"
-            "is used to send signals to its allies."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 305,
         .pokemonOffset = 7,
         .trainerScale = 257,
@@ -380,11 +360,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Fox"),
         .height = 15,
         .weight = 390,
-        .description = COMPOUND_STRING(
-            "It gazes into the flame at the tip of its\n"
-            "branch to achieve a focused state, which\n"
-            "allows it to see into the future. It uses\n"
-            "psychic power to incinerate its foes."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 268,
         .pokemonOffset = 2,
         .trainerScale = 271,
@@ -453,11 +429,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Bubble Frog"),
         .height = 3,
         .weight = 70,
-        .description = COMPOUND_STRING(
-            "It protects its skin by covering its body\n"
-            "in bubbles it secretes from its chest and\n"
-            "back. Beneath its happy-go-lucky air, it\n"
-            "keeps a watchful eye on its surroundings."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 530,
         .pokemonOffset = 13,
         .trainerScale = 256,
@@ -526,11 +498,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Bubble Frog"),
         .height = 6,
         .weight = 109,
-        .description = COMPOUND_STRING(
-            "It can throw bubble-covered pebbles with\n"
-            "precise control, hitting empty cans up to\n"
-            "a hundred feet away. Frogadier's swiftness\n"
-            "is unparalleled."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 422,
         .pokemonOffset = 12,
         .trainerScale = 256,
@@ -594,7 +562,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Ninja"),
         .height = 15,
         .weight = 400,
-        .description = gGreninjaPokedexText,
+        .description = gEmptyPokedexText,
         .pokemonScale = 268,
         .pokemonOffset = 2,
         .trainerScale = 271,
@@ -655,7 +623,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Ninja"),
         .height = 15,
         .weight = 400,
-        .description = gGreninjaPokedexText,
+        .description = gEmptyPokedexText,
         .pokemonScale = 268,
         .pokemonOffset = 2,
         .trainerScale = 271,
@@ -718,7 +686,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Ninja"),
         .height = 15,
         .weight = 400,
-        .description = gGreninjaPokedexText,
+        .description = gEmptyPokedexText,
         .pokemonScale = 268,
         .pokemonOffset = 2,
         .trainerScale = 271,
@@ -779,11 +747,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Digging"),
         .height = 4,
         .weight = 50,
-        .description = COMPOUND_STRING(
-            "It has ears like shovels. Digging holes\n"
-            "strengthens its ears so much that they\n"
-            "can sever thick roots effortlessly.\n"
-            "Bunnelby dig the whole night through."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 491,
         .pokemonOffset = 12,
         .trainerScale = 256,
@@ -847,11 +811,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Digging"),
         .height = 10,
         .weight = 424,
-        .description = COMPOUND_STRING(
-            "With its powerful ears it reduces dense\n"
-            "bedrock to rubble. It can be a big help\n"
-            "at construction sites. When it's finished\n"
-            "digging, it lounges about lazily."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 305,
         .pokemonOffset = 7,
         .trainerScale = 257,
@@ -915,11 +875,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Tiny Robin"),
         .height = 3,
         .weight = 17,
-        .description = COMPOUND_STRING(
-            "This amiable Pokémon is easy to train.\n"
-            "But when battle is joined, it shows its\n"
-            "ferocious side. It's merciless to\n"
-            "intruders that enter its territory."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 530,
         .pokemonOffset = 13,
         .trainerScale = 256,
@@ -987,11 +943,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Ember"),
         .height = 7,
         .weight = 160,
-        .description = COMPOUND_STRING(
-            "From its beak, it expels embers that set\n"
-            "the tall grass on fire. Then it pounces on\n"
-            "any bewildered Pokémon that pop out of\n"
-            "the grass."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 365,
         .pokemonOffset = 12,
         .trainerScale = 256,
@@ -1061,11 +1013,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Scorching"),
         .height = 12,
         .weight = 245,
-        .description = COMPOUND_STRING(
-            "In the fever of an exciting battle, it\n"
-            "showers embers from the gaps between its\n"
-            "feathers and takes to the air. It finishes\n"
-            "its prey off with a colossal kick."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 282,
         .pokemonOffset = 4,
         .trainerScale = 256,
@@ -1130,7 +1078,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Scatterdust"),                                                   \
         .height = 3,                                                                        \
         .weight = 25,                                                                       \
-        .description = gScatterbugPokedexText,                                              \
+        .description = gEmptyPokedexText,                                              \
         .pokemonScale = 530,                                                                \
         .pokemonOffset = 13,                                                                \
         .trainerScale = 256,                                                                \
@@ -1170,25 +1118,63 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
     }                                                                                       \
 
     [SPECIES_SCATTERBUG_ICY_SNOW]    = SCATTERBUG_SPECIES_INFO(ICY_SNOW, MON_RANDOMIZER_RANDOM_FORM),
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SCATTERBUG_POLAR]       = SCATTERBUG_SPECIES_INFO(POLAR, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SCATTERBUG_TUNDRA]      = SCATTERBUG_SPECIES_INFO(TUNDRA, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SCATTERBUG_CONTINENTAL] = SCATTERBUG_SPECIES_INFO(CONTINENTAL, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SCATTERBUG_GARDEN]      = SCATTERBUG_SPECIES_INFO(GARDEN, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SCATTERBUG_ELEGANT]     = SCATTERBUG_SPECIES_INFO(ELEGANT, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SCATTERBUG_MEADOW]      = SCATTERBUG_SPECIES_INFO(MEADOW, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SCATTERBUG_MODERN]      = SCATTERBUG_SPECIES_INFO(MODERN, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SCATTERBUG_MARINE]      = SCATTERBUG_SPECIES_INFO(MARINE, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SCATTERBUG_ARCHIPELAGO] = SCATTERBUG_SPECIES_INFO(ARCHIPELAGO, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SCATTERBUG_HIGH_PLAINS] = SCATTERBUG_SPECIES_INFO(HIGH_PLAINS, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SCATTERBUG_SANDSTORM]   = SCATTERBUG_SPECIES_INFO(SANDSTORM, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SCATTERBUG_RIVER]       = SCATTERBUG_SPECIES_INFO(RIVER, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SCATTERBUG_MONSOON]     = SCATTERBUG_SPECIES_INFO(MONSOON, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SCATTERBUG_SAVANNA]     = SCATTERBUG_SPECIES_INFO(SAVANNA, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SCATTERBUG_SUN]         = SCATTERBUG_SPECIES_INFO(SUN, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SCATTERBUG_OCEAN]       = SCATTERBUG_SPECIES_INFO(OCEAN, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SCATTERBUG_JUNGLE]      = SCATTERBUG_SPECIES_INFO(JUNGLE, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SCATTERBUG_FANCY]       = SCATTERBUG_SPECIES_INFO(FANCY, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SCATTERBUG_POKEBALL]    = SCATTERBUG_SPECIES_INFO(POKEBALL, MON_RANDOMIZER_RANDOM_FORM),
+#endif
 
 #define SPEWPA_SPECIES_INFO(evolution, rzMode)                                          \
     {                                                                           \
@@ -1215,7 +1201,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Scatterdust"),                                       \
         .height = 3,                                                            \
         .weight = 84,                                                           \
-        .description = gSpewpaPokedexText,                                      \
+        .description = gEmptyPokedexText,                                      \
         .pokemonScale = 530,                                                    \
         .pokemonOffset = 13,                                                    \
         .trainerScale = 256,                                                    \
@@ -1254,25 +1240,63 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
     }
 
     [SPECIES_SPEWPA_ICY_SNOW]    = SPEWPA_SPECIES_INFO(ICY_SNOW, MON_RANDOMIZER_RANDOM_FORM),
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SPEWPA_POLAR]       = SPEWPA_SPECIES_INFO(POLAR, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SPEWPA_TUNDRA]      = SPEWPA_SPECIES_INFO(TUNDRA, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SPEWPA_CONTINENTAL] = SPEWPA_SPECIES_INFO(CONTINENTAL, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SPEWPA_GARDEN]      = SPEWPA_SPECIES_INFO(GARDEN, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SPEWPA_ELEGANT]     = SPEWPA_SPECIES_INFO(ELEGANT, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SPEWPA_MEADOW]      = SPEWPA_SPECIES_INFO(MEADOW, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SPEWPA_MODERN]      = SPEWPA_SPECIES_INFO(MODERN, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SPEWPA_MARINE]      = SPEWPA_SPECIES_INFO(MARINE, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SPEWPA_ARCHIPELAGO] = SPEWPA_SPECIES_INFO(ARCHIPELAGO, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SPEWPA_HIGH_PLAINS] = SPEWPA_SPECIES_INFO(HIGH_PLAINS, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SPEWPA_SANDSTORM]   = SPEWPA_SPECIES_INFO(SANDSTORM, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SPEWPA_RIVER]       = SPEWPA_SPECIES_INFO(RIVER, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SPEWPA_MONSOON]     = SPEWPA_SPECIES_INFO(MONSOON, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SPEWPA_SAVANNA]     = SPEWPA_SPECIES_INFO(SAVANNA, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SPEWPA_SUN]         = SPEWPA_SPECIES_INFO(SUN, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SPEWPA_OCEAN]       = SPEWPA_SPECIES_INFO(OCEAN, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SPEWPA_JUNGLE]      = SPEWPA_SPECIES_INFO(JUNGLE, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SPEWPA_FANCY]       = SPEWPA_SPECIES_INFO(FANCY, MON_RANDOMIZER_RANDOM_FORM),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_SPEWPA_POKEBALL]   = SPEWPA_SPECIES_INFO(POKEBALL, MON_RANDOMIZER_RANDOM_FORM),
+#endif
 
 #define VIVILLON_MISC_INFO(form, color, iconPal)                                            \
         .baseHP        = 80,                                                                \
@@ -1337,203 +1361,161 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
     [SPECIES_VIVILLON_ICY_SNOW] =
     {
         VIVILLON_MISC_INFO(IcySnow, BODY_COLOR_WHITE, 0),
-        .description = COMPOUND_STRING(
-            "Its pattern depends on the climate and\n"
-            "topography of the land it was born in.\n"
-            "This form is from frigid lands.\n"
-            "It scatters toxic color scales in battle."),
+        .description = gEmptyPokedexText,
             .randomizerMode = MON_RANDOMIZER_RANDOM_FORM,
     },
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_VIVILLON_POLAR] =
     {
         VIVILLON_MISC_INFO(Polar, BODY_COLOR_BLUE, 0),
-        .description = COMPOUND_STRING(
-            "Its pattern depends on the climate and\n"
-            "topography of the land it was born in.\n"
-            "This form is from snowy lands.\n"
-            "It scatters toxic color scales in battle."),
+        .description = gEmptyPokedexText,
             .randomizerMode = MON_RANDOMIZER_RANDOM_FORM,
     },
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_VIVILLON_TUNDRA] =
     {
         VIVILLON_MISC_INFO(Tundra, BODY_COLOR_BLUE, 0),
-        .description = COMPOUND_STRING(
-            "Its pattern depends on the climate and\n"
-            "topography of the land it was born in.\n"
-            "This form is from lands of severe cold.\n"
-            "It scatters toxic color scales in battle."),
+        .description = gEmptyPokedexText,
             .randomizerMode = MON_RANDOMIZER_RANDOM_FORM,
     },
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_VIVILLON_CONTINENTAL] =
     {
         VIVILLON_MISC_INFO(Continental, BODY_COLOR_YELLOW, 2),
-        .description = COMPOUND_STRING(
-            "Its pattern depends on the climate and\n"
-            "topography of the land it was born in.\n"
-            "This form is from lands of vast space.\n"
-            "It scatters toxic color scales in battle."),
+        .description = gEmptyPokedexText,
             .randomizerMode = MON_RANDOMIZER_RANDOM_FORM,
     },
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_VIVILLON_GARDEN] =
     {
         VIVILLON_MISC_INFO(Garden, BODY_COLOR_GREEN, 1),
-        .description = COMPOUND_STRING(
-            "Its pattern depends on the climate and\n"
-            "topography of the land it was born in.\n"
-            "This form is from verdant lands.\n"
-            "It scatters toxic color scales in battle."),
+        .description = gEmptyPokedexText,
             .randomizerMode = MON_RANDOMIZER_RANDOM_FORM,
     },
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_VIVILLON_ELEGANT] =
     {
         VIVILLON_MISC_INFO(Elegant, BODY_COLOR_PURPLE, 0),
-        .description = COMPOUND_STRING(
-            "Its pattern depends on the climate and\n"
-            "topography of the land it was born in. This\n"
-            "form is from lands with distinct seasons.\n"
-            "It scatters toxic color scales in battle."),
+        .description = gEmptyPokedexText,
             .randomizerMode = MON_RANDOMIZER_RANDOM_FORM,
     },
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_VIVILLON_MEADOW] =
     {
         VIVILLON_MISC_INFO(Meadow, BODY_COLOR_PINK, 0),
-        .description = COMPOUND_STRING(
-            "Its pattern depends on the climate and\n"
-            "topography of the land it was born in. This\n"
-            "form is from lands where flowers bloom.\n"
-            "It scatters toxic color scales in battle."),
+        .description = gEmptyPokedexText,
             .randomizerMode = MON_RANDOMIZER_RANDOM_FORM,
     },
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_VIVILLON_MODERN] =
     {
         VIVILLON_MISC_INFO(Modern, BODY_COLOR_RED, 2),
-        .description = COMPOUND_STRING(
-            "Its pattern depends on the climate and\n"
-            "topography of the land it was born in.\n"
-            "This form is from sun-drenched lands.\n"
-            "It scatters toxic color scales in battle."),
+        .description = gEmptyPokedexText,
             .randomizerMode = MON_RANDOMIZER_RANDOM_FORM,
     },
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_VIVILLON_MARINE] =
     {
         VIVILLON_MISC_INFO(Marine, BODY_COLOR_BLUE, 0),
-        .description = COMPOUND_STRING(
-            "Its pattern depends on the climate and\n"
-            "topography of the land it was born in. This\n"
-            "form is from lands with ocean breezes.\n"
-            "It scatters toxic color scales in battle."),
+        .description = gEmptyPokedexText,
             .randomizerMode = MON_RANDOMIZER_RANDOM_FORM,
     },
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_VIVILLON_ARCHIPELAGO] =
     {
         VIVILLON_MISC_INFO(Archipelago, BODY_COLOR_BROWN, 0),
-        .description = COMPOUND_STRING(
-            "Its pattern depends on the climate and\n"
-            "topography of the land it was born in.\n"
-            "This form is from places with many islands.\n"
-            "It scatters toxic color scales in battle."),
+        .description = gEmptyPokedexText,
             .randomizerMode = MON_RANDOMIZER_RANDOM_FORM,
     },
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_VIVILLON_HIGH_PLAINS] =
     {
         VIVILLON_MISC_INFO(HighPlains, BODY_COLOR_BROWN, 0),
-        .description = COMPOUND_STRING(
-            "Its pattern depends on the climate and\n"
-            "topography of the land it was born in.\n"
-            "This form is from lands with little rain.\n"
-            "It scatters toxic color scales in battle."),
+        .description = gEmptyPokedexText,
             .randomizerMode = MON_RANDOMIZER_RANDOM_FORM,
     },
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_VIVILLON_SANDSTORM] =
     {
         VIVILLON_MISC_INFO(Sandstorm, BODY_COLOR_BROWN, 1),
-        .description = COMPOUND_STRING(
-            "Its pattern depends on the climate and\n"
-            "topography of the land it was born in.\n"
-            "This form is from parched lands.\n"
-            "It scatters toxic color scales in battle."),
+        .description = gEmptyPokedexText,
             .randomizerMode = MON_RANDOMIZER_RANDOM_FORM,
     },
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_VIVILLON_RIVER] =
     {
         VIVILLON_MISC_INFO(River, BODY_COLOR_BROWN, 2),
-        .description = COMPOUND_STRING(
-            "Its pattern depends on the climate and\n"
-            "topography of the land it was born in. This\n"
-            "form is from lands where large rivers flow.\n"
-            "It scatters toxic color scales in battle."),
+        .description = gEmptyPokedexText,
             .randomizerMode = MON_RANDOMIZER_RANDOM_FORM,
     },
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_VIVILLON_MONSOON] =
     {
         VIVILLON_MISC_INFO(Monsoon, BODY_COLOR_GRAY, 0),
-        .description = COMPOUND_STRING(
-            "Its pattern depends on the climate and\n"
-            "topography of the land it was born in. This\n"
-            "form is from lands with intense rainfall.\n"
-            "It scatters toxic color scales in battle."),
+        .description = gEmptyPokedexText,
             .randomizerMode = MON_RANDOMIZER_RANDOM_FORM,
     },
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_VIVILLON_SAVANNA] =
     {
         VIVILLON_MISC_INFO(Savanna, BODY_COLOR_GREEN, 0),
-        .description = COMPOUND_STRING(
-            "Its pattern depends on the climate and\n"
-            "topography of the land it was born in. This\n"
-            "form is from lands with a tropical climate.\n"
-            "It scatters toxic color scales in battle."),
+        .description = gEmptyPokedexText,
             .randomizerMode = MON_RANDOMIZER_RANDOM_FORM,
     },
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_VIVILLON_SUN] =
     {
         VIVILLON_MISC_INFO(Sun, BODY_COLOR_RED, 0),
-        .description = COMPOUND_STRING(
-            "Its pattern depends on the climate and\n"
-            "topography of the land it was born in.\n"
-            "This form is from lands bathed in light.\n"
-            "It scatters toxic color scales in battle."),
+        .description = gEmptyPokedexText,
             .randomizerMode = MON_RANDOMIZER_RANDOM_FORM,
     },
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_VIVILLON_OCEAN] =
     {
         VIVILLON_MISC_INFO(Ocean, BODY_COLOR_RED, 0),
-        .description = COMPOUND_STRING(
-            "Its pattern depends on the climate and\n"
-            "topography of the land it was born in. This\n"
-            "form is from lands of perpetual summer.\n"
-            "It scatters toxic color scales in battle."),
+        .description = gEmptyPokedexText,
             .randomizerMode = MON_RANDOMIZER_RANDOM_FORM,
     },
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_VIVILLON_JUNGLE] =
     {
         VIVILLON_MISC_INFO(Jungle, BODY_COLOR_GREEN, 0),
-        .description = COMPOUND_STRING(
-            "Its pattern depends on the climate and\n"
-            "topography of the land it was born in. This\n"
-            "form is from lands of tropical rainforests.\n"
-            "It scatters toxic color scales in battle."),
+        .description = gEmptyPokedexText,
             .randomizerMode = MON_RANDOMIZER_RANDOM_FORM,
     },
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_VIVILLON_FANCY] =
     {
         VIVILLON_MISC_INFO(Fancy, BODY_COLOR_PINK, 1),
-        .description = COMPOUND_STRING(
-            "Its pattern depends on the climate and\n"
-            "topography of the land it was born in.\n"
-            "This form is from a mysterious land.\n"
-            "It scatters toxic color scales in battle."),
+        .description = gEmptyPokedexText,
             .randomizerMode = MON_RANDOMIZER_RANDOM_FORM,
     },
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_VIVILLON_POKEBALL] =
     {
         VIVILLON_MISC_INFO(PokeBall, BODY_COLOR_RED, 2),
-        .description = COMPOUND_STRING(
-            "Its pattern depends on the climate and\n"
-            "topography of the land it was born in.\n"
-            "This form is from a special land.\n"
-            "It scatters toxic color scales in battle."),
+        .description = gEmptyPokedexText,
             .randomizerMode = MON_RANDOMIZER_RANDOM_FORM,
     },
+#endif
 #endif //P_FAMILY_SCATTERBUG
 
 #if P_FAMILY_LITLEO
@@ -1562,11 +1544,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Lion Cub"),
         .height = 6,
         .weight = 135,
-        .description = COMPOUND_STRING(
-            "They set off on their own from their pride\n"
-            "and live by themselves to become stronger.\n"
-            "These hot-blooded Pokémon are quick\n"
-            "to start a fight."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 422,
         .pokemonOffset = 12,
         .trainerScale = 256,
@@ -1631,11 +1609,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Royal"),
         .height = 15,
         .weight = 815,
-        .description = COMPOUND_STRING(
-            "The male with the largest mane of fire\n"
-            "is the leader of the pride. The females\n"
-            "protect the pride's cubs. They viciously\n"
-            "threaten any challenger."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 268,
         .pokemonOffset = 2,
         .trainerScale = 271,
@@ -1752,51 +1726,31 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
     [SPECIES_FLABEBE_RED] =
     {
         FLABEBE_MISC_INFO(Red, RED, 1),
-        .description = COMPOUND_STRING(
-            "This Flabébé rides a red flower.\n"
-            "Immediately after birth, this Pokémon\n"
-            "begins flying around in search of a\n"
-            "flower it likes."),
+        .description = gEmptyPokedexText,
         .randomizerMode = MON_RANDOMIZER_RANDOM_FORM,
     },
     [SPECIES_FLABEBE_YELLOW] =
     {
         FLABEBE_MISC_INFO(Yellow, YELLOW, 1),
-        .description = COMPOUND_STRING(
-            "It unleashes a variety of moves by\n"
-            "drawing forth the power hidden\n"
-            "within flowers. This Pokémon is\n"
-            "particularly fond of yellow flowers."),
+        .description = gEmptyPokedexText,
         .randomizerMode = MON_RANDOMIZER_INVALID,
     },
     [SPECIES_FLABEBE_ORANGE] =
     {
         FLABEBE_MISC_INFO(Orange, ORANGE, 0),
-        .description = COMPOUND_STRING(
-            "It receives strength from flowers\n"
-            "and gives them some of its energy in\n"
-            "return. This Pokémon likes orange\n"
-            "flowers best of all."),
+        .description = gEmptyPokedexText,
         .randomizerMode = MON_RANDOMIZER_INVALID,
     },
     [SPECIES_FLABEBE_BLUE]   =
     {
         FLABEBE_MISC_INFO(Blue, BLUE, 0),
-        .description = COMPOUND_STRING(
-            "This Pokémon likes blue flowers\n"
-            "best of all. It floats upward using the\n"
-            "power emanating from its flower\n"
-            "and bobs along lightly through the air."),
+        .description = gEmptyPokedexText,
         .randomizerMode = MON_RANDOMIZER_INVALID,
     },
     [SPECIES_FLABEBE_WHITE]  =
     {
         FLABEBE_MISC_INFO(White, WHITE, 1),
-        .description = COMPOUND_STRING(
-            "When evening falls, it searches out\n"
-            "a place blooming with flowers of\n"
-            "the same white color as itself, and\n"
-            "then it goes to sleep."),
+        .description = gEmptyPokedexText,
         .randomizerMode = MON_RANDOMIZER_INVALID,
     },
 
@@ -1865,51 +1819,31 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
     [SPECIES_FLOETTE_RED] =
     {
         FLOETTE_NORMAL_INFO(Red, RED, 1),
-        .description = COMPOUND_STRING(
-            "This Pokémon uses red wavelengths\n"
-            "of light to pour its own energy\n"
-            "into flowers and draw forth their\n"
-            "latent potential."),
+        .description = gEmptyPokedexText,
         .randomizerMode = MON_RANDOMIZER_SPECIAL_FORM,
     },
     [SPECIES_FLOETTE_YELLOW] =
     {
         FLOETTE_NORMAL_INFO(Yellow, YELLOW, 1),
-        .description = COMPOUND_STRING(
-            "This Pokémon can draw forth the\n"
-            "power hidden within yellow flowers.\n"
-            "This power then becomes the moves\n"
-            "Floette uses to protect itself."),
+        .description = gEmptyPokedexText,
         .randomizerMode = MON_RANDOMIZER_INVALID,
     },
     [SPECIES_FLOETTE_ORANGE] =
     {
         FLOETTE_NORMAL_INFO(Orange, ORANGE, 0),
-        .description = COMPOUND_STRING(
-            "This Pokémon can draw forth the\n"
-            "most power when in sync with orange\n"
-            "flowers, compared to flowers of other\n"
-            "colors."),
+        .description = gEmptyPokedexText,
         .randomizerMode = MON_RANDOMIZER_INVALID,
     },
     [SPECIES_FLOETTE_BLUE] =
     {
         FLOETTE_NORMAL_INFO(Blue, BLUE, 0),
-        .description = COMPOUND_STRING(
-            "Whenever this Pokémon finds\n"
-            "flowering plants that are withering, it\n"
-            "will bring them back to its territory\n"
-            "and care for them."),
+        .description = gEmptyPokedexText,
         .randomizerMode = MON_RANDOMIZER_INVALID,
     },
     [SPECIES_FLOETTE_WHITE] =
     {
         FLOETTE_NORMAL_INFO(White, WHITE, 1),
-        .description = COMPOUND_STRING(
-            "If it finds someone messing up a\n"
-            "flower bed, it will attack them\n"
-            "without mercy. This Floette takes\n"
-            "particularly good care of white flowers."),
+        .description = gEmptyPokedexText,
         .randomizerMode = MON_RANDOMIZER_INVALID,
     },
     [SPECIES_FLOETTE_ETERNAL] =
@@ -1924,11 +1858,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .expYield = 243,
         .eggGroups = MON_EGG_GROUPS(EGG_GROUP_NO_EGGS_DISCOVERED),
         .cryId = CRY_FLOETTE_ETERNAL,
-        .description = COMPOUND_STRING(
-            "The flower it's holding can no\n"
-            "longer be found blooming anywhere. It's\n"
-            "also thought to contain terrifying\n"
-            "power."),
+        .description = gEmptyPokedexText,
         .frontPic = gMonFrontPic_FloetteEternal,
         .frontPicSize = MON_COORDS_SIZE(64, 64),
         .frontPicYOffset = 3,
@@ -2001,50 +1931,31 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
     [SPECIES_FLORGES_RED] =
     {
         FLORGES_MISC_INFO(Red, 0),
-        .description = COMPOUND_STRING(
-            "This Pokémon creates an impressive\n"
-            "flower garden in its territory. It\n"
-            "draws forth the power of the red\n"
-            "flowers around its neck."),
+        .description = gEmptyPokedexText,
         .randomizerMode = MON_RANDOMIZER_RANDOM_FORM,
     },
     [SPECIES_FLORGES_YELLOW] =
     {
         FLORGES_MISC_INFO(Yellow, 1),
-        .description = COMPOUND_STRING(
-            "This Pokémon battles by drawing\n"
-            "forth the power of yellow flowers. It\n"
-            "ruthlessly punishes anyone who\n"
-            "tramples on flowering plants."),
+        .description = gEmptyPokedexText,
         .randomizerMode = MON_RANDOMIZER_INVALID,
     },
     [SPECIES_FLORGES_ORANGE] =
     {
         FLORGES_MISC_INFO(Orange, 0),
-        .description = COMPOUND_STRING(
-            "In times long past, castle\n"
-            "governors would lovingly raise Florges to\n"
-            "care for their castles' exquisite\n"
-            "gardens."),
+        .description = gEmptyPokedexText,
         .randomizerMode = MON_RANDOMIZER_INVALID,
     },
     [SPECIES_FLORGES_BLUE] =
     {
         FLORGES_MISC_INFO(Blue, 0),
-        .description = COMPOUND_STRING(
-            "Blue pigments were tremendously\n"
-            "expensive in the past, so paintings\n"
-            "of blue Florges are highly valuable."),
+        .description = gEmptyPokedexText,
         .randomizerMode = MON_RANDOMIZER_INVALID,
     },
     [SPECIES_FLORGES_WHITE] =
     {
         FLORGES_MISC_INFO(White, 0),
-        .description = COMPOUND_STRING(
-            "A flower garden made by a white-\n"
-            "flowered Florges will be beautifully\n"
-            "decorated with flowering plants of\n"
-            "many different colors."),
+        .description = gEmptyPokedexText,
         .randomizerMode = MON_RANDOMIZER_INVALID,
     },
 #endif //P_FAMILY_FLABEBE
@@ -2075,11 +1986,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Mount"),
         .height = 9,
         .weight = 310,
-        .description = COMPOUND_STRING(
-            "If it has sunshine and water, it doesn't\n"
-            "need to eat, because it can generate\n"
-            "energy from the leaves on its back.\n"
-            "It has a placid disposition."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 338,
         .pokemonOffset = 8,
         .trainerScale = 256,
@@ -2143,11 +2050,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Mount"),
         .height = 17,
         .weight = 910,
-        .description = COMPOUND_STRING(
-            "It can tell how its trainer is feeling by\n"
-            "subtle shifts in the grip on its horns. This\n"
-            "empathetic sense lets them run as if one\n"
-            "being. They inhabit mountainous regions."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 259,
         .pokemonOffset = 0,
         .trainerScale = 290,
@@ -2213,11 +2116,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Playful"),
         .height = 6,
         .weight = 80,
-        .description = COMPOUND_STRING(
-            "There's no point to the leaf in its mouth,\n"
-            "aside from an effort to look cool. It's\n"
-            "mischievous, so it's not well suited to\n"
-            "inexperienced Trainers."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 422,
         .pokemonOffset = 12,
         .trainerScale = 256,
@@ -2286,11 +2185,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Daunting"),
         .height = 21,
         .weight = 1360,
-        .description = COMPOUND_STRING(
-            "It boasts superb physical strength.\n"
-            "Those who wish to become Pangoro's\n"
-            "Trainer have no choice but to converse\n"
-            "with their fists."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 256,
         .pokemonOffset = 0,
         .trainerScale = 365,
@@ -2359,7 +2254,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Poodle"),                                                                    \
         .height = 12,                                                                                   \
         .weight = 280,                                                                                  \
-        .description = gFurfrouPokedexText,                                                             \
+        .description = gEmptyPokedexText,                                                             \
         .pokemonScale = 282,                                                                            \
         .pokemonOffset = 4,                                                                             \
         .trainerScale = 256,                                                                            \
@@ -2397,15 +2292,33 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
     }
 
     [SPECIES_FURFROU_NATURAL]   = FURFROU_MISC_INFO(Natural,   FALSE, 48, 3, 56, 0, 0),
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_FURFROU_HEART]     = FURFROU_MISC_INFO(Heart,     FALSE, 56, 2, 56, 1, 0),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_FURFROU_STAR]      = FURFROU_MISC_INFO(Star,      FALSE, 56, 2, 64, 1, 0),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_FURFROU_DIAMOND]   = FURFROU_MISC_INFO(Diamond,   FALSE, 48, 2, 56, 1, 0),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_FURFROU_DEBUTANTE] = FURFROU_MISC_INFO(Debutante, TRUE,  48, 2, 56, 1, 2),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_FURFROU_MATRON]    = FURFROU_MISC_INFO(Matron,    FALSE, 48, 2, 56, 1, 2),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_FURFROU_DANDY]     = FURFROU_MISC_INFO(Dandy,     FALSE, 48, 2, 56, 1, 1),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_FURFROU_LA_REINE]  = FURFROU_MISC_INFO(LaReine,   FALSE, 48, 2, 56, 1, 0),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_FURFROU_KABUKI]    = FURFROU_MISC_INFO(Kabuki,    FALSE, 56, 2, 56, 1, 0),
+#endif
+#if 0 // Quantum: retired form; numeric ID remains reserved for old saves.
     [SPECIES_FURFROU_PHARAOH]   = FURFROU_MISC_INFO(Pharaoh,   FALSE, 48, 2, 56, 1, 0),
+#endif
 #endif //P_FAMILY_FURFROU
 
 #if P_FAMILY_ESPURR
@@ -2434,11 +2347,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Restraint"),
         .height = 3,
         .weight = 35,
-        .description = COMPOUND_STRING(
-            "It has enough psychic energy to blast\n"
-            "everything within 300 feet of itself.\n"
-            "The organ that emits its intense psychic\n"
-            "power is sheltered by its ears."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 530,
         .pokemonOffset = 13,
         .trainerScale = 256,
@@ -2508,11 +2417,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Constraint"),
         .height = 6,
         .weight = 85,
-        .description = COMPOUND_STRING(
-            "The defensive instinct of the\n"
-            "males is strong. It's when they're\n"
-            "protecting themselves or their partners\n"
-            "that they unleash their full power."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 422,
         .pokemonOffset = 12,
         .trainerScale = 256,
@@ -2572,11 +2477,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Constraint"),
         .height = 6,
         .weight = 85,
-        .description = COMPOUND_STRING(
-            "Females are a bit more selfish and\n"
-            "aggressive than males. If they\n"
-            "don't get what they want, they will\n"
-            "torment you with their psychic abilities."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 422,
         .pokemonOffset = 12,
         .trainerScale = 256,
@@ -2638,11 +2539,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Sword"),
         .height = 8,
         .weight = 20,
-        .description = COMPOUND_STRING(
-            "If anyone dares to grab its hilt, it\n"
-            "wraps a blue cloth around that person's\n"
-            "arm and drains that person's life\n"
-            "energy completely."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 366,
         .pokemonOffset = 7,
         .trainerScale = 257,
@@ -2708,11 +2605,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Sword"),
         .height = 8,
         .weight = 45,
-        .description = COMPOUND_STRING(
-            "When Honedge evolves, it divides into\n"
-            "two swords. The complex attack patterns\n"
-            "of its two swords are unstoppable, even\n"
-            "against those skilled at swordplay."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 366,
         .pokemonOffset = 7,
         .trainerScale = 257,
@@ -2782,11 +2675,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Royal Sword"),
         .height = 17,
         .weight = 530,
-        .description = COMPOUND_STRING(
-            "In this defensive stance,\n"
-            "Aegislash uses its steel body and a force\n"
-            "field of spectral power to reduce the\n"
-            "damage of any attack."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 259,
         .pokemonOffset = 0,
         .trainerScale = 290,
@@ -2860,11 +2749,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Royal Sword"),
         .height = 17,
         .weight = 530,
-        .description = COMPOUND_STRING(
-            "Once upon a time, a king with an\n"
-            "Aegislash reigned over the land. His\n"
-            "Pokémon eventually drained him of\n"
-            "life, and his kingdom fell with him."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 259,
         .pokemonOffset = 0,
         .trainerScale = 290,
@@ -2925,11 +2810,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Perfume"),
         .height = 2,
         .weight = 5,
-        .description = COMPOUND_STRING(
-            "In the past, rather than using perfume,\n"
-            "royal ladies carried a Spritzee that would\n"
-            "waft a fragrance they liked. Its fragrance\n"
-            "changes depending on what it has eaten."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 682,
         .pokemonOffset = 24,
         .trainerScale = 256,
@@ -2999,11 +2880,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Fragrance"),
         .height = 8,
         .weight = 155,
-        .description = COMPOUND_STRING(
-            "Its scent is so overpowering that,\n"
-            "unless a Trainer happens to really enjoy\n"
-            "the smell, he or she will have a hard time\n"
-            "walking alongside it."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 366,
         .pokemonOffset = 7,
         .trainerScale = 257,
@@ -3067,11 +2944,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Cotton Candy"),
         .height = 4,
         .weight = 35,
-        .description = COMPOUND_STRING(
-            "Because it eats nothing but sweets, its\n"
-            "fur is as sticky sweet as cotton candy.\n"
-            "To entangle its opponents in battle, it\n"
-            "extrudes sticky white threads."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 491,
         .pokemonOffset = 12,
         .trainerScale = 256,
@@ -3141,11 +3014,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Meringue"),
         .height = 8,
         .weight = 50,
-        .description = COMPOUND_STRING(
-            "Slurpuff can distinguish even the\n"
-            "faintest of scents. It puts its sensitive\n"
-            "sense of smell to use by helping pastry\n"
-            "chefs in their work."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 366,
         .pokemonOffset = 7,
         .trainerScale = 257,
@@ -3212,11 +3081,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Revolving"),
         .height = 4,
         .weight = 35,
-        .description = COMPOUND_STRING(
-            "It flashes the light-emitting spots on its\n"
-            "body, which drains its opponent's will\n"
-            "to fight. It takes the opportunity to\n"
-            "scuttle away and hide."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 491,
         .pokemonOffset = 12,
         .trainerScale = 256,
@@ -3283,11 +3148,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Overturning"),
         .height = 15,
         .weight = 470,
-        .description = COMPOUND_STRING(
-            "It lures prey close with hypnotic motions,\n"
-            "then wraps its tentacles around it before\n"
-            "finishing it off with digestive fluids. It\n"
-            "forces others to do whatever it wants."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 268,
         .pokemonOffset = 2,
         .trainerScale = 271,
@@ -3353,11 +3214,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Two-Handed"),
         .height = 5,
         .weight = 310,
-        .description = COMPOUND_STRING(
-            "They stretch and then contract, yanking\n"
-            "their rocks along with them in bold hops.\n"
-            "They eat seaweed that washes up on\n"
-            "the shoreline."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 432,
         .pokemonOffset = 13,
         .trainerScale = 256,
@@ -3426,11 +3283,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Collective"),
         .height = 13,
         .weight = 960,
-        .description = COMPOUND_STRING(
-            "Barbaracle's legs and hands have minds\n"
-            "of their own, and they will move\n"
-            "independently. But they usually follow\n"
-            "the head's orders."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 272,
         .pokemonOffset = 3,
         .trainerScale = 256,
@@ -3494,11 +3347,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Mock Kelp"),
         .height = 5,
         .weight = 73,
-        .description = COMPOUND_STRING(
-            "Camouflaged as rotten kelp, it hides\n"
-            "from foes while storing up power for its\n"
-            "evolution. They spray liquid poison on\n"
-            "prey that approach unawares."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 432,
         .pokemonOffset = 13,
         .trainerScale = 256,
@@ -3568,11 +3417,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Mock Kelp"),
         .height = 18,
         .weight = 815,
-        .description = COMPOUND_STRING(
-            "Their poison is strong enough to eat\n"
-            "through the hull of a tanker. Tales are\n"
-            "told of ships that wander into seas where\n"
-            "Dragalge live, never to return."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 267,
         .pokemonOffset = 2,
         .trainerScale = 286,
@@ -3639,11 +3484,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Water Gun"),
         .height = 5,
         .weight = 83,
-        .description = COMPOUND_STRING(
-            "Through controlled expulsions of internal\n"
-            "gas, it can expel water like a pistol shot.\n"
-            "At close distances, it can even shatter\n"
-            "large rocks."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 432,
         .pokemonOffset = 13,
         .trainerScale = 256,
@@ -3711,11 +3552,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Howitzer"),
         .height = 13,
         .weight = 353,
-        .description = COMPOUND_STRING(
-            "By expelling water from the nozzle in the\n"
-            "back of its enormous claw, it can move\n"
-            "at a speed of 60 knots. They launch\n"
-            "cannonballs made of water."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 272,
         .pokemonOffset = 3,
         .trainerScale = 256,
@@ -3785,11 +3622,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Generator"),
         .height = 5,
         .weight = 60,
-        .description = COMPOUND_STRING(
-            "They make their home in deserts.\n"
-            "They can generate their own energy from\n"
-            "basking in the sun, so eating food is not\n"
-            "a requirement."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 432,
         .pokemonOffset = 13,
         .trainerScale = 256,
@@ -3855,11 +3688,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Generator"),
         .height = 10,
         .weight = 210,
-        .description = COMPOUND_STRING(
-            "A single Heliolisk can generate sufficient\n"
-            "electricity to power a skyscraper. It can\n"
-            "stimulate its muscles with electricity,\n"
-            "boosting the strength in its legs."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 305,
         .pokemonOffset = 7,
         .trainerScale = 257,
@@ -3924,11 +3753,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Royal Heir"),
         .height = 8,
         .weight = 260,
-        .description = COMPOUND_STRING(
-            "Its immense jaws have enough destructive\n"
-            "force that it can chew up a car. If\n"
-            "something happens that it doesn't like,\n"
-            "it throws a tantrum and runs wild."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 366,
         .pokemonOffset = 7,
         .trainerScale = 257,
@@ -3994,11 +3819,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Despot"),
         .height = 25,
         .weight = 2700,
-        .description = COMPOUND_STRING(
-            "Thanks to its gargantuan jaws, which could\n"
-            "shred thick metal plates as if they were\n"
-            "paper, it was invincible in the ancient\n"
-            "world it once inhabited."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 257,
         .pokemonOffset = 10,
         .trainerScale = 423,
@@ -4062,11 +3883,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Tundra"),
         .height = 13,
         .weight = 252,
-        .description = COMPOUND_STRING(
-            "This ancient Pokémon was restored from\n"
-            "part of its body that had been frozen in\n"
-            "ice for over 100 million years. It lived in a\n"
-            "cold land where there were no predators."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 272,
         .pokemonOffset = 3,
         .trainerScale = 256,
@@ -4138,11 +3955,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Tundra"),
         .height = 27,
         .weight = 2250,
-        .description = COMPOUND_STRING(
-            "Using the diamond-shaped crystals on its\n"
-            "body it can instantly create a wall of ice\n"
-            "to block an opponent's attack, or encase\n"
-            "them in ice."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 275,
         .pokemonOffset = 7,
         .trainerScale = 256,
@@ -4211,11 +4024,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Wrestling"),
         .height = 8,
         .weight = 215,
-        .description = COMPOUND_STRING(
-            "With its wings, it controls its position in\n"
-            "the air. Its proficient fighting skills\n"
-            "enable it to keep up with big bruisers\n"
-            "like Machamp and Hariyama."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 366,
         .pokemonOffset = 7,
         .trainerScale = 257,
@@ -4281,11 +4090,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Antenna"),
         .height = 2,
         .weight = 22,
-        .description = COMPOUND_STRING(
-            "Its whiskers serve as antennas.\n"
-            "By sending and receiving electrical\n"
-            "waves, it can communicate with others\n"
-            "over vast distances."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 682,
         .pokemonOffset = 24,
         .trainerScale = 256,
@@ -4352,11 +4157,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Jewel"),
         .height = 3,
         .weight = 57,
-        .description = COMPOUND_STRING(
-            "Born from the high temperatures and\n"
-            "pressures deep underground, it defends\n"
-            "itself by firing beams from the jewel part\n"
-            "of its body."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 530,
         .pokemonOffset = 13,
         .trainerScale = 256,
@@ -4429,11 +4230,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Soft Tissue"),
         .height = 3,
         .weight = 28,
-        .description = COMPOUND_STRING(
-            "Its source of protection is its slimy,\n"
-            "germ-laden mucous membrane. Anyone\n"
-            "who touches it will need some thorough\n"
-            "hand-washing."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 530,
         .pokemonOffset = 13,
         .trainerScale = 256,
@@ -4500,11 +4297,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Soft Tissue"),
         .height = 8,
         .weight = 175,
-        .description = COMPOUND_STRING(
-            "This Pokémon's mucous can dissolve\n"
-            "anything. Toothless, it sprays mucous\n"
-            "on its prey. Once they're nicely dissolved,\n"
-            "it slurps them up."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 366,
         .pokemonOffset = 7,
         .trainerScale = 257,
@@ -4570,11 +4363,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Dragon"),
         .height = 20,
         .weight = 1505,
-        .description = COMPOUND_STRING(
-            "It gets picked on because it's meek.\n"
-            "But then, whoever teased it gets to feel\n"
-            "the full force of its horns and a good\n"
-            "swatting from its thick tail."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 261,
         .pokemonOffset = 1,
         .trainerScale = 334,
@@ -4642,11 +4431,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Snail"),
         .height = 7,
         .weight = 685,
-        .description = COMPOUND_STRING(
-            "A creature given to melancholy.\n"
-            "Its metallic shell developed as a\n"
-            "result of the mucus on its skin reacting\n"
-            "with the iron in Hisui's water."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 366,
         .pokemonOffset = 7,
         .trainerScale = 257,
@@ -4709,11 +4494,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Shell Bunker"),
         .height = 17,
         .weight = 3341,
-        .description = COMPOUND_STRING(
-            "It loathes solitude and is extremely\n"
-            "clingy--it will fume and run riot if\n"
-            "those dearest to it ever leave its\n"
-            "side."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 261,
         .pokemonOffset = 1,
         .trainerScale = 334,
@@ -4778,11 +4559,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Key Ring"),
         .height = 2,
         .weight = 30,
-        .description = COMPOUND_STRING(
-            "These key collectors threaten any\n"
-            "attackers by fiercely jingling their keys\n"
-            "at them. It will sneak into people's homes\n"
-            "to steal their keys."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 682,
         .pokemonOffset = 24,
         .trainerScale = 256,
@@ -4855,11 +4632,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Stump"),
         .height = 4,
         .weight = 70,
-        .description = COMPOUND_STRING(
-            "According to legend, medicine to cure\n"
-            "any illness can be made by plucking the\n"
-            "green leaves on its head, brewing them,\n"
-            "and boiling down the liquid."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 491,
         .pokemonOffset = 12,
         .trainerScale = 256,
@@ -4926,11 +4699,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Elder Tree"),
         .height = 15,
         .weight = 710,
-        .description = COMPOUND_STRING(
-            "Through its roots, it exerts control over\n"
-            "other trees. A deadly curse falls upon\n"
-            "anyone cutting down trees in forests\n"
-            "where Trevenant dwell."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 268,
         .pokemonOffset = 2,
         .trainerScale = 271,
@@ -4998,11 +4767,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Pumpkin"),
         .height = 4,
         .weight = 50,
-        .description = COMPOUND_STRING(
-            "The light that streams out from\n"
-            "the holes in the pumpkin can\n"
-            "hypnotize and control the people and\n"
-            "Pokémon that see it."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 491,
         .pokemonOffset = 12,
         .trainerScale = 256,
@@ -5065,10 +4830,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Pumpkin"),
         .height = 3,
         .weight = 35,
-        .description = COMPOUND_STRING(
-            "When taking spirits to the\n"
-            "afterlife, small Pumpkaboo prefer the\n"
-            "spirits of children to those of adults."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 491,
         .pokemonOffset = 12,
         .trainerScale = 256,
@@ -5131,10 +4893,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Pumpkin"),
         .height = 5,
         .weight = 75,
-        .description = COMPOUND_STRING(
-            "When taking spirits to the\n"
-            "afterlife, large Pumpkaboo prefer the\n"
-            "spirits of adults to those of children."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 491,
         .pokemonOffset = 12,
         .trainerScale = 256,
@@ -5199,10 +4958,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Pumpkin"),
         .height = 8,
         .weight = 150,
-        .description = COMPOUND_STRING(
-            "Supersized Pumpkaboo are very\n"
-            "partial to the spirits of people who\n"
-            "were of similarly superior proportions."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 491,
         .pokemonOffset = 12,
         .trainerScale = 256,
@@ -5265,11 +5021,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Pumpkin"),
         .height = 9,
         .weight = 125,
-        .description = COMPOUND_STRING(
-            "Eerie cries emanate from its body\n"
-            "in the dead of night. The sounds are\n"
-            "said to be the wails of spirits who\n"
-            "are suffering in the afterlife."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 338,
         .pokemonOffset = 8,
         .trainerScale = 256,
@@ -5329,11 +5081,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Pumpkin"),
         .height = 7,
         .weight = 95,
-        .description = COMPOUND_STRING(
-            "A small-sized Pumpkaboo evolves\n"
-            "into a small-sized Gourgeist. Its\n"
-            "bodily proportions also get passed on\n"
-            "to its descendants."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 338,
         .pokemonOffset = 8,
         .trainerScale = 256,
@@ -5393,11 +5141,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Pumpkin"),
         .height = 11,
         .weight = 140,
-        .description = COMPOUND_STRING(
-            "A large-sized Pumpkaboo evolves\n"
-            "into a large-sized Gourgeist. Its\n"
-            "bodily proportions also get passed on\n"
-            "to its descendants."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 338,
         .pokemonOffset = 8,
         .trainerScale = 256,
@@ -5459,11 +5203,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Pumpkin"),
         .height = 17,
         .weight = 390,
-        .description = COMPOUND_STRING(
-            "A supersized Pumpkaboo evolves\n"
-            "into a supersized Gourgeist. Its\n"
-            "bodily proportions also get passed on to\n"
-            "its descendants."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 338,
         .pokemonOffset = 8,
         .trainerScale = 256,
@@ -5531,11 +5271,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Ice Chunk"),
         .height = 10,
         .weight = 995,
-        .description = COMPOUND_STRING(
-            "It blocks opponents' attacks with the ice\n"
-            "that shields its body. It uses cold air to\n"
-            "repair any cracks with new ice. They live\n"
-            "in herds on snowy mountains."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 305,
         .pokemonOffset = 7,
         .trainerScale = 257,
@@ -5603,11 +5339,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Iceberg"),
         .height = 20,
         .weight = 5050,
-        .description = COMPOUND_STRING(
-            "The way several Bergmite huddle on its\n"
-            "back make it look like an aircraft carrier\n"
-            "made of ice. Its cumbersome frame crushes\n"
-            "anything that stands in its way."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 261,
         .pokemonOffset = 1,
         .trainerScale = 334,
@@ -5673,10 +5405,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Iceberg"),
         .height = 14,
         .weight = 2624,
-        .description = COMPOUND_STRING(
-            "The armor of ice covering its lower\n"
-            "jaw puts steel to shame and can\n"
-            "shatter rocks with ease."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 261,
         .pokemonOffset = 1,
         .trainerScale = 334,
@@ -5744,11 +5473,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Sound Wave"),
         .height = 5,
         .weight = 80,
-        .description = COMPOUND_STRING(
-            "They live in pitch-black caves. Even a\n"
-            "robust wrestler will become dizzy and\n"
-            "unable to stand when exposed to its\n"
-            "200,000-hertz ultrasonic waves."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 432,
         .pokemonOffset = 13,
         .trainerScale = 256,
@@ -5823,11 +5548,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Sound Wave"),
         .height = 15,
         .weight = 850,
-        .description = COMPOUND_STRING(
-            "They fly around on moonless nights and\n"
-            "attack careless prey. The ultrasonic\n"
-            "waves it emits from its ears can reduce\n"
-            "a large boulder to pebbles."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 268,
         .pokemonOffset = 2,
         .trainerScale = 271,
@@ -5891,7 +5612,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Life"),
         .height = 30,
         .weight = 2150,
-        .description = gXerneasPokedexText,
+        .description = gEmptyPokedexText,
         .pokemonScale = 275,
         .pokemonOffset = 7,
         .trainerScale = 256,
@@ -5955,7 +5676,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Life"),
         .height = 30,
         .weight = 2150,
-        .description = gXerneasPokedexText,
+        .description = gEmptyPokedexText,
         .pokemonScale = 275,
         .pokemonOffset = 7,
         .trainerScale = 256,
@@ -6021,11 +5742,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Destruction"),
         .height = 58,
         .weight = 2030,
-        .description = COMPOUND_STRING(
-            "When its life comes to an end, its wings\n"
-            "and tail spread wide and glow red, and\n"
-            "it absorbs the life energy of every living\n"
-            "thing and turns into a cocoon."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 256,
         .pokemonOffset = 0,
         .trainerScale = 360,
@@ -6096,7 +5813,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Order"),
         .height = 50,
         .weight = 3050,
-        .description = gZygarde50PokedexText,
+        .description = gEmptyPokedexText,
         .pokemonScale = 256,
         .pokemonOffset = 0,
         .trainerScale = 721,
@@ -6160,7 +5877,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Order"),
         .height = 50,
         .weight = 3050,
-        .description = gZygarde50PokedexText,
+        .description = gEmptyPokedexText,
         .pokemonScale = 256,
         .pokemonOffset = 0,
         .trainerScale = 721,
@@ -6224,7 +5941,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Order"),
         .height = 12,
         .weight = 335,
-        .description = gZygarde10PokedexText,
+        .description = gEmptyPokedexText,
         .pokemonScale = 256,
         .pokemonOffset = 0,
         .trainerScale = 721,
@@ -6289,7 +6006,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Order"),
         .height = 12,
         .weight = 335,
-        .description = gZygarde10PokedexText,
+        .description = gEmptyPokedexText,
         .pokemonScale = 256,
         .pokemonOffset = 0,
         .trainerScale = 721,
@@ -6354,11 +6071,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Order"),
         .height = 45,
         .weight = 6100,
-        .description = COMPOUND_STRING(
-            "This is Zygarde's perfected form.\n"
-            "From the orifice on its chest, it\n"
-            "radiates high-powered energy that\n"
-            "eliminates everything."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 256,
         .pokemonOffset = 0,
         .trainerScale = 721,
@@ -6429,11 +6142,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Jewel"),
         .height = 7,
         .weight = 88,
-        .description = COMPOUND_STRING(
-            "A sudden transformation of Carbink,\n"
-            "its pink, glimmering body is said to be\n"
-            "the loveliest sight in the whole world.\n"
-            "It creates diamonds between its hands."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 365,
         .pokemonOffset = 12,
         .trainerScale = 256,
@@ -6503,11 +6212,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Jewel"),
         .height = 11,
         .weight = 278,
-        .description = COMPOUND_STRING(
-            "The impurities upon its body's surface\n"
-            "have fallen away, sparkling so brilliantly\n"
-            "that cannot be observed directly.\n"
-            "It is known as “the Royal Pink Princess”."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 365,
         .pokemonOffset = 12,
         .trainerScale = 256,
@@ -6578,11 +6283,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Mischief"),
         .height = 5,
         .weight = 90,
-        .description = COMPOUND_STRING(
-            "In its true form, it possess a huge amount\n"
-            "of power. When its powers are sealed away,\n"
-            "it is transformed into a much smaller form.\n"
-            "It teleports things to a secret place."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 432,
         .pokemonOffset = 13,
         .trainerScale = 256,
@@ -6657,11 +6358,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Djinn"),
         .height = 65,
         .weight = 490,
-        .description = COMPOUND_STRING(
-            "It is the true form of Hoopa, which has had\n"
-            "its power sealed away. The rings it carries\n"
-            "have the power to bend dimensions and are\n"
-            "able to seize anything in the world."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 432,
         .pokemonOffset = 13,
         .trainerScale = 256,
@@ -6732,11 +6429,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Steam"),
         .height = 17,
         .weight = 1950,
-        .description = COMPOUND_STRING(
-            "It lets out billows of steam from the arms\n"
-            "on its back and disappears into the dense\n"
-            "fog. It's said to live in mountains where\n"
-            "humans do not tread."),
+        .description = gEmptyPokedexText,
         .pokemonScale = 259,
         .pokemonOffset = 0,
         .trainerScale = 290,

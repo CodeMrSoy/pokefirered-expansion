@@ -26,6 +26,7 @@
 #include "text.h"
 #include "intro.h"
 #include "main.h"
+#include "poke_glass.h"
 #include "trainer_tower.h"
 #include "test_runner.h"
 #include "constants/rgb.h"
@@ -388,6 +389,7 @@ static void VBlankIntr(void)
 
     CopyBufferedValuesToGpuRegs();
     ProcessDma3Requests();
+    VBlankCB_PokeGlassReturn();
 
     gPcmDmaCounter = gSoundInfo.pcmDmaCounter;
 

@@ -1,8 +1,12 @@
-const u16 gMetatiles_General[] = INCBIN_U16("data/tilesets/primary/general/metatiles.bin");
-const u32 gMetatileAttributes_General[] = INCBIN_U32("data/tilesets/primary/general/metatile_attributes.bin");
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u16 gMetatiles_General[5120] __attribute__((alias("gMetatiles_GeneralSummer")));
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u32 gMetatileAttributes_General[640] __attribute__((alias("gMetatileAttributes_GeneralSummer")));
 
-const u16 gMetatiles_PalletTown[] = INCBIN_U16("data/tilesets/secondary/pallet_town/metatiles.bin");
-const u32 gMetatileAttributes_PalletTown[] = INCBIN_U32("data/tilesets/secondary/pallet_town/metatile_attributes.bin");
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u16 gMetatiles_PalletTown[712] __attribute__((alias("gMetatiles_PalletTownWinter")));
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u32 gMetatileAttributes_PalletTown[89] __attribute__((alias("gMetatileAttributes_PalletTownWinter")));
 
 const u16 gMetatiles_ViridianCity[] = INCBIN_U16("data/tilesets/secondary/viridian_city/metatiles.bin");
 const u32 gMetatileAttributes_ViridianCity[] = INCBIN_U32("data/tilesets/secondary/viridian_city/metatile_attributes.bin");
@@ -13,26 +17,36 @@ const u32 gMetatileAttributes_PewterCity[] = INCBIN_U32("data/tilesets/secondary
 const u16 gMetatiles_CeruleanCity[] = INCBIN_U16("data/tilesets/secondary/cerulean_city/metatiles.bin");
 const u32 gMetatileAttributes_CeruleanCity[] = INCBIN_U32("data/tilesets/secondary/cerulean_city/metatile_attributes.bin");
 
-const u16 gMetatiles_LavenderTown[] = INCBIN_U16("data/tilesets/secondary/lavender_town/metatiles.bin");
-const u32 gMetatileAttributes_LavenderTown[] = INCBIN_U32("data/tilesets/secondary/lavender_town/metatile_attributes.bin");
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u16 gMetatiles_LavenderTown[1744] __attribute__((alias("gMetatiles_LavenderTownWinter")));
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u32 gMetatileAttributes_LavenderTown[218] __attribute__((alias("gMetatileAttributes_LavenderTownWinter")));
 
 const u16 gMetatiles_VermilionCity[] = INCBIN_U16("data/tilesets/secondary/vermilion_city/metatiles.bin");
 const u32 gMetatileAttributes_VermilionCity[] = INCBIN_U32("data/tilesets/secondary/vermilion_city/metatile_attributes.bin");
 
-const u16 gMetatiles_CeladonCity[] = INCBIN_U16("data/tilesets/secondary/celadon_city/metatiles.bin");
-const u32 gMetatileAttributes_CeladonCity[] = INCBIN_U32("data/tilesets/secondary/celadon_city/metatile_attributes.bin");
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u16 gMetatiles_CeladonCity[1920] __attribute__((alias("gMetatiles_CeladonCityWinter")));
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u32 gMetatileAttributes_CeladonCity[240] __attribute__((alias("gMetatileAttributes_CeladonCityWinter")));
 
-const u16 gMetatiles_FuchsiaCity[] = INCBIN_U16("data/tilesets/secondary/fuchsia_city/metatiles.bin");
-const u32 gMetatileAttributes_FuchsiaCity[] = INCBIN_U32("data/tilesets/secondary/fuchsia_city/metatile_attributes.bin");
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u16 gMetatiles_FuchsiaCity[1536] __attribute__((alias("gMetatiles_FuchsiaCityWinter")));
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u32 gMetatileAttributes_FuchsiaCity[192] __attribute__((alias("gMetatileAttributes_FuchsiaCityWinter")));
 
 const u16 gMetatiles_CinnabarIsland[] = INCBIN_U16("data/tilesets/secondary/cinnabar_island/metatiles.bin");
 const u32 gMetatileAttributes_CinnabarIsland[] = INCBIN_U32("data/tilesets/secondary/cinnabar_island/metatile_attributes.bin");
 
-const u16 gMetatiles_IndigoPlateau[] = INCBIN_U16("data/tilesets/secondary/indigo_plateau/metatiles.bin");
-const u32 gMetatileAttributes_IndigoPlateau[] = INCBIN_U32("data/tilesets/secondary/indigo_plateau/metatile_attributes.bin");
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u16 gMetatiles_IndigoPlateau[1408] __attribute__((alias("gMetatiles_IndigoPlateauWinter")));
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u32 gMetatileAttributes_IndigoPlateau[176] __attribute__((alias("gMetatileAttributes_IndigoPlateauWinter")));
 
-const u16 gMetatiles_SaffronCity[] = INCBIN_U16("data/tilesets/secondary/saffron_city/metatiles.bin");
-const u32 gMetatileAttributes_SaffronCity[] = INCBIN_U32("data/tilesets/secondary/saffron_city/metatile_attributes.bin");
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u16 gMetatiles_SaffronCity[1600] __attribute__((alias("gMetatiles_SaffronCityWinter")));
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u32 gMetatileAttributes_SaffronCity[200] __attribute__((alias("gMetatileAttributes_SaffronCityWinter")));
 
 const u16 gMetatiles_PewterGym[] = INCBIN_U16("data/tilesets/secondary/pewter_gym/metatiles.bin");
 const u32 gMetatileAttributes_PewterGym[] = INCBIN_U32("data/tilesets/secondary/pewter_gym/metatile_attributes.bin");
@@ -94,11 +108,15 @@ const u32 gMetatileAttributes_SSAnne[] = INCBIN_U32("data/tilesets/secondary/ss_
 const u16 gMetatiles_Dummy2[] = INCBIN_U16("data/tilesets/secondary/dummy_2/metatiles.bin");
 const u32 gMetatileAttributes_Dummy2[] = INCBIN_U32("data/tilesets/secondary/dummy_2/metatile_attributes.bin");
 
-const u16 gMetatiles_ViridianForest[] = INCBIN_U16("data/tilesets/secondary/viridian_forest/metatiles.bin");
-const u32 gMetatileAttributes_ViridianForest[] = INCBIN_U32("data/tilesets/secondary/viridian_forest/metatile_attributes.bin");
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u16 gMetatiles_ViridianForest[344] __attribute__((alias("gMetatiles_ViridianForestWinter")));
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u32 gMetatileAttributes_ViridianForest[43] __attribute__((alias("gMetatileAttributes_ViridianForestWinter")));
 
-const u16 gMetatiles_UnusedGatehouse1[] = INCBIN_U16("data/tilesets/secondary/unused_gatehouse_1/metatiles.bin");
-const u32 gMetatileAttributes_UnusedGatehouse1[] = INCBIN_U32("data/tilesets/secondary/unused_gatehouse_1/metatile_attributes.bin");
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u16 gMetatiles_UnusedGatehouse1[912] __attribute__((alias("gMetatiles_UnusedGatehouse2")));
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u32 gMetatileAttributes_UnusedGatehouse1[114] __attribute__((alias("gMetatileAttributes_UnusedGatehouse2")));
 
 const u16 gMetatiles_RockTunnel[] = INCBIN_U16("data/tilesets/secondary/rock_tunnel/metatiles.bin");
 const u32 gMetatileAttributes_RockTunnel[] = INCBIN_U32("data/tilesets/secondary/rock_tunnel/metatile_attributes.bin");
@@ -173,7 +191,8 @@ const u16 gMetatiles_MtEmber[] = INCBIN_U16("data/tilesets/secondary/mt_ember/me
 const u32 gMetatileAttributes_MtEmber[] = INCBIN_U32("data/tilesets/secondary/mt_ember/metatile_attributes.bin");
 
 const u16 gMetatiles_BerryForest[] = INCBIN_U16("data/tilesets/secondary/berry_forest/metatiles.bin");
-const u32 gMetatileAttributes_BerryForest[] = INCBIN_U32("data/tilesets/secondary/berry_forest/metatile_attributes.bin");
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u32 gMetatileAttributes_BerryForest[42] __attribute__((alias("gMetatileAttributes_BerryForestWinter")));
 
 const u16 gMetatiles_NavelRock[] = INCBIN_U16("data/tilesets/secondary/navel_rock/metatiles.bin");
 const u32 gMetatileAttributes_NavelRock[] = INCBIN_U32("data/tilesets/secondary/navel_rock/metatile_attributes.bin");
@@ -181,8 +200,10 @@ const u32 gMetatileAttributes_NavelRock[] = INCBIN_U32("data/tilesets/secondary/
 const u16 gMetatiles_TanobyRuins[] = INCBIN_U16("data/tilesets/secondary/tanoby_ruins/metatiles.bin");
 const u32 gMetatileAttributes_TanobyRuins[] = INCBIN_U32("data/tilesets/secondary/tanoby_ruins/metatile_attributes.bin");
 
-const u16 gMetatiles_SeviiIslands123[] = INCBIN_U16("data/tilesets/secondary/sevii_islands_123/metatiles.bin");
-const u32 gMetatileAttributes_SeviiIslands123[] = INCBIN_U32("data/tilesets/secondary/sevii_islands_123/metatile_attributes.bin");
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u16 gMetatiles_SeviiIslands123[2280] __attribute__((alias("gMetatiles_SeviiIslands123Autumn")));
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u32 gMetatileAttributes_SeviiIslands123[285] __attribute__((alias("gMetatileAttributes_SeviiIslands123Autumn")));
 
 const u16 gMetatiles_SeviiIslands45[] = INCBIN_U16("data/tilesets/secondary/sevii_islands_45/metatiles.bin");
 const u32 gMetatileAttributes_SeviiIslands45[] = INCBIN_U32("data/tilesets/secondary/sevii_islands_45/metatile_attributes.bin");
@@ -202,92 +223,134 @@ const u32 gMetatileAttributes_PokemonLeague[] = INCBIN_U32("data/tilesets/second
 const u16 gMetatiles_HallOfFame[] = INCBIN_U16("data/tilesets/secondary/hall_of_fame/metatiles.bin");
 const u32 gMetatileAttributes_HallOfFame[] = INCBIN_U32("data/tilesets/secondary/hall_of_fame/metatile_attributes.bin");
 
-const u16 gMetatiles_GeneralWinter[] = INCBIN_U16("data/tilesets/primary/general_winter/metatiles.bin");
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u16 gMetatiles_GeneralWinter[5120] __attribute__((alias("gMetatiles_GeneralSummer")));
 const u32 gMetatileAttributes_GeneralWinter[] = INCBIN_U32("data/tilesets/primary/general_winter/metatile_attributes.bin");
 
-const u16 gMetatiles_GeneralAutumn[] = INCBIN_U16("data/tilesets/primary/general_autumn/metatiles.bin");
-const u32 gMetatileAttributes_GeneralAutumn[] = INCBIN_U32("data/tilesets/primary/general_autumn/metatile_attributes.bin");
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u16 gMetatiles_GeneralAutumn[5120] __attribute__((alias("gMetatiles_GeneralSummer")));
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u32 gMetatileAttributes_GeneralAutumn[640] __attribute__((alias("gMetatileAttributes_GeneralSummer")));
 
 const u16 gMetatiles_GeneralSummer[] = INCBIN_U16("data/tilesets/primary/general_summer/metatiles.bin");
 const u32 gMetatileAttributes_GeneralSummer[] = INCBIN_U32("data/tilesets/primary/general_summer/metatile_attributes.bin");
 
-const u16 gMetatiles_PalletTownSummer[] = INCBIN_U16("data/tilesets/secondary/pallet_town_summer/metatiles.bin");
-const u32 gMetatileAttributes_PalletTownSummer[] = INCBIN_U32("data/tilesets/secondary/pallet_town_summer/metatile_attributes.bin");
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u16 gMetatiles_PalletTownSummer[712] __attribute__((alias("gMetatiles_PalletTownWinter")));
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u32 gMetatileAttributes_PalletTownSummer[89] __attribute__((alias("gMetatileAttributes_PalletTownWinter")));
 
-const u16 gMetatiles_PalletTownAutumn[] = INCBIN_U16("data/tilesets/secondary/pallet_town_autumn/metatiles.bin");
-const u32 gMetatileAttributes_PalletTownAutumn[] = INCBIN_U32("data/tilesets/secondary/pallet_town_autumn/metatile_attributes.bin");
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u16 gMetatiles_PalletTownAutumn[712] __attribute__((alias("gMetatiles_PalletTownWinter")));
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u32 gMetatileAttributes_PalletTownAutumn[89] __attribute__((alias("gMetatileAttributes_PalletTownWinter")));
 
 const u16 gMetatiles_PalletTownWinter[] = INCBIN_U16("data/tilesets/secondary/pallet_town_winter/metatiles.bin");
 const u32 gMetatileAttributes_PalletTownWinter[] = INCBIN_U32("data/tilesets/secondary/pallet_town_winter/metatile_attributes.bin");
 
-const u16 gMetatiles_ViridianForestAutumn[] = INCBIN_U16("data/tilesets/secondary/viridian_forest_autumn/metatiles.bin");
-const u32 gMetatileAttributes_ViridianForestAutumn[] = INCBIN_U32("data/tilesets/secondary/viridian_forest_autumn/metatile_attributes.bin");
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u16 gMetatiles_ViridianForestAutumn[344] __attribute__((alias("gMetatiles_ViridianForestWinter")));
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u32 gMetatileAttributes_ViridianForestAutumn[43] __attribute__((alias("gMetatileAttributes_ViridianForestWinter")));
 
-const u16 gMetatiles_ViridianForestSummer[] = INCBIN_U16("data/tilesets/secondary/viridian_forest_summer/metatiles.bin");
-const u32 gMetatileAttributes_ViridianForestSummer[] = INCBIN_U32("data/tilesets/secondary/viridian_forest_summer/metatile_attributes.bin");
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u16 gMetatiles_ViridianForestSummer[344] __attribute__((alias("gMetatiles_ViridianForestWinter")));
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u32 gMetatileAttributes_ViridianForestSummer[43] __attribute__((alias("gMetatileAttributes_ViridianForestWinter")));
 
 const u16 gMetatiles_ViridianForestWinter[] = INCBIN_U16("data/tilesets/secondary/viridian_forest_winter/metatiles.bin");
 const u32 gMetatileAttributes_ViridianForestWinter[] = INCBIN_U32("data/tilesets/secondary/viridian_forest_winter/metatile_attributes.bin");
 
-const u16 gMetatiles_LavenderTownSummer[] = INCBIN_U16("data/tilesets/secondary/lavender_town_summer/metatiles.bin");
-const u32 gMetatileAttributes_LavenderTownSummer[] = INCBIN_U32("data/tilesets/secondary/lavender_town_summer/metatile_attributes.bin");
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u16 gMetatiles_LavenderTownSummer[1744] __attribute__((alias("gMetatiles_LavenderTownWinter")));
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u32 gMetatileAttributes_LavenderTownSummer[218] __attribute__((alias("gMetatileAttributes_LavenderTownWinter")));
 
-const u16 gMetatiles_LavenderTownAutumn[] = INCBIN_U16("data/tilesets/secondary/lavender_town_autumn/metatiles.bin");
-const u32 gMetatileAttributes_LavenderTownAutumn[] = INCBIN_U32("data/tilesets/secondary/lavender_town_autumn/metatile_attributes.bin");
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u16 gMetatiles_LavenderTownAutumn[1744] __attribute__((alias("gMetatiles_LavenderTownWinter")));
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u32 gMetatileAttributes_LavenderTownAutumn[218] __attribute__((alias("gMetatileAttributes_LavenderTownWinter")));
 
 const u16 gMetatiles_LavenderTownWinter[] = INCBIN_U16("data/tilesets/secondary/lavender_town_winter/metatiles.bin");
 const u32 gMetatileAttributes_LavenderTownWinter[] = INCBIN_U32("data/tilesets/secondary/lavender_town_winter/metatile_attributes.bin");
 
-const u16 gMetatiles_SaffronCitySummer[] = INCBIN_U16("data/tilesets/secondary/saffron_city_summer/metatiles.bin");
-const u32 gMetatileAttributes_SaffronCitySummer[] = INCBIN_U32("data/tilesets/secondary/saffron_city_summer/metatile_attributes.bin");
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u16 gMetatiles_SaffronCitySummer[1600] __attribute__((alias("gMetatiles_SaffronCityWinter")));
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u32 gMetatileAttributes_SaffronCitySummer[200] __attribute__((alias("gMetatileAttributes_SaffronCityWinter")));
 
-const u16 gMetatiles_SaffronCityAutumn[] = INCBIN_U16("data/tilesets/secondary/saffron_city_autumn/metatiles.bin");
-const u32 gMetatileAttributes_SaffronCityAutumn[] = INCBIN_U32("data/tilesets/secondary/saffron_city_autumn/metatile_attributes.bin");
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u16 gMetatiles_SaffronCityAutumn[1600] __attribute__((alias("gMetatiles_SaffronCityWinter")));
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u32 gMetatileAttributes_SaffronCityAutumn[200] __attribute__((alias("gMetatileAttributes_SaffronCityWinter")));
 
 const u16 gMetatiles_SaffronCityWinter[] = INCBIN_U16("data/tilesets/secondary/saffron_city_winter/metatiles.bin");
 const u32 gMetatileAttributes_SaffronCityWinter[] = INCBIN_U32("data/tilesets/secondary/saffron_city_winter/metatile_attributes.bin");
 
-const u16 gMetatiles_CeladonCitySummer[] = INCBIN_U16("data/tilesets/secondary/celadon_city_summer/metatiles.bin");
-const u32 gMetatileAttributes_CeladonCitySummer[] = INCBIN_U32("data/tilesets/secondary/celadon_city_summer/metatile_attributes.bin");
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u16 gMetatiles_CeladonCitySummer[1920] __attribute__((alias("gMetatiles_CeladonCityWinter")));
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u32 gMetatileAttributes_CeladonCitySummer[240] __attribute__((alias("gMetatileAttributes_CeladonCityWinter")));
 
-const u16 gMetatiles_CeladonCityAutumn[] = INCBIN_U16("data/tilesets/secondary/celadon_city_autumn/metatiles.bin");
-const u32 gMetatileAttributes_CeladonCityAutumn[] = INCBIN_U32("data/tilesets/secondary/celadon_city_autumn/metatile_attributes.bin");
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u16 gMetatiles_CeladonCityAutumn[1920] __attribute__((alias("gMetatiles_CeladonCityWinter")));
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u32 gMetatileAttributes_CeladonCityAutumn[240] __attribute__((alias("gMetatileAttributes_CeladonCityWinter")));
 
 const u16 gMetatiles_CeladonCityWinter[] = INCBIN_U16("data/tilesets/secondary/celadon_city_winter/metatiles.bin");
 const u32 gMetatileAttributes_CeladonCityWinter[] = INCBIN_U32("data/tilesets/secondary/celadon_city_winter/metatile_attributes.bin");
 
-const u16 gMetatiles_FuchsiaCitySummer[] = INCBIN_U16("data/tilesets/secondary/fuchsia_city_summer/metatiles.bin");
-const u32 gMetatileAttributes_FuchsiaCitySummer[] = INCBIN_U32("data/tilesets/secondary/fuchsia_city_summer/metatile_attributes.bin");
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u16 gMetatiles_FuchsiaCitySummer[1536] __attribute__((alias("gMetatiles_FuchsiaCityWinter")));
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u32 gMetatileAttributes_FuchsiaCitySummer[192] __attribute__((alias("gMetatileAttributes_FuchsiaCityWinter")));
 
-const u16 gMetatiles_FuchsiaCityAutumn[] = INCBIN_U16("data/tilesets/secondary/fuchsia_city_autumn/metatiles.bin");
-const u32 gMetatileAttributes_FuchsiaCityAutumn[] = INCBIN_U32("data/tilesets/secondary/fuchsia_city_autumn/metatile_attributes.bin");
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u16 gMetatiles_FuchsiaCityAutumn[1536] __attribute__((alias("gMetatiles_FuchsiaCityWinter")));
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u32 gMetatileAttributes_FuchsiaCityAutumn[192] __attribute__((alias("gMetatileAttributes_FuchsiaCityWinter")));
 
 const u16 gMetatiles_FuchsiaCityWinter[] = INCBIN_U16("data/tilesets/secondary/fuchsia_city_winter/metatiles.bin");
 const u32 gMetatileAttributes_FuchsiaCityWinter[] = INCBIN_U32("data/tilesets/secondary/fuchsia_city_winter/metatile_attributes.bin");
 
-const u16 gMetatiles_SeviiIslands123Winter[] = INCBIN_U16("data/tilesets/secondary/sevii_islands_123winter/metatiles.bin");
-const u32 gMetatileAttributes_SeviiIslands123Winter[] = INCBIN_U32("data/tilesets/secondary/sevii_islands_123winter/metatile_attributes.bin");
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u16 gMetatiles_SeviiIslands123Winter[2280] __attribute__((alias("gMetatiles_SeviiIslands123Autumn")));
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u32 gMetatileAttributes_SeviiIslands123Winter[285] __attribute__((alias("gMetatileAttributes_SeviiIslands123Autumn")));
 
-const u16 gMetatiles_BerryForestSummer[] = INCBIN_U16("data/tilesets/secondary/berry_forest_summer/metatiles.bin");
-const u32 gMetatileAttributes_BerryForestSummer[] = INCBIN_U32("data/tilesets/secondary/berry_forest_summer/metatile_attributes.bin");
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u16 gMetatiles_BerryForestSummer[336] __attribute__((alias("gMetatiles_BerryForestWinter")));
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u32 gMetatileAttributes_BerryForestSummer[42] __attribute__((alias("gMetatileAttributes_BerryForestWinter")));
 
-const u16 gMetatiles_BerryForestAutumn[] = INCBIN_U16("data/tilesets/secondary/berry_forest_autumn/metatiles.bin");
-const u32 gMetatileAttributes_BerryForestAutumn[] = INCBIN_U32("data/tilesets/secondary/berry_forest_autumn/metatile_attributes.bin");
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u16 gMetatiles_BerryForestAutumn[336] __attribute__((alias("gMetatiles_BerryForestWinter")));
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u32 gMetatileAttributes_BerryForestAutumn[42] __attribute__((alias("gMetatileAttributes_BerryForestWinter")));
 
 const u16 gMetatiles_BerryForestWinter[] = INCBIN_U16("data/tilesets/secondary/berry_forest_winter/metatiles.bin");
 const u32 gMetatileAttributes_BerryForestWinter[] = INCBIN_U32("data/tilesets/secondary/berry_forest_winter/metatile_attributes.bin");
 
-const u16 gMetatiles_SeviiIslands123Summer[] = INCBIN_U16("data/tilesets/secondary/sevii_islands_123summer/metatiles.bin");
-const u32 gMetatileAttributes_SeviiIslands123Summer[] = INCBIN_U32("data/tilesets/secondary/sevii_islands_123summer/metatile_attributes.bin");
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u16 gMetatiles_SeviiIslands123Summer[2280] __attribute__((alias("gMetatiles_SeviiIslands123Autumn")));
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u32 gMetatileAttributes_SeviiIslands123Summer[285] __attribute__((alias("gMetatileAttributes_SeviiIslands123Autumn")));
 
 const u16 gMetatiles_SeviiIslands123Autumn[] = INCBIN_U16("data/tilesets/secondary/sevii_islands_123autumn/metatiles.bin");
 const u32 gMetatileAttributes_SeviiIslands123Autumn[] = INCBIN_U32("data/tilesets/secondary/sevii_islands_123autumn/metatile_attributes.bin");
 
-const u16 gMetatiles_IndigoPlateauSummer[] = INCBIN_U16("data/tilesets/secondary/indigo_plateau_summer/metatiles.bin");
-const u32 gMetatileAttributes_IndigoPlateauSummer[] = INCBIN_U32("data/tilesets/secondary/indigo_plateau_summer/metatile_attributes.bin");
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u16 gMetatiles_IndigoPlateauSummer[1408] __attribute__((alias("gMetatiles_IndigoPlateauWinter")));
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u32 gMetatileAttributes_IndigoPlateauSummer[176] __attribute__((alias("gMetatileAttributes_IndigoPlateauWinter")));
 
-const u16 gMetatiles_IndigoPlateauAutumn[] = INCBIN_U16("data/tilesets/secondary/indigo_plateau_autumn/metatiles.bin");
-const u32 gMetatileAttributes_IndigoPlateauAutumn[] = INCBIN_U32("data/tilesets/secondary/indigo_plateau_autumn/metatile_attributes.bin");
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u16 gMetatiles_IndigoPlateauAutumn[1408] __attribute__((alias("gMetatiles_IndigoPlateauWinter")));
+// Identical pixels/tiles; colors and metadata remain independent.
+extern const u32 gMetatileAttributes_IndigoPlateauAutumn[176] __attribute__((alias("gMetatileAttributes_IndigoPlateauWinter")));
 
 const u16 gMetatiles_IndigoPlateauWinter[] = INCBIN_U16("data/tilesets/secondary/indigo_plateau_winter/metatiles.bin");
 const u32 gMetatileAttributes_IndigoPlateauWinter[] = INCBIN_U32("data/tilesets/secondary/indigo_plateau_winter/metatile_attributes.bin");
+
+const u16 gMetatiles_HavoraHarbor[] = INCBIN_U16("data/tilesets/secondary/havora_harbor/metatiles.bin");
+const u32 gMetatileAttributes_HavoraHarbor[] = INCBIN_U32("data/tilesets/secondary/havora_harbor/metatile_attributes.bin");

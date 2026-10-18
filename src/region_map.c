@@ -1,4 +1,5 @@
 #include "global.h"
+#include "poke_glass.h"
 #include "avatar.h"
 #include "decompress.h"
 #include "gflib.h"
@@ -412,12 +413,8 @@ static const u32 sAvatarMap_brendan[] = INCBIN_U32("graphics/avatars/brendan/map
 static const u16 sAvatarMapPal_brendan[] = INCBIN_U16("graphics/avatars/brendan/map.gbapal");
 static const u32 sAvatarMap_may[] = INCBIN_U32("graphics/avatars/may/map.4bpp.lz");
 static const u16 sAvatarMapPal_may[] = INCBIN_U16("graphics/avatars/may/map.gbapal");
-static const u32 sAvatarMap_rsbrendan[] = INCBIN_U32("graphics/avatars/rsbrendan/map.4bpp.lz");
-static const u16 sAvatarMapPal_rsbrendan[] = INCBIN_U16("graphics/avatars/rsbrendan/map.gbapal");
-static const u32 sAvatarMap_rsmay[] = INCBIN_U32("graphics/avatars/rsmay/map.4bpp.lz");
-static const u16 sAvatarMapPal_rsmay[] = INCBIN_U16("graphics/avatars/rsmay/map.gbapal");
-static const u32 *const sAvatarMapPics[] = {sAvatarMap_brendan, sAvatarMap_may, sAvatarMap_rsbrendan, sAvatarMap_rsmay};
-static const u16 *const sAvatarMapPalettes[] = {sAvatarMapPal_brendan, sAvatarMapPal_may, sAvatarMapPal_rsbrendan, sAvatarMapPal_rsmay};
+static const u32 *const sAvatarMapPics[] = {sAvatarMap_brendan, sAvatarMap_may};
+static const u16 *const sAvatarMapPalettes[] = {sAvatarMapPal_brendan, sAvatarMapPal_may};
 static const u32 sRegionMap_Gfx[] = INCBIN_U32("graphics/region_map/region_map.4bpp.lz");
 static const u32 sQuantumAtlas_Gfx[] = INCBIN_U32("graphics/region_map/quantum_atlas.bin.lz");
 static const u32 sQuantumMap_Tilemap[] = INCBIN_U32("graphics/region_map/quantum_map.bin.lz");
@@ -1111,7 +1108,7 @@ static void CB2_OpenRegionMap(void)
             SetBg0andBg3Hidden(TRUE);
         break;
     default:
-        BeginNormalPaletteFade(PALETTES_ALL, 0, 16, 0, RGB_BLACK);
+        BeginNormalPaletteFade(PALETTES_ALL, 0, IsPokeGlassActive() ? 0 : 16, 0, RGB_BLACK);
         CreateMainMapTask();
         SetRegionMapVBlankCB();
         break;
@@ -1308,7 +1305,7 @@ static void Task_RegionMap(u8 taskId)
         }
         break;
     case 5:
-        BeginNormalPaletteFade(PALETTES_ALL, 0, 0, 16, RGB_BLACK);
+        BeginNormalPaletteFade(PALETTES_ALL, 0, 0, IsPokeGlassActive() ? 0 : 16, RGB_BLACK);
     INCREMENT_MAIN_STATE_AND_BREAK:
         sRegionMap->mainState++;
         break;
@@ -2376,7 +2373,7 @@ static void Task_MapOpenAnim(u8 taskId)
     case 3:
         CopyBgTilemapBufferToVram(1);
         BlendPalettes(PALETTES_ALL, 16, RGB_BLACK);
-        BeginNormalPaletteFade(PALETTES_ALL, 0, 16, 0, RGB_BLACK);
+        BeginNormalPaletteFade(PALETTES_ALL, 0, IsPokeGlassActive() ? 0 : 16, 0, RGB_BLACK);
         SetRegionMapVBlankCB();
         sMapOpenCloseAnim->openState++;
         break;
@@ -2988,19 +2985,19 @@ static u8 GetMapsecType(u8 mapsec)
     case MAPSEC_SAFFRON_CITY:
         return FlagGet(FLAG_WORLD_MAP_SAFFRON_CITY) ? MAPSECTYPE_VISITED : MAPSECTYPE_NOT_VISITED;
     case MAPSEC_ONE_ISLAND:
-        return FlagGet(FLAG_WORLD_MAP_ONE_ISLAND) ? MAPSECTYPE_VISITED : MAPSECTYPE_NOT_VISITED;
+        return MAPSECTYPE_NONE; // Retired destination, including older saves.
     case MAPSEC_TWO_ISLAND:
-        return FlagGet(FLAG_WORLD_MAP_TWO_ISLAND) ? MAPSECTYPE_VISITED : MAPSECTYPE_NOT_VISITED;
+        return MAPSECTYPE_NONE; // Retired destination, including older saves.
     case MAPSEC_THREE_ISLAND:
-        return FlagGet(FLAG_WORLD_MAP_THREE_ISLAND) ? MAPSECTYPE_VISITED : MAPSECTYPE_NOT_VISITED;
+        return MAPSECTYPE_NONE; // Retired destination, including older saves.
     case MAPSEC_FOUR_ISLAND:
-        return FlagGet(FLAG_WORLD_MAP_FOUR_ISLAND) ? MAPSECTYPE_VISITED : MAPSECTYPE_NOT_VISITED;
+        return MAPSECTYPE_NONE; // Retired destination, including older saves.
     case MAPSEC_FIVE_ISLAND:
-        return FlagGet(FLAG_WORLD_MAP_FIVE_ISLAND) ? MAPSECTYPE_VISITED : MAPSECTYPE_NOT_VISITED;
+        return MAPSECTYPE_NONE; // Retired destination, including older saves.
     case MAPSEC_SEVEN_ISLAND:
-        return FlagGet(FLAG_WORLD_MAP_SEVEN_ISLAND) ? MAPSECTYPE_VISITED : MAPSECTYPE_NOT_VISITED;
+        return MAPSECTYPE_NONE; // Retired destination, including older saves.
     case MAPSEC_SIX_ISLAND:
-        return FlagGet(FLAG_WORLD_MAP_SIX_ISLAND) ? MAPSECTYPE_VISITED : MAPSECTYPE_NOT_VISITED;
+        return MAPSECTYPE_NONE; // Retired destination, including older saves.
     case MAPSEC_ROUTE_4_POKECENTER:
         if (!GetRegionMapPermission(MAPPERM_HAS_FLY_DESTINATIONS))
             return MAPSECTYPE_NONE;
@@ -3484,7 +3481,7 @@ static void LoadMapIcons(u8 taskId)
         break;
     case 3:
         BlendPalettes(PALETTES_ALL, 16, RGB_BLACK);
-        BeginNormalPaletteFade(PALETTES_ALL, 0, 16, 0, RGB_BLACK);
+        BeginNormalPaletteFade(PALETTES_ALL, 0, IsPokeGlassActive() ? 0 : 16, 0, RGB_BLACK);
         sMapIcons->state++;
         break;
     case 4:
@@ -3909,7 +3906,7 @@ static void Task_FlyMap(u8 taskId)
     switch (sFlyMap->state)
     {
     case 0:
-        BeginNormalPaletteFade(PALETTES_ALL, 0, 16, 0, RGB_BLACK);
+        BeginNormalPaletteFade(PALETTES_ALL, 0, IsPokeGlassActive() ? 0 : 16, 0, RGB_BLACK);
         InitMapIcons(GetSelectedRegionMap(), taskId, GetMainMapTask());
         CreateMapCursor(0, 0);
         CreatePlayerIcon(1, 1);
@@ -4009,7 +4006,7 @@ static void Task_FlyMap(u8 taskId)
         sFlyMap->state++;
         break;
     case 6:
-        BeginNormalPaletteFade(PALETTES_ALL, 0, 0, 16, RGB_BLACK);
+        BeginNormalPaletteFade(PALETTES_ALL, 0, 0, IsPokeGlassActive() ? 0 : 16, RGB_BLACK);
         sFlyMap->state++;
         break;
     default:
@@ -4045,7 +4042,10 @@ static void FreeFlyMap(u8 taskId)
     DestroyTask(taskId);
     FreeAllWindowBuffers();
     if (sFlyMap->selectedDestination == TRUE)
+    {
+        if (IsPokeGlassActive()) EndPokeGlassSession();
         SetMainCallback2(CB2_ReturnToField);
+    }
     else
         SetMainCallback2(sFlyMap->exitCallback);
     FREE_IF_NOT_NULL(sFlyMap);
@@ -4066,4 +4066,25 @@ static void SetFlyWarpDestination(u16 mapsec)
         SetWarpDestinationToMapWarp(sMapFlyDestinations[idx][0], sMapFlyDestinations[idx][1], -1);
     }
     ReturnToFieldFromFlyMapSelect();
+}
+
+u16 PokeGlassMapSection(u8 region, u8 x, u8 y)
+{
+    u16 section;
+    if (region >= REGIONMAP_COUNT || x >= MAP_WIDTH || y >= MAP_HEIGHT) return MAPSEC_NONE;
+    section = GetSelectedMapSection(region, LAYER_MAP, y, x);
+    if (section == MAPSEC_NONE) section = GetSelectedMapSection(region, LAYER_DUNGEON, y, x);
+    return section;
+}
+
+u8 PokeGlassPlayerRegion(void)
+{
+    u8 region, i;
+    if (gMapHeader.regionMapSectionId >= QUANTUM_MAPSEC_START
+     && gMapHeader.regionMapSectionId <= QUANTUM_MAPSEC_END) return REGIONMAP_QUANTUM;
+    if (gMapHeader.regionMapSectionId < SEVII_MAPSEC_START) return REGIONMAP_KANTO;
+    for (region = 0; region < 3; region++)
+        for (i = 0; sSeviiMapsecs[region][i] != MAPSEC_NONE; i++)
+            if (sSeviiMapsecs[region][i] == gMapHeader.regionMapSectionId) return region + 1;
+    return REGIONMAP_KANTO;
 }

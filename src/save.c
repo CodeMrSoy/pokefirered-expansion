@@ -1,4 +1,5 @@
 #include "global.h"
+#include "quantum_cleanup.h"
 
 #include "gba/flash_internal.h"
 
@@ -873,6 +874,11 @@ u8 LoadGameSave(u8 saveType)
     default:
         result = TryLoadSaveSlot(FULL_SAVE_SLOT, gRamSaveSectorLocations);
         CopyPartyAndObjectsFromSave();
+        if (result == SAVE_STATUS_OK)
+        {
+            QuantumMigrateLoadedPokemon();
+            QuantumMigrateLoadedWorld();
+        }
         gSaveFileStatus = result;
         gGameContinueCallback = NULL;
         break;

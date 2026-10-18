@@ -4497,9 +4497,33 @@
       "border_width": 2,
       "border_height": 2,
       "primary_tileset": "gTileset_General",
-      "secondary_tileset": "gTileset_VermilionCity",
+      "secondary_tileset": "gTileset_HavoraHarbor",
       "border_filepath": "data/layouts/Quantum_Havora_Harbor_Layout/border.bin",
       "blockdata_filepath": "data/layouts/Quantum_Havora_Harbor_Layout/map.bin"
+    },
+    {
+      "id": "LAYOUT_QUANTUM_HAVORA_WEST_QUAY",
+      "name": "QuantumHavoraWestQuay_Layout",
+      "width": 8,
+      "height": 40,
+      "border_width": 2,
+      "border_height": 2,
+      "primary_tileset": "gTileset_General",
+      "secondary_tileset": "gTileset_HavoraHarbor",
+      "border_filepath": "data/layouts/QuantumHavoraWestQuay/border.bin",
+      "blockdata_filepath": "data/layouts/QuantumHavoraWestQuay/map.bin"
+    },
+    {
+      "id": "LAYOUT_QUANTUM_HAVORA_NORTH_QUAY",
+      "name": "QuantumHavoraNorthQuay_Layout",
+      "width": 40,
+      "height": 8,
+      "border_width": 2,
+      "border_height": 2,
+      "primary_tileset": "gTileset_General",
+      "secondary_tileset": "gTileset_HavoraHarbor",
+      "border_filepath": "data/layouts/QuantumHavoraNorthQuay/border.bin",
+      "blockdata_filepath": "data/layouts/QuantumHavoraNorthQuay/map.bin"
     }
   ]
 }

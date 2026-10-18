@@ -7,8 +7,6 @@ enum AvatarLook
     AVATAR_LEAF,
     AVATAR_BRENDAN,
     AVATAR_MAY,
-    AVATAR_RS_BRENDAN,
-    AVATAR_RS_MAY,
     AVATAR_LOOK_COUNT
 };
 

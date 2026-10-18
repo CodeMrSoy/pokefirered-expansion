@@ -1,8 +1,10 @@
 Route23_MapScripts::
+	map_script MAP_SCRIPT_ON_RESUME, QuantumRelocated_OnResume
 	map_script MAP_SCRIPT_ON_TRANSITION, Route23_OnTransition
 	.byte 0
 
 Route23_OnTransition::
+	call QuantumRelocated_Show_MOLTRES
 	clearflag FLAG_HIDE_VICTORY_ROAD_3F_BOULDER
 	setflag FLAG_HIDE_VICTORY_ROAD_2F_BOULDER
 	setvar VAR_MAP_SCENE_VICTORY_ROAD_1F, 0

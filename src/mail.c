@@ -437,56 +437,7 @@ static const struct MailAttrStruct sMessageLayouts_5x2[] = {
 
 void ReadMail(struct Mail * mail, void (*savedCallback)(void), bool8 messageExists)
 {
-    u16 sp0;
-    u16 species;
-    sMailViewResources = AllocZeroed(sizeof(struct MailViewResources));
-    sMailViewResources->unused = 2;
-    sMailViewResources->mailArrangementType = 1;
-    sMailViewResources->copyEasyChatWord = CopyEasyChatWord;
-    sMailViewResources->convertEasyChatWordsToString = ConvertEasyChatWordsToString;
-    if (IS_ITEM_MAIL(mail->itemId))
-    {
-        sMailViewResources->mailType = ITEM_TO_MAIL(mail->itemId);
-    }
-    else
-    {
-        sMailViewResources->mailType = ITEM_TO_MAIL(ITEM_ORANGE_MAIL);
-        messageExists = FALSE;
-    }
-    switch (sMailViewResources->mailArrangementType)
-    {
-    case 0:
-    default:
-        sMailViewResources->messageLayout = &sMessageLayouts_3x3[sMailViewResources->mailType];
-        break;
-    case 1:
-        sMailViewResources->messageLayout = &sMessageLayouts_5x2[sMailViewResources->mailType];
-        break;
-    }
-    species = MailSpeciesToSpecies(mail->species, &sp0);
-    if (species != SPECIES_NONE && species < NUM_SPECIES)
-    {
-        switch (sMailViewResources->mailType)
-        {
-        default:
-            sMailViewResources->monIconType = MAIL_ICON_NONE;
-            break;
-        case ITEM_TO_MAIL(ITEM_BEAD_MAIL):
-            sMailViewResources->monIconType = MAIL_ICON_BEAD;
-            break;
-        case ITEM_TO_MAIL(ITEM_DREAM_MAIL):
-            sMailViewResources->monIconType = MAIL_ICON_DREAM;
-            break;
-        }
-    }
-    else
-    {
-        sMailViewResources->monIconType = MAIL_ICON_NONE;
-    }
-    sMailViewResources->mail = mail;
-    sMailViewResources->savedCallback = savedCallback;
-    sMailViewResources->messageExists = messageExists;
-    SetMainCallback2(CB2_InitMailView);
+    SetMainCallback2(savedCallback); // Retired letter-reading interface.
 }
 
 static bool8 DoInitMailView(void)

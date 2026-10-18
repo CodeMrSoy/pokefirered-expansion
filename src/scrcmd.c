@@ -2584,25 +2584,15 @@ bool8 ScrCmd_pokemart(struct ScriptContext * ctx)
 
 bool8 ScrCmd_pokemartdecoration(struct ScriptContext * ctx)
 {
-    const void *ptr = (void *)ScriptReadWord(ctx);
-
-    Script_RequestEffects(SCREFF_V1 | SCREFF_HARDWARE);
-
-    CreateDecorationShop1Menu(ptr);
-    ScriptContext_Stop();
-    return TRUE;
+    ScriptReadWord(ctx);
+    return FALSE;
 }
 
 // Changes clerk dialogue slightly from above. See MART_TYPE_DECOR2
 bool8 ScrCmd_pokemartdecoration2(struct ScriptContext * ctx)
 {
-    const void *ptr = (void *)ScriptReadWord(ctx);
-
-    Script_RequestEffects(SCREFF_V1 | SCREFF_HARDWARE);
-
-    CreateDecorationShop2Menu(ptr);
-    ScriptContext_Stop();
-    return TRUE;
+    ScriptReadWord(ctx);
+    return FALSE;
 }
 
 bool8 ScrCmd_playslotmachine(struct ScriptContext * ctx)
