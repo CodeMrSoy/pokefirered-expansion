@@ -56,8 +56,8 @@ def main():
   for xx in range(x+1,x+w-1):put(h,xx,y+2,AS['dock_face']['metatiles'][0][xx%2],True)
   asset(h,'pile',x+w-1,y)
   put(h,x,y+1,F['wood'])
- asset(h,'warehouse',1,3);asset(h,'fish_store',1,11)
- asset(h,'office',11,16);asset(h,'lighthouse',35,20)
+ asset(h,'warehouse',1,5);asset(h,'fish_store',1,13)
+ asset(h,'office',11,17);asset(h,'lighthouse',35,20)
  asset(h,'crane',6,8)
  for name,x,y in [('cargo',7,18),('crate',8,18),('crate',8,20),('barrel',8,16),
                   ('barrel',7,17),('net',7,15),('rope',24,7),('rope',30,6),

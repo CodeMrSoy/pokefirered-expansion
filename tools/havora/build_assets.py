@@ -7,6 +7,7 @@ this avoids shrinking buildings just to fit a single 384-tile secondary bank.
 """
 from pathlib import Path
 from PIL import Image
+from firered_buildings import exteriors
 import numpy as np,struct,json,shutil
 ROOT=Path(__file__).resolve().parents[2];OUT=ROOT/'data/tilesets/secondary/havora_harbor';PRIMARY=ROOT/'data/tilesets/primary/havora_harbor'
 SPECS=[
@@ -42,6 +43,8 @@ def main():
   if name in ['pile','lamp']:
    narrow=a.resize((10,size[1]),Image.Resampling.NEAREST);a=Image.new('RGBA',size);a.paste(narrow,((size[0]-10)//2,0))
   assets[name]=(a,bank)
+ # Native FireRed architecture overrides the earlier resampled concept exteriors.
+ for name,a in exteriors().items():assets[name]=(a,assets[name][1])
  palettes={}
  for bank in range(13):
   if bank in [0,1,6]:
