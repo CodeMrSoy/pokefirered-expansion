@@ -53,7 +53,9 @@ def main():
   for a,b in assets.values():
    if b==bank:rgb.extend([tuple(p[:3]) for p in np.array(a).reshape(-1,4) if p[3]])
   train=Image.new('RGB',(len(rgb),1));train.putdata(rgb);q=train.quantize(15,method=Image.Quantize.MEDIANCUT)
-  colors=[tuple((v>>3)<<3 for v in q.getpalette()[i:i+3]) for i in range(0,45,3)];palettes[bank]=[(0,0,0)]+colors
+  # Native-style assets can use fewer than 15 colors; pad the fixed GBA bank.
+  qp=(q.getpalette()+[0]*45)[:45]
+  colors=[tuple((v>>3)<<3 for v in qp[i:i+3]) for i in range(0,45,3)];palettes[bank]=[(0,0,0)]+colors
  for bank in range(16):
   colors=palettes.get(bank,[(0,0,0)]*16);content='JASC-PAL\n0100\n16\n'+'\n'.join(' '.join(map(str,c)) for c in colors)+'\n'
   for p in [PRIMARY,OUT]:(p/'palettes'/f'{bank:02}.pal').write_text(content)

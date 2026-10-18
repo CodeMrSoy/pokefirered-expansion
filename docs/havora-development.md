@@ -1,30 +1,34 @@
-# Havora harbor — FireRed architecture pass
+# Havora harbor — Nordic architecture at FireRed resolution
 
 The initial native harbor compressed the buildings, reduced the seawalls to
 thin rails, and placed the main pier too far south. This revision measures the
 approved reference against the 40x32 footprint and restores those proportions.
 
-## FireRed style correction
+## Nordic silhouettes with native FireRed materials
 
-The warehouse, fish store and office now assemble native Vermilion roof ends,
-eaves, walls, windows and closed-door graphics at their original pixel scale.
-Only roof colors change to restrained blue/green coastal shades. The compact
-32-pixel fixture uses a one-pixel outline, flat lantern and three metal shades;
-there are no resampled textures or glows. `firered_buildings.py` generates these
-exteriors directly from repository tiles, so no additional art dependency is
-needed. Unused space above the lower roofs returns to walkable paving.
+The warehouse and fish store retain the earlier tall gables and 80x96 footprints;
+the office keeps a 64x64 footprint and a smaller front gable. The fish sign,
+framed attic window, chimneys, timber beams and cargo details distinguish them
+from the flat vanilla replacements. These shapes are authored directly on the
+native pixel grid in `firered_buildings.py`, without resized concept pixels.
+
+Material colors come from General blue roofs/windows and Vermilion wall and
+timber palettes (secondary banks 02 and 10). Window clusters come from General
+metatile 0x006; the closed door is based on Vermilion 0x29e. Detail colors are
+mapped into the same small building palette. Broad roof courses, restrained
+shingle joints and one-pixel contours replace the earlier fine texture. The
+lantern has a small peaked cap and the same native material shades.
 
 A pixel comparison against the preceding native overview verified that every
-pixel outside the three building footprints and seven lamp footprints is
-unchanged, including rocks, paving, seawalls, docks, lighthouse and objects.
-Ferry scripts, events, collision at the boarding route and map connections
-remain unchanged by this pass. Buildings are exterior scenery with no new
-door warps.
+pixel outside the three building footprints and seven lantern footprints is
+unchanged, including paving, rocks, seawalls, docks, lighthouse and objects.
+Ferry scripts, events, boarding path and map connections remain unchanged.
+Buildings remain exterior scenery, with no new door warps or interiors.
 
 ## Visible changes
 
-- Western warehouse and fish store: 80x64 native pixels, at (1,5) and (1,13).
-- Dock office: 64x48 at (11,17), beside the open-air boarding entrance.
+- Western warehouse and fish store: 80x96 native pixels, at (1,3) and (1,11).
+- Dock office: 64x64 at (11,16), beside the open-air boarding entrance.
 - Main pier: starts at (18,13); Seagallop, sailor and arrival move together.
 - Lighthouse: 48x96 at (35,20), with a rocky foundation and walkable frontage.
 - Two-row masonry faces and side coping replace the flat boundary rails.
@@ -43,7 +47,7 @@ primary/secondary pair. This uses the engine's existing 1024-tile graphics
 address space; no graphics limit is raised. The prior design unnecessarily
 confined all new art to the 384 secondary slots and therefore shrank it.
 
-There are 257 unique custom graphics tiles and 113 secondary metatiles.
+There are 362 unique custom graphics tiles and 137 secondary metatiles.
 The primary PNG occupies its normal 640 slots; the secondary PNG contains a
 minimal blank row. All referenced graphics IDs are below 624. The remaining
 slots are available for future harbor art.
@@ -89,7 +93,8 @@ Generated source images are not assumed to be engine-ready.
 
 `python tools/havora/build_assets.py` extracts assets, scales them to the native
 sizes above, quantizes each material to a 15-color RGB555 bank, and packs exact
-8x8 tile patterns with flip reuse. It emits both native tilesets, metadata and
+8x8 tile patterns with flip reuse. Banks with fewer than 15 colors are explicitly padded to the fixed 16-entry
+GBA palette format. It emits both native tilesets, metadata and
 an indexed-pixel asset review sheet. No approximate tile replacement is used.
 
 `python tools/havora/build_map.py` places the artwork, collision and events.
@@ -121,7 +126,7 @@ to Vermilion, Stellar Ticket return to (20,16), and movement after disembarking.
 Injected warps are test setup; the connection checks use directional controls.
 The lighthouse plaque and native building/terrain views are also captured.
 
-ARM GNU 13.2.1 ROM build passed, with ROM region usage 21,454,108 bytes / 32 MiB
+ARM GNU 13.2.1 ROM build passed, with ROM region usage 21,455,596 bytes / 32 MiB
 (63.94%). There is no new dynamic RAM allocation for the artwork. Emulator
 captures use normal game lighting; the overview renders native palettes
 without time-of-day tint. No Porymap UI testing or full campaign playthrough
