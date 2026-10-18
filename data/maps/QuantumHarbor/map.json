@@ -29,8 +29,8 @@
     {
       "type": "object",
       "graphics_id": "OBJ_EVENT_GFX_SEAGALLOP",
-      "x": 25,
-      "y": 17,
+      "x": 20,
+      "y": 16,
       "elevation": 0,
       "movement_type": "MOVEMENT_TYPE_FACE_DOWN",
       "movement_range_x": 1,
@@ -43,8 +43,8 @@
     {
       "type": "object",
       "graphics_id": "OBJ_EVENT_GFX_SAILOR",
-      "x": 20,
-      "y": 17,
+      "x": 21,
+      "y": 18,
       "elevation": 3,
       "movement_type": "MOVEMENT_TYPE_FACE_UP",
       "movement_range_x": 1,
@@ -99,8 +99,8 @@
     {
       "type": "object",
       "graphics_id": "OBJ_EVENT_GFX_FISHER",
-      "x": 13,
-      "y": 4,
+      "x": 14,
+      "y": 6,
       "elevation": 3,
       "movement_type": "MOVEMENT_TYPE_FACE_RIGHT",
       "movement_range_x": 1,
@@ -113,8 +113,8 @@
     {
       "type": "object",
       "graphics_id": "OBJ_EVENT_GFX_SAILOR",
-      "x": 34,
-      "y": 22,
+      "x": 33,
+      "y": 26,
       "elevation": 3,
       "movement_type": "MOVEMENT_TYPE_FACE_UP",
       "movement_range_x": 1,
@@ -131,7 +131,7 @@
     {
       "type": "sign",
       "x": 36,
-      "y": 25,
+      "y": 27,
       "elevation": 3,
       "player_facing_dir": "BG_EVENT_PLAYER_FACING_ANY",
       "script": "QuantumHarbor_LighthouseSign"
