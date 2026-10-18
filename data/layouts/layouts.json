@@ -4496,7 +4496,7 @@
       "height": 32,
       "border_width": 2,
       "border_height": 2,
-      "primary_tileset": "gTileset_General",
+      "primary_tileset": "gTileset_HavoraPrimary",
       "secondary_tileset": "gTileset_HavoraHarbor",
       "border_filepath": "data/layouts/Quantum_Havora_Harbor_Layout/border.bin",
       "blockdata_filepath": "data/layouts/Quantum_Havora_Harbor_Layout/map.bin"
@@ -4508,7 +4508,7 @@
       "height": 40,
       "border_width": 2,
       "border_height": 2,
-      "primary_tileset": "gTileset_General",
+      "primary_tileset": "gTileset_HavoraPrimary",
       "secondary_tileset": "gTileset_HavoraHarbor",
       "border_filepath": "data/layouts/QuantumHavoraWestQuay/border.bin",
       "blockdata_filepath": "data/layouts/QuantumHavoraWestQuay/map.bin"
@@ -4520,7 +4520,7 @@
       "height": 8,
       "border_width": 2,
       "border_height": 2,
-      "primary_tileset": "gTileset_General",
+      "primary_tileset": "gTileset_HavoraPrimary",
       "secondary_tileset": "gTileset_HavoraHarbor",
       "border_filepath": "data/layouts/QuantumHavoraNorthQuay/border.bin",
       "blockdata_filepath": "data/layouts/QuantumHavoraNorthQuay/map.bin"

@@ -44,3 +44,17 @@ QuantumHarbor_LighthouseSign::
 
 QuantumHarbor_LighthouseSign_Text::
 	.string "HAVORA HARBOR LIGHT\nA welcome home for every sailor.$"
+
+QuantumHarbor_Fisher::
+	msgbox QuantumHarbor_Fisher_Text, MSGBOX_NPC
+	end
+
+QuantumHarbor_Fisher_Text::
+	.string "The tide brings fish this way.\nCare to cast a line?$"
+
+QuantumHarbor_BeaconKeeper::
+	msgbox QuantumHarbor_BeaconKeeper_Text, MSGBOX_NPC
+	end
+
+QuantumHarbor_BeaconKeeper_Text::
+	.string "This light guides ships home.\nWe keep it burning every night.$"

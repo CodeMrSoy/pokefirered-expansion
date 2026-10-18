@@ -6,8 +6,8 @@ from PIL import Image,ImageDraw
 ROOT=Path(__file__).resolve().parents[2]
 def words(p):
  b=p.read_bytes();return struct.unpack('<'+'H'*(len(b)//2),b)
-def atlas(secondary="vermilion_city"):
- paths=[ROOT/'data/tilesets'/p for p in ['primary/general','secondary/'+secondary]]
+def atlas(secondary="vermilion_city",primary="general"):
+ paths=[ROOT/'data/tilesets'/p for p in ['primary/'+primary,'secondary/'+secondary]]
  tiles=[Image.open(p/'tiles.png') for p in paths]
  pals=[]
  for i in range(13):
@@ -29,7 +29,7 @@ def atlas(secondary="vermilion_city"):
  return out
 def render(name,out):
  l=next(x for x in json.loads((ROOT/'data/layouts/layouts.json').read_text())['layouts'] if x['id']==name)
- ims=atlas('havora_harbor' if l['secondary_tileset']=='gTileset_HavoraHarbor' else 'vermilion_city');ws=words(ROOT/l['blockdata_filepath']);im=Image.new('RGB',(l['width']*16,l['height']*16))
+ ims=atlas('havora_harbor' if l['secondary_tileset']=='gTileset_HavoraHarbor' else 'vermilion_city','havora_harbor' if l['primary_tileset']=='gTileset_HavoraPrimary' else 'general');ws=words(ROOT/l['blockdata_filepath']);im=Image.new('RGB',(l['width']*16,l['height']*16))
  for i,w in enumerate(ws):im.paste(ims[w&1023],((i%l['width'])*16,(i//l['width'])*16))
  im.save(out)
 if __name__=='__main__':
