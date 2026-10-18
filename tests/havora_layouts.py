@@ -47,8 +47,11 @@ asset=json.loads((R/'tools/havora/assets.json').read_text());assert asset['tiles
 # Coping and dock changes must not create isolated walkable pockets.
 walkable={(x,y) for y in range(32) for x in range(40) if ha[y*40+x]&0xfc00==0x3000} - npc_cells
 assert walkable<=component((20,16)),walkable-component((20,16))
+# Removing props must remove their old invisible collision, too.
+for x,y in [(0,18),(12,20),(25,21),(33,24),(38,0),(8,16),(8,20),(35,20)]:
+ assert ha[y*40+x]&0xfc00==0x3000,(x,y)
 # The promenade and lighthouse fronts must remain masonry, not prop backgrounds.
-top=set(asset['assets']['wall']['metatiles'][0])|{asset['assets'][n]['metatiles'][0][0] for n in ['wall_corner_left','wall_corner_right']}
+top={asset['assets']['quay_south']['metatiles'][0][0]}
 for y,xs in [(23,range(10,29)),(27,range(32,39))]:
  for x in xs:assert ha[y*40+x]&1023 in top and ha[y*40+x]&0x400,(x,y)
 path=R/'data/tilesets/secondary/havora_harbor';data=(path/'metatiles.bin').read_bytes()

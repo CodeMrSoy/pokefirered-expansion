@@ -55,7 +55,7 @@ print('PASS: eight seamless crossings, harbor loading and original Stellar Ticke
 m.press(0);m.press(0);walk(4,18)
 print('After disembarking:',loc(),flush=True);assert loc()[0]==(43,19) and loc()[1][1]<16
 m.snap('havora-ferry-free-control')
-# Solid end rails and side rails must stop the player at the deck boundary.
+# Solid end lips and side lips must stop the player at the deck boundary.
 assert loc()==((43,19),(20,14));walk(4,20);assert loc()==((43,19),(20,14))
 warp(43,19,19,15);walk(6,20);assert loc()==((43,19),(19,15));m.snap('havora-dock-rails')
-print('PASS: lighthouse coping loop and solid pier end/side rails',flush=True)
+print('PASS: lighthouse coping loop and solid pier end/side boundaries',flush=True)

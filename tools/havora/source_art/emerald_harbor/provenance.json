@@ -1,0 +1,39 @@
+{
+  "source": "https://github.com/pret/pokeemerald",
+  "commit": "731ad5bfd6e6f265508d0efcca0ba42f9dcf5881",
+  "buildings": {
+    "warehouse": "SlateportCity (2,22), 5x5 blocks",
+    "house": "LilycoveCity (35,3), 4x4 blocks",
+    "lighthouse": "SlateportCity (32,51), 2x4 blocks",
+    "sailboat": "SlateportCity (34,44), 3x3 blocks"
+  },
+  "wood_recolor": {
+    "(238, 230, 164)": [
+      192,
+      168,
+      120
+    ],
+    "(238, 197, 98)": [
+      160,
+      128,
+      80
+    ],
+    "(205, 156, 57)": [
+      128,
+      96,
+      56
+    ],
+    "(164, 123, 24)": [
+      96,
+      72,
+      40
+    ],
+    "(106, 57, 41)": [
+      72,
+      48,
+      32
+    ]
+  },
+  "crane": "Native Havora FireRed redraw, tools/havora/firered_props.py",
+  "notes": "Native pixel sizes; grass backing removed from building cutouts. Wood palette darkened to approved preview. Other imports retain original colors until GBA 5-bit conversion."
+}
