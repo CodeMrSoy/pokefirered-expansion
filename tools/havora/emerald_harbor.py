@@ -47,7 +47,7 @@ def build_assets():
         info[name]={'metatiles':ids,'size':[im.width//16,im.height//16]}
         return ids
     for name in art:
-        if name not in floors:asset(name,'water' if name in ['sailboat','rock','dock_foot','dock_foot_west','dock_foot_east'] else 'stone')
+        if name not in floors and not name.startswith('zz_'):asset(name,'water' if name in ['sailboat','rock','dock_foot','dock_foot_west','dock_foot_east'] else 'stone')
     for name in floors:info[name]={'metatiles':[[floors[name]]],'size':[1,1]}
     # Compose the map from reusable pieces. Only mixed-background prop variants
     # create extra metatiles; the building parts remain ordinary Porymap blocks.
@@ -105,6 +105,9 @@ def build_assets():
         if entry['town']=='lilycove':
             for color in grass:ar[np.all(ar==color,axis=2)]=floor[np.all(ar==color,axis=2)]
         entry['havora_id']=register(Image.fromarray(ar),animated=entry['water_background'])
+    # Appended decorations preserve all previously published Porymap IDs.
+    for name in art:
+        if name.startswith('zz_'):asset(name,'water')
     # Original sea frames. Replace only pixels using Emerald's two ocean hues;
     # dock timber, sails, foam, roof pixels and shoreline masonry stay fixed.
     frames=[np.array(rgba(Image.open(SOURCE/'water_anim'/f'{i}.png')).convert('RGB')) for i in range(8)]
@@ -237,16 +240,18 @@ def build_assets():
     secondary=metas[:384];secondary_attrs=attrs[:384]
     (SECONDARY/'metatiles.bin').write_bytes(struct.pack('<'+'H'*(8*len(secondary)),*sum(secondary,[])));(SECONDARY/'metatile_attributes.bin').write_bytes(struct.pack('<'+'I'*len(secondary_attrs),*secondary_attrs))
     data={'style':'emerald_harbor','floors':floors,'assets':info,'tiles':max(tiles)+1,'custom_tiles':len(specs),'reserved_primary_tiles':sorted(reserved),'secondary_tiles':max(1,max(tiles)-639),'metatiles':len(secondary),'total_metatiles':len(metas),'primary_custom_metatiles':[mid for mid in meta_ids if mid<640],'catalog':catalog,'animation':{'start':animation_start,'slots':animation_slots,'active_tiles':len(animated),'frames':8},'quantized_color_sets':quantized,'palette_banks':sorted(palettes),'map_metatiles':grid,'map_collision':blocks}
+    if (R/'tools/havora/layout.json').exists():data.update(json.loads((R/'tools/havora/layout.json').read_text()))
     savejson(R/'tools/havora/assets.json',data)
     # Keep the approved unoccupied source composition for exact rendered-art checks.
     preview=Image.new('RGB',(640,512))
-    for y,row in enumerate(grid):
+    for y,row in enumerate(data['map_metatiles']):
         for x,mid in enumerate(row):preview.paste(images[id_to_index[mid]],(x*16,y*16))
     (R/'build').mkdir(exist_ok=True);preview.save(R/'build/havora-approved-emerald.png')
     print(f'Packed {len(metas)} metatiles, {len(specs)} custom graphics, {len(palettes)} palette banks')
 
 def build_map():
     data=json.loads((R/'tools/havora/assets.json').read_text())
+    if (R/'tools/havora/layout.json').exists():data.update(json.loads((R/'tools/havora/layout.json').read_text()))
     a=[mid|bits for row,collision in zip(data['map_metatiles'],data['map_collision']) for mid,bits in zip(row,collision)]
     p=R/'data/layouts/Quantum_Havora_Harbor_Layout'
     (p/'map.bin').write_bytes(struct.pack('<1280H',*a));(p/'border.bin').write_bytes(struct.pack('<4H',*([0x400|data['floors']['water']]*4)))

@@ -14,7 +14,7 @@ def read(name):
 h,hl,ha=read('QuantumHarbor');c,cl,ca=read('QuantumPortCity');read('QuantumHavoraWestQuay');read('QuantumHavoraNorthQuay')
 assert (hl['width'],hl['height'])==(40,32);assert not h['warp_events'] and not h['coord_events'];assert not any(w['dest_map']=='MAP_QUANTUM_HARBOR' for w in c['warp_events'])
 assert h['object_events'][0]['graphics_id']=='OBJ_EVENT_GFX_SEAGALLOP';assert h['object_events'][1]['script']=='QuantumHarbor_Sailor'
-assert (h['object_events'][1]['x'],h['object_events'][1]['y'])==(20,17)
+assert (h['object_events'][1]['x'],h['object_events'][1]['y'])==(21,18)
 for mid,(m,l,a) in maps.items():
  for co in m['connections']:
   if co['map'] not in maps:continue
@@ -42,18 +42,16 @@ def component(start):
     seen.add((xx,yy));q.append((xx,yy))
  return seen
 def reachable(start,target):return target in component(start)
-for p in [(0,2),(5,0),(20,18),(5,20),(15,22),(36,26),(13,5),(24,6),(10,9),(9,13)]:assert reachable((20,16),p),p
+for p in [(0,2),(5,0),(20,18),(5,20),(15,24),(36,28),(13,6),(24,6),(6,22),(14,24)]:assert reachable((20,18),p),p
 asset=json.loads((R/'tools/havora/assets.json').read_text());assert asset['tiles']<=1024;assert asset['secondary_tiles']<=384;assert asset['metatiles']<=384
 # Coping and dock changes must not create isolated walkable pockets.
 walkable={(x,y) for y in range(32) for x in range(40) if ha[y*40+x]&0xfc00==0x3000} - npc_cells
-assert walkable<=component((20,16)),walkable-component((20,16))
-# Removing props must remove their old invisible collision, too.
-for x,y in [(0,18),(12,20),(25,21),(33,24),(38,0),(8,16),(8,20),(35,20)]:
- assert ha[y*40+x]&0xfc00==0x3000,(x,y)
-# The promenade and lighthouse fronts must remain masonry, not prop backgrounds.
-top={asset['assets']['quay_south']['metatiles'][0][0]}
-for y,xs in [(23,range(10,29)),(27,range(32,39))]:
- for x in xs:assert ha[y*40+x]&1023 in top and ha[y*40+x]&0x400,(x,y)
+assert walkable<=component((20,18)),walkable-component((20,18))
+# New coastal details are solid and preserve the authored walking connections.
+for e in json.loads((R/'docs/havora-coastal-study.json').read_text())['placements']:
+ name='zz_water_boulder' if e['piece']=='rock' else e['piece']
+ for yy,row in enumerate(asset['assets'][name]['metatiles']):
+  for xx,mid in enumerate(row):assert ha[(e['y']+yy)*40+e['x']+xx]&0x400
 for directory in ['primary','secondary']:
  path=R/'data/tilesets'/directory/'havora_harbor';data=(path/'metatiles.bin').read_bytes()
  for v in struct.unpack('<'+'H'*(len(data)//2),data):

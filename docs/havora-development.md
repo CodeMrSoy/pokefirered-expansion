@@ -26,14 +26,14 @@ banks 0, 1 and 6 remain byte-compatible with General.
 The expanded catalog contains 501 source metatile entries, including every selected
 Pacifidlog platform/wood edge and both rope bridge directions; Lilycove exterior
 walls, roofs, windows, larger facades, stairs, plazas and paths; and Slateport market
-stalls, umbrellas, display goods, boats, docks and lighthouse pieces. The original
-placed buildings and quays remain, and a blue market stall is placed at (7,17).
+stalls, umbrellas, display goods, boats, docks and lighthouse pieces. The author's Porymap layout from be19b764 is retained, with additional coastal details
+applied to 44 blocks. Three market stalls occupy the west quay.
 
-Duplicate metatiles and mirrored 8×8 graphics are shared. The final set has 525
-custom metatiles: all 384 secondary slots plus 141 unused primary slots. Original
+Duplicate metatiles and mirrored 8×8 graphics are shared. The final set has 526
+custom metatiles: all 384 secondary slots plus 142 unused primary slots. Original
 primary blocks 5, 0x1C1 and 0x1D9 remain intact for city compatibility. There are
-921 custom graphics plus 83 reserved General graphics. The 128-slot animation
-range contains 116 active graphics and 12 padding slots. In total 1,016 of the
+925 custom graphics plus 83 reserved General graphics. The 128-slot animation
+range contains 120 active graphics and 8 padding slots. In total 1,016 of the
 1,024 graphics slots are allocated, leaving 8 free; all 13 palette banks are used.
 Additional metatiles can still combine existing graphics without adding artwork.
 
@@ -75,10 +75,10 @@ leave invisible collision. The promenade and lighthouse shore fronts remain soli
 attributes and decompressed graphics actually embedded in the ROM against the
 current source. The Makefile tracks layout binaries to prevent stale map builds.
 
-The ARM GNU 13.2.1 build passed. ROM region usage is 21,502,852 bytes / 32 MiB
+The ARM GNU 13.2.1 build passed. ROM region usage is 21,502,952 bytes / 32 MiB
 (64.08%). mGBA checks passed eight directional outdoor crossings, the lighthouse
 walking loop and plaque, pier boundaries, the open boarding route, original sailor
-return to Vermilion, Stellar Ticket return to (20,16), and free movement afterward.
+return to Vermilion, Stellar Ticket return to (20,18), and free movement afterward.
 Test setup uses injected warps; crossings and ferry travel use game controls.
 
 `tests/havora_rom_assets.py` also compares every animation frame embedded in the
@@ -90,3 +90,25 @@ blocked as before; Surf and old saves stranded at changed coordinates are outsid
 these checks. Water animation was verified in both VRAM and the visible screen across eight phases; a sampled house graphic stayed byte-identical.
 
 Only Havora-Development is updated. QOL, V1 and V2 refs are not modified.
+
+## Appended animated water boulder
+
+The new General/Emerald boulder at primary metatile **0x08E** is a native 16×16
+rock cutout with its flat light-blue backing removed. It now sits on the harbor
+sea animation. The stone pixels remain fixed while surrounding water cycles
+through all eight phases. It consumes four existing animation-padding slots,
+so total allocated graphics remain 1,016/1,024 and no old metatile IDs change.
+
+`tests/havora_water_boulder.py` decodes the compiled metatile from actual mGBA VRAM
+through eight phases, checks every opaque stone pixel stays fixed, and checks
+that the visible water changes. The author pushed the screenshot layout in be19b764 during this task. It was
+merged before applying 14 water rocks, 6 bollards, 6 planters and 2 extra stalls
+(44 blocks total). Two proposed decorations were omitted to preserve one-tile
+walking links at (29,24) and (37,27). All of the author's event and connection
+positions remain intact. The moved pier required updating the ferry arrival
+from (20,16), now water, to the walkable deck at (20,18), beside the sailor at
+(21,18). `docs/havora-coastal-study.json` records the applied placements.
+
+`tools/havora/layout.json` now stores the latest verified authored layout for
+explicit regeneration. Future manual Porymap changes belong in map.bin as usual;
+do not run build_map.py after editing unless you also update this snapshot.

@@ -34,26 +34,35 @@ IDs below are the combined map metatile IDs shown in Porymap (hex). Building par
 | wood | `0x281` | 1×1 |
 | water | `0x282` | 1×1 |
 
+## New coastal details
+
+- **0x08E — animated water boulder:** stone stays fixed while the surrounding sea moves. Use collision 1 for decorative water rocks. Add loose groups around the outer shoreline and breakwater; keep the ferry lane clear.
+- **0x283 — mooring bollard:** use on stone paving, one tile inward from seawalls.
+- **0x2B4 — flower planter:** use on the promenade and beside buildings.
+- Existing `market_stall` is a reusable 3×3 block grid; see the table above.
+
+The water-boulder addition preserves every previously published Havora metatile ID, so existing Porymap edits remain compatible.
+
 ## Keep travel working
 
-- Keep the ferry at (25,17), sailor at (20,17), and arrival at (20,16). The sailor must remain reachable from (20,18).
+- Keep the ferry at (20,16), sailor at (21,18), and arrival at (20,18). The sailor is reached from the left at (20,18).
 - The north and west borders connect outdoors through `QuantumHavoraNorthQuay` and `QuantumHavoraWestQuay`. Keep reciprocal connections and matching elevation 3.
 - Harbor buildings are exterior scenery. Doors do not currently have interior warps.
 - Walking ground uses elevation 3 / collision 0. Buildings, planters and pier lips use collision 1. Water and decorative boats remain blocked.
 - A tall prop can be walked behind where its upper tiles retain the ground collision. Its feet should block movement.
-- The market stall at (7,17) occupies a 3×3 footprint. Keep the aisle at x=6 open.
-- The lighthouse plaque remains at (36,25), read from (36,26).
+- The market stall at (7,17), (2,22) and (9,22) each occupy a 3×3 footprint. Keep the aisle at x=6 open.
+- The lighthouse plaque is at (36,27), read from (36,28). Keep the east-side walkway at x=37 clear.
 
 ## Save and build
 
 Porymap edits belong in `data/layouts/Quantum_Havora_Harbor_Layout/map.bin` and the usual map JSON / tileset files. Commit all files Porymap saves.
 
-**After manual layout edits, do not run `tools/havora/build_map.py` or `emerald_harbor.py`: they regenerate the approved layout and overwrite those edits.** `build_assets.py` regenerates the tileset and asset catalog. Ordinary ROM builds do not run these scripts.
+**After manual layout edits, do not run `tools/havora/build_map.py` or `emerald_harbor.py`: they regenerate the saved layout snapshot in `tools/havora/layout.json` and overwrite those edits.** `build_assets.py` regenerates the tileset and asset catalog. Ordinary ROM builds do not run these scripts.
 
 Run `python tests/havora_layouts.py` after layout changes. It checks every unoccupied walking tile is connected, the ferry route, map dimensions and connections. Existing tests protect the current promenade edges and docking lips; update them deliberately when redesigning those areas.
 
-The expanded tileset uses 525 custom metatiles (384 secondary + 141 primary),
-921 custom 8×8 graphics and all 13 palette banks. There are 8 free graphics slots;
+The expanded tileset uses 526 custom metatiles (384 secondary + 142 primary),
+925 custom 8×8 graphics and all 13 palette banks. There are 8 free graphics slots;
 you can still make many new metatiles by combining existing graphics. The source
 catalog includes 501 imported metatile entries, some sharing a Havora ID.
 
