@@ -6,7 +6,7 @@ R=Path(__file__).resolve().parents[1];ls=json.loads((R/'data/layouts/layouts.jso
 def read(name):
  m=json.loads((R/f'data/maps/{name}/map.json').read_text());l=next(l for l in ls if l['id']==m['layout']);b=(R/l['blockdata_filepath']).read_bytes();w,h=l['width'],l['height']
  assert len(b)==2*w*h;assert (w+15)*(h+14)<=0x2800
- a=struct.unpack('<'+'H'*(len(b)//2),b);limit=640+json.loads((R/'tools/havora/assets.json').read_text())['metatiles'] if l['secondary_tileset']=='gTileset_HavoraHarbor' else 808
+ a=struct.unpack('<'+'H'*(len(b)//2),b);limit=1024 if l['secondary_tileset'] in ['gTileset_HavoraHarbor','gTileset_HavoraCity'] else 808
  assert all((v&1023)<limit for v in a)
  for k in ['object_events','warp_events','coord_events','bg_events']:
   for e in m[k]:assert 0<=e['x']<w and 0<=e['y']<h

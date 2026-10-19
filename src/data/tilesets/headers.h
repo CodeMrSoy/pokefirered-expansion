@@ -1135,3 +1135,27 @@ const struct Tileset gTileset_HavoraPrimary =
     .metatileAttributes = gMetatileAttributes_HavoraPrimary,
     .callback = InitTilesetAnim_General,
 };
+
+const struct Tileset gTileset_HavoraCity =
+{
+    .lightPalettes = 0,
+    .isCompressed = TRUE,
+    .isSecondary = TRUE,
+    .tiles = gTilesetTiles_HavoraCity,
+    .palettes = gTilesetPalettes_HavoraCity,
+    .metatiles = gMetatiles_HavoraCity,
+    .metatileAttributes = gMetatileAttributes_HavoraCity,
+    .callback = InitTilesetAnim_HavoraHarbor,
+};
+
+const struct Tileset gTileset_HavoraCityPrimary =
+{
+    .lightPalettes = 0,
+    .isCompressed = TRUE,
+    .isSecondary = FALSE,
+    .tiles = gTilesetTiles_HavoraCityPrimary,
+    .palettes = gTilesetPalettes_HavoraCityPrimary,
+    .metatiles = gMetatiles_HavoraCityPrimary,
+    .metatileAttributes = gMetatileAttributes_HavoraCityPrimary,
+    .callback = InitTilesetAnim_General,
+};

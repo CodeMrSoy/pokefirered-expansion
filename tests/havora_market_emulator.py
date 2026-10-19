@@ -18,15 +18,28 @@ def step(key):
  assert loc()!=before,('blocked',key,before)
 for name,start,key,target in [
  ('market-from-harbor',(43,19,5,1),4,(43,21)),
- ('market-to-harbor',(43,21,5,38),5,(43,19)),
+ ('market-to-harbor',(43,21,5,62),5,(43,19)),
  ('market-from-west',(43,20,6,3),7,(43,21)),
- ('market-to-west',(43,21,1,30),6,(43,20)),
+ ('market-to-west',(43,21,1,54),6,(43,20)),
  ('harbor-west',(43,19,1,2),6,(43,20)),
  ('west-harbor',(43,20,6,15),7,(43,19)),
  ('west-old-city',(43,20,1,10),6,(43,0)),
  ('old-city-west',(43,0,78,10),7,(43,20))]:
  warp(*start);walk(key,35);assert loc()[0]==target,(name,loc());m.snap(name)
 print('PASS: eight seamless outdoor crossings',flush=True)
+for left in [4,19]:
+ warp(43,21,left+1,40)
+ for _ in range(3):step(4)
+ assert loc()==((43,21),(left+1,37)),('stair ascent',loc())
+ m.snap('terrace-stair-'+str(left))
+ # Actual player object currentElevation (low nibble byte 0x0B).
+ player=m.read(m.symbols['gPlayerAvatar']+5,1)[0]
+ assert m.read(m.symbols['gObjectEvents']+player*36+0x0B,1)[0]&15==4
+ for _ in range(3):step(5)
+ assert loc()==((43,21),(left+1,40)),('stair descent',loc())
+ assert m.read(m.symbols['gObjectEvents']+player*36+0x0B,1)[0]&15==3
+warp(43,21,12,40);walk(4,35);assert loc()==((43,21),(12,40)),'cliff wall is walkable'
+print('PASS: both stairways change actual player elevation 3/4 in both directions; cliff blocks direct climbing',flush=True)
 groups=json.loads((m.root/'data/maps/map_groups.json').read_text())['gMapGroup_QuantumIsland']
 district=json.loads((m.root/'data/maps/QuantumHavoraNorthQuay/map.json').read_text())
 for i,e in enumerate(district['warp_events']):

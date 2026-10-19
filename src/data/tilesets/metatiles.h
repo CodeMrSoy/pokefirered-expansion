@@ -357,3 +357,9 @@ const u32 gMetatileAttributes_HavoraHarbor[] = INCBIN_U32("data/tilesets/seconda
 
 const u16 gMetatiles_HavoraPrimary[] = INCBIN_U16("data/tilesets/primary/havora_harbor/metatiles.bin");
 const u32 gMetatileAttributes_HavoraPrimary[] = INCBIN_U32("data/tilesets/primary/havora_harbor/metatile_attributes.bin");
+
+const u16 gMetatiles_HavoraCity[] = INCBIN_U16("data/tilesets/secondary/havora_city/metatiles.bin");
+const u32 gMetatileAttributes_HavoraCity[] = INCBIN_U32("data/tilesets/secondary/havora_city/metatile_attributes.bin");
+
+const u16 gMetatiles_HavoraCityPrimary[] = INCBIN_U16("data/tilesets/primary/havora_city/metatiles.bin");
+const u32 gMetatileAttributes_HavoraCityPrimary[] = INCBIN_U32("data/tilesets/primary/havora_city/metatile_attributes.bin");

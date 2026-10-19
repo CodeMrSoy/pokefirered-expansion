@@ -28,16 +28,17 @@ def scene(name,layout):
 def main(out):
     city=scene('QuantumHavoraNorthQuay','LAYOUT_QUANTUM_HAVORA_NORTH_QUAY')
     harbor=scene('QuantumHarbor','LAYOUT_QUANTUM_HAVORA_HARBOR_LAYOUT')
-    sheet=Image.new('RGB',(1280,2528),'#132532');d=ImageDraw.Draw(sheet)
+    cityheight=city.height*2;footer=88+cityheight+1024
+    sheet=Image.new('RGB',(1280,footer+136),'#132532');d=ImageDraw.Draw(sheet)
     font=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',24)
     small=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',18)
-    d.text((20,14),'HAVORA — MARKET & RESIDENTIAL DISTRICT',font=font,fill='white')
-    d.text((20,50),'Native GBA tiles | 40 x 40 district | 12 stalls | 7 enterable buildings | Seamless harbor connection',font=small,fill='#badce7')
-    sheet.paste(city.resize((1280,1280),Image.Resampling.NEAREST),(0,88))
-    sheet.paste(harbor.resize((1280,1024),Image.Resampling.NEAREST),(0,1368))
-    d.text((20,2412),'North: homes and trade hall. Centre: shops and market. South: your existing harbor.',font=small,fill='white')
-    d.text((20,2444),'Tile-and-sprite render from the actual map data; stock FireRed interiors are an initial furnishing pass.',font=small,fill='#badce7')
-    d.text((20,2476),'Porymap map name: QuantumHavoraNorthQuay. No harbor blocks, ferry events or pixel graphics changed.',font=small,fill='#badce7')
+    d.text((20,14),'HAVORA — RAISED CITY TERRACE',font=font,fill='white')
+    d.text((20,50),'Dedicated city tileset | Native FireRed cliffs, trees and stairs | Elevation 4 city / elevation 3 harbor',font=small,fill='#badce7')
+    sheet.paste(city.resize((1280,cityheight),Image.Resampling.NEAREST),(0,88))
+    sheet.paste(harbor.resize((1280,1024),Image.Resampling.NEAREST),(0,88+cityheight))
+    d.text((20,footer+20),'Two stairways join the raised market to a lower garden promenade and the existing harbor.',font=small,fill='white')
+    d.text((20,footer+52),'Actual tile-and-sprite render. Dedicated city pair keeps compatible harbor edge graphics and animated water.',font=small,fill='#badce7')
+    d.text((20,footer+84),'Porymap map: QuantumHavoraNorthQuay | Primary: HavoraCityPrimary | Secondary: HavoraCity',font=small,fill='#badce7')
     sheet.save(out)
 if __name__=='__main__':
     import sys

@@ -12,8 +12,8 @@ def check(symbol,path):
  data=(R/path).read_bytes();off=sy[symbol]-0x8000000;assert rom[off:off+len(data)]==data,('Stale ROM data',symbol,path)
 for symbol,name in [('Quantum_Havora_Harbor_Layout','Quantum_Havora_Harbor_Layout'),('QuantumHavoraWestQuay_Layout','QuantumHavoraWestQuay'),('QuantumHavoraNorthQuay_Layout','QuantumHavoraNorthQuay'),('QuantumPortCity_Layout','QuantumPortCity')]:
  for suffix,file in [('Blockdata','map.bin'),('Border','border.bin')]:check(symbol+'_'+suffix,'data/layouts/'+name+'/'+file)
-for suffix,directory in [('HavoraPrimary','primary'),('HavoraHarbor','secondary')]:
- root='data/tilesets/'+directory+'/havora_harbor/'
+for suffix,directory,folder in [('HavoraPrimary','primary','havora_harbor'),('HavoraHarbor','secondary','havora_harbor'),('HavoraCityPrimary','primary','havora_city'),('HavoraCity','secondary','havora_city')]:
+ root='data/tilesets/'+directory+'/'+folder+'/'
  check('gMetatiles_'+suffix,root+'metatiles.bin');check('gMetatileAttributes_'+suffix,root+'metatile_attributes.bin');check('gTilesetTiles_'+suffix,root+'tiles.4bpp.lz')
  # Decode the actual ROM compression, then compare indices with the source PNG.
  off=sy['gTilesetTiles_'+suffix]-0x8000000;b=rom[off:];assert b[0]==0x10;size=int.from_bytes(b[1:4],'little');out=bytearray();pos=4
