@@ -1437,3 +1437,21 @@ Text_TestMsg::
 	.include "data/maps/QuantumHavoraNorthHouse2/scripts.inc"
 
 	.include "data/maps/QuantumHavoraNorthHouse3/scripts.inc"
+
+	.include "data/maps/QuantumHavoraCliffHouse1/scripts.inc"
+
+	.include "data/maps/QuantumHavoraCliffHouse2/scripts.inc"
+
+	.include "data/maps/QuantumHavoraCliffHouse3/scripts.inc"
+
+	.include "data/maps/QuantumHavoraCliffHouse4/scripts.inc"
+
+	.include "data/maps/QuantumHavoraCliffHouse5/scripts.inc"
+
+	.include "data/maps/QuantumHavoraHarborInn/scripts.inc"
+
+	.include "data/maps/QuantumHavoraNorthHouse4/scripts.inc"
+
+	.include "data/maps/QuantumHavoraNorthHouse5/scripts.inc"
+
+	.include "data/maps/QuantumHavoraNorthLodge/scripts.inc"

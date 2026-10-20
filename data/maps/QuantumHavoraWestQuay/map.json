@@ -16,18 +16,23 @@
   "connections": [
     {
       "map": "MAP_QUANTUM_PORT_CITY",
-      "offset": -51,
+      "offset": 0,
       "direction": "left"
     },
     {
       "map": "MAP_QUANTUM_HAVORA_NORTH_QUAY",
-      "offset": -51,
+      "offset": 0,
       "direction": "right"
     },
     {
       "map": "MAP_QUANTUM_HARBOR",
-      "offset": 13,
+      "offset": 64,
       "direction": "right"
+    },
+    {
+      "map": "MAP_QUANTUM_HAVORA_NORTH_DISTRICT",
+      "offset": -48,
+      "direction": "up"
     }
   ],
   "object_events": [],

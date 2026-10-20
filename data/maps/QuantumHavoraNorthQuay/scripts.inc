@@ -49,3 +49,17 @@ QuantumHavoraNorthQuay_Stock::
 	.2byte ITEM_REPEL
 	.2byte ITEM_ESCAPE_ROPE
 	.2byte ITEM_NONE
+
+QuantumHavoraNorthQuay_MarketCustomer::
+	msgbox QuantumHavoraNorthQuay_MarketCustomer_Text, MSGBOX_NPC
+	end
+
+QuantumHavoraNorthQuay_MarketCustomer_Text::
+	.string "A gift from HAVORA for my family.\nWhich stall would you choose?$"
+
+QuantumHavoraNorthQuay_MarketTraveler::
+	msgbox QuantumHavoraNorthQuay_MarketTraveler_Text, MSGBOX_NPC
+	end
+
+QuantumHavoraNorthQuay_MarketTraveler_Text::
+	.string "The houses climb right up the cliffs.\nI have never seen a port like it.$"

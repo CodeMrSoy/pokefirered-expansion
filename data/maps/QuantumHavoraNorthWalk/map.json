@@ -38,5 +38,14 @@
   ],
   "warp_events": [],
   "coord_events": [],
-  "bg_events": []
+  "bg_events": [
+    {
+      "type": "sign",
+      "x": 4,
+      "y": 21,
+      "elevation": 6,
+      "player_facing_dir": "BG_EVENT_PLAYER_FACING_ANY",
+      "script": "QuantumHavoraNorthWalk_Impact"
+    }
+  ]
 }

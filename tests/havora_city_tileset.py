@@ -23,3 +23,9 @@ for directory,count in [('primary',640),('secondary',384)]:
  words=struct.unpack('<'+'H'*(count*8),(folder/'metatiles.bin').read_bytes())
  assert all(w&1023<1024 and w>>12<13 for w in words)
 print('PASS: native FireRed terrain pixels at GBA color depth, exact shared edge art, compatible buffer strips, and city graphics/metatile budgets')
+# The approaching coastal-road camera draws the city's first eight columns
+# with General/Cinnabar before the crossing: only shared paving/water here.
+assert city[472].tobytes()==general[472].tobytes()
+raw=(R/'data/layouts/QuantumPortCity/map.bin').read_bytes();west=struct.unpack('<4608H',raw)
+assert all(west[y*48+x]&1023 in [449,472] for y in range(96) for x in range(8))
+print('PASS: coastal-road approach uses pixel-identical General water and paving')

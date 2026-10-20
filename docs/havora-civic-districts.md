@@ -98,3 +98,65 @@ Pokémon. Setup warps and test party creation are emulator instrumentation.
 The existing market/ferry emulator test covers the retained ferry round trip.
 Native review renders and mGBA screenshots are provided; no Porymap UI testing
 is claimed.
+
+## Coastal neighborhood refinement
+
+The refinement keeps all pre-existing service/house entrance coordinates and
+ferry interactions. It adds nine private, enterable homes/lodgings: five cliff
+homes, the harbor guesthouse, two northern homes and a northern lodge. The inn
+and lodge currently provide resident dialogue, not a paid/rest service. Existing
+Center healing, Mart sales and daycare raising remain the functional services.
+Outdoor resident counts are now west 10, north 10, daycare 5 and market 12.
+Three residents have short horizontal walking ranges; they stand off stairs,
+service thresholds and the ferry route. No new graphics or palettes are added.
+
+The west coast has water, native rock faces and stepped headlands below the
+residential plateaus. The old coastal road now meets the lower waterfront:
+QuantumPortCity's left connection offset is 60, with the road's reciprocal
+right offset -60. The road's existing events/layout are retained.
+
+QuantumHavoraWestQuay expands from 8x40 to 8x96. Its old cells begin at row 51;
+its world origin now matches the market's northern edge. It uses the city
+pair, whose lower quay and harbor-facing art remains compatible with the
+harbor. New stairs at x2..5 / y16..17 and y36..37 descend 5→4→3. The northern
+square connects at x50..53; its down offset is 48 and the quay's up offset -48.
+Market/quay offsets are both zero. Harbor/quay offsets are -64/+64. Existing
+west city/quay offsets are now zero. Former invisible pavement barriers on
+these two western maps have visible railings; the established eight-tile
+crossing at west-city rows 64..71 stays open.
+
+A single weathered impact hollow and sign near the northern lookout introduce
+Minior folklore. The larger crater landscape remains reserved for future
+mountain settlements. The lookout still has no onward regional connection.
+
+`tools/havora/refine_city.py` is a one-shot authoring recipe for the preceding
+8x40-quay civic baseline. It refuses to run again over the expanded layout.
+Do not run old district generators over this pass or subsequent Porymap edits.
+`tools/havora/review_connected.py OUTPUT.png` renders all current outdoor maps
+using their actual reciprocal connection offsets; it asserts world-placement
+consistency and includes native object sprites.
+
+### Different-primary camera transitions
+
+The visual runtime review exposed an engine assumption: camera connections
+only reloaded the secondary tileset. Walking from General to HavoraCity, or
+HavoraHarbor to HavoraCity, could therefore reach the correct map while drawing
+it with stale primary VRAM. `LoadMapFromCameraTransition` now compares the
+resolved old/new primary tilesets and reloads both banks, palettes, weather
+colors and animation callbacks when they differ. Same-primary transitions
+retain their prior behavior. This also respects resolved seasonal General
+variants rather than comparing only layout pointers.
+
+Metatile 0x1D8 in the city primary now uses the exact General water definition
+and existing reserved graphics. The west map's first eight columns use only
+this shared water and the already shared paving, so the approach remains
+readable while the camera is still on the General/Cinnabar coastal road.
+No graphics slots or palettes were added for this repair.
+
+`tests/havora_refinement_emulator.py` checks destination primary tile bytes in
+actual VRAM after road↔city and harbor↔market crossings, accounting for the
+active seasonal General variant and excluding reserved animated tiles. It
+also interacts with the Minior sign and checks the visible western railing.
+The civic tests now include fourteen crossings, nine stairways and all eighteen
+civic service/home doorways. The market/ferry suite retains its seven doorways,
+two stairways, shop tests and original ferry round trip.

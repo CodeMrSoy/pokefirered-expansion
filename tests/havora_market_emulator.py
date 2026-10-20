@@ -19,11 +19,11 @@ def step(key):
 for name,start,key,target in [
  ('market-from-harbor',(43,19,5,1),4,(43,21)),
  ('market-to-harbor',(43,21,5,62),5,(43,19)),
- ('market-from-west',(43,20,6,3),7,(43,21)),
+ ('market-from-west',(43,20,6,54),7,(43,21)),
  ('market-to-west',(43,21,1,54),6,(43,20)),
  ('harbor-west',(43,19,1,2),6,(43,20)),
- ('west-harbor',(43,20,6,15),7,(43,19)),
- ('west-old-city',(43,20,1,16),6,(43,0)),
+ ('west-harbor',(43,20,6,66),7,(43,19)),
+ ('west-old-city',(43,20,1,67),6,(43,0)),
  ('old-city-west',(43,0,46,67),7,(43,20))]:
  warp(*start);walk(key,35);assert loc()[0]==target,(name,loc());m.snap(name)
 print('PASS: eight seamless outdoor crossings',flush=True)

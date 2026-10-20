@@ -20,14 +20,16 @@ def step(key):
   if loc()!=before:break
  m.keys.clear();m.run(100);assert loc()!=before,('blocked',before,key)
 for source,x,y,key,dest in [
- ('QuantumHavoraWestQuay',1,16,6,'QuantumPortCity'),('QuantumPortCity',46,67,7,'QuantumHavoraWestQuay'),
+ ('QuantumPortCity',1,69,6,'QuantumHarborRoad'),('QuantumHarborRoad',22,9,7,'QuantumPortCity'),
+ ('QuantumHavoraWestQuay',1,67,6,'QuantumPortCity'),('QuantumPortCity',46,67,7,'QuantumHavoraWestQuay'),
+ ('QuantumHavoraWestQuay',3,1,4,'QuantumHavoraNorthDistrict'),('QuantumHavoraNorthDistrict',51,38,5,'QuantumHavoraWestQuay'),
  ('QuantumPortCity',17,1,4,'QuantumHavoraNorthDistrict'),('QuantumHavoraNorthDistrict',17,38,5,'QuantumPortCity'),
  ('QuantumHavoraNorthQuay',13,1,4,'QuantumHavoraNorthDistrict'),('QuantumHavoraNorthDistrict',69,38,5,'QuantumHavoraNorthQuay'),
  ('QuantumHavoraNorthDistrict',94,23,7,'QuantumHavoraCoastalDaycare'),('QuantumHavoraCoastalDaycare',1,23,6,'QuantumHavoraNorthDistrict'),
  ('QuantumHavoraNorthDistrict',69,1,4,'QuantumHavoraNorthWalk'),('QuantumHavoraNorthWalk',7,30,5,'QuantumHavoraNorthDistrict')]:
  warp(source,x,y);walk(key,35);assert loc()[0]==(43,number(dest)),(source,dest,loc())
  m.snap('civic-connection-'+source+'-'+dest)
-print('PASS: ten seamless civic district crossings',flush=True)
+print('PASS: fourteen seamless civic and coastal-road crossings',flush=True)
 for stair in json.loads((m.root/'tools/havora/civic-districts.json').read_text())['stairs']:
  name,x,y=stair['map'],stair['x']+1,stair['y'];warp(name,x,y+2)
  assert elevation()==stair['lower']
@@ -36,7 +38,7 @@ for stair in json.loads((m.root/'tools/havora/civic-districts.json').read_text()
  m.snap('civic-stairs-'+name+'-'+str(y))
  for _ in range(3):step(5)
  assert loc()[1]==(x,y+2) and elevation()==stair['lower'],('descent',stair,loc(),elevation())
-print('PASS: all seven new stairs change actual player elevations in both directions',flush=True)
+print('PASS: all nine civic stairs change actual player elevations in both directions',flush=True)
 allmaps={json.loads((m.root/f'data/maps/{n}/map.json').read_text())['id']:n for n in groups}
 for source in ['QuantumPortCity','QuantumHavoraNorthDistrict','QuantumHavoraCoastalDaycare']:
  outdoor=json.loads((m.root/f'data/maps/{source}/map.json').read_text())
@@ -46,7 +48,7 @@ for source in ['QuantumPortCity','QuantumHavoraNorthDistrict','QuantumHavoraCoas
   interior=json.loads((m.root/f'data/maps/{dest}/map.json').read_text());exit=interior['warp_events'][int(e['dest_warp_id'])]
   warp(dest,exit['x'],exit['y']-1);walk(5,35)
   assert loc()==((43,number(source)),(e['x'],e['y']+1)),('return',source,i,loc())
-print('PASS: gym, Center, Mart, daycare and five new home entrance/return trips',flush=True)
+print('PASS: all civic service and home entrance/return trips',flush=True)
 # This project's shared Center first-floor artwork has no upstairs escalator.
 # Keep that QOL interior and the legacy upper-floor map unchanged; test the
 # accessible ground-floor services rather than claiming an upstairs route.

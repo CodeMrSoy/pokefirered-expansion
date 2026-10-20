@@ -16,7 +16,7 @@
   "connections": [
     {
       "map": "MAP_QUANTUM_HAVORA_WEST_QUAY",
-      "offset": -13,
+      "offset": -64,
       "direction": "left"
     },
     {

@@ -95,8 +95,26 @@
       "y": 10,
       "upper": 7,
       "lower": 6
+    },
+    {
+      "map": "QuantumHavoraWestQuay",
+      "x": 2,
+      "y": 16,
+      "upper": 5,
+      "lower": 4
+    },
+    {
+      "map": "QuantumHavoraWestQuay",
+      "x": 2,
+      "y": 36,
+      "upper": 4,
+      "lower": 3
     }
   ],
   "gym_status": "Enterable stock training hall; leader/team/badge progression not assigned.",
-  "daycare_service": "Existing FireRed Route 5 single-Pokemon raising service and save storage."
+  "daycare_service": "Existing FireRed Route 5 single-Pokemon raising service and save storage.",
+  "west_quay_dimensions": [
+    8,
+    96
+  ]
 }

@@ -17,7 +17,7 @@ def load(name):
  for kind in ['object_events','warp_events','coord_events','bg_events']:
   for e in m[kind]:assert 0<=e['x']<l['width'] and 0<=e['y']<l['height'],(name,e)
  cache[name]=m,l,a;return m,l,a
-starts={'QuantumPortCity':(42,66),'QuantumHavoraNorthDistrict':(69,38),'QuantumHavoraCoastalDaycare':(2,24),'QuantumHavoraNorthWalk':(7,30)}
+starts={'QuantumHavoraWestQuay':(3,67),'QuantumPortCity':(42,66),'QuantumHavoraNorthDistrict':(69,38),'QuantumHavoraCoastalDaycare':(2,24),'QuantumHavoraNorthWalk':(7,30)}
 for name in names:load(name)
 for name,start in starts.items():
  m,l,a=load(name);w,h=l['width'],l['height'];occupied={(o['x'],o['y']) for o in m['object_events']}
@@ -61,3 +61,26 @@ assert (heal['map'],heal['x'],heal['y'])==('MAP_QUANTUM_HAVORA_NORTH_DISTRICT',6
 assert '{MAP(MAP_QUANTUM_HAVORA_NORTH_DISTRICT), HEAL_LOCATION_QUANTUM_PORT_CITY}' in (R/'src/region_map.c').read_text()
 assert read('tools/havora/civic-tiles.json')['graphics_budget']<=1024
 print('PASS: civic map sizes/buffers, elevation-aware circulation, accessible service doors/NPCs, reciprocal connections, and relocated healing/Fly coordinates')
+
+# Regression: the coastal quay must occupy the former gap and allow its
+# stair route all the way from the north square to the harbor.
+qm,ql,qa=load('QuantumHavoraWestQuay')
+assert (ql['width'],ql['height'])==(8,96)
+assert ql['primary_tileset']=='gTileset_HavoraCityPrimary'
+assert next(c['offset'] for c in qm['connections'] if c['map']=='MAP_QUANTUM_HARBOR')==64
+for name in ['QuantumPortCity','QuantumHavoraWestQuay']:
+ _,_,aa=load(name)
+ assert not any((v&1023)==0x1c1 and v&0xc00 for v in aa), (name,'invisible pavement wall')
+print('PASS: terraced quay circulation, expanded-map origin, and no invisible pavement barriers in the western seam')
+# A reachable warp must still be painted as a door, not overwritten by paving.
+attributes=(R/'data/tilesets/primary/havora_city/metatile_attributes.bin').read_bytes()+(R/'data/tilesets/secondary/havora_city/metatile_attributes.bin').read_bytes()
+for name in starts:
+ m,l,a=load(name)
+ for e in m['warp_events']:
+  mid=a[e['y']*l['width']+e['x']]&1023
+  assert struct.unpack_from('<I',attributes,mid*4)[0]&0x1ff==0x60,(name,'door behavior overwritten',e)
+ for o in m['object_events']:
+  if o['movement_type']=='MOVEMENT_TYPE_WANDER_LEFT_AND_RIGHT':
+   for x in range(o['x']-o['movement_range_x'],o['x']+o['movement_range_x']+1):
+    assert a[o['y']*l['width']+x]&0xfc00==o['elevation']<<12,(name,'unsafe wandering range',o)
+print('PASS: functional door metatile behaviors and unobstructed resident walking ranges')

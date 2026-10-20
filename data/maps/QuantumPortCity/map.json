@@ -16,12 +16,12 @@
   "connections": [
     {
       "map": "MAP_QUANTUM_HARBOR_ROAD",
-      "offset": 0,
+      "offset": 60,
       "direction": "left"
     },
     {
       "map": "MAP_QUANTUM_HAVORA_WEST_QUAY",
-      "offset": 51,
+      "offset": 0,
       "direction": "right"
     },
     {
@@ -72,6 +72,104 @@
       "trainer_sight_or_berry_tree_id": "0",
       "script": "QuantumPortCity_Trader",
       "flag": "0"
+    },
+    {
+      "type": "object",
+      "graphics_id": "OBJ_EVENT_GFX_WOMAN_1",
+      "x": 13,
+      "y": 16,
+      "elevation": 5,
+      "movement_type": "MOVEMENT_TYPE_FACE_DOWN",
+      "movement_range_x": 0,
+      "movement_range_y": 0,
+      "trainer_type": "TRAINER_TYPE_NONE",
+      "trainer_sight_or_berry_tree_id": "0",
+      "script": "QuantumPortCity_CliffGardener",
+      "flag": "0"
+    },
+    {
+      "type": "object",
+      "graphics_id": "OBJ_EVENT_GFX_MAN",
+      "x": 32,
+      "y": 15,
+      "elevation": 5,
+      "movement_type": "MOVEMENT_TYPE_WANDER_LEFT_AND_RIGHT",
+      "movement_range_x": 1,
+      "movement_range_y": 0,
+      "trainer_type": "TRAINER_TYPE_NONE",
+      "trainer_sight_or_berry_tree_id": "0",
+      "script": "QuantumPortCity_GymVisitor",
+      "flag": "0"
+    },
+    {
+      "type": "object",
+      "graphics_id": "OBJ_EVENT_GFX_WOMAN_1",
+      "x": 26,
+      "y": 38,
+      "elevation": 4,
+      "movement_type": "MOVEMENT_TYPE_WANDER_LEFT_AND_RIGHT",
+      "movement_range_x": 1,
+      "movement_range_y": 0,
+      "trainer_type": "TRAINER_TYPE_NONE",
+      "trainer_sight_or_berry_tree_id": "0",
+      "script": "QuantumPortCity_Baker",
+      "flag": "0"
+    },
+    {
+      "type": "object",
+      "graphics_id": "OBJ_EVENT_GFX_GENTLEMAN",
+      "x": 12,
+      "y": 56,
+      "elevation": 4,
+      "movement_type": "MOVEMENT_TYPE_FACE_DOWN",
+      "movement_range_x": 0,
+      "movement_range_y": 0,
+      "trainer_type": "TRAINER_TYPE_NONE",
+      "trainer_sight_or_berry_tree_id": "0",
+      "script": "QuantumPortCity_Neighbor",
+      "flag": "0"
+    },
+    {
+      "type": "object",
+      "graphics_id": "OBJ_EVENT_GFX_MAN",
+      "x": 33,
+      "y": 56,
+      "elevation": 4,
+      "movement_type": "MOVEMENT_TYPE_FACE_DOWN",
+      "movement_range_x": 0,
+      "movement_range_y": 0,
+      "trainer_type": "TRAINER_TYPE_NONE",
+      "trainer_sight_or_berry_tree_id": "0",
+      "script": "QuantumPortCity_Resident",
+      "flag": "0"
+    },
+    {
+      "type": "object",
+      "graphics_id": "OBJ_EVENT_GFX_SAILOR",
+      "x": 26,
+      "y": 80,
+      "elevation": 3,
+      "movement_type": "MOVEMENT_TYPE_FACE_DOWN",
+      "movement_range_x": 0,
+      "movement_range_y": 0,
+      "trainer_type": "TRAINER_TYPE_NONE",
+      "trainer_sight_or_berry_tree_id": "0",
+      "script": "QuantumPortCity_InnGuest",
+      "flag": "0"
+    },
+    {
+      "type": "object",
+      "graphics_id": "OBJ_EVENT_GFX_PIDGEY",
+      "x": 34,
+      "y": 82,
+      "elevation": 3,
+      "movement_type": "MOVEMENT_TYPE_FACE_DOWN",
+      "movement_range_x": 0,
+      "movement_range_y": 0,
+      "trainer_type": "TRAINER_TYPE_NONE",
+      "trainer_sight_or_berry_tree_id": "0",
+      "script": "QuantumPortCity_CoastBird",
+      "flag": "0"
     }
   ],
   "warp_events": [
@@ -94,6 +192,48 @@
       "y": 46,
       "elevation": 4,
       "dest_map": "MAP_QUANTUM_HAVORA_WEST_HOUSE2",
+      "dest_warp_id": "0"
+    },
+    {
+      "x": 12,
+      "y": 12,
+      "elevation": 5,
+      "dest_map": "MAP_QUANTUM_HAVORA_CLIFF_HOUSE1",
+      "dest_warp_id": "0"
+    },
+    {
+      "x": 33,
+      "y": 12,
+      "elevation": 5,
+      "dest_map": "MAP_QUANTUM_HAVORA_CLIFF_HOUSE2",
+      "dest_warp_id": "0"
+    },
+    {
+      "x": 26,
+      "y": 34,
+      "elevation": 4,
+      "dest_map": "MAP_QUANTUM_HAVORA_CLIFF_HOUSE3",
+      "dest_warp_id": "0"
+    },
+    {
+      "x": 13,
+      "y": 53,
+      "elevation": 4,
+      "dest_map": "MAP_QUANTUM_HAVORA_CLIFF_HOUSE4",
+      "dest_warp_id": "0"
+    },
+    {
+      "x": 32,
+      "y": 53,
+      "elevation": 4,
+      "dest_map": "MAP_QUANTUM_HAVORA_CLIFF_HOUSE5",
+      "dest_warp_id": "0"
+    },
+    {
+      "x": 24,
+      "y": 77,
+      "elevation": 3,
+      "dest_map": "MAP_QUANTUM_HAVORA_HARBOR_INN",
       "dest_warp_id": "0"
     }
   ],

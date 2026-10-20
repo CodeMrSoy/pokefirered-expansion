@@ -49,9 +49,9 @@ assert not any(e['dest_map']=='MAP_QUANTUM_HARBOR' for e in m['warp_events'])
 # All three boundary maps now agree on one world-space position.
 w=load('data/maps/QuantumHavoraWestQuay/map.json');h=load('data/maps/QuantumHarbor/map.json')
 offset=lambda mm,target:next(c['offset'] for c in mm['connections'] if c['map']==target)
-assert offset(m,w['id'])==51 and offset(w,m['id'])==-51
-assert offset(w,h['id'])==13 and offset(h,w['id'])==-13
-assert 51+13==l['height']
+assert offset(m,w['id'])==0 and offset(w,m['id'])==0
+assert offset(w,h['id'])==64 and offset(h,w['id'])==-64
+assert offset(m,w['id'])+offset(w,h['id'])==l['height']
 for left in [4,19]:
  for x in range(left,left+4):
   assert a[37*40+x]>>12==4 and a[40*40+x]>>12==3
