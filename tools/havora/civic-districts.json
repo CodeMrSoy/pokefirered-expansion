@@ -1,0 +1,102 @@
+{
+  "maps": {
+    "west": "MAP_QUANTUM_PORT_CITY",
+    "north": "MAP_QUANTUM_HAVORA_NORTH_DISTRICT",
+    "coast": "MAP_QUANTUM_HAVORA_COASTAL_DAYCARE",
+    "walk": "MAP_QUANTUM_HAVORA_NORTH_WALK",
+    "gym": "MAP_QUANTUM_HAVORA_GYM",
+    "mart": "MAP_QUANTUM_HAVORA_MART",
+    "daycare": "MAP_QUANTUM_HAVORA_DAYCARE"
+  },
+  "west_dimensions": [
+    48,
+    96
+  ],
+  "north_dimensions": [
+    96,
+    40
+  ],
+  "daycare_dimensions": [
+    48,
+    40
+  ],
+  "north_walk_dimensions": [
+    16,
+    32
+  ],
+  "entrances": {
+    "gym": [
+      23,
+      13,
+      5
+    ],
+    "center": [
+      64,
+      17,
+      5
+    ],
+    "mart": [
+      82,
+      17,
+      5
+    ],
+    "daycare": [
+      30,
+      13,
+      6
+    ]
+  },
+  "stairs": [
+    {
+      "map": "QuantumPortCity",
+      "x": 16,
+      "y": 28,
+      "upper": 5,
+      "lower": 4
+    },
+    {
+      "map": "QuantumPortCity",
+      "x": 28,
+      "y": 62,
+      "upper": 4,
+      "lower": 3
+    },
+    {
+      "map": "QuantumHavoraNorthDistrict",
+      "x": 24,
+      "y": 10,
+      "upper": 6,
+      "lower": 5
+    },
+    {
+      "map": "QuantumHavoraNorthDistrict",
+      "x": 68,
+      "y": 10,
+      "upper": 6,
+      "lower": 5
+    },
+    {
+      "map": "QuantumHavoraNorthDistrict",
+      "x": 68,
+      "y": 28,
+      "upper": 5,
+      "lower": 4
+    },
+    {
+      "map": "QuantumHavoraCoastalDaycare",
+      "x": 22,
+      "y": 26,
+      "upper": 6,
+      "lower": 5
+    },
+    {
+      "map": "QuantumHavoraNorthWalk",
+      "x": 6,
+      "y": 10,
+      "upper": 7,
+      "lower": 6
+    }
+  ],
+  "gym_status": "Enterable stock training hall; leader/team/badge progression not assigned.",
+  "daycare_service": "Existing FireRed Route 5 single-Pokemon raising service and save storage."
+}

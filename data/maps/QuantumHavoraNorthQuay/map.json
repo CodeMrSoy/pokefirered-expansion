@@ -23,6 +23,11 @@
       "map": "MAP_QUANTUM_HARBOR",
       "offset": 0,
       "direction": "down"
+    },
+    {
+      "map": "MAP_QUANTUM_HAVORA_NORTH_DISTRICT",
+      "offset": -56,
+      "direction": "up"
     }
   ],
   "object_events": [

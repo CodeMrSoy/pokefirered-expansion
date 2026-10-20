@@ -23,8 +23,8 @@ for name,start,key,target in [
  ('market-to-west',(43,21,1,54),6,(43,20)),
  ('harbor-west',(43,19,1,2),6,(43,20)),
  ('west-harbor',(43,20,6,15),7,(43,19)),
- ('west-old-city',(43,20,1,10),6,(43,0)),
- ('old-city-west',(43,0,78,10),7,(43,20))]:
+ ('west-old-city',(43,20,1,16),6,(43,0)),
+ ('old-city-west',(43,0,46,67),7,(43,20))]:
  warp(*start);walk(key,35);assert loc()[0]==target,(name,loc());m.snap(name)
 print('PASS: eight seamless outdoor crossings',flush=True)
 for left in [4,19]:

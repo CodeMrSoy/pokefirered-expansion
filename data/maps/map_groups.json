@@ -585,6 +585,17 @@
     "QuantumHavoraTraderHouse",
     "QuantumHavoraTradeHall",
     "QuantumHavoraOutfitters",
-    "QuantumHavoraProvisions"
+    "QuantumHavoraProvisions",
+    "QuantumHavoraNorthDistrict",
+    "QuantumHavoraCoastalDaycare",
+    "QuantumHavoraNorthWalk",
+    "QuantumHavoraGym",
+    "QuantumHavoraMart",
+    "QuantumHavoraDaycare",
+    "QuantumHavoraWestHouse1",
+    "QuantumHavoraWestHouse2",
+    "QuantumHavoraNorthHouse1",
+    "QuantumHavoraNorthHouse2",
+    "QuantumHavoraNorthHouse3"
   ]
 }

@@ -1415,3 +1415,25 @@ Text_TestMsg::
 	.include "data/maps/QuantumHavoraOutfitters/scripts.inc"
 
 	.include "data/maps/QuantumHavoraProvisions/scripts.inc"
+
+	.include "data/maps/QuantumHavoraNorthDistrict/scripts.inc"
+
+	.include "data/maps/QuantumHavoraCoastalDaycare/scripts.inc"
+
+	.include "data/maps/QuantumHavoraNorthWalk/scripts.inc"
+
+	.include "data/maps/QuantumHavoraGym/scripts.inc"
+
+	.include "data/maps/QuantumHavoraMart/scripts.inc"
+
+	.include "data/maps/QuantumHavoraDaycare/scripts.inc"
+
+	.include "data/maps/QuantumHavoraWestHouse1/scripts.inc"
+
+	.include "data/maps/QuantumHavoraWestHouse2/scripts.inc"
+
+	.include "data/maps/QuantumHavoraNorthHouse1/scripts.inc"
+
+	.include "data/maps/QuantumHavoraNorthHouse2/scripts.inc"
+
+	.include "data/maps/QuantumHavoraNorthHouse3/scripts.inc"

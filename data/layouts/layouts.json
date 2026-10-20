@@ -4384,12 +4384,12 @@
     {
       "id": "LAYOUT_QUANTUM_PORT_CITY",
       "name": "QuantumPortCity_Layout",
-      "width": 80,
-      "height": 80,
+      "width": 48,
+      "height": 96,
       "border_width": 2,
       "border_height": 2,
-      "primary_tileset": "gTileset_General",
-      "secondary_tileset": "gTileset_VermilionCity",
+      "primary_tileset": "gTileset_HavoraCityPrimary",
+      "secondary_tileset": "gTileset_HavoraCity",
       "border_filepath": "data/layouts/QuantumPortCity/border.bin",
       "blockdata_filepath": "data/layouts/QuantumPortCity/map.bin"
     },
@@ -4524,6 +4524,42 @@
       "secondary_tileset": "gTileset_HavoraCity",
       "border_filepath": "data/layouts/QuantumHavoraNorthQuay/border.bin",
       "blockdata_filepath": "data/layouts/QuantumHavoraNorthQuay/map.bin"
+    },
+    {
+      "id": "LAYOUT_QUANTUM_HAVORA_NORTH_DISTRICT",
+      "name": "QuantumHavoraNorthDistrict_Layout",
+      "width": 96,
+      "height": 40,
+      "border_width": 2,
+      "border_height": 2,
+      "primary_tileset": "gTileset_HavoraCityPrimary",
+      "secondary_tileset": "gTileset_HavoraCity",
+      "border_filepath": "data/layouts/QuantumHavoraNorthDistrict/border.bin",
+      "blockdata_filepath": "data/layouts/QuantumHavoraNorthDistrict/map.bin"
+    },
+    {
+      "id": "LAYOUT_QUANTUM_HAVORA_COASTAL_DAYCARE",
+      "name": "QuantumHavoraCoastalDaycare_Layout",
+      "width": 48,
+      "height": 40,
+      "border_width": 2,
+      "border_height": 2,
+      "primary_tileset": "gTileset_HavoraCityPrimary",
+      "secondary_tileset": "gTileset_HavoraCity",
+      "border_filepath": "data/layouts/QuantumHavoraCoastalDaycare/border.bin",
+      "blockdata_filepath": "data/layouts/QuantumHavoraCoastalDaycare/map.bin"
+    },
+    {
+      "id": "LAYOUT_QUANTUM_HAVORA_NORTH_WALK",
+      "name": "QuantumHavoraNorthWalk_Layout",
+      "width": 16,
+      "height": 32,
+      "border_width": 2,
+      "border_height": 2,
+      "primary_tileset": "gTileset_HavoraCityPrimary",
+      "secondary_tileset": "gTileset_HavoraCity",
+      "border_filepath": "data/layouts/QuantumHavoraNorthWalk/border.bin",
+      "blockdata_filepath": "data/layouts/QuantumHavoraNorthWalk/map.bin"
     }
   ]
 }

@@ -13,7 +13,11 @@ def scene(name,layout):
            'WOMAN_1':('people/woman_1.png','npc_green',16,32),
            'SAILOR':('people/sailor.png','npc_pink',16,32),
            'FISHER':('people/fisher.png','npc_white',16,32),
-           'SEAGALLOP':('misc/seagallop.png','seagallop',64,64)}
+           'SEAGALLOP':('misc/seagallop.png','seagallop',64,64),
+           'GENTLEMAN':('people/gentleman.png','npc_white',16,32),
+           'GYM_GUY':('people/gym_guy.png','npc_pink',16,32),
+           'PIDGEY':('pokemon/pidgey.png','npc_blue',16,16),
+           'NIDORAN_F':('pokemon/nidoran_f.png','npc_pink',16,16)}
     for obj in sorted(objects,key=lambda o:o['y']):
         file,pal,w,h=specs[obj['graphics_id'].removeprefix('OBJ_EVENT_GFX_')]
         root=R/'graphics/object_events'
