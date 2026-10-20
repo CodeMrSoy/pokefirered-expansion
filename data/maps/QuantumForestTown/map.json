@@ -15,14 +15,14 @@
   "battle_scene": "MAP_BATTLE_SCENE_NORMAL",
   "connections": [
     {
-      "direction": "down",
+      "map": "MAP_QUANTUM_COASTAL_ROAD",
       "offset": 0,
-      "map": "MAP_QUANTUM_COASTAL_ROAD"
+      "direction": "down"
     },
     {
-      "direction": "right",
+      "map": "MAP_QUANTUM_WOODLAND_LINK",
       "offset": 0,
-      "map": "MAP_QUANTUM_WOODLAND_LINK"
+      "direction": "right"
     }
   ],
   "object_events": [],
