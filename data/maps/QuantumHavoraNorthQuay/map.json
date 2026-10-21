@@ -28,6 +28,11 @@
       "map": "MAP_QUANTUM_HAVORA_NORTH_DISTRICT",
       "offset": -56,
       "direction": "up"
+    },
+    {
+      "map": "MAP_QUANTUM_HAVORA_CLIFFS",
+      "offset": 0,
+      "direction": "right"
     }
   ],
   "object_events": [

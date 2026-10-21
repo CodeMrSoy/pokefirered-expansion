@@ -16,8 +16,13 @@
   "connections": [
     {
       "map": "MAP_QUANTUM_HAVORA_NORTH_DISTRICT",
-      "offset": 0,
+      "offset": -11,
       "direction": "left"
+    },
+    {
+      "map": "MAP_QUANTUM_HAVORA_CLIFFS",
+      "offset": 0,
+      "direction": "down"
     }
   ],
   "object_events": [
@@ -25,7 +30,7 @@
       "type": "object",
       "graphics_id": "OBJ_EVENT_GFX_GENTLEMAN",
       "x": 29,
-      "y": 15,
+      "y": 12,
       "elevation": 6,
       "movement_type": "MOVEMENT_TYPE_FACE_DOWN",
       "movement_range_x": 0,
@@ -39,7 +44,7 @@
       "type": "object",
       "graphics_id": "OBJ_EVENT_GFX_NIDORAN_F",
       "x": 21,
-      "y": 20,
+      "y": 17,
       "elevation": 6,
       "movement_type": "MOVEMENT_TYPE_FACE_DOWN",
       "movement_range_x": 0,
@@ -53,7 +58,7 @@
       "type": "object",
       "graphics_id": "OBJ_EVENT_GFX_PIDGEY",
       "x": 29,
-      "y": 22,
+      "y": 19,
       "elevation": 6,
       "movement_type": "MOVEMENT_TYPE_FACE_DOWN",
       "movement_range_x": 0,
@@ -67,7 +72,7 @@
       "type": "object",
       "graphics_id": "OBJ_EVENT_GFX_WOMAN_1",
       "x": 27,
-      "y": 15,
+      "y": 12,
       "elevation": 6,
       "movement_type": "MOVEMENT_TYPE_FACE_DOWN",
       "movement_range_x": 0,
@@ -81,7 +86,7 @@
       "type": "object",
       "graphics_id": "OBJ_EVENT_GFX_MAN",
       "x": 29,
-      "y": 32,
+      "y": 29,
       "elevation": 5,
       "movement_type": "MOVEMENT_TYPE_FACE_DOWN",
       "movement_range_x": 0,
@@ -95,7 +100,7 @@
   "warp_events": [
     {
       "x": 30,
-      "y": 13,
+      "y": 10,
       "elevation": 6,
       "dest_map": "MAP_QUANTUM_HAVORA_DAYCARE",
       "dest_warp_id": "1"

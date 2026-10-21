@@ -1455,3 +1455,6 @@ Text_TestMsg::
 	.include "data/maps/QuantumHavoraNorthHouse5/scripts.inc"
 
 	.include "data/maps/QuantumHavoraNorthLodge/scripts.inc"
+
+	.include "data/maps/QuantumHavoraCliffs/scripts.inc"
+	.include "data/maps/QuantumHavoraCliffs/text.inc"

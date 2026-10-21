@@ -4492,7 +4492,7 @@
     {
       "id": "LAYOUT_QUANTUM_HAVORA_HARBOR_LAYOUT",
       "name": "Quantum_Havora_Harbor_Layout",
-      "width": 40,
+      "width": 41,
       "height": 32,
       "border_width": 2,
       "border_height": 2,
@@ -4540,8 +4540,8 @@
     {
       "id": "LAYOUT_QUANTUM_HAVORA_COASTAL_DAYCARE",
       "name": "QuantumHavoraCoastalDaycare_Layout",
-      "width": 35,
-      "height": 32,
+      "width": 37,
+      "height": 29,
       "border_width": 1,
       "border_height": 1,
       "primary_tileset": "gTileset_HavoraCityPrimary",
@@ -4560,6 +4560,18 @@
       "secondary_tileset": "gTileset_HavoraCity",
       "border_filepath": "data/layouts/QuantumHavoraNorthWalk/border.bin",
       "blockdata_filepath": "data/layouts/QuantumHavoraNorthWalk/map.bin"
+    },
+    {
+      "id": "LAYOUT_QUANTUM_HAVORA_CLIFFS",
+      "name": "QuantumHavoraCliffs_Layout",
+      "width": 20,
+      "height": 20,
+      "border_width": 2,
+      "border_height": 2,
+      "primary_tileset": "gTileset_HavoraCityPrimary",
+      "secondary_tileset": "gTileset_HavoraCity",
+      "border_filepath": "data/layouts/QuantumHavoraCliffs/border.bin",
+      "blockdata_filepath": "data/layouts/QuantumHavoraCliffs/map.bin"
     }
   ]
 }
