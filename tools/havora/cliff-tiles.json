@@ -1,0 +1,63 @@
+{
+  "city_primary_tileset": "gTileset_HavoraCityPrimary",
+  "harbor_primary_tileset": "gTileset_HavoraPrimary",
+  "animated_water_graphic_tile_ids": [
+    896,
+    1023
+  ],
+  "source_water_cliff_edge_metatile": 54,
+  "city_fire_red_cliff_metatiles": {
+    "0x068": 33,
+    "0x069": 34,
+    "0x06A": 35,
+    "0x06B": 37,
+    "0x06C": 38,
+    "0x06D": 39,
+    "0x06E": 40,
+    "0x06F": 41,
+    "0x070": 42,
+    "0x071": 43,
+    "0x072": 44,
+    "0x073": 45,
+    "0x075": 46,
+    "0x078": 47,
+    "0x079": 48,
+    "0x07A": 49,
+    "0x07B": 50,
+    "0x07C": 51,
+    "0x07D": 52,
+    "0x083": 53,
+    "0x084": 54,
+    "0x085": 55,
+    "0x086": 56,
+    "0x087": 57,
+    "0x08B": 58,
+    "0x08C": 59,
+    "0x08D": 60,
+    "0x08E": 61,
+    "0x09F": 62,
+    "0x0A7": 63,
+    "0x0A9": 64,
+    "0x089": 166,
+    "0x091": 167
+  },
+  "city_water_cliff_variants": {
+    "water_cliff": 168,
+    "water_cliff_h": 169,
+    "water_cliff_v": 170,
+    "water_cliff_hv": 171
+  },
+  "harbor_water_cliff_variants": {
+    "water_cliff": 145,
+    "water_cliff_h": 146,
+    "water_cliff_v": 147,
+    "water_cliff_hv": 148
+  },
+  "harbor_graphic_tiles_added": [
+    888,
+    889,
+    890
+  ],
+  "behavior": "Exposed quadrants inherit the Havora animated-water behavior; cliff quadrants retain the source cliff-edge collision, rotated with each visual orientation.",
+  "harbor_note": "Harbor has four animated-water cliff-edge orientations built from three free Harbor graphic tiles. The full regular FireRed cliff catalog remains on HavoraCityPrimary because the Harbor atlas has too little free graphic space."
+}
