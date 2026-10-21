@@ -1,0 +1,72 @@
+{
+  "outdoor_maps": 8,
+  "reciprocal_connections": 11,
+  "origins": {
+    "QuantumHavoraNorthQuay": [
+      0,
+      0
+    ],
+    "QuantumHavoraWestQuay": [
+      -8,
+      0
+    ],
+    "QuantumHarbor": [
+      0,
+      64
+    ],
+    "QuantumHavoraNorthDistrict": [
+      -56,
+      -40
+    ],
+    "QuantumHavoraCliffs": [
+      41,
+      0
+    ],
+    "QuantumPortCity": [
+      -50,
+      0
+    ],
+    "QuantumHavoraCoastalDaycare": [
+      40,
+      -29
+    ],
+    "QuantumHavoraNorthWalk": [
+      6,
+      -72
+    ]
+  },
+  "reachable_foot_cells": 7812,
+  "reachable_visible_doors": 22,
+  "inactive_interiors": [
+    {
+      "map": "QuantumPortCity",
+      "warp_index": 1,
+      "interior": "MAP_QUANTUM_HAVORA_WEST_HOUSE1",
+      "reason": "No door graphic/behavior; retained safe return landing only"
+    },
+    {
+      "map": "QuantumPortCity",
+      "warp_index": 7,
+      "interior": "MAP_QUANTUM_HAVORA_CLIFF_HOUSE5",
+      "reason": "No door graphic/behavior; retained safe return landing only"
+    },
+    {
+      "map": "QuantumPortCity",
+      "warp_index": 8,
+      "interior": "MAP_QUANTUM_HAVORA_HARBOR_INN",
+      "reason": "No door graphic/behavior; retained safe return landing only"
+    }
+  ],
+  "scenic_maps_without_foot_routes": [
+    "QuantumHavoraCliffs"
+  ],
+  "checks": [
+    "map and border lengths",
+    "map-buffer capacity",
+    "shared tileset compatibility",
+    "event bounds",
+    "outgoing and incoming warp indices",
+    "reciprocal offsets and consistent placement loops",
+    "static land routes from ferry sailor to all entrance/return locations"
+  ]
+}
