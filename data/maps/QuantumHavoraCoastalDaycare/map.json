@@ -16,12 +16,12 @@
   "connections": [
     {
       "map": "MAP_QUANTUM_HAVORA_NORTH_DISTRICT",
-      "offset": -11,
+      "offset": 0,
       "direction": "left"
     },
     {
       "map": "MAP_QUANTUM_HAVORA_CLIFFS",
-      "offset": 1,
+      "offset": 0,
       "direction": "down"
     }
   ],

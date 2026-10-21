@@ -16,7 +16,7 @@
   "connections": [
     {
       "map": "MAP_QUANTUM_HAVORA_NORTH_DISTRICT",
-      "offset": -62,
+      "offset": -55,
       "direction": "down"
     }
   ],

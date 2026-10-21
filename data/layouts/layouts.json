@@ -4384,7 +4384,7 @@
     {
       "id": "LAYOUT_QUANTUM_PORT_CITY",
       "name": "QuantumPortCity_Layout",
-      "width": 42,
+      "width": 36,
       "height": 80,
       "border_width": 2,
       "border_height": 2,
@@ -4517,7 +4517,7 @@
       "id": "LAYOUT_QUANTUM_HAVORA_NORTH_QUAY",
       "name": "QuantumHavoraNorthQuay_Layout",
       "width": 41,
-      "height": 64,
+      "height": 62,
       "border_width": 2,
       "border_height": 2,
       "primary_tileset": "gTileset_HavoraCityPrimary",
@@ -4528,8 +4528,8 @@
     {
       "id": "LAYOUT_QUANTUM_HAVORA_NORTH_DISTRICT",
       "name": "QuantumHavoraNorthDistrict_Layout",
-      "width": 96,
-      "height": 40,
+      "width": 89,
+      "height": 28,
       "border_width": 2,
       "border_height": 2,
       "primary_tileset": "gTileset_HavoraCityPrimary",

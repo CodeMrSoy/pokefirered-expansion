@@ -16,7 +16,7 @@
   "connections": [
     {
       "map": "MAP_QUANTUM_HAVORA_COASTAL_DAYCARE",
-      "offset": -1,
+      "offset": 0,
       "direction": "up"
     },
     {

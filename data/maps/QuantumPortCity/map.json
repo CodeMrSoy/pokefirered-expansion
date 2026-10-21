@@ -26,7 +26,7 @@
     },
     {
       "map": "MAP_QUANTUM_HAVORA_NORTH_DISTRICT",
-      "offset": -6,
+      "offset": -5,
       "direction": "up"
     }
   ],
@@ -34,7 +34,7 @@
     {
       "type": "object",
       "graphics_id": "OBJ_EVENT_GFX_GYM_GUY",
-      "x": 20,
+      "x": 14,
       "y": 17,
       "elevation": 5,
       "movement_type": "MOVEMENT_TYPE_FACE_DOWN",
@@ -48,7 +48,7 @@
     {
       "type": "object",
       "graphics_id": "OBJ_EVENT_GFX_SAILOR",
-      "x": 36,
+      "x": 30,
       "y": 66,
       "elevation": 4,
       "movement_type": "MOVEMENT_TYPE_FACE_DOWN",
@@ -62,7 +62,7 @@
     {
       "type": "object",
       "graphics_id": "OBJ_EVENT_GFX_MAN",
-      "x": 17,
+      "x": 11,
       "y": 49,
       "elevation": 4,
       "movement_type": "MOVEMENT_TYPE_FACE_DOWN",
@@ -76,7 +76,7 @@
     {
       "type": "object",
       "graphics_id": "OBJ_EVENT_GFX_WOMAN_1",
-      "x": 7,
+      "x": 1,
       "y": 16,
       "elevation": 5,
       "movement_type": "MOVEMENT_TYPE_FACE_DOWN",
@@ -90,7 +90,7 @@
     {
       "type": "object",
       "graphics_id": "OBJ_EVENT_GFX_MAN",
-      "x": 26,
+      "x": 20,
       "y": 15,
       "elevation": 5,
       "movement_type": "MOVEMENT_TYPE_WANDER_LEFT_AND_RIGHT",
@@ -104,7 +104,7 @@
     {
       "type": "object",
       "graphics_id": "OBJ_EVENT_GFX_WOMAN_1",
-      "x": 20,
+      "x": 14,
       "y": 38,
       "elevation": 4,
       "movement_type": "MOVEMENT_TYPE_WANDER_LEFT_AND_RIGHT",
@@ -118,7 +118,7 @@
     {
       "type": "object",
       "graphics_id": "OBJ_EVENT_GFX_GENTLEMAN",
-      "x": 6,
+      "x": 0,
       "y": 56,
       "elevation": 4,
       "movement_type": "MOVEMENT_TYPE_FACE_DOWN",
@@ -132,7 +132,7 @@
     {
       "type": "object",
       "graphics_id": "OBJ_EVENT_GFX_MAN",
-      "x": 31,
+      "x": 25,
       "y": 56,
       "elevation": 4,
       "movement_type": "MOVEMENT_TYPE_FACE_DOWN",
@@ -146,7 +146,7 @@
     {
       "type": "object",
       "graphics_id": "OBJ_EVENT_GFX_SAILOR",
-      "x": 39,
+      "x": 33,
       "y": 74,
       "elevation": 4,
       "movement_type": "MOVEMENT_TYPE_FACE_DOWN",
@@ -160,7 +160,7 @@
     {
       "type": "object",
       "graphics_id": "OBJ_EVENT_GFX_PIDGEY",
-      "x": 39,
+      "x": 33,
       "y": 76,
       "elevation": 4,
       "movement_type": "MOVEMENT_TYPE_FACE_DOWN",
@@ -174,63 +174,63 @@
   ],
   "warp_events": [
     {
-      "x": 17,
+      "x": 11,
       "y": 13,
       "elevation": 5,
       "dest_map": "MAP_QUANTUM_HAVORA_GYM",
       "dest_warp_id": "1"
     },
     {
-      "x": 8,
+      "x": 2,
       "y": 45,
       "elevation": 4,
       "dest_map": "MAP_QUANTUM_HAVORA_WEST_HOUSE1",
       "dest_warp_id": "0"
     },
     {
-      "x": 26,
+      "x": 20,
       "y": 46,
       "elevation": 4,
       "dest_map": "MAP_QUANTUM_HAVORA_WEST_HOUSE2",
       "dest_warp_id": "0"
     },
     {
-      "x": 6,
+      "x": 0,
       "y": 12,
       "elevation": 5,
       "dest_map": "MAP_QUANTUM_HAVORA_CLIFF_HOUSE1",
       "dest_warp_id": "0"
     },
     {
-      "x": 27,
+      "x": 21,
       "y": 12,
       "elevation": 5,
       "dest_map": "MAP_QUANTUM_HAVORA_CLIFF_HOUSE2",
       "dest_warp_id": "0"
     },
     {
-      "x": 20,
+      "x": 14,
       "y": 34,
       "elevation": 4,
       "dest_map": "MAP_QUANTUM_HAVORA_CLIFF_HOUSE3",
       "dest_warp_id": "0"
     },
     {
-      "x": 7,
+      "x": 1,
       "y": 53,
       "elevation": 4,
       "dest_map": "MAP_QUANTUM_HAVORA_CLIFF_HOUSE4",
       "dest_warp_id": "0"
     },
     {
-      "x": 26,
+      "x": 20,
       "y": 53,
       "elevation": 4,
       "dest_map": "MAP_QUANTUM_HAVORA_CLIFF_HOUSE5",
       "dest_warp_id": "0"
     },
     {
-      "x": 39,
+      "x": 33,
       "y": 75,
       "elevation": 4,
       "dest_map": "MAP_QUANTUM_HAVORA_HARBOR_INN",

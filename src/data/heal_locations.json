@@ -163,8 +163,8 @@
     {
       "id": "HEAL_LOCATION_QUANTUM_PORT_CITY",
       "map": "MAP_QUANTUM_HAVORA_NORTH_DISTRICT",
-      "x": 64,
-      "y": 18,
+      "x": 50,
+      "y": 4,
       "respawn_map": "MAP_QUANTUM_PORT_CITY_POKEMON_CENTER1_F",
       "respawn_npc": "LOCALID_QUANTUM_PORT_CITY_NURSE"
     },
