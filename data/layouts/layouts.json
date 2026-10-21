@@ -4496,8 +4496,8 @@
       "height": 32,
       "border_width": 2,
       "border_height": 2,
-      "primary_tileset": "gTileset_HavoraPrimary",
-      "secondary_tileset": "gTileset_HavoraHarbor",
+      "primary_tileset": "gTileset_HavoraCityPrimary",
+      "secondary_tileset": "gTileset_HavoraCity",
       "border_filepath": "data/layouts/Quantum_Havora_Harbor_Layout/border.bin",
       "blockdata_filepath": "data/layouts/Quantum_Havora_Harbor_Layout/map.bin"
     },
