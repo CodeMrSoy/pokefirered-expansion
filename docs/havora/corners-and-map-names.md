@@ -40,20 +40,26 @@ The four-corner PNG is a native map-data simulation of the old border fallback
 and corrected diagonal loading, not an emulator screenshot. Its bottom row
 shows the same junction from all four active districts.
 
-## House variety
+## Native FireRed houses
 
-Use HavoraCityPrimary / HavoraCity. `house-variety.png` shows four complete kits:
-brick-red house, brick-red cottage, coastal-teal house, and coastal-teal cottage.
-The narrower cottages use three columns while the houses use four. Assemble
-using the hexadecimal grid in `tools/havora/house-variants.json`; apply solid
-building collision and door-warp/elevation settings as appropriate to the map.
+The roof recolors and narrowed Lilycove cottages have been removed. Use
+`native-houses.png` and the hexadecimal grids in
+`tools/havora/native-houses.json` for the original Pallet two-story house and
+Cerulean single-story home designs. Both use HavoraCityPrimary / HavoraCity.
+Source map footprints and metatile IDs are recorded in the manifest.
 
-Twelve new roof metatiles reuse the existing wall and door pieces. Seventeen
-static graphic slots were reclaimed from eight unplaced, unprotected catalog
-entries. Their original definitions and graphics are retained in
-`house-variants-archive.json`. All 224 placed metatile definitions and 509
-protected catalog entries retain their graphics, attributes and referenced
-pixels. Animation destinations and palette files are unchanged.
+House pixels retain the original FireRed designs, fitted to the existing shared
+palette; roof-edge backgrounds use Havora grass. No palette files or placed map
+blocks change. These are authoring kits: place them in Porymap, set building
+collision, and configure door warps/interiors where needed. They do not create
+new enterable houses automatically.
+
+All 224 placed metatile definitions and 509 protected catalog definitions retain
+their referenced graphics and packed attributes. Animation graphic destinations
+are pinned. Reclaimed unplaced catalog art is archived in
+`native-houses-archive.json`.
+
+Native-house replacement: 38 definitions added; 70 static graphic slots reclaimed from 31 unplaced catalog definitions. ROM compilation and the corner/topology checks passed again after the replacement. No emulator or Porymap UI test was performed.
 
 ## Verification and limits
 
