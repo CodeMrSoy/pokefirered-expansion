@@ -5,25 +5,29 @@
         256,
         257,
         258,
-        259
+        259,
+        485
       ],
       [
         260,
         261,
         262,
-        263
+        263,
+        486
       ],
       [
         264,
         265,
         266,
-        267
+        267,
+        487
       ],
       [
         268,
         269,
         270,
-        271
+        271,
+        491
       ]
     ],
     "mart": [
@@ -154,7 +158,11 @@
     "347": 306,
     "348": 307,
     "349": 308,
-    "350": 309
+    "350": 309,
+    "391": 485,
+    "399": 486,
+    "407": 487,
+    "415": 491
   },
   "added_graphics": 92,
   "graphics_slots": [
@@ -252,5 +260,6 @@
     517
   ],
   "graphics_budget": 687,
-  "palette_note": "Native FireRed shapes; colors fitted to the existing city material palettes, no dithering."
+  "palette_note": "Native FireRed shapes; colors fitted to the existing city material palettes, no dithering.",
+  "repair_note": "Full five-column Center; native roof texture restored. Shared palette0 unused slot7 supplies dark red."
 }

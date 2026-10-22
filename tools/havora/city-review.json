@@ -1,0 +1,329 @@
+{
+  "base": "ac291bc1",
+  "buildings": [
+    {
+      "map": "HavoraMarket",
+      "kind": "viridian_home",
+      "origin": [
+        31,
+        5
+      ],
+      "door": [
+        32,
+        8
+      ],
+      "warp": 1
+    },
+    {
+      "map": "HavoraMarket",
+      "kind": "viridian_garden",
+      "origin": [
+        4,
+        13
+      ],
+      "door": [
+        5,
+        16
+      ],
+      "warp": 2
+    },
+    {
+      "map": "HavoraMarket",
+      "kind": "fountain",
+      "origin": [
+        19,
+        18
+      ]
+    },
+    {
+      "map": "HavoraMarket",
+      "kind": "department_store",
+      "origin": [
+        27,
+        43
+      ],
+      "doors": [
+        [
+          29,
+          52
+        ],
+        [
+          33,
+          52
+        ]
+      ],
+      "interior": "existing Havora provisions shop"
+    },
+    {
+      "map": "HavoraWestQuadrant",
+      "kind": "viridian_garden",
+      "origin": [
+        5,
+        5
+      ],
+      "door": [
+        6,
+        8
+      ],
+      "warp": 1
+    },
+    {
+      "map": "HavoraWestQuadrant",
+      "kind": "viridian_home",
+      "origin": [
+        25,
+        4
+      ],
+      "door": [
+        26,
+        7
+      ],
+      "warp": 2
+    },
+    {
+      "map": "HavoraWestQuadrant",
+      "kind": "long",
+      "origin": [
+        15,
+        32
+      ],
+      "door": [
+        17,
+        35
+      ],
+      "warp": 3
+    },
+    {
+      "map": "HavoraWestQuadrant",
+      "kind": "viridian_home",
+      "origin": [
+        23,
+        37
+      ],
+      "door": [
+        24,
+        40
+      ],
+      "warp": 4
+    },
+    {
+      "map": "HavoraWestQuadrant",
+      "kind": "viridian_garden",
+      "origin": [
+        8,
+        35
+      ],
+      "door": [
+        9,
+        38
+      ],
+      "warp": 5
+    },
+    {
+      "map": "HavoraWestQuadrant",
+      "kind": "viridian_home",
+      "origin": [
+        15,
+        42
+      ],
+      "door": [
+        16,
+        45
+      ],
+      "warp": 6
+    },
+    {
+      "map": "HavoraWestQuadrant",
+      "kind": "viridian_garden",
+      "origin": [
+        23,
+        31
+      ],
+      "door": [
+        24,
+        34
+      ],
+      "warp": 7
+    },
+    {
+      "map": "HavoraWestQuadrant",
+      "kind": "fountain",
+      "origin": [
+        13,
+        10
+      ]
+    },
+    {
+      "map": "HavoraNorthQuadrant",
+      "kind": "viridian_garden",
+      "origin": [
+        6,
+        5
+      ],
+      "door": [
+        7,
+        8
+      ],
+      "warp": 3
+    },
+    {
+      "map": "HavoraNorthQuadrant",
+      "kind": "viridian_home",
+      "origin": [
+        5,
+        15
+      ],
+      "door": [
+        6,
+        18
+      ],
+      "warp": 2
+    },
+    {
+      "map": "HavoraNorthQuadrant",
+      "kind": "long",
+      "origin": [
+        73,
+        16
+      ],
+      "door": [
+        75,
+        19
+      ],
+      "warp": 4
+    },
+    {
+      "map": "HavoraNorthQuadrant",
+      "kind": "viridian_garden",
+      "origin": [
+        49,
+        15
+      ],
+      "door": [
+        50,
+        18
+      ],
+      "warp": 7
+    },
+    {
+      "map": "HavoraNorthQuadrant",
+      "kind": "fountain",
+      "origin": [
+        68,
+        16
+      ]
+    }
+  ],
+  "doors": [
+    [
+      "HavoraMarket",
+      32,
+      8,
+      1
+    ],
+    [
+      "HavoraMarket",
+      5,
+      16,
+      2
+    ],
+    [
+      "HavoraMarket",
+      29,
+      52,
+      6
+    ],
+    [
+      "HavoraMarket",
+      33,
+      52,
+      7
+    ],
+    [
+      "HavoraWestQuadrant",
+      6,
+      8,
+      1
+    ],
+    [
+      "HavoraWestQuadrant",
+      26,
+      7,
+      2
+    ],
+    [
+      "HavoraWestQuadrant",
+      17,
+      35,
+      3
+    ],
+    [
+      "HavoraWestQuadrant",
+      24,
+      40,
+      4
+    ],
+    [
+      "HavoraWestQuadrant",
+      9,
+      38,
+      5
+    ],
+    [
+      "HavoraWestQuadrant",
+      16,
+      45,
+      6
+    ],
+    [
+      "HavoraWestQuadrant",
+      24,
+      34,
+      7
+    ],
+    [
+      "HavoraWestQuadrant",
+      21,
+      13,
+      0
+    ],
+    [
+      "HavoraNorthQuadrant",
+      7,
+      8,
+      3
+    ],
+    [
+      "HavoraNorthQuadrant",
+      6,
+      18,
+      2
+    ],
+    [
+      "HavoraNorthQuadrant",
+      75,
+      19,
+      4
+    ],
+    [
+      "HavoraNorthQuadrant",
+      50,
+      18,
+      7
+    ],
+    [
+      "HavoraNorthQuadrant",
+      75,
+      8,
+      0
+    ],
+    [
+      "HavoraNorthQuadrant",
+      82,
+      8,
+      1
+    ]
+  ],
+  "uncommitted_review": true,
+  "harbor_and_tilesets_untouched": true
+}
