@@ -8,6 +8,7 @@ void TransferTilesetAnimsBuffer(void);
 
 void InitTilesetAnim_General(void);
 void InitTilesetAnim_HavoraHarbor(void);
+void InitTilesetAnim_HavoraCity(void);
 void InitTilesetAnim_CeladonCity(void);
 void InitTilesetAnim_VermilionGym(void);
 void InitTilesetAnim_CeladonGym(void);

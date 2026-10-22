@@ -1145,7 +1145,7 @@ const struct Tileset gTileset_HavoraCity =
     .palettes = gTilesetPalettes_HavoraCity,
     .metatiles = gMetatiles_HavoraCity,
     .metatileAttributes = gMetatileAttributes_HavoraCity,
-    .callback = InitTilesetAnim_HavoraHarbor,
+    .callback = InitTilesetAnim_HavoraCity,
 };
 
 const struct Tileset gTileset_HavoraCityPrimary =
