@@ -15,7 +15,7 @@
   "battle_scene": "MAP_BATTLE_SCENE_NORMAL",
   "connections": [
     {
-      "map": "MAP_QUANTUM_PORT_CITY",
+      "map": "MAP_HAVORA_WEST_QUADRANT",
       "offset": -60,
       "direction": "right"
     },

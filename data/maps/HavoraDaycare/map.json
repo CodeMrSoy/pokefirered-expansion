@@ -1,7 +1,7 @@
 {
-  "id": "MAP_QUANTUM_HAVORA_COASTAL_DAYCARE",
-  "name": "QuantumHavoraCoastalDaycare",
-  "layout": "LAYOUT_QUANTUM_HAVORA_COASTAL_DAYCARE",
+  "id": "MAP_HAVORA_DAYCARE",
+  "name": "HavoraDaycare",
+  "layout": "LAYOUT_HAVORA_DAYCARE",
   "music": "MUS_SEVII_123",
   "region_map_section": "MAPSEC_QUANTUM_PORT_CITY",
   "requires_flash": false,
@@ -15,12 +15,12 @@
   "battle_scene": "MAP_BATTLE_SCENE_NORMAL",
   "connections": [
     {
-      "map": "MAP_QUANTUM_HAVORA_NORTH_DISTRICT",
-      "offset": 0,
+      "map": "MAP_HAVORA_NORTH_QUADRANT",
+      "offset": 1,
       "direction": "left"
     },
     {
-      "map": "MAP_QUANTUM_HAVORA_CLIFFS",
+      "map": "MAP_HAVORA_COASTAL_CLIFFS",
       "offset": 0,
       "direction": "down"
     }
@@ -37,7 +37,7 @@
       "movement_range_y": 0,
       "trainer_type": "TRAINER_TYPE_NONE",
       "trainer_sight_or_berry_tree_id": "0",
-      "script": "QuantumHavoraCoastalDaycare_Caretaker",
+      "script": "HavoraDaycare_Caretaker",
       "flag": "0"
     },
     {
@@ -51,7 +51,7 @@
       "movement_range_y": 0,
       "trainer_type": "TRAINER_TYPE_NONE",
       "trainer_sight_or_berry_tree_id": "0",
-      "script": "QuantumHavoraCoastalDaycare_Mon",
+      "script": "HavoraDaycare_Mon",
       "flag": "0"
     },
     {
@@ -65,7 +65,7 @@
       "movement_range_y": 0,
       "trainer_type": "TRAINER_TYPE_NONE",
       "trainer_sight_or_berry_tree_id": "0",
-      "script": "QuantumHavoraCoastalDaycare_Mon",
+      "script": "HavoraDaycare_Mon",
       "flag": "0"
     },
     {
@@ -79,7 +79,7 @@
       "movement_range_y": 0,
       "trainer_type": "TRAINER_TYPE_NONE",
       "trainer_sight_or_berry_tree_id": "0",
-      "script": "QuantumHavoraCoastalDaycare_Visitor",
+      "script": "HavoraDaycare_Visitor",
       "flag": "0"
     },
     {
@@ -93,7 +93,7 @@
       "movement_range_y": 0,
       "trainer_type": "TRAINER_TYPE_NONE",
       "trainer_sight_or_berry_tree_id": "0",
-      "script": "QuantumHavoraCoastalDaycare_CoastView",
+      "script": "HavoraDaycare_CoastView",
       "flag": "0"
     }
   ],

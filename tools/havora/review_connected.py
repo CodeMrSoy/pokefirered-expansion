@@ -5,7 +5,7 @@ from PIL import Image,ImageDraw,ImageFont
 R=Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(R/'tools/havora'))
 from review_market import scene
-names=['QuantumHavoraNorthQuay','QuantumHarbor','QuantumHavoraWestQuay','QuantumPortCity','QuantumHavoraNorthDistrict','QuantumHavoraCoastalDaycare','QuantumHavoraNorthWalk','QuantumHavoraCliffs']
+names=['HavoraMarket','HavoraHarbor','HavoraRiver','HavoraWestQuadrant','HavoraNorthQuadrant','HavoraDaycare','HavoraLookout','HavoraCoastalCliffs']
 meta={n:json.loads((R/f'data/maps/{n}/map.json').read_text()) for n in names}
 layouts={l['id']:l for l in json.loads((R/'data/layouts/layouts.json').read_text())['layouts']}
 def constant(n):return 'MAP_'+re.sub(r'(?<!^)(?=[A-Z])','_',n).upper()
@@ -38,7 +38,7 @@ for n in names:
  x,y=pos[n];px=margin+(x-x0)*16;py=top+(y-y0)*16
  s=scene(n,meta[n]['layout']);im.paste(s,(px,py));rects[n]=(px,py,px+s.width,py+s.height)
 # Small inset labels identify districts without rearranging their geography.
-labels={names[0]:'3  MARKET + HOMES',names[1]:'4  HAVORA HARBOR',names[2]:'7  QUAY STAIRS',names[3]:'2  WESTERN GYM HILLS',names[4]:'1  NORTH DISTRICT',names[5]:'5  COASTAL DAYCARE',names[6]:'6  NORTH WALK',names[7]:'8  COASTAL CLIFFS'}
+labels={names[0]:'3  HAVORA MARKET',names[1]:'4  HAVORA HARBOR',names[2]:'7  RIVER',names[3]:'2  WEST QUADRANT',names[4]:'1  NORTH QUADRANT',names[5]:'5  HAVORA DAYCARE',names[6]:'6  LOOKOUT',names[7]:'8  COASTAL CLIFFS'}
 for n,label in labels.items():
  x,y,r,b=rects[n];d.rectangle((x,y,r-1,b-1),outline='#f3d792',width=1)
  if label:
@@ -51,7 +51,7 @@ for line,size in key:
  d.text((kx,ky),line,font=f(size),fill='#f4dfb4' if size==26 else '#c0d1d8');ky+=39
 # Identify the slim west quay, whose visible seam joins the two halves.
 x,y,r,b=rects[names[2]]
-d.text((kx,ky+30),'West quay joins the western hills',font=f(21),fill='#c0d1d8')
+d.text((kx,ky+30),'River bridges join the western hills',font=f(21),fill='#c0d1d8')
 d.text((kx,ky+68),'to the market and harbor.',font=f(21),fill='#c0d1d8')
 d.text((margin,H-bottom+20),'Native tile render — not a Porymap screenshot.  One square on the game map = 16 × 16 pixels here.',font=f(23),fill='#c0d1d8')
 d.text((margin,H-bottom+58),'Havora-Development · Coastal neighborhood refinement · Outdoor districts shown; interiors omitted.',font=f(21),fill='#8fa8b4')

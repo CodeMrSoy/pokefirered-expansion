@@ -6,6 +6,7 @@
 #include "quest_log.h"
 #include "rtc.h"
 #include "script.h"
+#include "tilesets.h"
 
 struct ConnectionFlags
 {
@@ -27,6 +28,7 @@ static const struct ConnectionFlags sDummyConnectionFlags = {};
 static void InitMapLayoutData(struct MapHeader *);
 static void InitBackupMapLayoutData(const u16 *, u16, u16);
 static void InitBackupMapLayoutConnections(struct MapHeader *);
+static void FillHavoraDiagonalConnections(const struct MapHeader *);
 static void FillSouthConnection(struct MapHeader const *, struct MapHeader const *, s32);
 static void FillNorthConnection(struct MapHeader const *, struct MapHeader const *, s32);
 static void FillWestConnection(struct MapHeader const *, struct MapHeader const *, s32);
@@ -166,6 +168,81 @@ static void InitBackupMapLayoutConnections(struct MapHeader *mapHeader)
                 FillEastConnection(mapHeader, cMap, offset);
                 gMapConnectionFlags.east = TRUE;
                 break;
+            }
+        }
+        FillHavoraDiagonalConnections(mapHeader);
+    }
+}
+
+// The outdoor Havora districts share metatile IDs. At four-way junctions the
+// normal cardinal strips leave the diagonal camera corner undefined, exposing
+// the active map's repeating border instead of the adjacent district.
+static bool32 GetConnectionOrigin(const struct MapLayout *from, const struct MapLayout *to,
+                                 const struct MapConnection *connection, s32 *x, s32 *y)
+{
+    switch (connection->direction)
+    {
+    case CONNECTION_NORTH: *x = connection->offset; *y = -(s32)to->height; break;
+    case CONNECTION_SOUTH: *x = connection->offset; *y = from->height; break;
+    case CONNECTION_WEST: *x = -(s32)to->width; *y = connection->offset; break;
+    case CONNECTION_EAST: *x = from->width; *y = connection->offset; break;
+    default: return FALSE;
+    }
+    return TRUE;
+}
+
+static void FillHavoraDiagonalConnections(const struct MapHeader *mapHeader)
+{
+    const struct MapLayout *layout = mapHeader->mapLayout;
+    s32 i, j, x, y;
+
+    if (layout->primaryTileset != &gTileset_HavoraCityPrimary)
+        return;
+
+    for (i = 0; i < mapHeader->connections->count; i++)
+    {
+        const struct MapConnection *first = &mapHeader->connections->connections[i];
+        const struct MapHeader *neighbor = GetMapHeaderFromConnection(first);
+        s32 firstX, firstY;
+
+        if (neighbor == NULL || neighbor->connections == NULL
+            || neighbor->mapLayout->primaryTileset != layout->primaryTileset
+            || neighbor->mapLayout->secondaryTileset != layout->secondaryTileset
+            || !GetConnectionOrigin(layout, neighbor->mapLayout, first, &firstX, &firstY))
+            continue;
+
+        for (j = 0; j < neighbor->connections->count; j++)
+        {
+            const struct MapConnection *second = &neighbor->connections->connections[j];
+            const struct MapHeader *diagonal = GetMapHeaderFromConnection(second);
+            const struct MapLayout *source;
+            s32 secondX, secondY, originX, originY;
+
+            if (diagonal == NULL)
+                continue;
+            source = diagonal->mapLayout;
+            if (source->primaryTileset != layout->primaryTileset
+                || source->secondaryTileset != layout->secondaryTileset
+                || !GetConnectionOrigin(neighbor->mapLayout, source, second, &secondX, &secondY))
+                continue;
+            originX = firstX + secondX;
+            originY = firstY + secondY;
+
+            for (y = 0; y < VMap.Ysize; y++)
+            {
+                s32 sourceY = y - MAP_OFFSET - originY;
+                if (sourceY < 0 || sourceY >= source->height
+                    || (y >= MAP_OFFSET && y < layout->height + MAP_OFFSET))
+                    continue;
+                for (x = 0; x < VMap.Xsize; x++)
+                {
+                    s32 sourceX = x - MAP_OFFSET - originX;
+                    u16 *dest = &VMap.map[y * VMap.Xsize + x];
+                    if (sourceX >= 0 && sourceX < source->width
+                        && (x < MAP_OFFSET || x >= layout->width + MAP_OFFSET)
+                        && *dest == MAPGRID_UNDEFINED)
+                        *dest = source->map[sourceY * source->width + sourceX];
+                }
             }
         }
     }

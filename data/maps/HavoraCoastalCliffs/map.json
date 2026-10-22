@@ -1,7 +1,7 @@
 {
-  "id": "MAP_QUANTUM_HAVORA_CLIFFS",
-  "name": "QuantumHavoraCliffs",
-  "layout": "LAYOUT_QUANTUM_HAVORA_CLIFFS",
+  "id": "MAP_HAVORA_COASTAL_CLIFFS",
+  "name": "HavoraCoastalCliffs",
+  "layout": "LAYOUT_HAVORA_COASTAL_CLIFFS",
   "music": "MUS_SEVII_123",
   "region_map_section": "MAPSEC_QUANTUM_PORT_CITY",
   "requires_flash": false,
@@ -15,12 +15,12 @@
   "battle_scene": "MAP_BATTLE_SCENE_NORMAL",
   "connections": [
     {
-      "map": "MAP_QUANTUM_HAVORA_COASTAL_DAYCARE",
+      "map": "MAP_HAVORA_DAYCARE",
       "offset": 0,
       "direction": "up"
     },
     {
-      "map": "MAP_QUANTUM_HAVORA_NORTH_QUAY",
+      "map": "MAP_HAVORA_MARKET",
       "offset": 0,
       "direction": "left"
     }

@@ -1373,7 +1373,7 @@ Text_TestMsg::
 
 	.include "data/quantum/relocated_encounters.inc"
 
-	.include "data/maps/QuantumPortCity/scripts.inc"
+	.include "data/maps/HavoraWestQuadrant/scripts.inc"
 	.include "data/maps/QuantumPortCityPokemonCenter1F/scripts.inc"
 	.include "data/maps/QuantumPortCityPokemonCenter2F/scripts.inc"
 
@@ -1396,11 +1396,11 @@ Text_TestMsg::
 	.include "data/maps/QuantumCoastalRoad/scripts.inc"
 	.include "data/maps/QuantumWoodlandLink/scripts.inc"
 	.include "data/maps/QuantumMountainPass/scripts.inc"
-	.include "data/maps/QuantumHarbor/scripts.inc"
+	.include "data/maps/HavoraHarbor/scripts.inc"
 
-	.include "data/maps/QuantumHavoraWestQuay/scripts.inc"
+	.include "data/maps/HavoraRiver/scripts.inc"
 
-	.include "data/maps/QuantumHavoraNorthQuay/scripts.inc"
+	.include "data/maps/HavoraMarket/scripts.inc"
 
 	.include "data/maps/QuantumHavoraShipwrightHouse/scripts.inc"
 
@@ -1416,11 +1416,11 @@ Text_TestMsg::
 
 	.include "data/maps/QuantumHavoraProvisions/scripts.inc"
 
-	.include "data/maps/QuantumHavoraNorthDistrict/scripts.inc"
+	.include "data/maps/HavoraNorthQuadrant/scripts.inc"
 
-	.include "data/maps/QuantumHavoraCoastalDaycare/scripts.inc"
+	.include "data/maps/HavoraDaycare/scripts.inc"
 
-	.include "data/maps/QuantumHavoraNorthWalk/scripts.inc"
+	.include "data/maps/HavoraLookout/scripts.inc"
 
 	.include "data/maps/QuantumHavoraGym/scripts.inc"
 
@@ -1456,5 +1456,5 @@ Text_TestMsg::
 
 	.include "data/maps/QuantumHavoraNorthLodge/scripts.inc"
 
-	.include "data/maps/QuantumHavoraCliffs/scripts.inc"
-	.include "data/maps/QuantumHavoraCliffs/text.inc"
+	.include "data/maps/HavoraCoastalCliffs/scripts.inc"
+	.include "data/maps/HavoraCoastalCliffs/text.inc"

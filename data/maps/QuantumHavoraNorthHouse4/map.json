@@ -35,21 +35,21 @@
       "x": 4,
       "y": 7,
       "elevation": 0,
-      "dest_map": "MAP_QUANTUM_HAVORA_NORTH_DISTRICT",
+      "dest_map": "MAP_HAVORA_NORTH_QUADRANT",
       "dest_warp_id": "5"
     },
     {
       "x": 3,
       "y": 7,
       "elevation": 0,
-      "dest_map": "MAP_QUANTUM_HAVORA_NORTH_DISTRICT",
+      "dest_map": "MAP_HAVORA_NORTH_QUADRANT",
       "dest_warp_id": "5"
     },
     {
       "x": 5,
       "y": 7,
       "elevation": 0,
-      "dest_map": "MAP_QUANTUM_HAVORA_NORTH_DISTRICT",
+      "dest_map": "MAP_HAVORA_NORTH_QUADRANT",
       "dest_warp_id": "5"
     }
   ],

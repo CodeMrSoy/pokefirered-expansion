@@ -14879,8 +14879,8 @@
           }
         },
         {
-          "map": "MAP_QUANTUM_HARBOR",
-          "base_label": "gQuantumHarbor",
+          "map": "MAP_HAVORA_HARBOR",
+          "base_label": "gHavoraHarbor",
           "water_mons": {
             "encounter_rate": 2,
             "mons": [

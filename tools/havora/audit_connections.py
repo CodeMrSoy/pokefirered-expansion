@@ -64,7 +64,7 @@ for m in maps.values():
         if e['dest_map'] in selected:
             assert 0 <= int(e['dest_warp_id']) < len(maps[e['dest_map']]['warp_events']), m['name']
 opposite = {'left': 'right', 'right': 'left', 'up': 'down', 'down': 'up'}
-pos = {'MAP_QUANTUM_HAVORA_NORTH_QUAY': (0, 0)}
+pos = {'MAP_HAVORA_MARKET': (0, 0)}
 q = deque(pos)
 connection_count = 0
 while q:
@@ -101,7 +101,7 @@ def cell(k, x, y):
 def foot(value):
     return value is not None and (value >> 10) & 3 == 0 and (attrs[value & 1023] & 511) not in range(0x10, 0x20)
 
-start = ('MAP_QUANTUM_HARBOR', 21, 18)
+start = ('MAP_HAVORA_HARBOR', 21, 18)
 assert foot(cell(*start))
 q = deque([start])
 seen = {start}

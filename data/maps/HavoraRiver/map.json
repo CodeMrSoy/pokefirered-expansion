@@ -1,7 +1,7 @@
 {
-  "id": "MAP_QUANTUM_HAVORA_WEST_QUAY",
-  "name": "QuantumHavoraWestQuay",
-  "layout": "LAYOUT_QUANTUM_HAVORA_WEST_QUAY",
+  "id": "MAP_HAVORA_RIVER",
+  "name": "HavoraRiver",
+  "layout": "LAYOUT_HAVORA_RIVER",
   "music": "MUS_SEVII_123",
   "region_map_section": "MAPSEC_QUANTUM_PORT_CITY",
   "requires_flash": false,
@@ -15,22 +15,22 @@
   "battle_scene": "MAP_BATTLE_SCENE_NORMAL",
   "connections": [
     {
-      "map": "MAP_QUANTUM_PORT_CITY",
+      "map": "MAP_HAVORA_WEST_QUADRANT",
       "offset": 0,
       "direction": "left"
     },
     {
-      "map": "MAP_QUANTUM_HAVORA_NORTH_QUAY",
+      "map": "MAP_HAVORA_MARKET",
       "offset": 0,
       "direction": "right"
     },
     {
-      "map": "MAP_QUANTUM_HARBOR",
-      "offset": 64,
+      "map": "MAP_HAVORA_HARBOR",
+      "offset": 62,
       "direction": "right"
     },
     {
-      "map": "MAP_QUANTUM_HAVORA_NORTH_DISTRICT",
+      "map": "MAP_HAVORA_NORTH_QUADRANT",
       "offset": -41,
       "direction": "up"
     }

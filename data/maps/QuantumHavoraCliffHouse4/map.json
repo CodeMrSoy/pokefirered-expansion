@@ -35,21 +35,21 @@
       "x": 4,
       "y": 7,
       "elevation": 0,
-      "dest_map": "MAP_QUANTUM_PORT_CITY",
+      "dest_map": "MAP_HAVORA_WEST_QUADRANT",
       "dest_warp_id": "6"
     },
     {
       "x": 3,
       "y": 7,
       "elevation": 0,
-      "dest_map": "MAP_QUANTUM_PORT_CITY",
+      "dest_map": "MAP_HAVORA_WEST_QUADRANT",
       "dest_warp_id": "6"
     },
     {
       "x": 5,
       "y": 7,
       "elevation": 0,
-      "dest_map": "MAP_QUANTUM_PORT_CITY",
+      "dest_map": "MAP_HAVORA_WEST_QUADRANT",
       "dest_warp_id": "6"
     }
   ],

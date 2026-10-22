@@ -1,0 +1,72 @@
+{
+  "maps": 8,
+  "consistent_connection_pairs": 11,
+  "map_group_numbers_preserved": true,
+  "authored_cells_preserved": 11979,
+  "original_border_files_preserved": true,
+  "north_quadrant_added_edge_columns": 1,
+  "origins": {
+    "HavoraMarket": [
+      0,
+      0
+    ],
+    "HavoraRiver": [
+      -8,
+      0
+    ],
+    "HavoraHarbor": [
+      0,
+      62
+    ],
+    "HavoraNorthQuadrant": [
+      -49,
+      -28
+    ],
+    "HavoraCoastalCliffs": [
+      41,
+      0
+    ],
+    "HavoraWestQuadrant": [
+      -44,
+      0
+    ],
+    "HavoraDaycare": [
+      41,
+      -29
+    ],
+    "HavoraLookout": [
+      6,
+      -60
+    ]
+  },
+  "existing_out_of_bounds_events_needing_later_review": [
+    {
+      "map": "HavoraNorthQuadrant",
+      "kind": "object_events",
+      "index": 2,
+      "x": 15,
+      "y": -8
+    },
+    {
+      "map": "HavoraNorthQuadrant",
+      "kind": "object_events",
+      "index": 8,
+      "x": 67,
+      "y": -6
+    },
+    {
+      "map": "HavoraNorthQuadrant",
+      "kind": "object_events",
+      "index": 9,
+      "x": -6,
+      "y": 19
+    },
+    {
+      "map": "HavoraNorthQuadrant",
+      "kind": "warp_events",
+      "index": 7,
+      "x": 67,
+      "y": -8
+    }
+  ]
+}

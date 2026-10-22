@@ -557,7 +557,7 @@
     "SevenIsland_SevaultCanyon_House"
   ],
   "gMapGroup_QuantumIsland": [
-    "QuantumPortCity",
+    "HavoraWestQuadrant",
     "QuantumPortCityPokemonCenter1F",
     "QuantumPortCityPokemonCenter2F",
     "QuantumCoastalCity",
@@ -576,9 +576,9 @@
     "QuantumCoastalRoad",
     "QuantumWoodlandLink",
     "QuantumMountainPass",
-    "QuantumHarbor",
-    "QuantumHavoraWestQuay",
-    "QuantumHavoraNorthQuay",
+    "HavoraHarbor",
+    "HavoraRiver",
+    "HavoraMarket",
     "QuantumHavoraShipwrightHouse",
     "QuantumHavoraWeaverHouse",
     "QuantumHavoraFisherHouse",
@@ -586,9 +586,9 @@
     "QuantumHavoraTradeHall",
     "QuantumHavoraOutfitters",
     "QuantumHavoraProvisions",
-    "QuantumHavoraNorthDistrict",
-    "QuantumHavoraCoastalDaycare",
-    "QuantumHavoraNorthWalk",
+    "HavoraNorthQuadrant",
+    "HavoraDaycare",
+    "HavoraLookout",
     "QuantumHavoraGym",
     "QuantumHavoraMart",
     "QuantumHavoraDaycare",
@@ -606,6 +606,6 @@
     "QuantumHavoraNorthHouse4",
     "QuantumHavoraNorthHouse5",
     "QuantumHavoraNorthLodge",
-    "QuantumHavoraCliffs"
+    "HavoraCoastalCliffs"
   ]
 }

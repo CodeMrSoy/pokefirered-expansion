@@ -26,7 +26,7 @@
       "movement_range_y": 0,
       "trainer_type": "TRAINER_TYPE_NONE",
       "trainer_sight_or_berry_tree_id": "0",
-      "script": "QuantumHavoraNorthQuay_Supplies",
+      "script": "HavoraMarket_Supplies",
       "flag": "0"
     }
   ],
@@ -35,21 +35,21 @@
       "x": 4,
       "y": 7,
       "elevation": 0,
-      "dest_map": "MAP_QUANTUM_HAVORA_NORTH_QUAY",
+      "dest_map": "MAP_HAVORA_MARKET",
       "dest_warp_id": "6"
     },
     {
       "x": 3,
       "y": 7,
       "elevation": 0,
-      "dest_map": "MAP_QUANTUM_HAVORA_NORTH_QUAY",
+      "dest_map": "MAP_HAVORA_MARKET",
       "dest_warp_id": "6"
     },
     {
       "x": 5,
       "y": 7,
       "elevation": 0,
-      "dest_map": "MAP_QUANTUM_HAVORA_NORTH_QUAY",
+      "dest_map": "MAP_HAVORA_MARKET",
       "dest_warp_id": "6"
     }
   ],

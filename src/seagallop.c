@@ -75,7 +75,7 @@ static const s8 sSeag[][4] = {
     [SEAGALLOP_CINNABAR_ISLAND] = {MAP(MAP_CINNABAR_ISLAND),     0x15, 0x07},
     [SEAGALLOP_NAVEL_ROCK]      = {MAP(MAP_NAVEL_ROCK_HARBOR),   0x08, 0x05},
     [SEAGALLOP_BIRTH_ISLAND]    = {MAP(MAP_BIRTH_ISLAND_HARBOR), 0x08, 0x05},
-    [SEAGALLOP_QUANTUM_PORT]   = {MAP(MAP_QUANTUM_HARBOR), 20, 18}
+    [SEAGALLOP_QUANTUM_PORT]   = {MAP(MAP_HAVORA_HARBOR), 20, 18}
 };
 
 // Bitpacked array.  In the commented section, right-most bit is the

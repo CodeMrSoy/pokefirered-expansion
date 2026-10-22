@@ -1,7 +1,7 @@
 {
-  "id": "MAP_QUANTUM_HAVORA_NORTH_WALK",
-  "name": "QuantumHavoraNorthWalk",
-  "layout": "LAYOUT_QUANTUM_HAVORA_NORTH_WALK",
+  "id": "MAP_HAVORA_LOOKOUT",
+  "name": "HavoraLookout",
+  "layout": "LAYOUT_HAVORA_LOOKOUT",
   "music": "MUS_SEVII_123",
   "region_map_section": "MAPSEC_QUANTUM_PORT_CITY",
   "requires_flash": false,
@@ -15,7 +15,7 @@
   "battle_scene": "MAP_BATTLE_SCENE_NORMAL",
   "connections": [
     {
-      "map": "MAP_QUANTUM_HAVORA_NORTH_DISTRICT",
+      "map": "MAP_HAVORA_NORTH_QUADRANT",
       "offset": -55,
       "direction": "down"
     }
@@ -32,7 +32,7 @@
       "movement_range_y": 0,
       "trainer_type": "TRAINER_TYPE_NONE",
       "trainer_sight_or_berry_tree_id": "0",
-      "script": "QuantumHavoraNorthWalk_View",
+      "script": "HavoraLookout_View",
       "flag": "0"
     }
   ],
@@ -45,7 +45,7 @@
       "y": 21,
       "elevation": 6,
       "player_facing_dir": "BG_EVENT_PLAYER_FACING_ANY",
-      "script": "QuantumHavoraNorthWalk_Impact"
+      "script": "HavoraLookout_Impact"
     }
   ]
 }
