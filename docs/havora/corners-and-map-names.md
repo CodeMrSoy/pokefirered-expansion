@@ -1,6 +1,7 @@
 # Havora corner loading, names and house options
 
-All work is on Havora-Development, based on a85c6562.
+Work targets Havora-Development only. The current housing update starts from
+5ece37d9; the original corner/name migration started from a85c6562.
 
 ## Map names in Porymap
 
@@ -40,26 +41,35 @@ The four-corner PNG is a native map-data simulation of the old border fallback
 and corrected diagonal loading, not an emulator screenshot. Its bottom row
 shows the same junction from all four active districts.
 
-## Native FireRed houses
+## Selected FireRed housing and department store
 
-The roof recolors and narrowed Lilycove cottages have been removed. Use
-`native-houses.png` and the hexadecimal grids in
-`tools/havora/native-houses.json` for the original Pallet two-story house and
-Cerulean single-story home designs. Both use HavoraCityPrimary / HavoraCity.
-Source map footprints and metatile IDs are recorded in the manifest.
+The active residential designs outside the harbor are the long Cerulean house
+and the plain / garden-front Viridian houses shown in the reference. The blue
+Lilycove houses remain on HavoraHarbor. The unused Pallet option is superseded.
 
-House pixels retain the original FireRed designs, fitted to the existing shared
-palette; roof-edge backgrounds use Havora grass. No palette files or placed map
-blocks change. These are authoring kits: place them in Porymap, set building
-collision, and configure door warps/interiors where needed. They do not create
-new enterable houses automatically.
+Eight existing buildings were replaced within reviewed plots: four in Market,
+two in North Quadrant, one in West Quadrant and the Daycare frontage. The long
+home uses an eight-column arrangement of the original Cerulean modules. Changed
+doors retain their interior destinations and exterior warp indices; the existing
+interior return warps point to those indices. Door/landing collisions, matching
+elevations, door behaviors and reciprocal return references pass data checks.
 
-All 224 placed metatile definitions and 509 protected catalog definitions retain
-their referenced graphics and packed attributes. Animation graphic destinations
-are pinned. Reclaimed unplaced catalog art is archived in
-`native-houses-archive.json`.
+The native Celadon Department Store fits as a complete 9x10 metatile authoring
+kit. It has not been placed and has no new Havora interior. Assemble it using
+`tools/havora/green-houses.json`, then configure a plot and interior when placing
+it. `green-houses.png` previews the available buildings; the connected city view
+is `connected-green-houses.png`. These are native data renders, not UI captures.
 
-Native-house replacement: 38 definitions added; 70 static graphic slots reclaimed from 31 unplaced catalog definitions. ROM compilation and the corner/topology checks passed again after the replacement. No emulator or Porymap UI test was performed.
+71 new metatile definitions use 98 reclaimed static graphic slots. Only
+unplaced, obsolete catalog pieces were retired; their original definitions and
+graphics are in `green-houses-archive.json`. The authoring catalog has been
+filtered so it no longer advertises retired pieces. Original FireRed geometry
+is adapted to the shared Havora palette, with contrasting green roof stripes.
+
+The existing 224 placed metatile definitions and their referenced graphic pixels
+remain unchanged. All 2,397 cliff/stair map cells, every border, all connection
+offsets, harbor data, palette colors and fixed animation destinations are
+preserved. Only the reviewed house plots and their door approaches change.
 
 ## Verification and limits
 
@@ -68,10 +78,10 @@ Native-house replacement: 38 definitions added; 70 static graphic slots reclaime
   actual loader functions, across all four viewpoints; 49-56 corner cells filled
   per view; existing main/cardinal cells and non-Havora maps preserved.
 - `python tools/havora/check_topology.py`: names, dimensions, border lengths,
-  numeric map IDs, all original authored cells and reciprocal placement checked.
+  numeric map IDs, original art outside reviewed house plots, and reciprocal placement checked.
 - No Porymap UI or in-game walking/ferry test was performed.
 
 The latest source resize already left several NPC/door events outside their
 layouts. They are listed in topology-review.json and require a separate event
-placement pass. This change preserves those authored events while updating their
-map references. It does not claim those pre-existing event positions are valid.
+placement pass. Unrelated existing event placement issues remain; only the eight replacement
+buildings have their exterior door coordinates updated. It does not claim those pre-existing event positions are valid.

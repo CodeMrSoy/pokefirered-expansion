@@ -22,16 +22,6 @@
       "catalog_index": 58
     },
     {
-      "source_id": 514,
-      "metatile": 471,
-      "catalog_index": 59
-    },
-    {
-      "source_id": 515,
-      "metatile": 471,
-      "catalog_index": 60
-    },
-    {
       "source_id": 516,
       "metatile": 477,
       "catalog_index": 61
@@ -57,11 +47,6 @@
       "catalog_index": 65
     },
     {
-      "source_id": 521,
-      "metatile": 174,
-      "catalog_index": 66
-    },
-    {
       "source_id": 522,
       "metatile": 469,
       "catalog_index": 67
@@ -70,66 +55,6 @@
       "source_id": 523,
       "metatile": 469,
       "catalog_index": 68
-    },
-    {
-      "source_id": 524,
-      "metatile": 491,
-      "catalog_index": 69
-    },
-    {
-      "source_id": 525,
-      "metatile": 217,
-      "catalog_index": 70
-    },
-    {
-      "source_id": 526,
-      "metatile": 492,
-      "catalog_index": 71
-    },
-    {
-      "source_id": 527,
-      "metatile": 493,
-      "catalog_index": 72
-    },
-    {
-      "source_id": 528,
-      "metatile": 478,
-      "catalog_index": 73
-    },
-    {
-      "source_id": 529,
-      "metatile": 175,
-      "catalog_index": 74
-    },
-    {
-      "source_id": 530,
-      "metatile": 479,
-      "catalog_index": 75
-    },
-    {
-      "source_id": 531,
-      "metatile": 479,
-      "catalog_index": 76
-    },
-    {
-      "source_id": 532,
-      "metatile": 216,
-      "catalog_index": 77
-    },
-    {
-      "source_id": 533,
-      "metatile": 494,
-      "catalog_index": 78
-    },
-    {
-      "source_id": 534,
-      "metatile": 176,
-      "catalog_index": 79
-    },
-    {
-      "source_id": 535,
-      "metatile": 495,
-      "catalog_index": 80
     },
     {
       "source_id": 538,
@@ -222,11 +147,6 @@
       "catalog_index": 98
     },
     {
-      "source_id": 586,
-      "metatile": 481,
-      "catalog_index": 99
-    },
-    {
       "source_id": 587,
       "metatile": 447,
       "catalog_index": 100
@@ -252,16 +172,6 @@
       "catalog_index": 104
     },
     {
-      "source_id": 595,
-      "metatile": 482,
-      "catalog_index": 105
-    },
-    {
-      "source_id": 596,
-      "metatile": 483,
-      "catalog_index": 106
-    },
-    {
       "source_id": 597,
       "metatile": 823,
       "catalog_index": 107
@@ -277,36 +187,6 @@
       "catalog_index": 109
     },
     {
-      "source_id": 603,
-      "metatile": 496,
-      "catalog_index": 110
-    },
-    {
-      "source_id": 604,
-      "metatile": 215,
-      "catalog_index": 111
-    },
-    {
-      "source_id": 605,
-      "metatile": 177,
-      "catalog_index": 112
-    },
-    {
-      "source_id": 606,
-      "metatile": 497,
-      "catalog_index": 113
-    },
-    {
-      "source_id": 607,
-      "metatile": 498,
-      "catalog_index": 114
-    },
-    {
-      "source_id": 608,
-      "metatile": 178,
-      "catalog_index": 115
-    },
-    {
       "source_id": 609,
       "metatile": 443,
       "catalog_index": 116
@@ -317,19 +197,9 @@
       "catalog_index": 117
     },
     {
-      "source_id": 613,
-      "metatile": 499,
-      "catalog_index": 118
-    },
-    {
       "source_id": 614,
       "metatile": 666,
       "catalog_index": 119
-    },
-    {
-      "source_id": 615,
-      "metatile": 181,
-      "catalog_index": 120
     },
     {
       "source_id": 616,
@@ -345,26 +215,6 @@
       "source_id": 618,
       "metatile": 470,
       "catalog_index": 123
-    },
-    {
-      "source_id": 619,
-      "metatile": 182,
-      "catalog_index": 124
-    },
-    {
-      "source_id": 620,
-      "metatile": 183,
-      "catalog_index": 125
-    },
-    {
-      "source_id": 621,
-      "metatile": 500,
-      "catalog_index": 126
-    },
-    {
-      "source_id": 622,
-      "metatile": 184,
-      "catalog_index": 127
     },
     {
       "source_id": 624,
@@ -387,11 +237,6 @@
       "catalog_index": 131
     },
     {
-      "source_id": 634,
-      "metatile": 199,
-      "catalog_index": 132
-    },
-    {
       "source_id": 640,
       "metatile": 200,
       "catalog_index": 133
@@ -400,36 +245,6 @@
       "source_id": 641,
       "metatile": 503,
       "catalog_index": 134
-    },
-    {
-      "source_id": 644,
-      "metatile": 204,
-      "catalog_index": 135
-    },
-    {
-      "source_id": 645,
-      "metatile": 504,
-      "catalog_index": 136
-    },
-    {
-      "source_id": 646,
-      "metatile": 205,
-      "catalog_index": 137
-    },
-    {
-      "source_id": 652,
-      "metatile": 206,
-      "catalog_index": 138
-    },
-    {
-      "source_id": 654,
-      "metatile": 207,
-      "catalog_index": 139
-    },
-    {
-      "source_id": 655,
-      "metatile": 208,
-      "catalog_index": 140
     }
   ],
   "market_stall": [
@@ -454,40 +269,11 @@
     488,
     489,
     490,
-    174,
-    491,
-    217,
-    492,
-    493,
-    175,
-    216,
-    494,
-    176,
-    495,
-    496,
-    215,
-    177,
-    497,
-    498,
-    178,
-    499,
-    181,
-    182,
-    183,
-    500,
-    184,
     501,
     186,
     502,
-    199,
     200,
-    503,
-    204,
-    504,
-    205,
-    206,
-    207,
-    208
+    503
   ],
   "retired_unplaced_metatiles": [
     173,
@@ -520,5 +306,6 @@
   "placed_metatiles_verified": 238,
   "water_frames_verified": 8,
   "palette_changes": false,
-  "note": "No map, collision, elevation, event, warp or connection data changed. Statue uses the stock FireRed gym silhouette with current outdoor stone colors."
+  "note": "No map, collision, elevation, event, warp or connection data changed. Statue uses the stock FireRed gym silhouette with current outdoor stone colors.",
+  "catalog_note": "Unplaced obsolete house modules reclaimed for the selected Viridian homes and Celadon Department Store; originals archived in green-houses-archive.json."
 }

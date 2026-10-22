@@ -1,0 +1,10 @@
+{
+  "residences_replaced": 8,
+  "changed_cells_within_reviewed_plots": 231,
+  "existing_placed_metatiles_preserved": 224,
+  "cliff_and_stair_cells_preserved": 2397,
+  "all_borders_connections_and_harbor_unchanged": true,
+  "door_collision_elevation_behavior_and_return_warps_checked": true,
+  "fixed_animation_graphics_and_palettes_unchanged": true,
+  "emulator_or_porymap_ui_test": false
+}

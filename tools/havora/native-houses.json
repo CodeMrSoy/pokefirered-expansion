@@ -1,42 +1,5 @@
 {
   "kits": {
-    "pallet_home": [
-      [
-        209,
-        210,
-        210,
-        210,
-        211
-      ],
-      [
-        212,
-        213,
-        213,
-        213,
-        214
-      ],
-      [
-        218,
-        219,
-        219,
-        219,
-        220
-      ],
-      [
-        222,
-        223,
-        224,
-        225,
-        226
-      ],
-      [
-        227,
-        228,
-        505,
-        229,
-        230
-      ]
-    ],
     "cerulean_home": [
       [
         507,
@@ -77,52 +40,6 @@
     ]
   },
   "sources": {
-    "pallet_home": {
-      "map": "PalletTown",
-      "rectangle": [
-        5,
-        3,
-        5,
-        5
-      ],
-      "metatiles": [
-        [
-          641,
-          642,
-          642,
-          642,
-          643
-        ],
-        [
-          649,
-          650,
-          650,
-          650,
-          651
-        ],
-        [
-          657,
-          659,
-          658,
-          658,
-          660
-        ],
-        [
-          664,
-          665,
-          666,
-          667,
-          668
-        ],
-        [
-          672,
-          675,
-          674,
-          673,
-          676
-        ]
-      ]
-    },
     "cerulean_home": {
       "map": "CeruleanCity",
       "rectangle": [
@@ -172,35 +89,13 @@
     }
   },
   "new_metatiles": [
-    209,
-    210,
-    211,
-    212,
-    213,
-    214,
-    218,
-    219,
-    220,
-    222,
-    223,
-    224,
-    225,
-    226,
-    227,
-    229,
-    505,
-    228,
-    230,
     233,
     234,
     235,
     236,
     237,
     238,
-    506,
     239,
-    507,
-    508,
     240,
     241,
     242,
@@ -209,7 +104,10 @@
     251,
     252,
     253,
-    310
+    310,
+    506,
+    507,
+    508
   ],
   "retired_unplaced_metatiles": [
     212,
@@ -262,5 +160,5 @@
     "cerulean_home:3": 4,
     "cerulean_home:8": 3
   },
-  "note": "Original FireRed house designs, fitted to the existing shared palette. No map placement, collision, event, connection or border changes."
+  "note": "Cerulean long home retained. Pallet home option superseded by the selected Viridian designs; see green-houses.json. Historical import counters describe the original migration."
 }

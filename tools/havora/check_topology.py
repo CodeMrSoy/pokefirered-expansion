@@ -11,6 +11,12 @@ def source(p):return subprocess.check_output(['git','show',BASE+':'+p],cwd=R)
 def words(b):return [v[0] for v in struct.iter_unpack('<H',b)]
 L={l['id']:l for l in load('data/layouts/layouts.json')['layouts']}
 oldL={l['id']:l for l in json.loads(source('data/layouts/layouts.json'))['layouts']}
+allowed={}
+placement_manifest=R/'tools/havora/green-house-placements.json'
+if placement_manifest.exists():
+ p=load('tools/havora/green-house-placements.json');kits=load('tools/havora/green-houses.json')['kits'];kits['long_home']=p['long_home_grid']
+ for e in p['placements']:
+  cells=allowed.setdefault(e['map'],set());x,y,w,h=e['old_rectangle'];cells.update((x+i,y+j) for j in range(h) for i in range(w));x,y=e['new_origin'];grid=kits[e['kit']];cells.update((x+i,y+j) for j,row in enumerate(grid) for i in range(len(row)));x,y=e['door'];cells.add((x,y+1))
 M={n:load(f'data/maps/{n}/map.json') for n in RENAMES.values()};ids={m['id']:n for n,m in M.items()};events=[];art=0
 for old,new in RENAMES.items():
  m=M[new];l=L[m['layout']];om=json.loads(source(f'data/maps/{old}/map.json'));ol=oldL[om['layout']]
@@ -19,8 +25,9 @@ for old,new in RENAMES.items():
  b=words((R/l['blockdata_filepath']).read_bytes());a=words(source(ol['blockdata_filepath']))
  assert len(b)==l['width']*l['height']
  for y in range(ol['height']):
-  assert b[y*l['width']:y*l['width']+ol['width']]==a[y*ol['width']:(y+1)*ol['width']],new
- art+=len(a)
+  for x in range(ol['width']):
+   if (x,y) not in allowed.get(new,set()):assert b[y*l['width']+x]==a[y*ol['width']+x],(new,x,y)
+ art+=len(a)-sum(1 for x,y in allowed.get(new,set()) if x<ol['width'] and y<ol['height'])
  border=(R/l['border_filepath']).read_bytes();assert len(border)==l['border_width']*l['border_height']*2
  assert border==source(ol['border_filepath'])
  for kind in ['object_events','warp_events','coord_events','bg_events']:
@@ -46,4 +53,4 @@ while q:
 assert len(pos)==8 and len(pairs)==11
 assert pos['HavoraDaycare'][0]==pos['HavoraCoastalCliffs'][0]==pos['HavoraMarket'][0]+L[M['HavoraMarket']['layout']]['width']
 assert pos['HavoraDaycare'][1]+L[M['HavoraDaycare']['layout']]['height']==0
-print(json.dumps({'maps':8,'consistent_connection_pairs':len(pairs),'map_group_numbers_preserved':True,'authored_cells_preserved':art,'original_border_files_preserved':True,'north_quadrant_added_edge_columns':1,'origins':pos,'existing_out_of_bounds_events_needing_later_review':events},indent=2))
+print(json.dumps({'maps':8,'consistent_connection_pairs':len(pairs),'map_group_numbers_preserved':True,'authored_cells_preserved_outside_reviewed_house_plots':art,'original_border_files_preserved':True,'north_quadrant_added_edge_columns':1,'origins':pos,'existing_out_of_bounds_events_needing_later_review':events},indent=2))
