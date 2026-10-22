@@ -26,7 +26,7 @@
     },
     {
       "map": "MAP_HAVORA_NORTH_QUADRANT",
-      "offset": -49,
+      "offset": -51,
       "direction": "up"
     },
     {
@@ -277,14 +277,14 @@
       "dest_warp_id": "0"
     },
     {
-      "x": 29,
+      "x": 15,
       "y": 52,
       "elevation": 4,
       "dest_map": "MAP_QUANTUM_HAVORA_PROVISIONS",
       "dest_warp_id": "0"
     },
     {
-      "x": 33,
+      "x": 24,
       "y": 52,
       "elevation": 3,
       "dest_map": "MAP_QUANTUM_HAVORA_PROVISIONS",
