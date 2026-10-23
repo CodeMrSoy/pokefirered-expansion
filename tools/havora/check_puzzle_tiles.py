@@ -2,6 +2,7 @@
 """Verify the one-time puzzle-kit migration against its recorded source commit."""
 import io
 import json
+import sys
 import struct
 import subprocess
 from pathlib import Path
@@ -88,3 +89,62 @@ changed = subprocess.check_output(['git', 'diff', '--name-only', base, '--', 'da
 assert not changed, ('Migration must not paint maps or change events/engine', changed)
 assert not subprocess.check_output(['git', 'diff', '--name-only', base, '--', '**/anim/**', '**/palettes/**'], cwd=R).decode().strip()
 print('PASS: five contiguous grass-backed entries, 4-bit graphics, palette/animation budgets, retained-metatile pixels, archived fragments, and unchanged maps/events/engine.')
+
+if '--rom' in sys.argv:
+    # Check the linked ROM, not just the converter's intermediate files.
+    symbols = {}
+    for line in subprocess.check_output(['arm-none-eabi-nm', str(R / 'pokefirered.elf')], text=True).splitlines():
+        fields = line.split()
+        if len(fields) == 3:
+            symbols[fields[2]] = int(fields[0], 16)
+    rom = (R / 'pokefirered.gba').read_bytes()
+
+    def embedded(symbol, path):
+        data = (R / path).read_bytes()
+        offset = symbols[symbol] - 0x08000000
+        assert 0 <= offset <= len(rom) - len(data)
+        assert rom[offset:offset + len(data)] == data, ('stale linked asset', symbol)
+        return offset
+
+    def decompress(offset):
+        assert rom[offset] == 0x10, 'Expected GBA LZ77 graphics'
+        size = int.from_bytes(rom[offset + 1:offset + 4], 'little')
+        pos, output = offset + 4, bytearray()
+        while len(output) < size:
+            flags = rom[pos]
+            pos += 1
+            for bit in range(7, -1, -1):
+                if len(output) >= size:
+                    break
+                if flags & (1 << bit):
+                    a, b = rom[pos:pos + 2]
+                    pos += 2
+                    distance, length = ((a & 15) << 8 | b) + 1, (a >> 4) + 3
+                    assert distance <= len(output)
+                    for _ in range(length):
+                        output.append(output[-distance])
+                else:
+                    output.append(rom[pos])
+                    pos += 1
+        assert len(output) == size
+        return output
+
+    for group, suffix in [('primary', 'HavoraCityPrimary'), ('secondary', 'HavoraCity')]:
+        root = f'data/tilesets/{group}/havora_city/'
+        embedded('gMetatiles_' + suffix, root + 'metatiles.bin')
+        embedded('gMetatileAttributes_' + suffix, root + 'metatile_attributes.bin')
+        offset = embedded('gTilesetTiles_' + suffix, root + 'tiles.4bpp.lz')
+        im = Image.open(R / root / 'tiles.png')
+        expected = bytearray()
+        for y in range(0, im.height, 8):
+            for x in range(0, im.width, 8):
+                for yy in range(8):
+                    for xx in range(0, 8, 2):
+                        expected.append(im.getpixel((x + xx, y + yy)) | im.getpixel((x + xx + 1, y + yy)) << 4)
+        assert decompress(offset) == expected, ('linked PNG pixels differ', suffix)
+        for bank in (range(7) if group == 'primary' else range(7, 13)):
+            start = symbols['gTilesetPalettes_' + suffix] - 0x08000000 + bank * 32
+            colors = palettes[bank].astype('uint16')
+            expected_pal = ((colors[:, 0] >> 3) | ((colors[:, 1] >> 3) << 5) | ((colors[:, 2] >> 3) << 10))
+            assert rom[start:start + 32] == struct.pack('<16H', *expected_pal), ('linked palette differs', suffix, bank)
+    print('PASS: linked ROM contains the current Havora metatiles, behaviors, all 1,024 graphics, and all 13 active background palette banks.')

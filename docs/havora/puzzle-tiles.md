@@ -56,7 +56,28 @@ its recorded source commit, and `python tools/havora/review_puzzle_tiles.py`
 to regenerate the preview. Do not rerun earlier full tileset generators after
 manual Porymap edits.
 
-Asset-preservation, fountain-animation and diagonal-border checks passed for
-this migration. A ROM build was attempted but stopped while building `gbagfx`
-because the environment lacked `png.h`/the libpng development headers. No
-successful ROM compilation, emulator test or Porymap walkthrough is claimed.
+## Build dependencies and verified ROM
+
+`libpng` headers are the development files, including `png.h`, needed to
+compile the PNG graphics converter. Install the Ubuntu/WSL build packages with:
+
+```sh
+sudo apt update
+sudo apt install build-essential libpng-dev pkg-config binutils-arm-none-eabi gcc-arm-none-eabi libnewlib-dev libnewlib-arm-none-eabi
+```
+
+The complete ROM compiled successfully with ARM GCC 13.2.1 after installing
+these dependencies. The successful build used `make -j2 KEEP_TEMPS=1` after
+removing five incomplete, zero-byte generated objects from the initial build.
+No game-source or map changes were needed to fix the environment.
+
+Run `python tools/havora/check_puzzle_tiles.py --rom` after compiling. In
+addition to the source-preservation checks, it verifies the actual linked ROM
+metatile tables and behaviors, decompresses all 1,024 shared graphics and
+compares them to the source PNGs, and checks all 13 active palette banks.
+These checks passed, as did the fountain-animation and diagonal-border checks.
+
+Validated game/asset source: `8127ca706af491e4dbcc943e45142d70a3fe0b33`.
+ROM SHA-256: `5b23030b9ce515151c821539f1d9ea6aa1f6681fcd212230603065e8e791cb84`.
+The build and linked-asset checks do not constitute an emulator test or a
+Porymap walkthrough; neither is claimed here.
