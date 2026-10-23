@@ -12,11 +12,6 @@
   },
   "building_tiles": [
     {
-      "source_id": 512,
-      "metatile": 474,
-      "catalog_index": 57
-    },
-    {
       "source_id": 513,
       "metatile": 476,
       "catalog_index": 58
@@ -30,31 +25,6 @@
       "source_id": 517,
       "metatile": 473,
       "catalog_index": 62
-    },
-    {
-      "source_id": 518,
-      "metatile": 475,
-      "catalog_index": 63
-    },
-    {
-      "source_id": 519,
-      "metatile": 466,
-      "catalog_index": 64
-    },
-    {
-      "source_id": 520,
-      "metatile": 467,
-      "catalog_index": 65
-    },
-    {
-      "source_id": 522,
-      "metatile": 469,
-      "catalog_index": 67
-    },
-    {
-      "source_id": 523,
-      "metatile": 469,
-      "catalog_index": 68
     },
     {
       "source_id": 538,
@@ -77,11 +47,6 @@
       "catalog_index": 84
     },
     {
-      "source_id": 558,
-      "metatile": 808,
-      "catalog_index": 86
-    },
-    {
       "source_id": 565,
       "metatile": 665,
       "catalog_index": 88
@@ -90,16 +55,6 @@
       "source_id": 566,
       "metatile": 666,
       "catalog_index": 89
-    },
-    {
-      "source_id": 567,
-      "metatile": 810,
-      "catalog_index": 90
-    },
-    {
-      "source_id": 573,
-      "metatile": 811,
-      "catalog_index": 91
     },
     {
       "source_id": 574,
@@ -112,19 +67,9 @@
       "catalog_index": 93
     },
     {
-      "source_id": 579,
-      "metatile": 445,
-      "catalog_index": 94
-    },
-    {
       "source_id": 580,
       "metatile": 446,
       "catalog_index": 95
-    },
-    {
-      "source_id": 581,
-      "metatile": 814,
-      "catalog_index": 96
     },
     {
       "source_id": 582,
@@ -137,19 +82,9 @@
       "catalog_index": 98
     },
     {
-      "source_id": 587,
-      "metatile": 447,
-      "catalog_index": 100
-    },
-    {
       "source_id": 588,
       "metatile": 448,
       "catalog_index": 101
-    },
-    {
-      "source_id": 589,
-      "metatile": 818,
-      "catalog_index": 102
     },
     {
       "source_id": 590,
@@ -157,24 +92,9 @@
       "catalog_index": 103
     },
     {
-      "source_id": 591,
-      "metatile": 451,
-      "catalog_index": 104
-    },
-    {
-      "source_id": 597,
-      "metatile": 823,
-      "catalog_index": 107
-    },
-    {
       "source_id": 598,
       "metatile": 452,
       "catalog_index": 108
-    },
-    {
-      "source_id": 599,
-      "metatile": 453,
-      "catalog_index": 109
     },
     {
       "source_id": 609,
@@ -190,11 +110,6 @@
       "source_id": 614,
       "metatile": 666,
       "catalog_index": 119
-    },
-    {
-      "source_id": 616,
-      "metatile": 834,
-      "catalog_index": 121
     },
     {
       "source_id": 617,
@@ -220,11 +135,6 @@
       "source_id": 626,
       "metatile": 502,
       "catalog_index": 130
-    },
-    {
-      "source_id": 633,
-      "metatile": 468,
-      "catalog_index": 131
     },
     {
       "source_id": 640,
@@ -297,5 +207,70 @@
   "water_frames_verified": 8,
   "palette_changes": false,
   "note": "No map, collision, elevation, event, warp or connection data changed. Statue uses the stock FireRed gym silhouette with current outdoor stone colors.",
-  "catalog_note": "Unplaced obsolete house modules reclaimed for the selected Viridian homes and Celadon Department Store; originals archived in green-houses-archive.json."
+  "catalog_note": "Unplaced obsolete house modules reclaimed for the selected Viridian homes and Celadon Department Store; originals archived in green-houses-archive.json.",
+  "complete_market_stalls": {
+    "wide": [
+      [
+        505,
+        319,
+        320,
+        321,
+        532
+      ],
+      [
+        534,
+        359,
+        544,
+        360,
+        357
+      ],
+      [
+        539,
+        323,
+        323,
+        543,
+        542
+      ]
+    ],
+    "narrow": [
+      [
+        335,
+        319,
+        321,
+        316
+      ],
+      [
+        356,
+        359,
+        360,
+        535
+      ],
+      [
+        541,
+        543,
+        543,
+        540
+      ]
+    ]
+  },
+  "forest_entrance": [
+    [
+      545,
+      361,
+      546,
+      547
+    ],
+    [
+      362,
+      363,
+      548,
+      549
+    ],
+    [
+      550,
+      144,
+      455,
+      551
+    ]
+  ]
 }

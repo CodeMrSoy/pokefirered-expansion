@@ -70,3 +70,38 @@ HavoraWestQuadrant_CoastBird::
 
 HavoraWestQuadrant_CoastBird_Text::
 	.string "The POKéMON watches the waves.$"
+
+HavoraWestQuadrant_Practice1::
+	msgbox HavoraWestQuadrant_Practice1_Text, MSGBOX_NPC
+	end
+
+HavoraWestQuadrant_Practice1_Text::
+	.string "We train in pairs here.\nWatch your partner as well\las your foe!$"
+
+HavoraWestQuadrant_Practice2::
+	msgbox HavoraWestQuadrant_Practice2_Text, MSGBOX_NPC
+	end
+
+HavoraWestQuadrant_Practice2_Text::
+	.string "A good crew works together.\nOur POKéMON do the same!$"
+
+HavoraWestQuadrant_Practice3::
+	msgbox HavoraWestQuadrant_Practice3_Text, MSGBOX_NPC
+	end
+
+HavoraWestQuadrant_Practice3_Text::
+	.string "We are planning our next move.\nTwo partners, one plan!$"
+
+HavoraWestQuadrant_Practice4::
+	msgbox HavoraWestQuadrant_Practice4_Text, MSGBOX_NPC
+	end
+
+HavoraWestQuadrant_Practice4_Text::
+	.string "Helping your partner can be\lthe strongest move of all.$"
+
+HavoraWestQuadrant_GymSign::
+	msgbox HavoraWestQuadrant_GymSign_Text, MSGBOX_SIGN
+	end
+
+HavoraWestQuadrant_GymSign_Text::
+	.string "HAVORA GYM\nPartner practice court to the east.$"

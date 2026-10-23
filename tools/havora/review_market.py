@@ -17,6 +17,9 @@ def scene(name,layout):
            'GENTLEMAN':('people/gentleman.png','npc_white',16,32),
            'GYM_GUY':('people/gym_guy.png','npc_pink',16,32),
            'PIDGEY':('pokemon/pidgey.png','npc_blue',16,16),
+           'PSYDUCK':('pokemon/psyduck.png','npc_blue',16,16),
+           'PIKACHU':('pokemon/pikachu.png','npc_blue',16,16),
+           'SNORLAX':('pokemon/snorlax.png','npc_blue',32,32),
            'NIDORAN_F':('pokemon/nidoran_f.png','npc_pink',16,16)}
     for obj in sorted(objects,key=lambda o:o['y']):
         file,pal,w,h=specs[obj['graphics_id'].removeprefix('OBJ_EVENT_GFX_')]
