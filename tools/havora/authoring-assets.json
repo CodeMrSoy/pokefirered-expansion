@@ -12,21 +12,6 @@
   },
   "building_tiles": [
     {
-      "source_id": 513,
-      "metatile": 476,
-      "catalog_index": 58
-    },
-    {
-      "source_id": 516,
-      "metatile": 477,
-      "catalog_index": 61
-    },
-    {
-      "source_id": 517,
-      "metatile": 473,
-      "catalog_index": 62
-    },
-    {
       "source_id": 538,
       "metatile": 480,
       "catalog_index": 81
@@ -35,16 +20,6 @@
       "source_id": 539,
       "metatile": 480,
       "catalog_index": 82
-    },
-    {
-      "source_id": 542,
-      "metatile": 443,
-      "catalog_index": 83
-    },
-    {
-      "source_id": 543,
-      "metatile": 444,
-      "catalog_index": 84
     },
     {
       "source_id": 565,
@@ -97,54 +72,14 @@
       "catalog_index": 108
     },
     {
-      "source_id": 609,
-      "metatile": 443,
-      "catalog_index": 116
-    },
-    {
-      "source_id": 610,
-      "metatile": 443,
-      "catalog_index": 117
-    },
-    {
       "source_id": 614,
       "metatile": 666,
       "catalog_index": 119
     },
     {
-      "source_id": 617,
-      "metatile": 470,
-      "catalog_index": 122
-    },
-    {
-      "source_id": 618,
-      "metatile": 470,
-      "catalog_index": 123
-    },
-    {
-      "source_id": 624,
-      "metatile": 501,
-      "catalog_index": 128
-    },
-    {
       "source_id": 625,
       "metatile": 186,
       "catalog_index": 129
-    },
-    {
-      "source_id": 626,
-      "metatile": 502,
-      "catalog_index": 130
-    },
-    {
-      "source_id": 640,
-      "metatile": 200,
-      "catalog_index": 133
-    },
-    {
-      "source_id": 641,
-      "metatile": 503,
-      "catalog_index": 134
     }
   ],
   "market_stall": [
@@ -272,5 +207,12 @@
       455,
       551
     ]
-  ]
+  ],
+  "puzzle_tiles": {
+    "boulder_grass": 556,
+    "cut_tree_grass": 557,
+    "hole_open_grass": 558,
+    "switch_released_grass": 559,
+    "switch_pressed_grass": 560
+  }
 }
