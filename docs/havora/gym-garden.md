@@ -17,3 +17,7 @@ Preview images are native tile-and-sprite renders, not generated concept illustr
 ## Later editor-kit expansion
 
 The court now has white chalk lines and a Poké Ball motif. Complete market stalls and the requested Bond Bridge forest mouth have been added to the shared tile palette for manual placement. This expansion reclaims archived, unplaced catalogue art; the earlier statement that all unplaced definitions and graphics remain untouched applies to the initial garden patch only. See editor-kits.md and editor-kits.json for current details. The combined build passes (build/editor-kits/build.log).
+
+## Repaint after map cleanup
+
+Reapplied the approved garden to the open plateau in 553b2f28. Only the 279 garden cells are repainted; the latest grass edits outside those cells, every cliff/seam, and all newer North Quadrant and Lookout edits are retained. The four practice actors, gym sign and safe NPC positions are restored; the gym-door warp uses the terrace elevation 6. check_gym_garden.py now validates against 553b2f28. The current native render is gym-garden-preview.png.

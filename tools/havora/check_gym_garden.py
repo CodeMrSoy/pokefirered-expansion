@@ -3,7 +3,7 @@
 import json,struct,subprocess
 from pathlib import Path
 from collections import deque
-R=Path(__file__).resolve().parents[2];BASE='a8b19167'
+R=Path(__file__).resolve().parents[2];BASE='553b2f28'
 def old(p):return subprocess.check_output(['git','show',BASE+':'+p],cwd=R)
 def js(p):return json.loads((R/p).read_text())
 def words(b):return list(struct.unpack('<'+'H'*(len(b)//2),b))
