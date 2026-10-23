@@ -16,7 +16,7 @@
   "connections": [
     {
       "map": "MAP_HAVORA_NORTH_QUADRANT",
-      "offset": -57,
+      "offset": -58,
       "direction": "down"
     }
   ],
@@ -24,8 +24,8 @@
     {
       "type": "object",
       "graphics_id": "OBJ_EVENT_GFX_FISHER",
-      "x": 10,
-      "y": 6,
+      "x": 9,
+      "y": 5,
       "elevation": 7,
       "movement_type": "MOVEMENT_TYPE_FACE_DOWN",
       "movement_range_x": 0,
@@ -41,8 +41,8 @@
   "bg_events": [
     {
       "type": "sign",
-      "x": 4,
-      "y": 21,
+      "x": 3,
+      "y": 20,
       "elevation": 6,
       "player_facing_dir": "BG_EVENT_PLAYER_FACING_ANY",
       "script": "HavoraLookout_Impact"

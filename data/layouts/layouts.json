@@ -4552,8 +4552,8 @@
     {
       "id": "LAYOUT_HAVORA_LOOKOUT",
       "name": "HavoraLookout_Layout",
-      "width": 16,
-      "height": 32,
+      "width": 14,
+      "height": 31,
       "border_width": 2,
       "border_height": 2,
       "primary_tileset": "gTileset_HavoraCityPrimary",
