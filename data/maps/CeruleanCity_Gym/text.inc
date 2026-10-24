@@ -16,9 +16,9 @@ CeruleanCity_Gym_Text_ExplainCascadeBadge::
     .string "POKéMON up to Lv. 30 obey.\p"
     .string "That includes even outsiders you\n"
     .string "got in trades.\p"
-    .string "There's more. You can now use CUT\n"
-    .string "anytime, even out of battle.\p"
-    .string "You can CUT down small trees to\n"
+    .string "There's more. Use Pruning Shears\n"
+    .string "to clear small trees from your path.\p"
+    .string "You can trim small trees to\n"
     .string "open new pathways.\p"
     .string "You can also have my favorite TM.$"
 

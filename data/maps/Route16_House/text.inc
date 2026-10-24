@@ -5,13 +5,15 @@ Route16_House_Text_FoundMySecretRetreat::
     .string "I'll make it up to you with this!$"
 
 Route16_House_Text_ReceivedHM02FromGirl::
-    .string "{PLAYER} received HM02\n"
+    .string "{PLAYER} received a Sky Whistle\n"
     .string "from the girl.$"
 
 Route16_House_Text_ExplainHM02::
-    .string "HM02 is FLY.\n"
-    .string "It's a wonderfully convenient move.\p"
-    .string "Please, put it to good use.$"
+    .string "Use the Sky Whistle outdoors to\n"
+    .string "call a flying POKéMON.\p"
+    .string "With the THUNDERBADGE, it can\n"
+    .string "take you to a town you have visited.\p"
+    .string "Use it from Key Items or the map.$"
 
 Route16_House_Text_DontHaveAnyRoomForThis::
     .string "You don't have any room for this.$"

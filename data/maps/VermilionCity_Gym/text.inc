@@ -18,8 +18,8 @@ VermilionCity_Gym_Text_LtSurgePostBattle::
 VermilionCity_Gym_Text_ExplainThunderBadgeTakeThis::
     .string "The THUNDERBADGE cranks up your\n"
     .string "POKéMON's SPEED!\p"
-    .string "It also lets your POKéMON FLY\n"
-    .string "lightning-quick anytime, kid!\p"
+    .string "Use a Sky Whistle to call a lift\n"
+    .string "to towns you have visited, kid!\p"
     .string "You're special, kid!\n"
     .string "Take this!$"
 

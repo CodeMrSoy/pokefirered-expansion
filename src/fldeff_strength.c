@@ -1,4 +1,5 @@
 #include "global.h"
+#include "field_tools.h"
 #include "field_player_avatar.h"
 #include "field_effect.h"
 #include "party_menu.h"
@@ -33,6 +34,7 @@ static void FieldCB_UseStrength(void)
 
 u32 FldEff_UseStrength(void)
 {
+    FieldTool_Prepare(FIELD_MOVE_STRENGTH);
     u8 taskId = CreateFieldEffectShowMon();
     FLDEFF_SET_FUNC_TO_DATA(ShowMonCB_UseStrength);
     return FALSE;

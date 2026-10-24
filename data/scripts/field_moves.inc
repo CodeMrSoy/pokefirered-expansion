@@ -8,13 +8,12 @@ EventScript_CutTree::
 	msgbox Text_MonUsedMove
 	closemessage
 EventScript_CutTreeCommon:
-	isfollowerfieldmoveuser VAR_0x8004
-	setfieldeffectargument 3, VAR_0x8004 @ skip pose if so
+	setvar VAR_0x8004, FALSE
+	setfieldeffectargument 3, TRUE @ tool use has no Pokémon summon pose
 	dofieldeffect FLDEFF_USE_CUT_ON_TREE
 	waitstate
 EventScript_CutTreeDown:: @ fallthrough
 	setflag FLAG_SAFE_FOLLOWER_MOVEMENT
-	call_if_eq VAR_0x8004, TRUE, EventScript_FollowerFieldMove
 	applymovement VAR_LAST_TALKED, Movement_CutTreeDown
 	waitmovement 0
 	removeobject VAR_LAST_TALKED
@@ -41,16 +40,16 @@ EventScript_DontCutTree::
 	end
 
 Text_CutTreeDown::
-	.string "This tree looks like it can be CUT\n"
-	.string "down!\p"
-	.string "Would you like to CUT it?$"
+    .string "This tree can be trimmed.\n"
+    .string "Use the Pruning Shears?$"
 
 Text_MonUsedMove::
 	.string "{STR_VAR_1} used {STR_VAR_2}!$"
 
 Text_TreeCanBeCutDown::
-	.string "This tree looks like it can be CUT\n"
-	.string "down!$"
+    .string "A small tree blocks the path.\p"
+    .string "Pruning Shears and the\n"
+    .string "CASCADEBADGE could clear it.$"
 
 @ Use rock smash from party menu
 EventScript_FldEffRockSmash::
@@ -68,13 +67,12 @@ EventScript_RockSmash::
 	closemessage
 EventScript_RockSmashCommon:
 	@ check if follower should use the field move
-	isfollowerfieldmoveuser VAR_0x8004
-	setfieldeffectargument 3, VAR_0x8004 @ skip pose if so
+	setvar VAR_0x8004, FALSE
+	setfieldeffectargument 3, TRUE @ tool use has no Pokémon summon pose
 	dofieldeffect FLDEFF_USE_ROCK_SMASH
 	waitstate
 EventScript_SmashRock:: @ fallthrough
 	setflag FLAG_SAFE_FOLLOWER_MOVEMENT
-	call_if_eq VAR_0x8004, TRUE, EventScript_FollowerFieldMove
 	applymovement VAR_LAST_TALKED, Movement_BreakRock
 	waitmovement 0
 	removeobject VAR_LAST_TALKED
@@ -203,6 +201,7 @@ Movement_BreakRock::
 
 EventScript_CantSmashRock::
 	msgbox Text_MonMaySmashRock, MSGBOX_SIGN
+	releaseall
 	end
 
 EventScript_DontSmashRock::
@@ -211,12 +210,13 @@ EventScript_DontSmashRock::
 	end
 
 Text_UseRockSmash::
-	.string "This rock appears to be breakable.\n"
-	.string "Would you like to use ROCK SMASH?$"
+    .string "This rock looks breakable.\n"
+    .string "Use the Rock Hammer?$"
 
 Text_MonMaySmashRock::
-	.string "It's a rugged rock, but a POKéMON\n"
-	.string "may be able to smash it.$"
+    .string "A cracked rock blocks the path.\p"
+    .string "A Rock Hammer and the\n"
+    .string "MARSHBADGE could break it.$"
 
 EventScript_StrengthBoulder::
 	goto_if_questlog EventScript_ReleaseEnd
@@ -242,14 +242,17 @@ EventScript_FldEffStrength::
 EventScript_UseStrength::
 	setflag FLAG_SYS_USE_STRENGTH
 	msgbox Text_MonUsedStrengthCanMoveBoulders, MSGBOX_SIGN
+	releaseall
 	end
 
 EventScript_CantMoveBoulder::
 	msgbox Text_MonMayPushBoulder, MSGBOX_SIGN
+	releaseall
 	end
 
 EventScript_AlreadyUsedStrength::
 	msgbox Text_StrengthMadeMovingBouldersPossible, MSGBOX_SIGN
+	releaseall
 	end
 
 EventScript_DontUseStrength::
@@ -258,22 +261,21 @@ EventScript_DontUseStrength::
 	end
 
 Text_UseStrength::
-	.string "It's a big boulder, but a POKéMON\n"
-	.string "may be able to push it aside.\p"
-	.string "Would you like to use STRENGTH?$"
+    .string "A heavy boulder blocks the path.\n"
+    .string "Use the Power Gloves?$"
 
 Text_MonUsedStrengthCanMoveBoulders::
-	.string "{STR_VAR_1} used STRENGTH!\p"
-	.string "{STR_VAR_1}'s STRENGTH made it\n"
-	.string "possible to move boulders around!$"
+    .string "{PLAYER} put on the Power Gloves!\p"
+    .string "You can now push heavy boulders.$"
 
 Text_MonMayPushBoulder::
-	.string "It's a big boulder, but a POKéMON\n"
-	.string "may be able to push it aside.$"
+    .string "This boulder is too heavy.\p"
+    .string "Power Gloves and the\n"
+    .string "RAINBOWBADGE could move it.$"
 
 Text_StrengthMadeMovingBouldersPossible::
-	.string "STRENGTH made it possible to move\n"
-	.string "boulders around.$"
+    .string "The Power Gloves let you push\n"
+    .string "heavy boulders.$"
 
 EventScript_Waterfall::
 	goto_if_questlog EventScript_ReleaseEnd
@@ -299,11 +301,12 @@ Text_WallOfWaterCrashingDown::
 	.string "with a mighty roar.$"
 
 Text_UseWaterfall::
-	.string "It's a large waterfall.\n"
-	.string "Would you like to use WATERFALL?$"
+    .string "A roaring waterfall towers above.\n"
+    .string "Use the Basculegion Bait?$"
 
 Text_MonUsedWaterfall::
-	.string "{STR_VAR_1} used WATERFALL.$"
+    .string "{PLAYER} used Basculegion Bait!\n"
+    .string "A guide will lead the way.$"
 
 @ Unused leftover from R/S
 EventScript_DeepWater::

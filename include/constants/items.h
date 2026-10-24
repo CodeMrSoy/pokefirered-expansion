@@ -835,6 +835,15 @@
 #define ITEM_HM07 688
 #define ITEM_HM08 689
 
+// Field tools reuse the original HM IDs to preserve gifts and old saves.
+#define ITEM_PRUNING_SHEARS ITEM_HM01
+#define ITEM_SKY_WHISTLE ITEM_HM02
+#define ITEM_WAILMER_WAILER ITEM_HM03
+#define ITEM_POWER_GLOVES ITEM_HM04
+#define ITEM_LANTERN ITEM_HM05
+#define ITEM_ROCK_HAMMER ITEM_HM06
+#define ITEM_BASCULEGION_BAIT ITEM_HM07
+
 // Charms
 #define ITEM_OVAL_CHARM 690
 #define ITEM_SHINY_CHARM 691
@@ -1005,7 +1014,8 @@
 // HOPO BERRY
 // LEGEND PLATE
 
-#define ITEMS_COUNT 831
+#define ITEM_FIELD_ITEM_CASE 831
+#define ITEMS_COUNT 832
 #define ITEM_FIELD_ARROW ITEMS_COUNT
 
 // A special item id associated with "Cancel"/"Exit" etc. in a list of items or decorations

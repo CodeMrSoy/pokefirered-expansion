@@ -3,10 +3,10 @@ SSAnne_2F_Room3_Text_SeenMonsFerryPeople::
     .string "ferry people across the water!$"
 
 SSAnne_2F_Room3_Text_SomeTreesCanBeCutDown::
-    .string "Small trees can be chopped down\n"
-    .string "using the move CUT.\p"
-    .string "But remember this!\n"
-    .string "CUT is an HM technique.\p"
-    .string "Once learned, it is not so easily\n"
-    .string "discarded.$"
+    .string "Small trees can be trimmed with\n"
+    .string "Pruning Shears.\p"
+    .string "With the CASCADEBADGE, just\n"
+    .string "press A while facing a small tree.\p"
+    .string "Your POKéMON can keep their move\n"
+    .string "slots for battling!$"
 

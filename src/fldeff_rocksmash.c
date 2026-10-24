@@ -1,4 +1,5 @@
 #include "global.h"
+#include "field_tools.h"
 #include "gflib.h"
 #include "field_player_avatar.h"
 #include "field_effect.h"
@@ -122,6 +123,7 @@ static void FieldCallback_UseRockSmash(void)
 
 u32 FldEff_UseRockSmash(void)
 {
+    FieldTool_Prepare(FIELD_MOVE_ROCK_SMASH);
     u8 taskId = CreateFieldEffectShowMon();
 
     FLDEFF_SET_FUNC_TO_DATA(StartRockSmashFieldEffect);

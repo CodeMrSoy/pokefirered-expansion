@@ -1,4 +1,5 @@
 #include "global.h"
+#include "field_tools.h"
 #include "poke_glass.h"
 #include "gflib.h"
 #include "battle.h"
@@ -658,6 +659,7 @@ void ResetBagScrollPositions(void)
 
 void CB2_BagMenuFromStartMenu(void)
 {
+    FieldTools_MigrateInventory();
     GoToBagMenu(ITEMMENULOCATION_FIELD, POCKETS_COUNT_NO_CASES, CB2_ReturnToFieldWithOpenMenu);
 }
 
@@ -1862,7 +1864,7 @@ static void Task_RemoveItemFromBag(u8 taskId)
     }
 }
 
-static u16 *RegisteredItemAt(u32 slot)
+u16 *RegisteredItemAt(u32 slot)
 {
     return slot == 0 ? &gSaveBlock1Ptr->registeredItem : &gSaveBlock1Ptr->registeredItemsExtra[slot - 1];
 }
@@ -2309,6 +2311,7 @@ bool8 UseRegisteredKeyItemOnField(void)
     u16 item = ITEM_NONE;
     u8 taskId;
     if (InUnionRoom() == TRUE) return FALSE;
+    FieldTools_MigrateInventory();
     HideMapNamePopUpWindow();
     ChangeBgY(0, 0, 0);
     for (i = 0; i < 4; i++)
