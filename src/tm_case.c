@@ -1,4 +1,5 @@
 #include "global.h"
+#include "field_tools.h"
 #include "tm_case.h"
 #include "gflib.h"
 #include "decompress.h"
@@ -812,11 +813,11 @@ static void TMCaseSetup_GetTMCount(void)
     struct BagPocket *pocket = &gBagPockets[POCKET_TM_HM];
     u16 i;
 
-    CompactItemsInBagPocket(POCKET_TM_HM);
+    FieldTools_MigrateInventory();
     sTMCaseDynamicResources->numTMs = 0;
     for (i = 0; i < pocket->capacity; i++)
     {
-        if (pocket->itemSlots[i].itemId == ITEM_NONE)
+        if (pocket->itemSlots[i].itemId == ITEM_NONE || !IsItemTMHM(pocket->itemSlots[i].itemId))
             break;
         sTMCaseDynamicResources->numTMs++;
     }

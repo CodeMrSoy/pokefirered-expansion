@@ -8,8 +8,8 @@ Route9_Text_AliciaDefeat::
 Route9_Text_AliciaPostBattle::
     .string "The tunnel coming up is pitch-black\n"
     .string "inside.\p"
-    .string "You'll need FLASH to get through\n"
-    .string "there.$"
+    .string "Use your Lantern from Key Items\n"
+    .string "to light the way.$"
 
 Route9_Text_ChrisIntro::
     .string "Who's that walking there with those\n"

@@ -1591,39 +1591,18 @@ static void DrawGlassStorage(void)
 
 static const u8 sStorageNameChars[] = _(" ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-.");
 
-static u16 StorageFieldMoves(struct BoxPokemon *mon)
-{
-    static const u16 moves[] = {MOVE_CUT, MOVE_FLY, MOVE_SURF, MOVE_STRENGTH, MOVE_FLASH, MOVE_ROCK_SMASH, MOVE_WATERFALL, MOVE_DIVE};
-    u16 mask = 0;
-    u32 i, j;
-    if (!GetBoxMonData(mon, MON_DATA_SPECIES) || GetBoxMonData(mon, MON_DATA_IS_EGG)) return 0;
-    for (i = 0; i < MAX_MON_MOVES; i++)
-        for (j = 0; j < ARRAY_COUNT(moves); j++)
-            if (GetBoxMonData(mon, MON_DATA_MOVE1 + i) == moves[j]) mask |= 1 << j;
-    return mask;
-}
-
 static const u8 *StorageReleaseSelected(void)
 {
     u8 slot = sGlassStorage.cursor < 30 ? sGlassStorage.cursor : sGlassStorage.cursor - 30;
     bool8 party = sGlassStorage.cursor >= 30;
     struct Pokemon mon;
-    u16 needed, item;
-    u32 i, box;
+    u16 item;
     if (sGlassStorage.cursor >= 36) return COMPOUND_STRING("Choose a Pokemon first.");
     StorageRead(sGlassStorage.box, slot, party, &mon);
     if (!GetMonData(&mon, MON_DATA_SPECIES)) return COMPOUND_STRING("This slot is empty.");
     if (GetMonData(&mon, MON_DATA_IS_EGG)) return COMPOUND_STRING("An Egg cannot be released.");
     if (party && !CountPartyAliveNonEggMonsExcept(slot)) return COMPOUND_STRING("Keep a usable party Pokemon.");
     if ((party && GetMonData(&mon, MON_DATA_MAIL) != 255) || ItemIsMail(GetMonData(&mon, MON_DATA_HELD_ITEM))) return COMPOUND_STRING("Remove its Mail first.");
-    needed = StorageFieldMoves(&mon.box);
-    for (i = 0; needed && i < PARTY_SIZE; i++)
-        if (!(party && i == slot)) needed &= ~StorageFieldMoves(&gPlayerParty[i].box);
-    for (box = 0; needed && box < TOTAL_BOXES_COUNT; box++)
-        for (i = 0; needed && i < IN_BOX_COUNT; i++)
-            if (!(!party && box == sGlassStorage.box && i == slot))
-                needed &= ~StorageFieldMoves(GetBoxedMonPtr(box, i));
-    if (needed) return COMPOUND_STRING("Keep another field-move user.");
     item = GetMonData(&mon, MON_DATA_HELD_ITEM);
     if (item && !AddBagItem(item, 1)) return COMPOUND_STRING("Make room for its held item.");
     if (party)

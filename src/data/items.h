@@ -11828,107 +11828,93 @@ const struct Item gItemsInfo[] =
 
     [ITEM_HM_CUT] =
     {
-        .name = _("HM01"),
+        .name = _("Pruning Shears"),
         .price = 0,
-        .description = COMPOUND_STRING(
-            "Attacks the foe "
-            "with\nsharp blades "
-            "or claws."),
+        .description = COMPOUND_STRING("Trim small trees and\npatches of grass.\nRequires the Cascade Badge."),
         .importance = 1,
-        .pocket = POCKET_TM_HM,
-        .type = ITEM_USE_PARTY_MENU,
-        .fieldUseFunc = NULL,
-        .secondaryId = MOVE_CUT,
+        .pocket = POCKET_KEY_ITEMS,
+        .type = ITEM_USE_FIELD,
+        .fieldUseFunc = ItemUseOutOfBattle_FieldTool,
+        .iconPic = gFieldToolIcon_Shears,
+        .iconPalette = gFieldToolIconPalette_Shears,
     },
 
     [ITEM_HM_FLY] =
     {
-        .name = _("HM02"),
+        .name = _("Sky Whistle"),
         .price = 0,
-        .description = COMPOUND_STRING(
-            "Flies up on the "
-            "first\nturn, then "
-            "attacks next\nturn."),
+        .description = COMPOUND_STRING("Call a flying Pokémon\nto a visited town.\nRequires the Thunder Badge."),
         .importance = 1,
-        .pocket = POCKET_TM_HM,
-        .type = ITEM_USE_PARTY_MENU,
-        .fieldUseFunc = NULL,
-        .secondaryId = MOVE_FLY,
+        .pocket = POCKET_KEY_ITEMS,
+        .type = ITEM_USE_FIELD,
+        .fieldUseFunc = ItemUseOutOfBattle_FieldTool,
+        .iconPic = gFieldToolIcon_Whistle,
+        .iconPalette = gFieldToolIconPalette_Whistle,
     },
 
     [ITEM_HM_SURF] =
     {
-        .name = _("HM03"),
+        .name = _("Wailmer Wailer"),
         .price = 0,
-        .description = COMPOUND_STRING(
-            "Creates a huge "
-            "wave,\nthen crashes "
-            "it down on\nthe foe."),
+        .description = COMPOUND_STRING("Call a sea Pokémon for\nrides across water.\nRequires the Soul Badge."),
         .importance = 1,
-        .pocket = POCKET_TM_HM,
-        .type = ITEM_USE_PARTY_MENU,
-        .fieldUseFunc = NULL,
-        .secondaryId = MOVE_SURF,
+        .pocket = POCKET_KEY_ITEMS,
+        .type = ITEM_USE_FIELD,
+        .fieldUseFunc = ItemUseOutOfBattle_FieldTool,
+        .iconPic = gFieldToolIcon_WailmerWailer,
+        .iconPalette = gFieldToolIconPalette_WailmerWailer,
     },
 
     [ITEM_HM_STRENGTH] =
     {
-        .name = _("HM04"),
+        .name = _("Power Gloves"),
         .price = 0,
-        .description = COMPOUND_STRING(
-            "Builds enormous "
-            "power,\nthen slams "
-            "the foe."),
+        .description = COMPOUND_STRING("Grip and push heavy\nboulders. Requires the\nRainbow Badge."),
         .importance = 1,
-        .pocket = POCKET_TM_HM,
-        .type = ITEM_USE_PARTY_MENU,
-        .fieldUseFunc = NULL,
-        .secondaryId = MOVE_STRENGTH,
+        .pocket = POCKET_KEY_ITEMS,
+        .type = ITEM_USE_FIELD,
+        .fieldUseFunc = ItemUseOutOfBattle_FieldTool,
+        .iconPic = gFieldToolIcon_Gloves,
+        .iconPalette = gFieldToolIconPalette_Gloves,
     },
 
     [ITEM_HM_FLASH] =
     {
-        .name = _("HM05"),
+        .name = _("Lantern"),
         .price = 0,
-        .description = COMPOUND_STRING(
-            "Looses a powerful "
-            "blast\nof light that "
-            "reduces\naccuracy."),
+        .description = COMPOUND_STRING("Light up a dark cave.\nUse from the Bag or wheel.\nRequires the Boulder Badge."),
         .importance = 1,
-        .pocket = POCKET_TM_HM,
-        .type = ITEM_USE_PARTY_MENU,
-        .fieldUseFunc = NULL,
-        .secondaryId = MOVE_FLASH,
+        .pocket = POCKET_KEY_ITEMS,
+        .type = ITEM_USE_FIELD,
+        .fieldUseFunc = ItemUseOutOfBattle_FieldTool,
+        .iconPic = gFieldToolIcon_Lantern,
+        .iconPalette = gFieldToolIconPalette_Lantern,
     },
 
     [ITEM_HM_ROCK_SMASH] =
     {
-        .name = _("HM06"),
+        .name = _("Rock Hammer"),
         .price = 0,
-        .description = COMPOUND_STRING(
-            "A rock-crushingly "
-            "tough\nattack that "
-            "may lower\nDefense."),
+        .description = COMPOUND_STRING("Break cracked rocks.\nRequires the Marsh Badge."),
         .importance = 1,
-        .pocket = POCKET_TM_HM,
-        .type = ITEM_USE_PARTY_MENU,
-        .fieldUseFunc = NULL,
-        .secondaryId = MOVE_ROCK_SMASH,
+        .pocket = POCKET_KEY_ITEMS,
+        .type = ITEM_USE_FIELD,
+        .fieldUseFunc = ItemUseOutOfBattle_FieldTool,
+        .iconPic = gFieldToolIcon_Hammer,
+        .iconPalette = gFieldToolIconPalette_Hammer,
     },
 
     [ITEM_HM_WATERFALL] =
     {
-        .name = _("HM07"),
+        .name = _("Basculegion Bait"),
         .price = 0,
-        .description = COMPOUND_STRING(
-            "Attacks the foe "
-            "with\nenough power "
-            "to climb\nwaterfalls."),
+        .description = COMPOUND_STRING("Reusable bait to call a\nwaterfall guide. Requires\nthe Volcano Badge."),
         .importance = 1,
-        .pocket = POCKET_TM_HM,
-        .type = ITEM_USE_PARTY_MENU,
-        .fieldUseFunc = NULL,
-        .secondaryId = MOVE_WATERFALL,
+        .pocket = POCKET_KEY_ITEMS,
+        .type = ITEM_USE_FIELD,
+        .fieldUseFunc = ItemUseOutOfBattle_FieldTool,
+        .iconPic = gFieldToolIcon_Bait,
+        .iconPalette = gFieldToolIconPalette_Bait,
     },
 
     [ITEM_HM_DIVE] =

@@ -39,14 +39,14 @@ FuchsiaCity_WardensHouse_Text_ThanksLassieGiveYouSomething::
     .string "trouble.$"
 
 FuchsiaCity_WardensHouse_Text_ReceivedHM04FromWarden::
-    .string "{PLAYER} received HM04\n"
+    .string "{PLAYER} received Power Gloves\n"
     .string "from the WARDEN.$"
 
 FuchsiaCity_WardensHouse_Text_ExplainStrength::
-    .string "WARDEN: Inside HM04 you'll find\n"
-    .string "STRENGTH.\p"
-    .string "It lets POKéMON move boulders when\n"
-    .string "you're outside of battle.\p"
+    .string "WARDEN: Those Power Gloves give\n"
+    .string "you a firm grip on heavy boulders.\p"
+    .string "With the RAINBOWBADGE, press A\n"
+    .string "at a boulder to put them on.\p"
     .string "Oh yes, did you find the SECRET\n"
     .string "HOUSE in the SAFARI ZONE?$"
 
@@ -62,4 +62,9 @@ FuchsiaCity_WardensHouse_Text_MonPhotosFossilsOnDisplay::
 FuchsiaCity_WardensHouse_Text_OldMonMerchandiseOnDisplay::
     .string "Old POKéMON merchandise is on\n"
     .string "display.$"
+
+FuchsiaCity_WardensHouse_Text_NoRoomForGloves::
+    .string "Make room in your Key Items\n"
+    .string "pocket for my Power Gloves.\p"
+    .string "Then bring me my GOLD TEETH!$"
 

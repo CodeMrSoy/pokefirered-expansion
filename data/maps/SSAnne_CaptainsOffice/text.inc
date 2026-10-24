@@ -12,24 +12,17 @@ SSAnne_CaptainsOffice_Text_RubbedCaptainsBack::
 SSAnne_CaptainsOffice_Text_ThankYouHaveHMForCut::
     .string "CAPTAIN: Whew! Thank you!\n"
     .string "I'm feeling much better now.\p"
-    .string "You want to see my hidden CUT\n"
-    .string "technique?\p"
-    .string "I could show you my prized CUT\n"
-    .string "technique if I weren't so ill…\p"
-    .string "I know! You can have this!\n"
-    .string "This HIDDEN MACHINE!\p"
-    .string "Teach CUT to your POKéMON, and\n"
-    .string "you can see it CUT anytime!$"
+    .string "Take my Pruning Shears.\n"
+    .string "They make short work of trees!$"
 
 SSAnne_CaptainsOffice_Text_ObtainedHM01FromCaptain::
-    .string "{PLAYER} obtained HM01\n"
+    .string "{PLAYER} obtained Pruning Shears\n"
     .string "from the CAPTAIN!$"
 
 SSAnne_CaptainsOffice_Text_ExplainCut::
-    .string "Using CUT, you can chop down\n"
-    .string "small trees.\p"
-    .string "Why not try it with the trees\n"
-    .string "around VERMILION CITY?$"
+    .string "With the CASCADEBADGE, use your\n"
+    .string "Pruning Shears on small trees.\p"
+    .string "Just walk up to one and press A!$"
 
 SSAnne_CaptainsOffice_Text_SSAnneWillSetSailSoon::
     .string "CAPTAIN: …Whew!\p"

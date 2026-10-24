@@ -1,4 +1,5 @@
 #include "global.h"
+#include "field_tools.h"
 #include "poke_glass.h"
 #include "gflib.h"
 #include "battle.h"
@@ -658,6 +659,7 @@ void ResetBagScrollPositions(void)
 
 void CB2_BagMenuFromStartMenu(void)
 {
+    FieldTools_MigrateInventory();
     GoToBagMenu(ITEMMENULOCATION_FIELD, POCKETS_COUNT_NO_CASES, CB2_ReturnToFieldWithOpenMenu);
 }
 

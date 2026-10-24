@@ -1,4 +1,5 @@
 #include "global.h"
+#include "field_tools.h"
 #include "gflib.h"
 #include "clock.h"
 #include "rtc.h"
@@ -2321,6 +2322,14 @@ bool8 ScrCmd_checkfieldmoveusable(struct ScriptContext* ctx)
 
     if (!FieldMove_IsUnlocked(fieldMove))
         return FALSE;
+
+    if (FieldTool_GetItem(fieldMove) != ITEM_NONE)
+    {
+        FieldTool_Prepare(fieldMove);
+        gSpecialVar_0x8004 = SPECIES_NONE;
+        gSpecialVar_Result = TRUE;
+        return FALSE;
+    }
 
     partyIndex = Party_FirstMonWithMove(moveId);
     if (partyIndex != PARTY_SIZE)

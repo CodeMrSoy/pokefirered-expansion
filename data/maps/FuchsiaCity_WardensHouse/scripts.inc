@@ -13,6 +13,8 @@ FuchsiaCity_WardensHouse_EventScript_Warden::
 	end
 
 FuchsiaCity_WardensHouse_EventScript_GiveGoldTeeth::
+	checkitemspace ITEM_POWER_GLOVES
+	goto_if_eq VAR_RESULT, FALSE, FuchsiaCity_WardensHouse_EventScript_NoRoomForGloves
 	textcolor NPC_TEXT_COLOR_NEUTRAL
 	playfanfare MUS_OBTAIN_TMHM
 	message FuchsiaCity_WardensHouse_Text_GaveGoldTeethToWarden
@@ -26,6 +28,11 @@ FuchsiaCity_WardensHouse_EventScript_GiveGoldTeeth::
 	giveitem_msg FuchsiaCity_WardensHouse_Text_ReceivedHM04FromWarden, ITEM_HM04
 	setflag FLAG_GOT_HM04
 	removeitem ITEM_GOLD_TEETH
+	release
+	end
+
+FuchsiaCity_WardensHouse_EventScript_NoRoomForGloves::
+	msgbox FuchsiaCity_WardensHouse_Text_NoRoomForGloves
 	release
 	end
 

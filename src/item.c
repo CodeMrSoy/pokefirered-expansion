@@ -1,4 +1,5 @@
 #include "global.h"
+#include "field_tools.h"
 #include "gflib.h"
 #include "berry.h"
 #include "event_data.h"
@@ -254,6 +255,13 @@ bool8 AddBagItem(u16 itemId, u16 count)
 
     if (count == 0)
         return FALSE;
+
+    if (FieldTool_GetMove(itemId) != FIELD_MOVE_COUNT)
+    {
+        if (CheckBagHasItem(itemId, 1))
+            return TRUE;
+        count = 1;
+    }
 
     if (pocket >= POCKETS_COUNT)
         return FALSE;
@@ -827,7 +835,8 @@ bool8 IsItemTM(u16 itemId)
 bool8 IsItemHM(u16 itemId)
 {
     itemId = SanitizeItemId(itemId);
-    return ITEM_HM01 <= itemId && itemId <= ITEM_HM08;
+    return ITEM_HM01 <= itemId && itemId <= ITEM_HM08
+        && FieldTool_GetMove(itemId) == FIELD_MOVE_COUNT;
 }
 
 bool8 IsItemTMHM(u16 itemId)

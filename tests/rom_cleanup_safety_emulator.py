@@ -36,18 +36,22 @@ enums = (m.root/'include/pokemon.h').read_text().split('enum {',1)[1].split('};'
 fields = [line.strip().rstrip(',') for line in enums.splitlines() if line.strip().startswith('MON_DATA_')]
 setdata(fields.index('MON_DATA_IS_EGG'), 1)
 before=m.read(party,600); release(); assert m.read(party,600)==before, 'Released an Egg'
-reset(); native('SetMonMoveSlot', party, 57, 0) # Surf
-before=m.read(party,600); release(); assert m.read(party,600)==before, 'Released the only Surf user'
-# An alternative user in another box makes release safe.
-m.write(box + 29*80, m.read(party,80))
+# Field tools make releasing a sole Surf user safe; Pokémon moves no longer
+# gate traversal. The other Pokémon and boxed data still remain untouched.
+reset(); native('SetMonMoveSlot', party, 57, 0)
 release(); assert m.read(m.symbols['gPlayerPartyCount'],1)==b'\x02'
 assert native('GetMonData3',party,18,0)==4
+reset(); native('SetMonMoveSlot', party, 57, 0)
+m.write(box + 29*80, m.read(party,80))
+release(); assert m.read(m.symbols['gPlayerPartyCount'],1)==b'\x02'
 assert native('GetBoxMonData3',box+29*80,20,0)==57
-# Eggs elsewhere cannot count as a replacement field-move user.
+# A boxed Egg stays intact when an unrelated party Pokémon is released.
 reset(); native('SetMonMoveSlot',party,57,0)
 setdata(fields.index('MON_DATA_IS_EGG'),1); m.write(box,m.read(party,80))
+egg=m.read(box,80)
 setdata(fields.index('MON_DATA_IS_EGG'),0)
-before=m.read(party,600); release(); assert m.read(party,600)==before
+release(); assert m.read(m.symbols['gPlayerPartyCount'],1)==b'\x02'
+assert m.read(box,80)==egg
 # Releasing a held-item Pokemon returns exactly one item, once.
 reset(); setdata(19,520) # Oran Berry
 before=native('CountTotalItemQuantityInBag',520)
@@ -57,4 +61,4 @@ assert native('GetMonData3',party,18,0)==4
 m.write(m.symbols['sGlassStorage']+1,b'\x00')
 before=m.read(party,600); release(); assert m.read(party,600)==before
 assert native('CountTotalItemQuantityInBag',520)==1
-print('Egg, sole Surf user, boxed replacement, Egg replacement, held item conservation, empty slot passed')
+print('Egg protection, sole Surf user release, boxed Pokémon/Egg conservation, held items and empty slots passed')

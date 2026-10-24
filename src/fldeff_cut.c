@@ -1,4 +1,5 @@
 #include "global.h"
+#include "field_tools.h"
 #include "gflib.h"
 #include "event_object_lock.h"
 #include "event_object_movement.h"
@@ -169,6 +170,7 @@ static void FieldCallback_CutGrass(void)
 
 u32 FldEff_UseCutOnGrass(void)
 {
+    FieldTool_Prepare(FIELD_MOVE_CUT);
     u8 taskId = CreateFieldEffectShowMon();
     FLDEFF_SET_FUNC_TO_DATA(FieldMoveCallback_CutGrass);
     IncrementGameStat(GAME_STAT_USED_CUT);
@@ -183,6 +185,7 @@ static void FieldCallback_CutTree(void)
 
 u32 FldEff_UseCutOnTree(void)
 {
+    FieldTool_Prepare(FIELD_MOVE_CUT);
     u8 taskId = CreateFieldEffectShowMon();
     FLDEFF_SET_FUNC_TO_DATA(FieldMoveCallback_CutTree);
     IncrementGameStat(GAME_STAT_USED_CUT);

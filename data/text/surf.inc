@@ -1,10 +1,10 @@
 Text_WantToSurf::
-	.string "The water is dyed a deep blue…\n"
-	.string "Would you like to SURF?$"
+    .string "The water stretches out ahead.\n"
+    .string "Use the Wailmer Wailer?$"
 
 Text_UsedSurf::
-	.string "{STR_VAR_1} used SURF!$"
+    .string "{PLAYER} used the Wailmer Wailer!$"
 
 Text_CurrentTooFast::
-	.string "The current is much too fast!\n"
-	.string "SURF can't be used here…$"
+    .string "The current is much too fast!\n"
+    .string "A sea POKéMON cannot cross here.$"

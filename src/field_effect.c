@@ -1,4 +1,6 @@
 #include "global.h"
+#include "field_tools.h"
+#include "item_icon.h"
 #include "avatar.h"
 #include "gflib.h"
 #include "data.h"
@@ -1574,6 +1576,7 @@ static bool8 (*const sUseWaterfallFieldEffectFuncs[])(struct Task *task, struct 
 
 u32 FldEff_UseWaterfall(void)
 {
+    FieldTool_Prepare(FIELD_MOVE_WATERFALL);
     u8 taskId = CreateTask(Task_UseWaterfall, 0xFF);
     gTasks[taskId].data[1] = gFieldEffectArguments[0];
     Task_UseWaterfall(taskId);
@@ -2559,6 +2562,11 @@ u32 FldEff_FieldMoveShowMon(void)
     else
         taskId = CreateTask(Task_ShowMon_Indoors, 0xFF);
     gTasks[taskId].data[15] = InitFieldMoveMonSprite(gFieldEffectArguments[0], gFieldEffectArguments[1], gFieldEffectArguments[2]);
+    if (gTasks[taskId].data[15] == MAX_SPRITES)
+    {
+        DestroyTask(taskId);
+        FieldEffectActiveListRemove(FLDEFF_FIELD_MOVE_SHOW_MON);
+    }
     return 0;
 }
 
@@ -2568,7 +2576,12 @@ u32 FldEff_FieldMoveShowMonInit(void)
 {
     u32 noDucking = gFieldEffectArguments[0] & SHOW_MON_CRY_NO_DUCKING;
     u8 partyIdx = gFieldEffectArguments[0];
-    if (gFieldEffectArguments[0] & NOT_IN_PARTY_MASK)
+    if (gFieldEffectArguments[0] & FIELD_TOOL_ARGUMENT)
+    {
+        gFieldEffectArguments[1] = FALSE;
+        gFieldEffectArguments[2] = 0;
+    }
+    else if (gFieldEffectArguments[0] & NOT_IN_PARTY_MASK)
     {
         gFieldEffectArguments[0] &= ~NOT_IN_PARTY_MASK;
         gFieldEffectArguments[1] = FALSE;
@@ -2704,7 +2717,15 @@ static void ShowMonEffect_Outdoors_7(struct Task *task)
     ChangeBgX(0, 0, 0);
     ChangeBgY(0, 0, 0);
     Menu_LoadStdPal();
-    FreeResourcesAndDestroySprite(&gSprites[task->data[15]], task->data[15]);
+    if (gSprites[task->data[15]].data[5])
+    {
+        FreeSpriteOamMatrix(&gSprites[task->data[15]]);
+        FreeSpriteTilesByTag(FIELD_TOOL_ICON_TAG);
+        FreeSpritePaletteByTag(FIELD_TOOL_ICON_TAG);
+        DestroySprite(&gSprites[task->data[15]]);
+    }
+    else
+        FreeResourcesAndDestroySprite(&gSprites[task->data[15]], task->data[15]);
     FieldEffectActiveListRemove(FLDEFF_FIELD_MOVE_SHOW_MON);
     DestroyTask(FindTaskIdByFunc(Task_ShowMon_Outdoors));
 }
@@ -2823,7 +2844,15 @@ static void ShowMonEffect_Indoors_7(struct Task *task)
     ChangeBgX(0, 0, 0);
     ChangeBgY(0, 0, 0);
     Menu_LoadStdPal();
-    FreeResourcesAndDestroySprite(&gSprites[task->data[15]], task->data[15]);
+    if (gSprites[task->data[15]].data[5])
+    {
+        FreeSpriteOamMatrix(&gSprites[task->data[15]]);
+        FreeSpriteTilesByTag(FIELD_TOOL_ICON_TAG);
+        FreeSpritePaletteByTag(FIELD_TOOL_ICON_TAG);
+        DestroySprite(&gSprites[task->data[15]]);
+    }
+    else
+        FreeResourcesAndDestroySprite(&gSprites[task->data[15]], task->data[15]);
     FieldEffectActiveListRemove(FLDEFF_FIELD_MOVE_SHOW_MON);
     DestroyTask(FindTaskIdByFunc(Task_ShowMon_Indoors));
 }
@@ -2905,7 +2934,37 @@ static u8 InitFieldMoveMonSprite(u32 species, bool32 isShiny, u32 personality)
     struct Sprite *sprite;
     playCry = (species & SHOW_MON_CRY_NO_DUCKING) >> 16;
     species &= ~SHOW_MON_CRY_NO_DUCKING;
-    monSprite = CreateMonSprite_FieldMove(species, isShiny, personality, 320, 80, 0);
+    if (species & FIELD_TOOL_ARGUMENT)
+    {
+        u8 matrixNum;
+        monSprite = AddItemIconSprite(FIELD_TOOL_ICON_TAG, FIELD_TOOL_ICON_TAG, species & ~FIELD_TOOL_ARGUMENT);
+        if (monSprite == MAX_SPRITES)
+        {
+            FreeSpriteTilesByTag(FIELD_TOOL_ICON_TAG);
+            FreeSpritePaletteByTag(FIELD_TOOL_ICON_TAG);
+            return MAX_SPRITES;
+        }
+        sprite = &gSprites[monSprite];
+        sprite->x = 320;
+        sprite->y = 80;
+        sprite->data[5] = TRUE;
+        matrixNum = AllocOamMatrix();
+        if (matrixNum != 0xFF)
+        {
+            // Double the item only for this cut-in. Double-size OAM leaves
+            // room for the enlarged 32px texture without cropping its edges.
+            sprite->oam.affineMode = ST_OAM_AFFINE_DOUBLE;
+            sprite->oam.matrixNum = matrixNum;
+            sprite->affineAnimPaused = TRUE;
+            CalcCenterToCornerVec(sprite, sprite->oam.shape, sprite->oam.size, sprite->oam.affineMode);
+            SetOamMatrix(matrixNum, 0x80, 0, 0, 0x80);
+            // Item textures occupy the upper-left 24px of a 32px sprite.
+            sprite->x2 = 8;
+            sprite->y2 = 8;
+        }
+    }
+    else
+        monSprite = CreateMonSprite_FieldMove(species, isShiny, personality, 320, 80, 0);
     sprite = &gSprites[monSprite];
     sprite->callback = SpriteCallbackDummy;
     sprite->oam.priority = 0;
@@ -2921,7 +2980,11 @@ static void SpriteCB_FieldMoveMonSlideOnscreen(struct Sprite *sprite)
         sprite->x = 0x78;
         sprite->data[1] = 30;
         sprite->callback = SpriteCB_FieldMoveMonWaitAfterCry;
-        if (sprite->data[6])
+        if (sprite->data[5])
+        {
+            PlaySE(SE_SELECT);
+        }
+        else if (sprite->data[6])
         {
             PlayCry_NormalNoDucking(sprite->data[0], 0, CRY_VOLUME_RS, CRY_PRIORITY_NORMAL);
         }
@@ -2969,6 +3032,7 @@ static void (*const sUseSurfEffectFuncs[])(struct Task *) = {
 
 u32 FldEff_UseSurf(void)
 {
+    FieldTool_Prepare(FIELD_MOVE_SURF);
     u8 taskId = CreateTask(Task_FldEffUseSurf, 0xff);
     gTasks[taskId].data[15] = gFieldEffectArguments[0];
     Overworld_ClearSavedMusic();
@@ -3207,6 +3271,7 @@ static void (*const sFlyOutFieldEffectFuncs[])(struct Task *) =
 
 u32 FldEff_FlyOut(void)
 {
+    FieldTool_Prepare(FIELD_MOVE_FLY);
     u8 taskId = CreateTask(Task_FlyOut, 0xFE);
     gTasks[taskId].tMonPartyId = gFieldEffectArguments[0];
     return 0;
