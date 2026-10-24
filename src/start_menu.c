@@ -245,14 +245,7 @@ static void AppendToStartMenuItems(u8 newEntry)
 static void SetUpStartMenu_Debug(void)
 {
     AppendToStartMenuItems(STARTMENU_DEBUG);
-    // Oak's tablet gift unlocks the hub; owning Pokémon or the Pokédex is not enough.
-    if (CheckBagHasItem(ITEM_POKEGLASS, 1))
-        AppendToStartMenuItems(STARTMENU_POKEDEX);
-    AppendToStartMenuItems(STARTMENU_BAG);
-    AppendToStartMenuItems(STARTMENU_PLAYER);
-    AppendToStartMenuItems(STARTMENU_SAVE);
-    AppendToStartMenuItems(STARTMENU_OPTION);
-    AppendToStartMenuItems(STARTMENU_EXIT);
+    SetUpStartMenu_NormalField();
 }
 
 static void SetUpStartMenu_NormalField(void)
