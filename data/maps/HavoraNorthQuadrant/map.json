@@ -77,8 +77,8 @@
     {
       "type": "object",
       "graphics_id": "OBJ_EVENT_GFX_SAILOR",
-      "x": 64,
-      "y": 3,
+      "x": 55,
+      "y": 16,
       "elevation": 5,
       "movement_type": "MOVEMENT_TYPE_FACE_DOWN",
       "movement_range_x": 0,
@@ -119,8 +119,8 @@
     {
       "type": "object",
       "graphics_id": "OBJ_EVENT_GFX_GENTLEMAN",
-      "x": 32,
-      "y": 20,
+      "x": 33,
+      "y": 18,
       "elevation": 5,
       "movement_type": "MOVEMENT_TYPE_FACE_DOWN",
       "movement_range_x": 0,
@@ -133,8 +133,8 @@
     {
       "type": "object",
       "graphics_id": "OBJ_EVENT_GFX_WOMAN_1",
-      "x": 31,
-      "y": 13,
+      "x": 29,
+      "y": 12,
       "elevation": 5,
       "movement_type": "MOVEMENT_TYPE_FACE_DOWN",
       "movement_range_x": 0,
@@ -161,8 +161,8 @@
     {
       "type": "object",
       "graphics_id": "OBJ_EVENT_GFX_SAILOR",
-      "x": 61,
-      "y": 5,
+      "x": 62,
+      "y": 17,
       "elevation": 5,
       "movement_type": "MOVEMENT_TYPE_FACE_DOWN",
       "movement_range_x": 0,
@@ -187,8 +187,8 @@
       "flag": "0"
     },
     {
-      "type": "object",
       "local_id": "LOCALID_HAVORA_PUZZLE_BOULDER_1",
+      "type": "object",
       "graphics_id": "OBJ_EVENT_GFX_PUSHABLE_BOULDER",
       "x": 15,
       "y": 24,
@@ -202,8 +202,8 @@
       "flag": "FLAG_TEMP_11"
     },
     {
-      "type": "object",
       "local_id": "LOCALID_HAVORA_PUZZLE_BOULDER_2",
+      "type": "object",
       "graphics_id": "OBJ_EVENT_GFX_PUSHABLE_BOULDER",
       "x": 22,
       "y": 18,
@@ -217,8 +217,8 @@
       "flag": "FLAG_TEMP_12"
     },
     {
-      "type": "object",
       "local_id": "LOCALID_HAVORA_PUZZLE_BOULDER_3",
+      "type": "object",
       "graphics_id": "OBJ_EVENT_GFX_PUSHABLE_BOULDER",
       "x": 19,
       "y": 16,
@@ -232,8 +232,8 @@
       "flag": "FLAG_TEMP_13"
     },
     {
-      "type": "object",
       "local_id": "LOCALID_HAVORA_PUZZLE_BOULDER_4",
+      "type": "object",
       "graphics_id": "OBJ_EVENT_GFX_PUSHABLE_BOULDER",
       "x": 24,
       "y": 17,
@@ -247,8 +247,8 @@
       "flag": "FLAG_TEMP_14"
     },
     {
-      "type": "object",
       "local_id": "LOCALID_HAVORA_PUZZLE_BOULDER_5",
+      "type": "object",
       "graphics_id": "OBJ_EVENT_GFX_PUSHABLE_BOULDER",
       "x": 16,
       "y": 23,
@@ -262,8 +262,8 @@
       "flag": "FLAG_TEMP_15"
     },
     {
-      "type": "object",
       "local_id": "LOCALID_HAVORA_PUZZLE_BOULDER_6",
+      "type": "object",
       "graphics_id": "OBJ_EVENT_GFX_PUSHABLE_BOULDER",
       "x": 19,
       "y": 23,
@@ -277,8 +277,8 @@
       "flag": "FLAG_TEMP_16"
     },
     {
-      "type": "object",
       "local_id": "LOCALID_HAVORA_PUZZLE_TREE_1",
+      "type": "object",
       "graphics_id": "OBJ_EVENT_GFX_CUT_TREE",
       "x": 14,
       "y": 25,
@@ -292,8 +292,8 @@
       "flag": "FLAG_TEMP_17"
     },
     {
-      "type": "object",
       "local_id": "LOCALID_HAVORA_PUZZLE_TREE_2",
+      "type": "object",
       "graphics_id": "OBJ_EVENT_GFX_CUT_TREE",
       "x": 22,
       "y": 17,
@@ -307,8 +307,8 @@
       "flag": "FLAG_TEMP_18"
     },
     {
-      "type": "object",
       "local_id": "LOCALID_HAVORA_PUZZLE_TREE_3",
+      "type": "object",
       "graphics_id": "OBJ_EVENT_GFX_CUT_TREE",
       "x": 18,
       "y": 16,
@@ -324,15 +324,15 @@
   ],
   "warp_events": [
     {
-      "x": 77,
-      "y": 8,
+      "x": 52,
+      "y": 10,
       "elevation": 5,
       "dest_map": "MAP_QUANTUM_PORT_CITY_POKEMON_CENTER1_F",
       "dest_warp_id": "1"
     },
     {
-      "x": 84,
-      "y": 8,
+      "x": 60,
+      "y": 22,
       "elevation": 5,
       "dest_map": "MAP_QUANTUM_HAVORA_MART",
       "dest_warp_id": "0"
@@ -352,8 +352,8 @@
       "dest_warp_id": "0"
     },
     {
-      "x": 52,
-      "y": 18,
+      "x": 70,
+      "y": 20,
       "elevation": 4,
       "dest_map": "MAP_QUANTUM_HAVORA_NORTH_LODGE",
       "dest_warp_id": "0"
@@ -419,7 +419,7 @@
     },
     {
       "type": "sign",
-      "x": 21,
+      "x": 18,
       "y": 26,
       "elevation": 6,
       "player_facing_dir": "BG_EVENT_PLAYER_FACING_ANY",
