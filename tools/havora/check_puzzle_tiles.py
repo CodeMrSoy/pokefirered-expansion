@@ -63,10 +63,15 @@ def render(m, graphics):
 
 new_ids = set(kit['assets'].values())
 retired = set(kit['retired_unplaced'])
+# Later features may occupy entries that were blank in the original migration.
+extra_ids = set()
+puzzle = R / 'tools/havora/counterweight-puzzle.json'
+if puzzle.exists():
+    extra_ids.update(json.loads(puzzle.read_text())['gate_metatiles'].values())
 assert sorted(new_ids) == list(range(0x22c, 0x231))
 for mid in range(1024):
     assert all(w & 1023 < 1024 and w >> 12 < 13 for w in new_meta[mid])
-    if mid not in new_ids | retired:
+    if mid not in new_ids | retired | extra_ids:
         assert new_attrs[mid] == old_attrs[mid], ('changed old behavior', mid)
         assert np.array_equal(render(old_meta[mid], old_tiles), render(new_meta[mid], new_tiles)), ('changed retained pixels', mid)
 fixed = set(kit['animation_graphic_ids_preserved'])
@@ -86,9 +91,10 @@ for key, archived in kit['archive']['metatiles'].items():
     assert archived['words'] == old_meta[int(key)]
     assert archived['attribute'] == old_attrs[int(key)]
 changed = subprocess.check_output(['git', 'diff', '--name-only', base, '--', 'data/maps', 'data/layouts', 'src', 'include'], cwd=R).decode().strip()
-assert not changed, ('Migration must not paint maps or change events/engine', changed)
+if '--migration-snapshot' in sys.argv:
+    assert not changed, ('Original migration changed maps/events/engine', changed)
 assert not subprocess.check_output(['git', 'diff', '--name-only', base, '--', '**/anim/**', '**/palettes/**'], cwd=R).decode().strip()
-print('PASS: five contiguous grass-backed entries, 4-bit graphics, palette/animation budgets, retained-metatile pixels, archived fragments, and unchanged maps/events/engine.')
+print('PASS: five contiguous grass-backed entries, 4-bit graphics, palette/animation budgets, retained-metatile pixels, archived fragments, and original asset preservation.')
 
 if '--rom' in sys.argv:
     # Check the linked ROM, not just the converter's intermediate files.

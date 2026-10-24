@@ -1,4 +1,5 @@
 #include "global.h"
+#include "havora_puzzle.h"
 #include "avatar.h"
 #include "gflib.h"
 #include "bike.h"
@@ -698,7 +699,10 @@ static bool8 TryPushBoulder(s16 x, s16 y, u8 direction)
     x = gObjectEvents[objectEventId].currentCoords.x;
     y = gObjectEvents[objectEventId].currentCoords.y;
     MoveCoords(direction_, &x, &y);
-    if (MapGridGetMetatileBehaviorAt(x, y) == MB_FALL_WARP || (GetCollisionAtCoords(&gObjectEvents[objectEventId], x, y, direction_) == COLLISION_NONE && !MetatileBehavior_IsNonAnimDoor(MapGridGetMetatileBehaviorAt(x, y))))
+    if (!HavoraPuzzle_CanPushBoulder(&gObjectEvents[objectEventId], x, y))
+        return FALSE;
+
+    if (HavoraPuzzle_CanEnterPit(&gObjectEvents[objectEventId], x, y) || MapGridGetMetatileBehaviorAt(x, y) == MB_FALL_WARP || (GetCollisionAtCoords(&gObjectEvents[objectEventId], x, y, direction_) == COLLISION_NONE && !MetatileBehavior_IsNonAnimDoor(MapGridGetMetatileBehaviorAt(x, y))))
     {
         StartStrengthAnim(objectEventId, direction_);
         return TRUE;

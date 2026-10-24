@@ -9,7 +9,9 @@ def scene(name,layout):
     path=B/(name+'-native.png');render(layout,path)
     im=Image.open(path).convert('RGBA')
     objects=json.loads((R/f'data/maps/{name}/map.json').read_text())['object_events']
-    specs={'MAN':('people/man.png','npc_white',16,32),
+    specs={'PUSHABLE_BOULDER':('misc/strength_boulder.png','npc_white',16,16),
+           'CUT_TREE':('misc/cut_tree.png','npc_green',16,16),
+           'MAN':('people/man.png','npc_white',16,32),
            'WOMAN_1':('people/woman_1.png','npc_green',16,32),
            'SAILOR':('people/sailor.png','npc_pink',16,32),
            'FISHER':('people/fisher.png','npc_white',16,32),

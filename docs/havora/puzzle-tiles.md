@@ -81,3 +81,10 @@ Validated game/asset source: `8127ca706af491e4dbcc943e45142d70a3fe0b33`.
 ROM SHA-256: `5b23030b9ce515151c821539f1d9ea6aa1f6681fcd212230603065e8e791cb84`.
 The build and linked-asset checks do not constitute an emulator test or a
 Porymap walkthrough; neither is claimed here.
+
+## Placed maze controls
+
+The subsequent Counterweight Grove implementation now supplies interactive
+boulders, Cut trees, pits, plates, gates and a reset for the user-painted maze.
+See [the wiring and runtime verification](counterweight-puzzle.md). The build
+and test statements above describe the earlier art-only migration.

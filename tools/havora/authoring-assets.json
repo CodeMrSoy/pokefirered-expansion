@@ -213,6 +213,8 @@
     "cut_tree_grass": 557,
     "hole_open_grass": 558,
     "switch_released_grass": 559,
-    "switch_pressed_grass": 560
+    "switch_pressed_grass": 560,
+    "gate_closed_grass": 561,
+    "gate_open_grass": 562
   }
 }

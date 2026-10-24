@@ -473,4 +473,7 @@ gSpecials::
 	def_special StartPokeGlassIntro
 	def_special OpenPokeGlassWardrobe
 	def_special OpenPokeGlassStorage
+	def_special HavoraPuzzle_OnLoad
+	def_special HavoraPuzzle_OnResume
+	def_special HavoraPuzzle_ResetState
 gSpecialsEnd::
