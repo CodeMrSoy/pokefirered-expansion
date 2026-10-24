@@ -110,7 +110,7 @@ static void PutTile(u16 position, u16 tile, bool8 blocked, bool8 redraw)
         CurrentMapDrawMetatileAt(x, y);
 }
 
-// Temporary OBJ graphics avoid consuming any of Havora's full BG tile bank.
+// Temporary OBJ graphics animate the barrier above its static grass/cap tile.
 // All three barriers share one 640-byte sheet and one palette during a move.
 #define GATE_ANIM_TAG 0xFA50
 #define GATE_FRAME_TICKS 6
@@ -241,9 +241,9 @@ static bool8 StartGateAnimation(u8 open)
         gTasks[taskId].data[4 + i] = spriteId;
         gSprites[spriteId].coordOffsetEnabled = TRUE;
         StartSpriteAnim(&gSprites[spriteId], open & (1 << i) ? 0 : 1);
-        // Opening remains blocked until the barrier is fully below ground;
+        // Opening remains blocked until the barrier is flush with the grass;
         // closing blocks immediately, so actors cannot enter a rising gate.
-        PutTile(sGates[i], HAVORA_PUZZLE_GATE_OPEN, TRUE, TRUE);
+        PutTile(sGates[i], HAVORA_PUZZLE_GROUND, TRUE, TRUE);
     }
     return TRUE;
 fallback:

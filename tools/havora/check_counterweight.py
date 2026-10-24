@@ -17,15 +17,15 @@ for key,first in [('boulders',11),('trees',17)]:
  for i,coord in enumerate(d[key]):
   obj=m['object_events'][first+i-1];assert [obj['x'],obj['y']]==coord and obj['elevation']==6
 for group in ['primary','secondary']:
- for leaf in ['tiles.png','metatile_attributes.bin']:
+ for leaf in ['metatile_attributes.bin']:
   path=f'data/tilesets/{group}/havora_city/{leaf}';assert (R/path).read_bytes()==old(path),path
  path=f'data/tilesets/{group}/havora_city/metatiles.bin';new=(R/path).read_bytes();prev=old(path)
  for i in range(len(new)//16):
-  if group!='primary' or i!=a['closed_metatile']:assert new[i*16:i*16+16]==prev[i*16:i*16+16],(group,i)
+  if group!='primary' or i not in [a['closed_metatile'],a['open_metatile']]:assert new[i*16:i*16+16]==prev[i*16:i*16+16],(group,i)
  for p in (R/f'data/tilesets/{group}/havora_city/palettes').glob('*.pal'):assert p.read_text().splitlines()==old(str(p.relative_to(R))).decode().splitlines()
 meta=struct.unpack('<5120H',(R/'data/tilesets/primary/havora_city/metatiles.bin').read_bytes())
 assert meta[561*8:562*8]==meta[:4]+meta[90*8+4:91*8]
-assert meta[562*8:563*8]==meta[:8]
+assert meta[562*8:563*8]==meta[:4]+(0,0,0x13f8,0x13f8)
 from PIL import Image
 sheet=Image.open(R/a['sheet']);assert sheet.mode=='P' and sheet.size==(16,80)
 tiles=[]
@@ -40,8 +40,26 @@ for k,w in enumerate(meta[90*8+4:91*8]):
  overlay.paste(im,(k%2*8,k//2*8))
 for frame,shift in enumerate(a['frame_shifts']):
  expected=Image.new('P',(16,16))
- if shift<16:expected.paste(overlay.crop((0,0,16,16-shift)),(0,shift))
+ if shift is None:
+  expected.paste(tiles[1016],(0,8));expected.paste(tiles[1016],(8,8))
+ else:expected.paste(overlay.crop((0,0,16,16-shift)),(0,shift))
  assert expected.tobytes()==sheet.crop((0,frame*16,16,(frame+1)*16)).tobytes(),frame
+# Reclaim only a formerly blank and unused tail tile, preserving every other
+# BG graphic. The legacy harbor callback retains its original 128-tile DMA.
+import io
+for group,start in [('primary',0),('secondary',640)]:
+ p=f'data/tilesets/{group}/havora_city/tiles.png';before=Image.open(io.BytesIO(old(p)))
+ for y in range(0,before.height,8):
+  for x in range(0,128,8):
+   tid=start+y//8*16+x//8
+   if tid==1016:assert not any(before.crop((x,y,x+8,y+8)).tobytes())
+   else:assert before.crop((x,y,x+8,y+8)).tobytes()==tiles[tid].tobytes(),tid
+for group in ['primary','secondary']:
+ p=f'data/tilesets/{group}/havora_city/metatiles.bin';v=struct.unpack('<'+'H'*(len(old(p))//2),old(p));assert all(w&1023!=1016 for w in v)
+for p in (R/'data/tilesets/secondary/havora_harbor/anim/water').glob('*.4bpp'):
+ assert not any(p.read_bytes()[-8*32:]),p
+cap=tiles[1016];assert any(cap.tobytes()) and not any(cap.crop((0,0,8,4)).tobytes())
+assert sheet.crop((0,64,16,80)).tobytes()==expected.tobytes()
 # Independently replay the recorded solution with the exact painted floor,
 # push-only movement, Cut gates, holes and weight-dependent collision.
 floor=set(map(tuple,d['floor']));balls=list(map(tuple,d['boulders']));trees=list(map(tuple,d['trees']));holes=list(map(tuple,d['holes']));plates=list(map(tuple,d['plates']));gates=list(map(tuple,d['gates']));player=tuple(d['start']);cut=filled=0;dirs=[(0,-1),(1,0),(0,1),(-1,0)]
@@ -70,4 +88,4 @@ for move in d['solution']:
   player=src
  assert (cut,filled)==(move['cut_mask'],move['filled_mask'])
 assert tuple(d['goal']) in reach() and filled==7 and all(p in balls for p in plates[1:])
-print('PASS: 37-action solution; latest user maps/events/connections/cliffs preserved byte-for-byte; native gate art and all five animation frames exact; no BG graphics or palettes changed.')
+print('PASS: 37-action solution; latest user maps/events/connections/cliffs preserved byte-for-byte; native gate art and all five animation frames exact; only one formerly blank/unreferenced BG slot used for resting log tops; all other BG art and palettes intact.')

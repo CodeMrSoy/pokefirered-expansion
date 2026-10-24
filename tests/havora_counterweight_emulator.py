@@ -84,6 +84,8 @@ def observe_animation():
 def advance_animation(n=45):
  for _ in range(n):observe_animation();m.run(1)
  assert not gate_task() and not gate_resources(),'animation leaked a task or sprite resource'
+ cap=(R/'data/tilesets/secondary/havora_city/tiles.4bpp').read_bytes()[(1016-640)*32:(1017-640)*32]
+ assert m.read(0x06000000+1016*32,32)==cap,'ocean DMA overwrote resting log tops'
 
 def active_objects():
  out=[]
@@ -179,7 +181,9 @@ for index,action in enumerate(plan['solution']):
  assert var(0x40d6)&7==action['cut_mask'],(index,'cut mask')
  assert var(0x40d6)>>3&7==action['filled_mask'],(index,'pit mask')
  opened=check_world()
- if index==2:m.snap('grove-gate-a-open')
+ if index==2:
+  m.run(160);check_world();advance_animation(1);m.snap('grove-gate-a-open')
+  print('PASS resting log tops persist through ten ocean DMA updates',flush=True)
  if opened[1] and 'B' not in captures:m.snap('grove-gate-b-open');captures.append('B')
  print('action',index+1,action['action'],'PASS',flush=True)
  if index==12:
@@ -206,6 +210,6 @@ for direction in ['open','close']:
   image,(x,y)=animation_captures[direction][step]
   canvas=Image.new('RGB',(760,520),'#172d34');canvas.paste(image.crop((x-40,y-40,x+40,y+40)).resize((480,480),Image.Resampling.NEAREST),(0,40));canvas.paste(image.resize((240,160),Image.Resampling.NEAREST),(500,60));draw=ImageDraw.Draw(canvas)
   draw.text((12,10),'HAVORA — actual ROM gate '+('opening' if direction=='open' else 'closing'),font=font,fill='#f3dfbc')
-  draw.text((500,250),'Your updated gate art',font=font,fill='#c7d9cd');draw.text((500,280),'Four-pixel retraction',font=font,fill='#c7d9cd');draw.text((500,310),'Reverse when closing',font=font,fill='#c7d9cd');frames.append(canvas)
+  draw.text((500,250),'Your updated gate art',font=font,fill='#c7d9cd');draw.text((500,280),'Ends flush with grass',font=font,fill='#c7d9cd');draw.text((500,310),'Reverse when closing',font=font,fill='#c7d9cd');frames.append(canvas)
 frames[0].save(R/'docs/havora/gate-animation.gif',save_all=True,append_images=frames[1:],duration=[500,120,120,120,500,500,120,120,120,500],loop=0)
 print('PASS all three gates animate; all five frames observed opening and closing; blocked moving barriers, matching night palette, and cleaned-up tasks/OBJ resources',flush=True)

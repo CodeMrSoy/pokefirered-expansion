@@ -357,7 +357,12 @@ void InitTilesetAnim_HavoraHarbor(void)
 static void TilesetAnim_HavoraCity(u16 timer)
 {
     u16 i;
-    TilesetAnim_HavoraHarbor(timer);
+    // The final eight source tiles are blank and unreferenced by water art.
+    // Keep them static in the shared city pair for the recessed gate caps.
+    if (timer % 16 == 0)
+        AppendTilesetAnimToBuffer(sHavoraWaterFrames[(timer / 16) % ARRAY_COUNT(sHavoraWaterFrames)],
+            (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(HAVORA_WATER_ANIM_START)),
+            120 * TILE_SIZE_4BPP);
     if (timer % 12 == 0)
     {
         const u16 *frame = sHavoraFountainFrames[(timer / 12) % ARRAY_COUNT(sHavoraFountainFrames)];

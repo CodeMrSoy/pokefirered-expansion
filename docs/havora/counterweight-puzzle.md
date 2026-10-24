@@ -26,16 +26,21 @@ Only boulders provide weight. Plates visually press and release immediately
 after a push, and unweighted gates close again. A push that would close a
 gate on the player, another boulder, a follower or an NPC is rejected.
 
-`0x231` is the closed timber barrier; `0x232` is the open grass entry.
+`0x231` is the closed timber barrier; `0x232` is the walkable recessed-log entry. Two flat end-grain caps remain
+visible in the grass instead of the gate disappearing completely.
 The closed design now follows the user's replacement tile `0x05A` (the two
 posts without a crossbar). The user's painted gate IDs stay unchanged; load
 restores the matching controlled alias at the same coordinates.
 
-The posts retract downwards in four-pixel increments and rise in reverse:
+The posts retract downwards and stop with their tops flush with the grass,
+then rise in reverse:
 five 16×16 frames at six game ticks each, approximately half a second total.
 The animation shares one temporary 640-byte OBJ sheet and one OBJ palette
-across all changing gates. It takes **zero new BG graphics or metatile slots**;
-all shared graphics, palette files, cliffs and user map/event files are intact.
+across all changing gates. The resting caps use one formerly blank/unreferenced BG graphic (1016); no
+metatile slots are added. City water DMA now stops before the eight blank tail
+tiles so it cannot erase the caps. All water-bearing graphics, other shared
+graphics, palette files, cliffs and user map/event files are intact. The
+legacy harbor callback keeps its original 128-tile transfer.
 It copies the displayed gate palette so weather/night/fade tint matches the
 stationary art. Opening stays blocked until complete; closing blocks at once.
 A second boulder push waits for the current transition to finish. Resource
@@ -78,7 +83,7 @@ moves every puzzle boulder.
 
 - Full ROM compilation succeeded using ARM GCC and `KEEP_TEMPS=1`.
 - `python tools/havora/check_counterweight.py` checks preservation of the latest user maps/events byte-for-byte,
-  unchanged BG graphics/palettes, the five exact native animation frames, and
+  all other BG graphics/palettes, the five exact native animation frames, and
   independently replays the 37-action solution (34 pushes, three cuts).
 - `python tools/havora/check_puzzle_tiles.py --rom` checks preservation of the
   original tile art and the linked metatiles, graphics and palettes. Use
@@ -91,7 +96,8 @@ moves every puzzle boulder.
   reset cancellation, and confirmed full reset. The animation checks also
   cover all three gate transitions, every opening/closing frame, blocked
   moving gates, matching night/fade palette, resource cleanup, palette
-  exhaustion fallback, and resume during an unfinished animation.
+  exhaustion fallback, resume during an unfinished animation, and resting caps
+  surviving repeated ocean DMA updates.
 - The emulator fixture enables the normal Strength flag and executes native
   `removeobject` commands for Cut results. It does not test the party/badge
   prerequisites or the full Cut field-effect sequence. Actual flash-save /

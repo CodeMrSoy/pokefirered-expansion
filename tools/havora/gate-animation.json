@@ -7,9 +7,11 @@
     0,
     4,
     8,
-    12,
-    16
+    10,
+    null
   ],
+  "bg_cap_graphic": 1016,
+  "water_animated_tiles": 120,
   "ticks_per_frame": 6,
   "frames": 5,
   "obj_tiles": 20,

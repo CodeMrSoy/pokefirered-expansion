@@ -38,7 +38,7 @@ int main(void){
  InitTilesetAnim_HavoraCity();assert(sSecondaryTilesetAnimCounterMax==1920);assert(sSecondaryTilesetAnimCallback==TilesetAnim_HavoraCity);
  for(n=0;n<3840;n++){
   u16 timer=n%sSecondaryTilesetAnimCounterMax;count=0;k=0;sSecondaryTilesetAnimCallback(timer);
-  if(n%16==0){assert(transfer[k].src==sHavoraWaterFrames[(n/16)%8]);assert(transfer[k].dest==BG_VRAM+896*32);assert(transfer[k++].size==4096);}
+  if(n%16==0){assert(transfer[k].src==sHavoraWaterFrames[(n/16)%8]);assert(transfer[k].dest==BG_VRAM+896*32);assert(transfer[k++].size==120*32);}
   if(n%12==0)for(i=0;i<6;i++){assert(transfer[k].src==sHavoraFountainFrames[(n/12)%5]+(i+2)*16);assert(transfer[k].dest==BG_VRAM+sHavoraFountainTileIds[i]*32);assert(transfer[k++].size==32);}
   assert(count==k);if(count>max)max=count;
   // General's schedule queues at most one transfer on any tick.
