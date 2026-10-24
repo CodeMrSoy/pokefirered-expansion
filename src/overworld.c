@@ -990,7 +990,7 @@ static void SetDefaultFlashLevel(void)
     if (!gMapHeader.cave)
         gSaveBlock1Ptr->flashLevel = 0;
     else if (FlagGet(FLAG_SYS_FLASH_ACTIVE))
-        gSaveBlock1Ptr->flashLevel = 0;
+        gSaveBlock1Ptr->flashLevel = 1;
     else
         gSaveBlock1Ptr->flashLevel = gMaxFlashLevel;
 }
@@ -1642,6 +1642,7 @@ static void OverworldBasic(void)
     UpdatePaletteFade();
     UpdateTilesetAnimations();
     DoScheduledBgTilemapCopiesToVram();
+    UpdateLanternLighting();
     // Every minute if no palette fade is active, update TOD blending as needed
     if (!gPaletteFade.active && --gTimeUpdateCounter <= 0)
     {
@@ -1961,6 +1962,11 @@ static void VBlankCB_Field(void)
 static void InitCurrentFlashLevelScanlineEffect(void)
 {
     u8 flashLevel = GetFlashLevel();
+    if (gMapHeader.cave)
+    {
+        UpdateLanternLighting();
+        return;
+    }
     if (flashLevel != 0)
     {
         WriteFlashScanlineEffectBuffer(flashLevel);

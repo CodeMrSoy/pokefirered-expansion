@@ -43,10 +43,10 @@ CeladonCity_Condominiums_RoofRoom_Text_ExplainUnionRoom::
     .string "meeting other TRAINERS.$"
 
 CeladonCity_Condominiums_RoofRoom_Text_PamphletOnTMs::
-    .string "It's a pamphlet on TMs.\p"
-    .string "… …\p"
-    .string "There are fifty TMs in all.\p"
-    .string "There are also seven HMs that\n"
-    .string "can be used repeatedly.\p"
+    .string "It's a pamphlet on TMs and tools.\p"
+    .string "TMs teach POKéMON battle moves.\p"
+    .string "Seven reusable field tools help\n"
+    .string "TRAINERS explore the world.\p"
+    .string "Each needs the matching GYM BADGE.\p"
     .string "SILPH CO.$"
 

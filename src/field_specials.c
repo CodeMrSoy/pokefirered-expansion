@@ -1,4 +1,5 @@
 #include "global.h"
+#include "field_tools.h"
 #include "gflib.h"
 #include "quest_log.h"
 #include "list_menu.h"
@@ -72,20 +73,11 @@ void OpenPokeGlassMap(void)
 
 void OpenPokeGlassMapNative(void)
 {
-    u8 i;
     CleanupOverworldWindowsAndTilemaps();
     if (FieldMove_IsUnlocked(FIELD_MOVE_FLY) && FieldMove_SetUpFly())
     {
-        for (i = 0; i < gPlayerPartyCount; i++)
-        {
-            if (!GetMonData(&gPlayerParty[i], MON_DATA_IS_EGG)
-             && MonKnowsMove(&gPlayerParty[i], MOVE_FLY))
-            {
-                gPartyMenu.slotId = i;
-                CB2_OpenFlyMapWithExitCB(CB2_ReturnToFieldContinueScript);
-                return;
-            }
-        }
+        CB2_OpenFlyMapWithExitCB(CB2_ReturnToFieldContinueScript);
+        return;
     }
     InitRegionMapWithExitCB(REGIONMAP_TYPE_NORMAL, CB2_ReturnToFieldContinueScript);
 }

@@ -1,4 +1,5 @@
 #include "global.h"
+#include "field_tools.h"
 #include "quantum_cleanup.h"
 #include "pokemon.h"
 #include "pokemon_storage_system.h"
@@ -518,6 +519,7 @@ void QuantumRecoverWarpDestination(struct WarpData *warp)
 
 void QuantumMigrateLoadedWorld(void)
 {
+    FieldTools_MigrateInventory();
     u32 readScene, writeScene = 0;
     bool8 relocated = RetiredMap(&gSaveBlock1Ptr->location);
     if (relocated)

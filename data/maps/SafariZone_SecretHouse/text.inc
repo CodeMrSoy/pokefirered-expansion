@@ -10,17 +10,15 @@ SafariZone_SecretHouse_Text_CongratsYouveWon::
     .string "You have won!$"
 
 SafariZone_SecretHouse_Text_ReceivedHM03FromAttendant::
-    .string "{PLAYER} received HM03\n"
+    .string "{PLAYER} received a Wailmer Wailer\n"
     .string "from the attendant!$"
 
 SafariZone_SecretHouse_Text_ExplainSurf::
-    .string "HM03 is SURF.\p"
-    .string "POKéMON will be able to ferry you\n"
-    .string "across water using it.\p"
-    .string "And, this HM isn't disposable, so\n"
-    .string "you can use it over and over.\p"
-    .string "You're super lucky for winning this\n"
-    .string "fabulous prize!$"
+    .string "Your prize is a Wailmer Wailer!\p"
+    .string "With the SOULBADGE, face the water\n"
+    .string "and press A to call a sea POKéMON.\p"
+    .string "Step back onto shore to get off.\n"
+    .string "No POKéMON needs to learn a move!$"
 
 SafariZone_SecretHouse_Text_DontHaveRoomForPrize::
     .string "You don't have room for this\n"

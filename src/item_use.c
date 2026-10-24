@@ -1,4 +1,6 @@
 #include "global.h"
+#include "field_tools.h"
+#include "field_move.h"
 #include "gflib.h"
 #include "battle.h"
 #include "battle_anim.h"
@@ -424,6 +426,76 @@ static void ItemUseOnFieldCB_Rod(u8 taskId)
 {
     StartFishing(GetItemSecondaryId(gSpecialVar_ItemId));
     DestroyTask(taskId);
+}
+
+static void ItemUseOnFieldCB_FieldTool(u8 taskId)
+{
+    enum FieldMove move = FieldTool_GetMove(gSpecialVar_ItemId);
+    void (*callback)(void);
+    if (move == FIELD_MOVE_COUNT || !FieldMove_IsUnlocked(move))
+    {
+        DisplayItemMessageOnField(taskId, FONT_NORMAL,
+            COMPOUND_STRING("You need the right tool and\nGYM BADGE to use it."),
+            Task_ItemUse_CloseMessageBoxAndReturnToField);
+        return;
+    }
+    if (!gFieldMovesInfo[move].setUpFunc())
+    {
+        PrintNotTheTimeToUseThat(taskId, TRUE);
+        return;
+    }
+    FieldTool_Prepare(move);
+    DestroyTask(taskId);
+    if (move == FIELD_MOVE_FLY)
+    {
+        CleanupOverworldWindowsAndTilemaps();
+        CB2_OpenFlyMapWithExitCB(CB2_ReturnToField);
+        return;
+    }
+    callback = gPostMenuFieldCallback;
+    gPostMenuFieldCallback = NULL;
+    gFieldCallback2 = NULL;
+    callback();
+}
+
+static bool8 sCaseFromRegistered;
+
+static void ItemUseOnFieldCB_FieldItemCase(u8 taskId)
+{
+    CleanupOverworldWindowsAndTilemaps();
+    FieldItemCase_OpenUI();
+    DestroyTask(taskId);
+}
+
+void ItemUseOutOfBattle_FieldItemCase(u8 taskId)
+{
+    sCaseFromRegistered = gTasks[taskId].tUsingRegisteredKeyItem == TRUE;
+    sItemUseOnFieldCB = ItemUseOnFieldCB_FieldItemCase;
+    SetUpItemUseOnFieldCallback(taskId);
+}
+
+void FieldItemCase_Return(bool32 use, u16 item)
+{
+    if (use)
+    {
+        gSpecialVar_ItemId = item;
+        sItemUseOnFieldCB = ItemUseOnFieldCB_FieldTool;
+        gFieldCallback = FieldCB_UseItemOnField;
+        SetMainCallback2(CB2_ReturnToField);
+    }
+    else if (sCaseFromRegistered)
+    {
+        gFieldCallback = NULL;
+        SetMainCallback2(CB2_ReturnToField);
+    }
+    else
+        GoToBagMenu(ITEMMENULOCATION_LAST, POCKET_KEY_ITEMS, CB2_ReturnToField);
+}
+
+void ItemUseOutOfBattle_FieldTool(u8 taskId)
+{
+    sItemUseOnFieldCB = ItemUseOnFieldCB_FieldTool;
+    SetUpItemUseOnFieldCallback(taskId);
 }
 
 void ItemUseOutOfBattle_Itemfinder(u8 taskId)

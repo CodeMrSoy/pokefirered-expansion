@@ -1,4 +1,5 @@
 #include "global.h"
+#include "field_tools.h"
 #include "decompress.h"
 #include "gflib.h"
 #include "event_data.h"
@@ -179,7 +180,7 @@ bool32 FieldMove_SetUpFlash(void)
 static void FieldCallback_Flash(void)
 {
     u8 taskId = CreateFieldEffectShowMon();
-    gFieldEffectArguments[0] = GetCursorSelectionMonId();
+    FieldTool_Prepare(FIELD_MOVE_FLASH);
     gTasks[taskId].data[8] = ((uintptr_t)FldEff_UseFlash) >> 16;
     gTasks[taskId].data[9] = ((uintptr_t)FldEff_UseFlash);
 }

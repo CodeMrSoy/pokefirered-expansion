@@ -4,6 +4,8 @@ SSAnne_CaptainsOffice_MapScripts::
 SSAnne_CaptainsOffice_EventScript_Captain::
 	lock
 	goto_if_set FLAG_GOT_HM01, SSAnne_CaptainsOffice_EventScript_AlreadyGotCut
+	checkitemspace ITEM_PRUNING_SHEARS
+	goto_if_eq VAR_RESULT, FALSE, SSAnne_CaptainsOffice_EventScript_NoRoomForCut
 	msgbox SSAnne_CaptainsOffice_Text_CaptainIFeelSeasick
 	textcolor NPC_TEXT_COLOR_NEUTRAL
 	message SSAnne_CaptainsOffice_Text_RubbedCaptainsBack
@@ -22,7 +24,6 @@ SSAnne_CaptainsOffice_EventScript_Captain::
 	release
 	end
 
-@ Unused
 SSAnne_CaptainsOffice_EventScript_NoRoomForCut::
 	msgbox SSAnne_CaptainsOffice_Text_YouHaveNoRoomForThis
 	closemessage

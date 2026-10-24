@@ -6200,7 +6200,6 @@ static void TrySetCursorFistAnim(void)
 
 static void InitCanReleaseMonVars(void)
 {
-    u16 knownMoveFlags;
     if (sIsMonBeingMoved)
     {
         gStorage->tempMon = gStorage->movingMon;
@@ -6224,12 +6223,6 @@ static void InitCanReleaseMonVars(void)
 
     gStorage->isSurfMon = FALSE;
     gStorage->isDiveMon = FALSE;
-    gStorage->restrictedMoveList[0] = MOVE_SURF;
-    gStorage->restrictedMoveList[1] = MOVE_DIVE;
-    gStorage->restrictedMoveList[2] = MOVES_COUNT;
-    knownMoveFlags = GetMonData(&gStorage->tempMon, MON_DATA_KNOWN_MOVES, (u8 *)gStorage->restrictedMoveList);
-    gStorage->isSurfMon = knownMoveFlags & 1;
-    gStorage->isDiveMon = (knownMoveFlags >> 1) & 1;
     if (gStorage->isSurfMon || gStorage->isDiveMon)
         gStorage->releaseMonStatusResolved = FALSE;
     else

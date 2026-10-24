@@ -1,4 +1,5 @@
 #include "global.h"
+#include "field_tools.h"
 #include "poke_glass.h"
 #include "gflib.h"
 #include "battle.h"
@@ -3470,7 +3471,7 @@ static void SetPartyMonFieldSelectionActions(struct Pokemon *mons, u8 slotId)
             continue;
         for (j = 0; j < FIELD_MOVE_COUNT; ++j)
         {
-            if (moveId == gFieldMovesInfo[j].moveId)
+            if (FieldTool_GetItem(j) == ITEM_NONE && moveId == gFieldMovesInfo[j].moveId)
             {
                 AppendToList(sPartyMenuInternal->actions, &sPartyMenuInternal->numActions, j + CURSOR_OPTION_FIELD_MOVES);
                 break;
@@ -4693,7 +4694,7 @@ void SetUsedFlyQuestLogEvent(const u8 *healLocCtrlData)
     Free(map);
 
     data = Alloc(sizeof(*data));
-    data->species = GetMonData(&gPlayerParty[GetCursorSelectionMonId()], MON_DATA_SPECIES_OR_EGG);
+    data->species = FieldMove_GetDefaultSpecies(FIELD_MOVE_FLY);
     data->fieldMove = FIELD_MOVE_FLY;
     data->mapSec = mapHeader->regionMapSectionId;
     SetQuestLogEvent(QL_EVENT_USED_FIELD_MOVE, (const u16 *)data);

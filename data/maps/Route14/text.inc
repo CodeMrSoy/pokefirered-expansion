@@ -6,8 +6,8 @@ Route14_Text_CarterDefeat::
     .string "Not good enough quite yet.$"
 
 Route14_Text_CarterPostBattle::
-    .string "You have some HMs, right? POKéMON\n"
-    .string "can't forget those moves easily.$"
+    .string "Field tools clear obstacles without\n"
+    .string "taking up a POKéMON's move slot!$"
 
 Route14_Text_MitchIntro::
     .string "My bird POKéMON should be ready\n"
@@ -21,10 +21,10 @@ Route14_Text_MitchPostBattle::
     .string "better moves.$"
 
 Route14_Text_BeckIntro::
-    .string "They have TMs on sale at the\n"
-    .string "CELADON DEPT. STORE.\p"
-    .string "TMs aren't really rare, but not\n"
-    .string "many people have HMs.$"
+    .string "They sell TMs and useful tools at\n"
+    .string "the CELADON DEPT. STORE.\p"
+    .string "Have you seen the Rock Hammer\n"
+    .string "on the fourth floor?$"
 
 Route14_Text_BeckDefeat::
     .string "Aww, bummer!$"
@@ -36,10 +36,9 @@ Route14_Text_BeckPostBattle::
     .string "of the move.$"
 
 Route14_Text_MarlonIntro::
-    .string "Have you taught your bird POKéMON\n"
-    .string "how to FLY?\p"
-    .string "You'll be able to soar with it into\n"
-    .string "the sky!$"
+    .string "Do you have a Sky Whistle?\p"
+    .string "With the THUNDERBADGE, you can\n"
+    .string "call a flying POKéMON for a ride!$"
 
 Route14_Text_MarlonDefeat::
     .string "Shot down in flames!$"
