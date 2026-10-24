@@ -1,0 +1,220 @@
+{
+  "source_commit": "0673644fe7c6dd3a4d4634b9c79a96a11edc556f",
+  "statue_metatiles": {
+    "paving": [
+      173,
+      488
+    ],
+    "grass": [
+      489,
+      490
+    ]
+  },
+  "building_tiles": [
+    {
+      "source_id": 538,
+      "metatile": 480,
+      "catalog_index": 81
+    },
+    {
+      "source_id": 539,
+      "metatile": 480,
+      "catalog_index": 82
+    },
+    {
+      "source_id": 565,
+      "metatile": 665,
+      "catalog_index": 88
+    },
+    {
+      "source_id": 566,
+      "metatile": 666,
+      "catalog_index": 89
+    },
+    {
+      "source_id": 574,
+      "metatile": 669,
+      "catalog_index": 92
+    },
+    {
+      "source_id": 575,
+      "metatile": 670,
+      "catalog_index": 93
+    },
+    {
+      "source_id": 580,
+      "metatile": 446,
+      "catalog_index": 95
+    },
+    {
+      "source_id": 582,
+      "metatile": 673,
+      "catalog_index": 97
+    },
+    {
+      "source_id": 583,
+      "metatile": 674,
+      "catalog_index": 98
+    },
+    {
+      "source_id": 588,
+      "metatile": 448,
+      "catalog_index": 101
+    },
+    {
+      "source_id": 590,
+      "metatile": 450,
+      "catalog_index": 103
+    },
+    {
+      "source_id": 598,
+      "metatile": 452,
+      "catalog_index": 108
+    },
+    {
+      "source_id": 614,
+      "metatile": 666,
+      "catalog_index": 119
+    },
+    {
+      "source_id": 625,
+      "metatile": 186,
+      "catalog_index": 129
+    }
+  ],
+  "market_stall": [
+    [
+      684,
+      685,
+      686
+    ],
+    [
+      687,
+      688,
+      689
+    ],
+    [
+      690,
+      690,
+      691
+    ]
+  ],
+  "new_metatiles": [
+    173,
+    488,
+    489,
+    490,
+    501,
+    186,
+    502,
+    200,
+    503
+  ],
+  "retired_unplaced_metatiles": [
+    173,
+    174,
+    175,
+    176,
+    177,
+    178,
+    181,
+    182,
+    183,
+    184,
+    186,
+    199,
+    200,
+    204,
+    205,
+    206,
+    207,
+    208,
+    209,
+    210,
+    211,
+    215,
+    216,
+    217,
+    1018
+  ],
+  "reclaimed_graphics": 65,
+  "placed_metatiles_verified": 238,
+  "water_frames_verified": 8,
+  "palette_changes": false,
+  "note": "No map, collision, elevation, event, warp or connection data changed. Statue uses the stock FireRed gym silhouette with current outdoor stone colors.",
+  "catalog_note": "Unplaced obsolete house modules reclaimed for the selected Viridian homes and Celadon Department Store; originals archived in green-houses-archive.json.",
+  "complete_market_stalls": {
+    "wide": [
+      [
+        505,
+        319,
+        320,
+        321,
+        532
+      ],
+      [
+        534,
+        359,
+        544,
+        360,
+        357
+      ],
+      [
+        539,
+        323,
+        323,
+        543,
+        542
+      ]
+    ],
+    "narrow": [
+      [
+        335,
+        319,
+        321,
+        316
+      ],
+      [
+        356,
+        359,
+        360,
+        535
+      ],
+      [
+        541,
+        543,
+        543,
+        540
+      ]
+    ]
+  },
+  "forest_entrance": [
+    [
+      545,
+      361,
+      546,
+      547
+    ],
+    [
+      362,
+      363,
+      548,
+      549
+    ],
+    [
+      550,
+      144,
+      455,
+      551
+    ]
+  ],
+  "puzzle_tiles": {
+    "boulder_grass": 556,
+    "cut_tree_grass": 557,
+    "hole_open_grass": 558,
+    "switch_released_grass": 559,
+    "switch_pressed_grass": 560,
+    "gate_closed_grass": 561,
+    "gate_open_grass": 562
+  }
+}

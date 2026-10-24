@@ -1,0 +1,14 @@
+{
+  "center_complete_size": [
+    5,
+    4
+  ],
+  "mart_complete_size": [
+    4,
+    4
+  ],
+  "unused_palette_entry_repurposed": "0:7 dark red",
+  "all_other_existing_metatiles_and_graphics_preserved_except_archived_unplaced_modules": true,
+  "all_water_flower_and_fountain_animation_graphics_preserved": true,
+  "harbor_graphics_and_attributes_unchanged": true
+}

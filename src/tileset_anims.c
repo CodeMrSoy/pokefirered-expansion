@@ -330,3 +330,52 @@ void InitTilesetAnim_CeladonGym(void)
     sSecondaryTilesetAnimCounterMax = 256;
     sSecondaryTilesetAnimCallback = TilesetAnim_CeladonGym;
 }
+
+// Havora's ocean animation also updates water pixels in dock/boat edge tiles.
+#include "data/havora_water_anim.h"
+
+static void TilesetAnim_HavoraHarbor(u16 timer)
+{
+    if (timer % 16 == 0)
+        AppendTilesetAnimToBuffer(sHavoraWaterFrames[(timer / 16) % ARRAY_COUNT(sHavoraWaterFrames)],
+            (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(HAVORA_WATER_ANIM_START)),
+            HAVORA_WATER_ANIM_TILES * TILE_SIZE_4BPP);
+}
+
+void InitTilesetAnim_HavoraHarbor(void)
+{
+    sSecondaryTilesetAnimCounter = 0;
+    sSecondaryTilesetAnimCounterMax = 128;
+    sSecondaryTilesetAnimCallback = TilesetAnim_HavoraHarbor;
+}
+
+// Havora City's fountain uses free static slots, independently of ocean tiles.
+// The first two graphics in Celadon's source frames never change, so they are
+// kept in the static atlas. Only the six changing graphics need DMA updates.
+#include "data/havora_fountain_anim.h"
+
+static void TilesetAnim_HavoraCity(u16 timer)
+{
+    u16 i;
+    // The final eight source tiles are blank and unreferenced by water art.
+    // Keep them static in the shared city pair for the recessed gate caps.
+    if (timer % 16 == 0)
+        AppendTilesetAnimToBuffer(sHavoraWaterFrames[(timer / 16) % ARRAY_COUNT(sHavoraWaterFrames)],
+            (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(HAVORA_WATER_ANIM_START)),
+            120 * TILE_SIZE_4BPP);
+    if (timer % 12 == 0)
+    {
+        const u16 *frame = sHavoraFountainFrames[(timer / 12) % ARRAY_COUNT(sHavoraFountainFrames)];
+        for (i = 0; i < HAVORA_FOUNTAIN_ANIM_TILES; i++)
+            AppendTilesetAnimToBuffer(frame + (i + HAVORA_FOUNTAIN_FRAME_TILE_OFFSET) * (TILE_SIZE_4BPP / sizeof(u16)),
+                (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(sHavoraFountainTileIds[i])), TILE_SIZE_4BPP);
+    }
+}
+
+void InitTilesetAnim_HavoraCity(void)
+{
+    sSecondaryTilesetAnimCounter = 0;
+    // LCM(128 ocean ticks, 60 fountain ticks) preserves both animation phases.
+    sSecondaryTilesetAnimCounterMax = 1920;
+    sSecondaryTilesetAnimCallback = TilesetAnim_HavoraCity;
+}

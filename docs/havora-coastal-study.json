@@ -1,0 +1,147 @@
+{
+  "status": "applied_to_author_commit_be19b764",
+  "source": "Author screenshot 2026-10-18 22:22, matched exactly to native tiles",
+  "note": "Applied to the pushed author layout. Unchanged cells preserve author blocks/collision; objects and connections are retained.",
+  "placements": [
+    {
+      "piece": "rock",
+      "x": 1,
+      "y": 28
+    },
+    {
+      "piece": "rock",
+      "x": 2,
+      "y": 28
+    },
+    {
+      "piece": "rock",
+      "x": 2,
+      "y": 29
+    },
+    {
+      "piece": "rock",
+      "x": 3,
+      "y": 30
+    },
+    {
+      "piece": "rock",
+      "x": 25,
+      "y": 28
+    },
+    {
+      "piece": "rock",
+      "x": 26,
+      "y": 29
+    },
+    {
+      "piece": "rock",
+      "x": 27,
+      "y": 29
+    },
+    {
+      "piece": "rock",
+      "x": 34,
+      "y": 30
+    },
+    {
+      "piece": "rock",
+      "x": 35,
+      "y": 30
+    },
+    {
+      "piece": "rock",
+      "x": 36,
+      "y": 31
+    },
+    {
+      "piece": "rock",
+      "x": 38,
+      "y": 17
+    },
+    {
+      "piece": "rock",
+      "x": 39,
+      "y": 18
+    },
+    {
+      "piece": "rock",
+      "x": 39,
+      "y": 19
+    },
+    {
+      "piece": "rock",
+      "x": 39,
+      "y": 29
+    },
+    {
+      "piece": "bollard",
+      "x": 8,
+      "y": 2
+    },
+    {
+      "piece": "bollard",
+      "x": 15,
+      "y": 2
+    },
+    {
+      "piece": "bollard",
+      "x": 22,
+      "y": 2
+    },
+    {
+      "piece": "bollard",
+      "x": 28,
+      "y": 2
+    },
+    {
+      "piece": "bollard",
+      "x": 36,
+      "y": 2
+    },
+    {
+      "piece": "bollard",
+      "x": 21,
+      "y": 23
+    },
+    {
+      "piece": "planter",
+      "x": 5,
+      "y": 13
+    },
+    {
+      "piece": "planter",
+      "x": 6,
+      "y": 16
+    },
+    {
+      "piece": "planter",
+      "x": 14,
+      "y": 20
+    },
+    {
+      "piece": "planter",
+      "x": 1,
+      "y": 24
+    },
+    {
+      "piece": "planter",
+      "x": 13,
+      "y": 24
+    },
+    {
+      "piece": "planter",
+      "x": 24,
+      "y": 24
+    },
+    {
+      "piece": "market_stall",
+      "x": 2,
+      "y": 22
+    },
+    {
+      "piece": "market_stall",
+      "x": 9,
+      "y": 22
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 #include "global.h"
 #include "field_tools.h"
+#include "havora_puzzle.h"
 #include "gflib.h"
 #include "clock.h"
 #include "rtc.h"
@@ -1363,6 +1364,7 @@ bool8 ScrCmd_removeobject(struct ScriptContext * ctx)
 
     Script_RequestEffects(SCREFF_V1 | SCREFF_SAVE | SCREFF_HARDWARE);
 
+    HavoraPuzzle_RecordCut(localId, gSaveBlock1Ptr->location.mapNum, gSaveBlock1Ptr->location.mapGroup);
     RemoveObjectEventByLocalIdAndMap(localId, gSaveBlock1Ptr->location.mapNum, gSaveBlock1Ptr->location.mapGroup);
     return FALSE;
 }

@@ -1,0 +1,43 @@
+{
+  "source": "https://github.com/pret/pokeemerald",
+  "commit": "731ad5bfd6e6f265508d0efcca0ba42f9dcf5881",
+  "buildings": {
+    "warehouse": "SlateportCity (2,22), 5x5 blocks",
+    "house": "LilycoveCity (35,3), 4x4 blocks",
+    "lighthouse": "SlateportCity (32,51), 2x4 blocks",
+    "sailboat": "SlateportCity (34,44), 3x3 blocks"
+  },
+  "wood_recolor": {
+    "(238, 230, 164)": [
+      192,
+      168,
+      120
+    ],
+    "(238, 197, 98)": [
+      160,
+      128,
+      80
+    ],
+    "(205, 156, 57)": [
+      128,
+      96,
+      56
+    ],
+    "(164, 123, 24)": [
+      96,
+      72,
+      40
+    ],
+    "(106, 57, 41)": [
+      72,
+      48,
+      32
+    ]
+  },
+  "crane": "Native Havora FireRed redraw, tools/havora/firered_props.py",
+  "notes": "Native pixel sizes; grass backing removed from building cutouts. Wood palette darkened to approved preview. Other imports retain original colors until GBA 5-bit conversion.",
+  "expanded_catalog": "501 source metatile entries from Pacifidlog wood/bridges, Lilycove exteriors/paths, and Slateport market/boats/quays. Source IDs and mapped Havora IDs are in tools/havora/assets.json.",
+  "water_animation": "Eight original General water frames, original destination tile 432; ocean metatile 0x170 uses tiles 454/455. Static props are masked while their surrounding water animates.",
+  "extra_palette_normalization": "Extra catalog pieces share the harbor palette banks and may have close-color substitutions. Original geometry is preserved.",
+  "water_boulder": "General/Emerald metatile 0x0C5 (Slateport palette context), flat background color (115,189,246) made transparent and replaced by animated sea. Appended at Havora primary 0x08E; no old IDs change."
+}

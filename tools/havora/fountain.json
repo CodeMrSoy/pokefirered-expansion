@@ -1,0 +1,138 @@
+{
+  "kits": {
+    "grass": [
+      [
+        180,
+        185,
+        187
+      ],
+      [
+        191,
+        192,
+        197
+      ],
+      [
+        198,
+        224,
+        225
+      ],
+      [
+        229,
+        189,
+        190
+      ]
+    ],
+    "paving": [
+      [
+        195,
+        196,
+        221
+      ],
+      [
+        231,
+        232,
+        245
+      ],
+      [
+        246,
+        312,
+        456
+      ],
+      [
+        457,
+        458,
+        484
+      ]
+    ]
+  },
+  "source": "CeladonCity fountain 0x2CD-0x2D8",
+  "animation_graphic_ids": [
+    553,
+    570,
+    571,
+    575,
+    576,
+    578
+  ],
+  "animation_tiles": 6,
+  "constant_frame_tiles": 2,
+  "palette_bank": 4,
+  "frames": 5,
+  "ticks_per_frame": 12,
+  "combined_cycle_ticks": 1920,
+  "placed_metatiles_preserved": 266,
+  "protected_catalog_preserved": 563,
+  "new_metatiles": [
+    180,
+    185,
+    187,
+    191,
+    192,
+    197,
+    198,
+    224,
+    225,
+    229,
+    189,
+    190,
+    195,
+    196,
+    221,
+    231,
+    232,
+    245,
+    246,
+    312,
+    456,
+    457,
+    458,
+    484
+  ],
+  "retired_unplaced_metatiles": [
+    185,
+    187,
+    189,
+    190,
+    191,
+    192,
+    195,
+    196,
+    197,
+    198,
+    221,
+    224,
+    225,
+    229,
+    231,
+    232,
+    245,
+    246,
+    312,
+    456,
+    505
+  ],
+  "reclaimed_static_graphics": 13,
+  "note": "Shared-tileset authoring kit; no map placements, events, warps, palettes or existing animation destinations modified.",
+  "collision_mask": [
+    [
+      0,
+      0,
+      0
+    ],
+    [
+      1,
+      1,
+      1
+    ],
+    [
+      1,
+      1,
+      1
+    ],
+    [
+      0,
+      0,
+      0
+    ]
+  ]
+}

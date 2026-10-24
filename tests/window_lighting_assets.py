@@ -21,7 +21,8 @@ for r in manifest['secondary_rules']:
  for i,e in enumerate(entries):
   mid=640+i//8;glass=mid in r['glass_metatiles'] if r['glass_metatiles'] is not None else mid not in r['unlit_metatiles']
   if e>>12 in (src,clone):
-   expected=clone if (glass if r['glass_clone'] else not glass) else src
+   override=any(o['metatile']==mid and o['quadrant']==i%8 for o in r.get('glass_overrides',[]))
+   expected=src if override else (clone if (glass if r['glass_clone'] else not glass) else src)
    assert e>>12==expected,(r['tileset'],hex(mid),'Wrong light isolation')
  if args.baseline_ref:
   before=subprocess.check_output(['git','show',args.baseline_ref+':'+r['metatiles']],cwd=root)
@@ -29,5 +30,5 @@ for r in manifest['secondary_rules']:
   assert len(old)==len(entries)
   for a,b in zip(old,entries):
    assert a&0xfff==b&0xfff,(r['tileset'],'Tile graphics or flips changed')
-   assert a==b or (a>>12==src and b>>12==clone),(r['tileset'],'Unexpected palette change')
+   assert a==b or {a>>12,b>>12}=={src,clone},(r['tileset'],'Unexpected palette change')
 print('Glass/ground separation and identical daytime colors passed for',len(manifest['secondary_rules']),'tileset variants')

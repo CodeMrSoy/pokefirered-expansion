@@ -30,6 +30,88 @@
         708,
         709,
         713
+      ],
+      "glass_overrides": [
+        {
+          "metatile": 704,
+          "quadrant": 5
+        },
+        {
+          "metatile": 704,
+          "quadrant": 7
+        },
+        {
+          "metatile": 705,
+          "quadrant": 1
+        },
+        {
+          "metatile": 705,
+          "quadrant": 2
+        },
+        {
+          "metatile": 705,
+          "quadrant": 3
+        },
+        {
+          "metatile": 705,
+          "quadrant": 4
+        },
+        {
+          "metatile": 705,
+          "quadrant": 5
+        },
+        {
+          "metatile": 707,
+          "quadrant": 1
+        },
+        {
+          "metatile": 707,
+          "quadrant": 3
+        },
+        {
+          "metatile": 707,
+          "quadrant": 5
+        },
+        {
+          "metatile": 708,
+          "quadrant": 0
+        },
+        {
+          "metatile": 708,
+          "quadrant": 1
+        },
+        {
+          "metatile": 708,
+          "quadrant": 2
+        },
+        {
+          "metatile": 708,
+          "quadrant": 3
+        },
+        {
+          "metatile": 708,
+          "quadrant": 4
+        },
+        {
+          "metatile": 708,
+          "quadrant": 5
+        },
+        {
+          "metatile": 709,
+          "quadrant": 4
+        },
+        {
+          "metatile": 709,
+          "quadrant": 6
+        },
+        {
+          "metatile": 713,
+          "quadrant": 0
+        },
+        {
+          "metatile": 713,
+          "quadrant": 1
+        }
       ]
     },
     {
@@ -339,6 +421,88 @@
         708,
         709,
         713
+      ],
+      "glass_overrides": [
+        {
+          "metatile": 704,
+          "quadrant": 5
+        },
+        {
+          "metatile": 704,
+          "quadrant": 7
+        },
+        {
+          "metatile": 705,
+          "quadrant": 1
+        },
+        {
+          "metatile": 705,
+          "quadrant": 2
+        },
+        {
+          "metatile": 705,
+          "quadrant": 3
+        },
+        {
+          "metatile": 705,
+          "quadrant": 4
+        },
+        {
+          "metatile": 705,
+          "quadrant": 5
+        },
+        {
+          "metatile": 707,
+          "quadrant": 1
+        },
+        {
+          "metatile": 707,
+          "quadrant": 3
+        },
+        {
+          "metatile": 707,
+          "quadrant": 5
+        },
+        {
+          "metatile": 708,
+          "quadrant": 0
+        },
+        {
+          "metatile": 708,
+          "quadrant": 1
+        },
+        {
+          "metatile": 708,
+          "quadrant": 2
+        },
+        {
+          "metatile": 708,
+          "quadrant": 3
+        },
+        {
+          "metatile": 708,
+          "quadrant": 4
+        },
+        {
+          "metatile": 708,
+          "quadrant": 5
+        },
+        {
+          "metatile": 709,
+          "quadrant": 4
+        },
+        {
+          "metatile": 709,
+          "quadrant": 6
+        },
+        {
+          "metatile": 713,
+          "quadrant": 0
+        },
+        {
+          "metatile": 713,
+          "quadrant": 1
+        }
       ]
     },
     {
@@ -367,6 +531,88 @@
         708,
         709,
         713
+      ],
+      "glass_overrides": [
+        {
+          "metatile": 704,
+          "quadrant": 5
+        },
+        {
+          "metatile": 704,
+          "quadrant": 7
+        },
+        {
+          "metatile": 705,
+          "quadrant": 1
+        },
+        {
+          "metatile": 705,
+          "quadrant": 2
+        },
+        {
+          "metatile": 705,
+          "quadrant": 3
+        },
+        {
+          "metatile": 705,
+          "quadrant": 4
+        },
+        {
+          "metatile": 705,
+          "quadrant": 5
+        },
+        {
+          "metatile": 707,
+          "quadrant": 1
+        },
+        {
+          "metatile": 707,
+          "quadrant": 3
+        },
+        {
+          "metatile": 707,
+          "quadrant": 5
+        },
+        {
+          "metatile": 708,
+          "quadrant": 0
+        },
+        {
+          "metatile": 708,
+          "quadrant": 1
+        },
+        {
+          "metatile": 708,
+          "quadrant": 2
+        },
+        {
+          "metatile": 708,
+          "quadrant": 3
+        },
+        {
+          "metatile": 708,
+          "quadrant": 4
+        },
+        {
+          "metatile": 708,
+          "quadrant": 5
+        },
+        {
+          "metatile": 709,
+          "quadrant": 4
+        },
+        {
+          "metatile": 709,
+          "quadrant": 6
+        },
+        {
+          "metatile": 713,
+          "quadrant": 0
+        },
+        {
+          "metatile": 713,
+          "quadrant": 1
+        }
       ]
     },
     {
@@ -395,6 +641,88 @@
         708,
         709,
         713
+      ],
+      "glass_overrides": [
+        {
+          "metatile": 704,
+          "quadrant": 5
+        },
+        {
+          "metatile": 704,
+          "quadrant": 7
+        },
+        {
+          "metatile": 705,
+          "quadrant": 1
+        },
+        {
+          "metatile": 705,
+          "quadrant": 2
+        },
+        {
+          "metatile": 705,
+          "quadrant": 3
+        },
+        {
+          "metatile": 705,
+          "quadrant": 4
+        },
+        {
+          "metatile": 705,
+          "quadrant": 5
+        },
+        {
+          "metatile": 707,
+          "quadrant": 1
+        },
+        {
+          "metatile": 707,
+          "quadrant": 3
+        },
+        {
+          "metatile": 707,
+          "quadrant": 5
+        },
+        {
+          "metatile": 708,
+          "quadrant": 0
+        },
+        {
+          "metatile": 708,
+          "quadrant": 1
+        },
+        {
+          "metatile": 708,
+          "quadrant": 2
+        },
+        {
+          "metatile": 708,
+          "quadrant": 3
+        },
+        {
+          "metatile": 708,
+          "quadrant": 4
+        },
+        {
+          "metatile": 708,
+          "quadrant": 5
+        },
+        {
+          "metatile": 709,
+          "quadrant": 4
+        },
+        {
+          "metatile": 709,
+          "quadrant": 6
+        },
+        {
+          "metatile": 713,
+          "quadrant": 0
+        },
+        {
+          "metatile": 713,
+          "quadrant": 1
+        }
       ]
     },
     {

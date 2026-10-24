@@ -12,5 +12,6 @@ extern const u16 gTilesetPalettes_DepartmentStore[][16];
 
 extern const struct Tileset gTileset_Building;
 extern const struct Tileset gTileset_GenericBuilding1;
+extern const struct Tileset gTileset_HavoraCityPrimary;
 
 #endif // GUARD_TILESETS_H

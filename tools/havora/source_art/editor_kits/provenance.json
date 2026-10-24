@@ -1,0 +1,17 @@
+{
+  "source": "https://github.com/pret/pokeemerald",
+  "commit": "731ad5bfd6e6f265508d0efcca0ba42f9dcf5881",
+  "purpose": "Complete Slateport stall side panels, canopy ends and counter pieces missing from the earlier cutout.",
+  "sha256": {
+    "emerald-7.pal": "ac42c0f677e9b2f695888cd1b28eabbc43067230c949490b321bf97d87e49587",
+    "emerald-6.pal": "a59e29c540025a6f567fcb565986c7afc98add28007d5b76edd6b9df41f1f298",
+    "slateport-metatiles.bin": "438a0fdb3dcb3393b5bee30c2866b915a8f46b655912b2205c8f6758cfa0ddbb",
+    "emerald-8.pal": "26f89121ef99771416cfdc0b9c7ce0c9abe219a21b44fffc59dc8ffbfdb11862",
+    "emerald-2.pal": "8a469b137e6fc97823ab46b903c0ab80c466212cd430340586ccde22afbee949",
+    "slateport-tiles.png": "a9f3d4b49fbf4f133ecffe88248235509ad5c155b55465231dfb44cb12562dbe",
+    "emerald-0.pal": "424a32d1079a61b6b9b4f1e879dd68108708905e8312d18edd134af3918407fd",
+    "general-tiles.png": "365ba5482e7564763e614a0009900d1c317790dcd9f7a06c4ab74c363a3ba2f5",
+    "slateport-map.bin": "7094d5feff9cdd39816b71b7aaa31cf9c099c0d06f0a85e9b048d3a801cec136",
+    "emerald-9.pal": "d236d96c012ae0f5c5464531ed8b27eedfee0dafbd50555f1126649f33c52ab7"
+  }
+}

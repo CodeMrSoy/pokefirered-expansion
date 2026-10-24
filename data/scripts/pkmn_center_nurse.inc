@@ -14,8 +14,9 @@ EventScript_PkmnCenterNurse_HealPkmn::
 	message Text_TakeYourPkmnForFewSeconds
 	waitmessage
 	call EventScript_PkmnCenterNurse_TakeAndHealPkmn
+	@ Union Room / Trainer Tower specials are retired; always finish healing.
 	special SetUsedPkmnCenterQuestLogEvent
-	goto EventScript_PkmnCenterNurse_CheckTrainerTowerAndUnionRoom
+	goto EventScript_PkmnCenterNurse_ReturnPkmn
 	end
 
 EventScript_PkmnCenterNurse_TakeAndHealPkmn::
@@ -30,28 +31,8 @@ EventScript_PkmnCenterNurse_TakeAndHealPkmn::
 	callnative UpdateFollowingPokemon
 	return
 
-EventScript_PkmnCenterNurse_CheckTrainerTowerAndUnionRoom::
-	specialvar VAR_RESULT, IsPlayerNotInTrainerTowerLobby
-	goto_if_eq VAR_RESULT, FALSE, EventScript_PkmnCenterNurse_ReturnPkmn
-	specialvar VAR_RESULT, BufferUnionRoomPlayerName
-	copyvar VAR_0x8008, VAR_RESULT
-	goto_if_eq VAR_0x8008, 0, EventScript_PkmnCenterNurse_ReturnPkmn
-	goto_if_eq VAR_0x8008, 1, EventScript_PkmnCenterNurse_PlayerWaitingInUnionRoom
-	end
-
 EventScript_PkmnCenterNurse_ReturnPkmn::
 	message Text_RestoredPkmnToFullHealth
-	waitmessage
-	applymovement VAR_LAST_TALKED, Movement_Bow
-	waitmovement 0
-	msgbox Text_WeHopeToSeeYouAgain
-	return
-
-EventScript_PkmnCenterNurse_PlayerWaitingInUnionRoom::
-	goto_if_set FLAG_SYS_INFORMED_OF_LOCAL_WIRELESS_PLAYER, EventScript_PkmnCenterNurse_ReturnPkmn
-	msgbox Text_RestoredPkmnToFullHealth
-	setflag FLAG_SYS_INFORMED_OF_LOCAL_WIRELESS_PLAYER
-	message Text_PlayerIsPlayingRightNowGoForIt
 	waitmessage
 	applymovement VAR_LAST_TALKED, Movement_Bow
 	waitmovement 0

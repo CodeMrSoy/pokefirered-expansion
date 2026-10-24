@@ -1,5 +1,6 @@
 #include "global.h"
 #include "field_tools.h"
+#include "havora_puzzle.h"
 #include "gflib.h"
 #include "bike.h"
 #include "coord_event_weather.h"
@@ -220,6 +221,9 @@ int ProcessPlayerFieldInput(struct FieldInput *input)
 
     FieldClearPlayerInput(&gFieldInputRecord);
     gFieldInputRecord.dpadDirection = input->dpadDirection;
+
+    if (HavoraPuzzle_TryResetShortcut())
+        return TRUE;
 
     if (CheckForTrainersWantingBattle() == TRUE)
         return TRUE;
@@ -1162,6 +1166,8 @@ static const u8 *GetCoordEventScriptAtPosition(struct MapHeader *mapHeader, u16 
 
 void HandleBoulderFallThroughHole(struct ObjectEvent * object)
 {
+    if (HavoraPuzzle_OnBoulderMoved(object))
+        return;
     if (MapGridGetMetatileBehaviorAt(object->currentCoords.x, object->currentCoords.y) == MB_FALL_WARP)
     {
         PlaySE(SE_FALL);

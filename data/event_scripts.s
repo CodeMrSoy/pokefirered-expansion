@@ -1373,7 +1373,7 @@ Text_TestMsg::
 
 	.include "data/quantum/relocated_encounters.inc"
 
-	.include "data/maps/QuantumPortCity/scripts.inc"
+	.include "data/maps/HavoraWestQuadrant/scripts.inc"
 	.include "data/maps/QuantumPortCityPokemonCenter1F/scripts.inc"
 	.include "data/maps/QuantumPortCityPokemonCenter2F/scripts.inc"
 
@@ -1396,4 +1396,65 @@ Text_TestMsg::
 	.include "data/maps/QuantumCoastalRoad/scripts.inc"
 	.include "data/maps/QuantumWoodlandLink/scripts.inc"
 	.include "data/maps/QuantumMountainPass/scripts.inc"
-	.include "data/maps/QuantumHarbor/scripts.inc"
+	.include "data/maps/HavoraHarbor/scripts.inc"
+
+	.include "data/maps/HavoraRiver/scripts.inc"
+
+	.include "data/maps/HavoraMarket/scripts.inc"
+
+	.include "data/maps/QuantumHavoraShipwrightHouse/scripts.inc"
+
+	.include "data/maps/QuantumHavoraWeaverHouse/scripts.inc"
+
+	.include "data/maps/QuantumHavoraFisherHouse/scripts.inc"
+
+	.include "data/maps/QuantumHavoraTraderHouse/scripts.inc"
+
+	.include "data/maps/QuantumHavoraTradeHall/scripts.inc"
+
+	.include "data/maps/QuantumHavoraOutfitters/scripts.inc"
+
+	.include "data/maps/QuantumHavoraProvisions/scripts.inc"
+
+	.include "data/maps/HavoraNorthQuadrant/scripts.inc"
+
+	.include "data/maps/HavoraDaycare/scripts.inc"
+
+	.include "data/maps/HavoraLookout/scripts.inc"
+
+	.include "data/maps/QuantumHavoraGym/scripts.inc"
+
+	.include "data/maps/QuantumHavoraMart/scripts.inc"
+
+	.include "data/maps/QuantumHavoraDaycare/scripts.inc"
+
+	.include "data/maps/QuantumHavoraWestHouse1/scripts.inc"
+
+	.include "data/maps/QuantumHavoraWestHouse2/scripts.inc"
+
+	.include "data/maps/QuantumHavoraNorthHouse1/scripts.inc"
+
+	.include "data/maps/QuantumHavoraNorthHouse2/scripts.inc"
+
+	.include "data/maps/QuantumHavoraNorthHouse3/scripts.inc"
+
+	.include "data/maps/QuantumHavoraCliffHouse1/scripts.inc"
+
+	.include "data/maps/QuantumHavoraCliffHouse2/scripts.inc"
+
+	.include "data/maps/QuantumHavoraCliffHouse3/scripts.inc"
+
+	.include "data/maps/QuantumHavoraCliffHouse4/scripts.inc"
+
+	.include "data/maps/QuantumHavoraCliffHouse5/scripts.inc"
+
+	.include "data/maps/QuantumHavoraHarborInn/scripts.inc"
+
+	.include "data/maps/QuantumHavoraNorthHouse4/scripts.inc"
+
+	.include "data/maps/QuantumHavoraNorthHouse5/scripts.inc"
+
+	.include "data/maps/QuantumHavoraNorthLodge/scripts.inc"
+
+	.include "data/maps/HavoraCoastalCliffs/scripts.inc"
+	.include "data/maps/HavoraCoastalCliffs/text.inc"

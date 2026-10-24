@@ -1,0 +1,265 @@
+{
+  "placements": [
+    {
+      "map": "HavoraMarket",
+      "old_rectangle": [
+        4,
+        5,
+        4,
+        4
+      ],
+      "new_origin": [
+        5,
+        5
+      ],
+      "kit": "viridian_home",
+      "door": [
+        6,
+        8
+      ],
+      "warp_index": 0,
+      "previous_warp": {
+        "x": 6,
+        "y": 8,
+        "elevation": 4,
+        "dest_map": "MAP_QUANTUM_HAVORA_SHIPWRIGHT_HOUSE",
+        "dest_warp_id": "0"
+      },
+      "destination": "MAP_QUANTUM_HAVORA_SHIPWRIGHT_HOUSE"
+    },
+    {
+      "map": "HavoraMarket",
+      "old_rectangle": [
+        31,
+        13,
+        4,
+        4
+      ],
+      "new_origin": [
+        31,
+        12
+      ],
+      "kit": "viridian_garden",
+      "door": [
+        32,
+        15
+      ],
+      "warp_index": 3,
+      "previous_warp": {
+        "x": 33,
+        "y": 16,
+        "elevation": 4,
+        "dest_map": "MAP_QUANTUM_HAVORA_TRADER_HOUSE",
+        "dest_warp_id": "0"
+      },
+      "destination": "MAP_QUANTUM_HAVORA_TRADER_HOUSE"
+    },
+    {
+      "map": "HavoraMarket",
+      "old_rectangle": [
+        16,
+        3,
+        8,
+        5
+      ],
+      "new_origin": [
+        16,
+        4
+      ],
+      "kit": "long_home",
+      "door": [
+        20,
+        7
+      ],
+      "warp_index": 4,
+      "previous_warp": {
+        "x": 20,
+        "y": 7,
+        "elevation": 4,
+        "dest_map": "MAP_QUANTUM_HAVORA_TRADE_HALL",
+        "dest_warp_id": "0"
+      },
+      "destination": "MAP_QUANTUM_HAVORA_TRADE_HALL"
+    },
+    {
+      "map": "HavoraMarket",
+      "old_rectangle": [
+        3,
+        21,
+        8,
+        4
+      ],
+      "new_origin": [
+        3,
+        21
+      ],
+      "kit": "long_home",
+      "door": [
+        7,
+        24
+      ],
+      "warp_index": 5,
+      "previous_warp": {
+        "x": 7,
+        "y": 24,
+        "elevation": 4,
+        "dest_map": "MAP_QUANTUM_HAVORA_OUTFITTERS",
+        "dest_warp_id": "0"
+      },
+      "destination": "MAP_QUANTUM_HAVORA_OUTFITTERS"
+    },
+    {
+      "map": "HavoraNorthQuadrant",
+      "old_rectangle": [
+        16,
+        17,
+        6,
+        4
+      ],
+      "new_origin": [
+        17,
+        17
+      ],
+      "kit": "viridian_home",
+      "door": [
+        18,
+        20
+      ],
+      "warp_index": 5,
+      "previous_warp": {
+        "x": 12,
+        "y": 18,
+        "elevation": 5,
+        "dest_map": "MAP_QUANTUM_HAVORA_NORTH_HOUSE4",
+        "dest_warp_id": "0"
+      },
+      "destination": "MAP_QUANTUM_HAVORA_NORTH_HOUSE4"
+    },
+    {
+      "map": "HavoraNorthQuadrant",
+      "old_rectangle": [
+        31,
+        16,
+        6,
+        4
+      ],
+      "new_origin": [
+        32,
+        16
+      ],
+      "kit": "viridian_garden",
+      "door": [
+        33,
+        19
+      ],
+      "warp_index": 6,
+      "previous_warp": {
+        "x": 27,
+        "y": 17,
+        "elevation": 5,
+        "dest_map": "MAP_QUANTUM_HAVORA_NORTH_HOUSE5",
+        "dest_warp_id": "0"
+      },
+      "destination": "MAP_QUANTUM_HAVORA_NORTH_HOUSE5"
+    },
+    {
+      "map": "HavoraWestQuadrant",
+      "old_rectangle": [
+        7,
+        49,
+        6,
+        4
+      ],
+      "new_origin": [
+        8,
+        49
+      ],
+      "kit": "viridian_home",
+      "door": [
+        9,
+        52
+      ],
+      "warp_index": 8,
+      "previous_warp": {
+        "x": 33,
+        "y": 75,
+        "elevation": 4,
+        "dest_map": "MAP_QUANTUM_HAVORA_HARBOR_INN",
+        "dest_warp_id": "0"
+      },
+      "destination": "MAP_QUANTUM_HAVORA_HARBOR_INN"
+    },
+    {
+      "map": "HavoraDaycare",
+      "old_rectangle": [
+        3,
+        11,
+        8,
+        4
+      ],
+      "new_origin": [
+        3,
+        11
+      ],
+      "kit": "long_home",
+      "door": [
+        7,
+        14
+      ],
+      "warp_index": 0,
+      "previous_warp": {
+        "x": 22,
+        "y": 14,
+        "elevation": 5,
+        "dest_map": "MAP_QUANTUM_HAVORA_DAYCARE",
+        "dest_warp_id": "1"
+      },
+      "destination": "MAP_QUANTUM_HAVORA_DAYCARE"
+    }
+  ],
+  "long_home_grid": [
+    [
+      507,
+      508,
+      508,
+      508,
+      508,
+      508,
+      508,
+      240
+    ],
+    [
+      235,
+      236,
+      236,
+      236,
+      236,
+      236,
+      236,
+      237
+    ],
+    [
+      238,
+      506,
+      506,
+      253,
+      233,
+      310,
+      506,
+      239
+    ],
+    [
+      243,
+      241,
+      241,
+      251,
+      234,
+      252,
+      242,
+      250
+    ]
+  ],
+  "harbor_untouched": true,
+  "cliff_cells_untouched": true,
+  "note": "Existing interior destination and warp indices are retained, so return warps follow the updated exterior doors. Unrelated pre-existing event placement issues remain."
+}

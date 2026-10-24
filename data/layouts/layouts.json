@@ -4382,16 +4382,16 @@
       "blockdata_filepath": "data/layouts/OneIsland_KindleRoad_EmberSpa/map.bin"
     },
     {
-      "id": "LAYOUT_QUANTUM_PORT_CITY",
-      "name": "QuantumPortCity_Layout",
-      "width": 80,
+      "id": "LAYOUT_HAVORA_WEST_QUADRANT",
+      "name": "HavoraWestQuadrant_Layout",
+      "width": 36,
       "height": 80,
       "border_width": 2,
       "border_height": 2,
-      "primary_tileset": "gTileset_General",
-      "secondary_tileset": "gTileset_VermilionCity",
-      "border_filepath": "data/layouts/QuantumPortCity/border.bin",
-      "blockdata_filepath": "data/layouts/QuantumPortCity/map.bin"
+      "primary_tileset": "gTileset_HavoraCityPrimary",
+      "secondary_tileset": "gTileset_HavoraCity",
+      "border_filepath": "data/layouts/HavoraWestQuadrant/border.bin",
+      "blockdata_filepath": "data/layouts/HavoraWestQuadrant/map.bin"
     },
     {
       "id": "LAYOUT_QUANTUM_COASTAL_CITY",
@@ -4490,16 +4490,88 @@
       "blockdata_filepath": "data/layouts/QuantumMountainPass/map.bin"
     },
     {
-      "id": "LAYOUT_QUANTUM_HAVORA_HARBOR_LAYOUT",
-      "name": "Quantum_Havora_Harbor_Layout",
-      "width": 40,
+      "id": "LAYOUT_HAVORA_HARBOR",
+      "name": "HavoraHarbor_Layout",
+      "width": 41,
       "height": 32,
       "border_width": 2,
       "border_height": 2,
-      "primary_tileset": "gTileset_General",
-      "secondary_tileset": "gTileset_VermilionCity",
-      "border_filepath": "data/layouts/Quantum_Havora_Harbor_Layout/border.bin",
-      "blockdata_filepath": "data/layouts/Quantum_Havora_Harbor_Layout/map.bin"
+      "primary_tileset": "gTileset_HavoraCityPrimary",
+      "secondary_tileset": "gTileset_HavoraCity",
+      "border_filepath": "data/layouts/HavoraHarbor/border.bin",
+      "blockdata_filepath": "data/layouts/HavoraHarbor/map.bin"
+    },
+    {
+      "id": "LAYOUT_HAVORA_RIVER",
+      "name": "HavoraRiver_Layout",
+      "width": 8,
+      "height": 96,
+      "border_width": 2,
+      "border_height": 2,
+      "primary_tileset": "gTileset_HavoraCityPrimary",
+      "secondary_tileset": "gTileset_HavoraCity",
+      "border_filepath": "data/layouts/HavoraRiver/border.bin",
+      "blockdata_filepath": "data/layouts/HavoraRiver/map.bin"
+    },
+    {
+      "id": "LAYOUT_HAVORA_MARKET",
+      "name": "HavoraMarket_Layout",
+      "width": 41,
+      "height": 62,
+      "border_width": 2,
+      "border_height": 2,
+      "primary_tileset": "gTileset_HavoraCityPrimary",
+      "secondary_tileset": "gTileset_HavoraCity",
+      "border_filepath": "data/layouts/HavoraMarket/border.bin",
+      "blockdata_filepath": "data/layouts/HavoraMarket/map.bin"
+    },
+    {
+      "id": "LAYOUT_HAVORA_NORTH_QUADRANT",
+      "name": "HavoraNorthQuadrant_Layout",
+      "width": 92,
+      "height": 28,
+      "border_width": 2,
+      "border_height": 2,
+      "primary_tileset": "gTileset_HavoraCityPrimary",
+      "secondary_tileset": "gTileset_HavoraCity",
+      "border_filepath": "data/layouts/HavoraNorthQuadrant/border.bin",
+      "blockdata_filepath": "data/layouts/HavoraNorthQuadrant/map.bin"
+    },
+    {
+      "id": "LAYOUT_HAVORA_DAYCARE",
+      "name": "HavoraDaycare_Layout",
+      "width": 37,
+      "height": 29,
+      "border_width": 1,
+      "border_height": 1,
+      "primary_tileset": "gTileset_HavoraCityPrimary",
+      "secondary_tileset": "gTileset_HavoraCity",
+      "border_filepath": "data/layouts/HavoraDaycare/border.bin",
+      "blockdata_filepath": "data/layouts/HavoraDaycare/map.bin"
+    },
+    {
+      "id": "LAYOUT_HAVORA_LOOKOUT",
+      "name": "HavoraLookout_Layout",
+      "width": 14,
+      "height": 19,
+      "border_width": 2,
+      "border_height": 2,
+      "primary_tileset": "gTileset_HavoraCityPrimary",
+      "secondary_tileset": "gTileset_HavoraCity",
+      "border_filepath": "data/layouts/HavoraLookout/border.bin",
+      "blockdata_filepath": "data/layouts/HavoraLookout/map.bin"
+    },
+    {
+      "id": "LAYOUT_HAVORA_COASTAL_CLIFFS",
+      "name": "HavoraCoastalCliffs_Layout",
+      "width": 20,
+      "height": 20,
+      "border_width": 2,
+      "border_height": 2,
+      "primary_tileset": "gTileset_HavoraCityPrimary",
+      "secondary_tileset": "gTileset_HavoraCity",
+      "border_filepath": "data/layouts/HavoraCoastalCliffs/border.bin",
+      "blockdata_filepath": "data/layouts/HavoraCoastalCliffs/map.bin"
     }
   ]
 }
