@@ -1,0 +1,19 @@
+{
+  "base_commit": "425737747dc068015ac6661f20e9d79169dcef9b",
+  "source_gate_metatile": 90,
+  "closed_metatile": 561,
+  "open_metatile": 562,
+  "frame_shifts": [
+    0,
+    4,
+    8,
+    12,
+    16
+  ],
+  "ticks_per_frame": 6,
+  "frames": 5,
+  "obj_tiles": 20,
+  "background_palette": 1,
+  "sheet": "graphics/havora/gate.png",
+  "maps_changed": false
+}

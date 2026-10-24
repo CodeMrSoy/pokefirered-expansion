@@ -2,9 +2,10 @@
 
 The user's maze in `HavoraNorthQuadrant` is playable. It uses the existing
 six boulders, three Cut trees, three pits and four buttons at their painted
-coordinates. There are 16 changed map cells: nine static pieces become grass
-under real object events, three pits acquire collision, three gates are
-placed, and one blocked hedge cell becomes an entrance notice.
+coordinates. The original installation changed 16 map cells: nine static
+pieces became grass under real object events, three pits acquired collision,
+three gates were placed, and one hedge became an entrance notice. The later
+gate-animation update preserves the latest user-painted maps/events exactly.
 
 ## Wiring
 
@@ -25,13 +26,26 @@ Only boulders provide weight. Plates visually press and release immediately
 after a push, and unweighted gates close again. A push that would close a
 gate on the player, another boulder, a follower or an NPC is rejected.
 
-`0x231` is the closed timber barrier; `0x232` is the open grass entry. These
-reuse existing FireRed fence and grass graphics, taking **zero new 8×8 slots**.
-The closed barrier uses collision 1. The open entry is walkable at elevation 6.
+`0x231` is the closed timber barrier; `0x232` is the open grass entry.
+The closed design now follows the user's replacement tile `0x05A` (the two
+posts without a crossbar). The user's painted gate IDs stay unchanged; load
+restores the matching controlled alias at the same coordinates.
+
+The posts retract downwards in four-pixel increments and rise in reverse:
+five 16×16 frames at six game ticks each, approximately half a second total.
+The animation shares one temporary 640-byte OBJ sheet and one OBJ palette
+across all changing gates. It takes **zero new BG graphics or metatile slots**;
+all shared graphics, palette files, cliffs and user map/event files are intact.
+It copies the displayed gate palette so weather/night/fade tint matches the
+stationary art. Opening stays blocked until complete; closing blocks at once.
+A second boulder push waits for the current transition to finish. Resource
+exhaustion falls back to the final tile without trapping the player.
+Map load/resume cancels temporary animation and restores the saved target.
+
 The forest approach remains an outdoor walk; no forest destination map/warp
 was invented, and existing connections, offsets and warps are preserved.
 
-The entrance notice and gate inspections offer reset with confirmation.
+The entrance notice (now at (18,26)) and gate inspections offer reset with confirmation.
 **L + R + SELECT** also opens the reset prompt from inside the maze, so a
 boulder deadlock cannot force a save reload. Confirming restores every piece,
 uncuts trees, empties pits, releases buttons, closes gates and returns the
@@ -63,8 +77,8 @@ moves every puzzle boulder.
 ## Verification
 
 - Full ROM compilation succeeded using ARM GCC and `KEEP_TEMPS=1`.
-- `python tools/havora/check_counterweight.py` checks the exact 16-cell patch,
-  existing NPCs, warps, connections, other districts, unchanged graphics, and
+- `python tools/havora/check_counterweight.py` checks preservation of the latest user maps/events byte-for-byte,
+  unchanged BG graphics/palettes, the five exact native animation frames, and
   independently replays the 37-action solution (34 pushes, three cuts).
 - `python tools/havora/check_puzzle_tiles.py --rom` checks preservation of the
   original tile art and the linked metatiles, graphics and palettes. Use
@@ -74,13 +88,25 @@ moves every puzzle boulder.
   native overworld boulder pushes. It verifies pit consumption/collision,
   pressing/releasing plates, gate collision, the forest approach, moved-object
   and Cut-state persistence across a map reload, occupied-gate protection,
-  reset cancellation, and confirmed full reset.
+  reset cancellation, and confirmed full reset. The animation checks also
+  cover all three gate transitions, every opening/closing frame, blocked
+  moving gates, matching night/fade palette, resource cleanup, palette
+  exhaustion fallback, and resume during an unfinished animation.
 - The emulator fixture enables the normal Strength flag and executes native
   `removeobject` commands for Cut results. It does not test the party/badge
   prerequisites or the full Cut field-effect sequence. Actual flash-save /
   restart testing was not performed; progress uses the normal saved variables.
 - No Porymap UI walkthrough was performed. Preview art is a native tile/sprite
   render with reference labels. Emulator captures are actual ROM frames.
+
+## Gate animation preview
+
+![Actual ROM opening and closing](gate-animation.gif)
+
+The GIF slows the intermediate frames slightly for review. Runtime timing is
+six game ticks per frame. The labeled plan below was captured at the original
+puzzle installation; later user landscaping and the moved reset notice are
+authoritative in the current maps.
 
 ![Labeled plan](counterweight-preview.png)
 

@@ -7,31 +7,41 @@ R=Path(__file__).resolve().parents[2]
 d=json.loads((R/'tools/havora/counterweight-puzzle.json').read_text());base=d['base_commit']
 def old(p):return subprocess.check_output(['git','show',base+':'+p],cwd=R)
 def js(p):return json.loads((R/p).read_text())
-m=js('data/maps/HavoraNorthQuadrant/map.json');previous=json.loads(old('data/maps/HavoraNorthQuadrant/map.json'))
-for k in m:
- if k not in ('object_events','bg_events'):assert m[k]==previous[k],k
-assert m['object_events'][:10]==previous['object_events']
+# User edits after the first placement are authoritative. Animation work may
+# change the closed-gate alias, but must not repaint any maps or event data.
+a=js('tools/havora/gate-animation.json');base=a['base_commit']
+assert not subprocess.check_output(['git','diff','--name-only',base,'--','data/maps','data/layouts'],cwd=R).strip(), 'User map/event edits changed'
+m=js('data/maps/HavoraNorthQuadrant/map.json')
 assert len(m['object_events'])==19<64
 for key,first in [('boulders',11),('trees',17)]:
  for i,coord in enumerate(d[key]):
   obj=m['object_events'][first+i-1];assert [obj['x'],obj['y']]==coord and obj['elevation']==6
-p='data/layouts/HavoraNorthQuadrant/map.bin';raw=(R/p).read_bytes();prior=old(p);now=struct.unpack('<2576H',raw);before=struct.unpack('<2576H',prior)
-changes=[{'x':i%92,'y':i//92,'before':a,'after':b} for i,(a,b) in enumerate(zip(before,now)) if a!=b]
-assert changes==d['changed_cells'] and len(changes)==16
-assert not subprocess.check_output(['git','diff','--name-only',base,'--','data/layouts/layouts.json'],cwd=R).strip()
-for layout in js('data/layouts/layouts.json')['layouts']:
- if layout['primary_tileset']=='gTileset_HavoraCityPrimary':
-  for k in ['blockdata_filepath','border_filepath']:
-   path=layout[k]
-   if path!=p:assert (R/path).read_bytes()==old(path),path
-# Both gate entries reuse existing native art without taking graphics/palette space.
-for path in ['data/tilesets/primary/havora_city/tiles.png','data/tilesets/secondary/havora_city/tiles.png','data/tilesets/secondary/havora_city/metatiles.bin']:
- assert (R/path).read_bytes()==old(path),path
-meta='data/tilesets/primary/havora_city/metatiles.bin';new=(R/meta).read_bytes();prev=old(meta)
-for mid in range(640):
- if mid not in (561,562):assert new[mid*16:(mid+1)*16]==prev[mid*16:(mid+1)*16]
-assert new[561*16:562*16]==new[89*16:90*16]
-assert new[562*16:563*16]==new[:16]
+for group in ['primary','secondary']:
+ for leaf in ['tiles.png','metatile_attributes.bin']:
+  path=f'data/tilesets/{group}/havora_city/{leaf}';assert (R/path).read_bytes()==old(path),path
+ path=f'data/tilesets/{group}/havora_city/metatiles.bin';new=(R/path).read_bytes();prev=old(path)
+ for i in range(len(new)//16):
+  if group!='primary' or i!=a['closed_metatile']:assert new[i*16:i*16+16]==prev[i*16:i*16+16],(group,i)
+ for p in (R/f'data/tilesets/{group}/havora_city/palettes').glob('*.pal'):assert p.read_text().splitlines()==old(str(p.relative_to(R))).decode().splitlines()
+meta=struct.unpack('<5120H',(R/'data/tilesets/primary/havora_city/metatiles.bin').read_bytes())
+assert meta[561*8:562*8]==meta[:4]+meta[90*8+4:91*8]
+assert meta[562*8:563*8]==meta[:8]
+from PIL import Image
+sheet=Image.open(R/a['sheet']);assert sheet.mode=='P' and sheet.size==(16,80)
+tiles=[]
+for group in ['primary','secondary']:
+ im=Image.open(R/f'data/tilesets/{group}/havora_city/tiles.png')
+ tiles.extend(im.crop((x,y,x+8,y+8)) for y in range(0,im.height,8) for x in range(0,128,8))
+overlay=Image.new('P',(16,16))
+for k,w in enumerate(meta[90*8+4:91*8]):
+ im=tiles[w&1023]
+ if w&1024:im=im.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
+ if w&2048:im=im.transpose(Image.Transpose.FLIP_TOP_BOTTOM)
+ overlay.paste(im,(k%2*8,k//2*8))
+for frame,shift in enumerate(a['frame_shifts']):
+ expected=Image.new('P',(16,16))
+ if shift<16:expected.paste(overlay.crop((0,0,16,16-shift)),(0,shift))
+ assert expected.tobytes()==sheet.crop((0,frame*16,16,(frame+1)*16)).tobytes(),frame
 # Independently replay the recorded solution with the exact painted floor,
 # push-only movement, Cut gates, holes and weight-dependent collision.
 floor=set(map(tuple,d['floor']));balls=list(map(tuple,d['boulders']));trees=list(map(tuple,d['trees']));holes=list(map(tuple,d['holes']));plates=list(map(tuple,d['plates']));gates=list(map(tuple,d['gates']));player=tuple(d['start']);cut=filled=0;dirs=[(0,-1),(1,0),(0,1),(-1,0)]
@@ -60,4 +70,4 @@ for move in d['solution']:
   player=src
  assert (cut,filled)==(move['cut_mask'],move['filled_mask'])
 assert tuple(d['goal']) in reach() and filled==7 and all(p in balls for p in plates[1:])
-print('PASS: 37-action solution, six interactive boulders, three Cut trees, exact 16-cell patch, preserved NPCs/warps/connections/cliffs/other districts, and zero added graphics.')
+print('PASS: 37-action solution; latest user maps/events/connections/cliffs preserved byte-for-byte; native gate art and all five animation frames exact; no BG graphics or palettes changed.')

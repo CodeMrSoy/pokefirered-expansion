@@ -6,6 +6,9 @@
 #include "fieldmap.h"
 #include "havora_puzzle.h"
 #include "main.h"
+#include "palette.h"
+#include "sprite.h"
+#include "task.h"
 #include "script.h"
 #include "sound.h"
 #include "constants/event_objects.h"
@@ -107,6 +110,148 @@ static void PutTile(u16 position, u16 tile, bool8 blocked, bool8 redraw)
         CurrentMapDrawMetatileAt(x, y);
 }
 
+// Temporary OBJ graphics avoid consuming any of Havora's full BG tile bank.
+// All three barriers share one 640-byte sheet and one palette during a move.
+#define GATE_ANIM_TAG 0xFA50
+#define GATE_FRAME_TICKS 6
+#define GATE_ANIM_TICKS (5 * GATE_FRAME_TICKS)
+static const u32 sGateAnimationTiles[] = INCBIN_U32("graphics/havora/gate.4bpp");
+static const struct SpriteSheet sGateSheet = {sGateAnimationTiles, sizeof(sGateAnimationTiles), GATE_ANIM_TAG};
+static const struct OamData sGateOam = {
+    .shape = SPRITE_SHAPE(16x16),
+    .size = SPRITE_SIZE(16x16),
+    .priority = 2,
+};
+static const union AnimCmd sGateOpenAnim[] = {
+    ANIMCMD_FRAME(0, GATE_FRAME_TICKS),
+    ANIMCMD_FRAME(4, GATE_FRAME_TICKS),
+    ANIMCMD_FRAME(8, GATE_FRAME_TICKS),
+    ANIMCMD_FRAME(12, GATE_FRAME_TICKS),
+    ANIMCMD_FRAME(16, GATE_FRAME_TICKS),
+    ANIMCMD_END,
+};
+static const union AnimCmd sGateCloseAnim[] = {
+    ANIMCMD_FRAME(16, GATE_FRAME_TICKS),
+    ANIMCMD_FRAME(12, GATE_FRAME_TICKS),
+    ANIMCMD_FRAME(8, GATE_FRAME_TICKS),
+    ANIMCMD_FRAME(4, GATE_FRAME_TICKS),
+    ANIMCMD_FRAME(0, GATE_FRAME_TICKS),
+    ANIMCMD_END,
+};
+static const union AnimCmd *const sGateAnims[] = {sGateOpenAnim, sGateCloseAnim};
+static const struct SpriteTemplate sGateTemplate = {
+    .tileTag = GATE_ANIM_TAG,
+    .paletteTag = GATE_ANIM_TAG,
+    .oam = &sGateOam,
+    .anims = sGateAnims,
+    .affineAnims = gDummySpriteAffineAnimTable,
+    .callback = SpriteCallbackDummy,
+};
+static void Task_AnimateHavoraGates(u8 taskId);
+
+static void CopyGatePalette(u8 paletteNum)
+{
+    // Copy the displayed BG colors, including weather/night/fade tint. The
+    // barrier must not flash to a brighter object palette while retracting.
+    u16 offset = 0x100 + paletteNum * 16;
+    CpuCopy16(gPlttBufferUnfaded + 16, gPlttBufferUnfaded + offset, 32);
+    CpuCopy16(gPlttBufferFaded + 16, gPlttBufferFaded + offset, 32);
+}
+
+static void FinishGateAnimation(u8 taskId, bool8 redraw)
+{
+    u8 i;
+    struct Task *task = &gTasks[taskId];
+    for (i = 0; i < 3; i++)
+    {
+        u8 spriteId = task->data[4 + i];
+        if (spriteId < MAX_SPRITES && gSprites[spriteId].inUse
+            && gSprites[spriteId].template == &sGateTemplate)
+            DestroySprite(&gSprites[spriteId]);
+        if (redraw && (task->data[0] & (1 << i)))
+        {
+            bool8 open = task->data[1] & (1 << i);
+            PutTile(sGates[i], open ? HAVORA_PUZZLE_GATE_OPEN : HAVORA_PUZZLE_GATE_CLOSED, !open, TRUE);
+        }
+    }
+    FreeSpriteTilesByTag(GATE_ANIM_TAG);
+    FreeSpritePaletteByTag(GATE_ANIM_TAG);
+    DestroyTask(taskId);
+}
+
+static void Task_AnimateHavoraGates(u8 taskId)
+{
+    if (!IsCurrentPuzzleMap())
+    {
+        FinishGateAnimation(taskId, FALSE);
+        return;
+    }
+    CopyGatePalette(gTasks[taskId].data[3]);
+    if (++gTasks[taskId].data[2] >= GATE_ANIM_TICKS)
+        FinishGateAnimation(taskId, TRUE);
+}
+
+static bool8 StartGateAnimation(u8 open)
+{
+    u8 i, changed = 0, taskId, paletteNum;
+    for (i = 0; i < 3; i++)
+    {
+        u16 tile = open & (1 << i) ? HAVORA_PUZZLE_GATE_OPEN : HAVORA_PUZZLE_GATE_CLOSED;
+        if (MapGridGetMetatileIdAt((sGates[i] & 0xFF) + MAP_OFFSET, (sGates[i] >> 8) + MAP_OFFSET) != tile)
+            changed |= 1 << i;
+    }
+    if (!changed)
+        return FALSE;
+    // Resource exhaustion safely falls back to the final tiles. No gameplay
+    // state or control lock depends on a sprite allocation succeeding.
+    if (GetTaskCount() >= NUM_TASKS || GetSpriteTileStartByTag(TAG_NONE) == 0xFFFF)
+        goto fallback;
+    LoadSpriteSheet(&sGateSheet);
+    // This engine's loader returns zero on allocation failure (also a valid
+    // tile start), so inspect the registered tag instead of its return value.
+    if (GetSpriteTileStartByTag(GATE_ANIM_TAG) == 0xFFFF)
+        goto fallback;
+    paletteNum = AllocSpritePalette(GATE_ANIM_TAG);
+    if (paletteNum == 0xFF)
+    {
+        FreeSpriteTilesByTag(GATE_ANIM_TAG);
+        goto fallback;
+    }
+    CopyGatePalette(paletteNum);
+    taskId = CreateTask(Task_AnimateHavoraGates, 80);
+    gTasks[taskId].data[0] = changed;
+    gTasks[taskId].data[1] = open;
+    gTasks[taskId].data[3] = paletteNum;
+    for (i = 0; i < 3; i++)
+        gTasks[taskId].data[4 + i] = MAX_SPRITES;
+    for (i = 0; i < 3; i++)
+    {
+        s16 x = (sGates[i] & 0xFF) + MAP_OFFSET;
+        s16 y = (sGates[i] >> 8) + MAP_OFFSET;
+        u8 spriteId;
+        if (!(changed & (1 << i)))
+            continue;
+        SetSpritePosToOffsetMapCoords(&x, &y, 8, 8);
+        spriteId = CreateSpriteAtEnd(&sGateTemplate, x, y, 0);
+        if (spriteId == MAX_SPRITES)
+        {
+            FinishGateAnimation(taskId, TRUE);
+            return TRUE;
+        }
+        gTasks[taskId].data[4 + i] = spriteId;
+        gSprites[spriteId].coordOffsetEnabled = TRUE;
+        StartSpriteAnim(&gSprites[spriteId], open & (1 << i) ? 0 : 1);
+        // Opening remains blocked until the barrier is fully below ground;
+        // closing blocks immediately, so actors cannot enter a rising gate.
+        PutTile(sGates[i], HAVORA_PUZZLE_GATE_OPEN, TRUE, TRUE);
+    }
+    return TRUE;
+fallback:
+    for (i = 0; i < 3; i++)
+        PutTile(sGates[i], open & (1 << i) ? HAVORA_PUZZLE_GATE_OPEN : HAVORA_PUZZLE_GATE_CLOSED, !(open & (1 << i)), TRUE);
+    return TRUE;
+}
+
 static void RefreshWorld(bool8 redraw, bool8 sound)
 {
     u16 rocks[HAVORA_PUZZLE_BOULDER_COUNT];
@@ -119,13 +264,11 @@ static void RefreshWorld(bool8 redraw, bool8 sound)
             !(holes & (1 << i)), redraw);
     for (i = 0; i < 4; i++)
         PutTile(sPlates[i], Occupied(rocks, sPlates[i]) ? HAVORA_PUZZLE_PLATE_DOWN : HAVORA_PUZZLE_PLATE_UP, FALSE, redraw);
-    for (i = 0; i < 3; i++)
-    {
-        u16 tile = open & (1 << i) ? HAVORA_PUZZLE_GATE_OPEN : HAVORA_PUZZLE_GATE_CLOSED;
-        if (MapGridGetMetatileIdAt((sGates[i] & 0xFF) + MAP_OFFSET, (sGates[i] >> 8) + MAP_OFFSET) != tile)
-            gateChanged = TRUE;
-        PutTile(sGates[i], tile, !(open & (1 << i)), redraw);
-    }
+    if (redraw)
+        gateChanged = StartGateAnimation(open);
+    else
+        for (i = 0; i < 3; i++)
+            PutTile(sGates[i], open & (1 << i) ? HAVORA_PUZZLE_GATE_OPEN : HAVORA_PUZZLE_GATE_CLOSED, !(open & (1 << i)), FALSE);
     if (sound && gateChanged)
         PlaySE(SE_SWITCH);
 }
@@ -178,6 +321,10 @@ void HavoraPuzzle_OnLoad(void)
 {
     if (!IsCurrentPuzzleMap())
         return;
+    // Resume/warp may interrupt an animation. Restore the saved target state,
+    // rather than retaining temporary collision or painting another map.
+    if (FuncIsActiveTask(Task_AnimateHavoraGates))
+        FinishGateAnimation(FindTaskIdByFunc(Task_AnimateHavoraGates), FALSE);
     if ((State() & STATE_MAGIC_MASK) != STATE_MAGIC)
         HavoraPuzzle_ResetState();
     RestoreTemplates();
@@ -237,6 +384,8 @@ bool8 HavoraPuzzle_CanPushBoulder(const struct ObjectEvent *object, s16 x, s16 y
     u8 i, j, open, holes = FilledPits();
     if (!IsPuzzleRock(object))
         return TRUE;
+    if (FuncIsActiveTask(Task_AnimateHavoraGates))
+        return FALSE;
     if (IsOpenPit(x, y) && GetObjectEventIdByPosition(x, y, HAVORA_PUZZLE_ELEVATION) != OBJECT_EVENTS_COUNT)
         return FALSE;
     destination = PACK(x - MAP_OFFSET, y - MAP_OFFSET);
