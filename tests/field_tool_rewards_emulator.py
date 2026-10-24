@@ -53,6 +53,8 @@ def pocket():
 
 
 def quantity(item):
+    if 682 <= item <= 688:
+        return native('CheckBagHasItem', item, 1)
     ptr, capacity = pocket()
     return sum(count for value, count in struct.iter_unpack('<HH', m.read(ptr, capacity * 4))
                if value == item)
@@ -93,7 +95,7 @@ for name, x, y, npc, item, flag in rewards:
     m.write(ptr, b'\0' * 4)
     start(label)
     finish()
-    assert quantity(item) == 1, (name, 'reward not placed in Key Items')
+    assert quantity(item) == 1, (name, 'reward not collected in case')
     assert native('FlagGet', flag) == 1, (name, 'reward flag missing')
     if item == 685:
         assert not native('CheckBagHasItem', 749, 1), 'Successful gift retained Gold Teeth'
@@ -101,7 +103,7 @@ for name, x, y, npc, item, flag in rewards:
     finish()
     assert quantity(item) == 1, (name, 'repeat dialogue duplicated reward')
     m.snap(name + '-reward')
-    print('PASS:', name, 'gives Key Item', item, '; full pocket/retry/repeat safe', flush=True)
+    print('PASS:', name, 'collects field tool', item, '; full pocket/retry/repeat safe', flush=True)
 
 # The aide must still require ten caught/owned species, not just ten seen.
 restore(base)
@@ -144,10 +146,9 @@ for item in (687, 688):
         m.press(5, 20)
     for _ in range(6):
         m.press(8, 90)
-    assert quantity(item) == 1, ('Shop purchase failed', item)
     for _ in range(5):
         m.press(0, 90)
     finish()
     assert quantity(item) == 1
-    print('PASS: actual Celadon 4F purchase grants reusable Key Item', item, flush=True)
+    print('PASS: actual Celadon 4F purchase adds field tool to case', item, flush=True)
 print('All retained HM gifts and both relocated acquisition paths passed.', flush=True)

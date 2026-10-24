@@ -2936,32 +2936,11 @@ static u8 InitFieldMoveMonSprite(u32 species, bool32 isShiny, u32 personality)
     species &= ~SHOW_MON_CRY_NO_DUCKING;
     if (species & FIELD_TOOL_ARGUMENT)
     {
-        u8 matrixNum;
-        monSprite = AddItemIconSprite(FIELD_TOOL_ICON_TAG, FIELD_TOOL_ICON_TAG, species & ~FIELD_TOOL_ARGUMENT);
+        monSprite = FieldTool_CreateLargeSprite(species & ~FIELD_TOOL_ARGUMENT, FIELD_TOOL_ICON_TAG, 320, 80);
         if (monSprite == MAX_SPRITES)
-        {
-            FreeSpriteTilesByTag(FIELD_TOOL_ICON_TAG);
-            FreeSpritePaletteByTag(FIELD_TOOL_ICON_TAG);
             return MAX_SPRITES;
-        }
         sprite = &gSprites[monSprite];
-        sprite->x = 320;
-        sprite->y = 80;
         sprite->data[5] = TRUE;
-        matrixNum = AllocOamMatrix();
-        if (matrixNum != 0xFF)
-        {
-            // Double the item only for this cut-in. Double-size OAM leaves
-            // room for the enlarged 32px texture without cropping its edges.
-            sprite->oam.affineMode = ST_OAM_AFFINE_DOUBLE;
-            sprite->oam.matrixNum = matrixNum;
-            sprite->affineAnimPaused = TRUE;
-            CalcCenterToCornerVec(sprite, sprite->oam.shape, sprite->oam.size, sprite->oam.affineMode);
-            SetOamMatrix(matrixNum, 0x80, 0, 0, 0x80);
-            // Item textures occupy the upper-left 24px of a 32px sprite.
-            sprite->x2 = 8;
-            sprite->y2 = 8;
-        }
     }
     else
         monSprite = CreateMonSprite_FieldMove(species, isShiny, personality, 320, 80, 0);

@@ -33,7 +33,7 @@ def pocket(index):
  p=m.symbols['gBagPockets']+index*8
  return struct.unpack('<I',m.read(p,4))[0],m.read(p+4,1)[0]
 # One healthy party member with no traversal moves. Use real give-mon script.
-m.inject(b'\x23'+struct.pack('<I',(m.symbols['ScrCmd_createmon']|1)+0x2000000)+struct.pack('<BBHHI',0,6,1,25,0)+b'\x02')
+m.inject(b'\x23'+struct.pack('<I',(m.symbols['ScrCmd_createmon']|1)+0x2000000)+struct.pack('<BBHHI',0,6,1,100,0)+b'\x02')
 assert m.read(m.symbols['gPlayerPartyCount'],1)==b'\x01'
 for slot in range(4): native('SetMonMoveSlot',m.symbols['gPlayerParty'],33,slot)
 for move,item,badge in [(0,682,2),(1,683,3),(2,684,5),(3,685,4),(4,686,1),(5,687,6),(6,688,7)]:
@@ -50,7 +50,7 @@ for move,item,badge in [(0,682,2),(1,683,3),(2,684,5),(3,685,4),(4,686,1),(5,687
  assert native('IsItemHM',item)==0 and native('IsItemTMHM',item)==0
  assert native('AddBagItem',item,99)==1
  assert native('CheckBagHasItem',item,2)==0,'Tool duplicated'
-print('PASS: all seven tools require ownership/badges, occupy Key Items, are unique and need no HM user',flush=True)
+print('PASS: all seven tools require ownership/badges, are collected uniquely in the case and need no HM user',flush=True)
 # Recover old HM inventory in the original slots without changing unrelated TMs.
 kp,kcap=pocket(1);tp,tcap=pocket(3)
 base=savedstate()
@@ -90,9 +90,7 @@ for _ in range(250):
  for i in range(64):
   s=m.read(m.symbols['gSprites']+i*68,68)
   if s[62]&1 and 100<=struct.unpack_from('<h',s,32)[0]<=140 and struct.unpack_from('<h',s,0x2e+5*2)[0]==1 and struct.unpack_from('<H',s,0x2e)[0]==(8192|682):
-   assert s[1]&3==3,'Tool banner did not use double-size affine OAM'
-   matrix=(struct.unpack_from('<H',s,2)[0]>>9)&31
-   assert m.read(m.symbols['gOamMatrices']+matrix*8,8)==struct.pack('<hhhh',128,0,0,128),'Tool banner was not scaled 2x'
+   assert s[1]&3==0 and s[3]>>6==3,'Tool banner did not use native 64px OAM'
    seen=True;m.snap('shears-banner')
  if seen:break
  m.run(1)
@@ -118,6 +116,7 @@ native('ItemUseOutOfBattle_FieldTool',task)
 m.run(500);finish()
 assert m.read(m.symbols['gOamMatrixAllocBitmap'],4)==matrices_before_lantern,'Indoor tool banner leaked an affine matrix'
 assert native('FlagGet',constant('FLAG_SYS_FLASH_ACTIVE'))==1
+assert native('GetFlashLevel')==1
 m.snap('lantern-lit')
 print('PASS: registered Lantern illuminates cave',flush=True)
 def registered(item):
@@ -144,7 +143,7 @@ print('PASS: gloves activate Strength state and push a real boulder',flush=True)
 # The living Kanto caves retain real smashable rocks.
 warp('RockTunnel_B1F',1,21)
 rock=object_at(1,20);assert rock is not None
-native('VarSet',0x4020,255) # A real Repel prevents the optional rock encounter.
+native('VarSet',0x4020,255) # Level-100 lead plus Repel excludes the optional rock encounter.
 m.press(8,80);m.press(8,80);m.press(8,1);m.run(500);finish()
 assert not m.read(rock,1)[0]&1,'Rock Hammer did not remove the rock'
 assert native('CheckBagHasItem',687,1)==1
@@ -206,17 +205,21 @@ warp('RockTunnel_1F',15,16)
 flag('FLAG_SYS_FLASH_ACTIVE',False)
 kp,kcap=pocket(1)
 keyids=[struct.unpack('<H',m.read(kp+i*4,2))[0] for i in range(kcap)]
-lantern=keyids.index(686)
+lantern=keyids.index(831)
 native('GoToBagMenu',0,1,m.symbols['CB2_ReturnToField']|1);m.run(180)
 for _ in range(lantern):m.press(5,12)
-m.snap('tools-key-items-bag');m.press(8,40);m.press(8,500);finish()
+m.snap('tools-key-items-bag');m.press(8,40);m.press(8,180)
+for _ in range(4):m.press(5,12)
+m.snap('tools-case-lantern');m.press(8,500);finish()
 assert native('FlagGet',constant('FLAG_SYS_FLASH_ACTIVE'))==1,'Bag Lantern failed'
 flag('FLAG_SYS_FLASH_ACTIVE',False)
 save=ptr('gSaveBlock1Ptr')
 m.write(save+0x296,struct.pack('<H',686))
 # Save field registeredItemsExtra is exposed through the public structure; use
 # the first single registration that the new game starts with.
-m.press(2,500);finish()
+m.press(2,180)
+for _ in range(4):m.press(5,12)
+m.press(8,500);finish()
 assert native('FlagGet',constant('FLAG_SYS_FLASH_ACTIVE'))==1,'Select Lantern failed'
 print('PASS: actual Bag Use and Select registration invoke the Lantern',flush=True)
 # A real old-style HM entry saved to flash migrates on Continue, not only when

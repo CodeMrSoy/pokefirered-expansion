@@ -1,10 +1,10 @@
-# QOL field tools
+# QOL Field Item Case
 
-The seven supported HM field actions now use reusable Key Items. They require
-ownership and the same badges as before, with no move/party/species requirement.
-The battle moves remain available and can be forgotten normally.
+Seven traversal tools live inside one reusable F.I. Case in Key Items. Each tool
+still requires its original reward and badge; no party move/species is needed.
+Original battle moves remain available and can be forgotten normally.
 
-| Action | Key Item | Badge | Acquisition |
+| Action | Tool | Badge | Acquisition |
 | --- | --- | --- | --- |
 | Cut | Pruning Shears | Cascade | S.S. Anne captain |
 | Fly | Sky Whistle | Thunder | Route 16 house |
@@ -14,60 +14,66 @@ The battle moves remain available and can be forgotten normally.
 | Rock Smash | Rock Hammer | Marsh | Celadon Department Store, 4F |
 | Waterfall | Basculegion Bait | Volcano | Celadon Department Store, 4F |
 
-Press A at trees, boulders, cracked rocks, water edges and waterfalls for the
-corresponding Yes/No prompt. Lantern and Sky Whistle work from Key Items or the
-registered-item wheel. The tablet's native map also offers whistle travel when
-available. All tools can be registered; invalid locations show a message.
 
-Cut also trims grass when used directly. Gloves remain active for the map using
-the original Strength state. The Wailmer Wailer calls a sea Pokémon using a round, blue
-Wailmer-shaped flute icon. Boarding, water movement, dismounting and encounters retain native
-Surf behavior, including the original riding sprite.
-The whistle uses native Fly destinations, visited-location restrictions and the
-existing bird transport. Bait is reusable and uses native waterfall movement.
-The field-move cut-in shows the appropriate item icon at twice its Bag size,
-centered in the banner, instead of a Pokémon and
-plays an item sound instead of a cry. Pokémon field-move summon poses are skipped
-for Cut, Strength, Rock Smash and Lantern.
+The first tool automatically adds the F.I. Case. Further tools occupy no extra
+Bag slots. Use the case in Key Items or register it on the four-slot item wheel;
+selecting the case opens all seven tools. The menu shows a native 64×64 preview,
+a description, A to use, and B to go back. Uncollected tools and missing badges
+cannot launch an action. The first collected tool is selected on opening. B
+returns to the Bag when opened there and to the field when opened via Select.
+The supplied 24×24 F.I. Case icon is used in both the Bag and the wheel. It is
+converted to 15 RGB555 colors plus transparency without changing pixel positions;
+the original RGBA source is preserved and the importer reproduces the native PNG
+and palette. Individual 24×24 field-tool artwork is no longer used or compiled.
 
-Item art uses native 24×24 indexed sprites with a transparent outer margin and
-an individual 16-entry palette per tool (15 opaque colors plus transparency).
-`tools/render_field_tools.py` imports the seven designs approved on October 24,
-2026 and reproduces the PNGs and JASC palettes. The unmodified RGB uploads are
-preserved in `tools/field_tool_sources`. The importer removes their baked-in
-checkerboards, fits their silhouettes inside a 22×22 area and quantizes each
-to 15 foreground colors at GBA RGB555 precision without dithering. Fine emblem,
-cord and finger-hole details are reduced at the native item-icon resolution.
-The set uses green-handled shears, gold reinforced gloves, a dark flame lantern,
-a Corviknight-themed Sky Whistle, a blue Wailmer ocarina, a gold-ended hammer
-and a red-and-cream Basculegion bait pouch.
+The 64×64 transition art is also reused for case previews, without duplicate
+ROM graphics. Each tool has a 16-entry RGB555 palette with transparent index 0.
+`tools/render_field_tools.py` recreates these from the transparent references in
+`tools/field_tool_sources`. Preview sprite resources are released on selection
+changes and exit. Case/field cut-ins use separate tags. A persistent sprite
+template prevents tag/palette corruption when changing previews.
 
-Original HM item IDs, gift flags and save structures are unchanged. Existing HM
-inventory moves from the TM Case to Key Items on Continue or opening the Bag.
-If the pocket is full, the old entry is retained and continues to authorize field
-interactions. Opening the Bag retries migration after space becomes available.
-Deferred entries are hidden from the TM Case until recovery.
-Repeated grants/migration do not duplicate tools. Existing learned moves remain
-on Pokémon; HM entries no longer appear in the TM Case or as Party field actions.
-Unused Dive has no overworld functionality in this campaign.
+Press A at trees, boulders, rocks, shorelines, and waterfalls for native Yes/No
+prompts. Using a tool from the case delegates to the same field action, including
+location restrictions. The whistle retains the visited-destination Fly map and
+native bird transport; Surf retains the original FireRed riding sprite, native
+movement/dismount/encounters. Strength persists for the map; bait is reusable.
+The native field-move banner shows the 64×64 item with an item sound.
 
-The party/box last-usable-Pokémon, Egg, Mail and held-item release protections
-remain. The obsolete requirement to retain a sole HM user is removed.
+Lantern caves: maps marked requires_flash refuse entry without a collected
+Lantern, with a message. Rock Tunnel 1F/B1F are currently the dark maps. Entry is
+pitch black until the Lantern is used. A player-centered light expands on ignition, with a bright core and a smoothstep
+dithered falloff out to a 56px radius; the rest remains black. Eight gentle flame
+phases run at five updates per second without consuming the game RNG. Four 64px
+OBJ masks share one palette and 8 KiB of OBJ tiles, with no persistent heap buffer.
+Resources are released outside caves and reset safely through menus. A two-window
+light remains as a fallback if tiles, palette, sprites or temporary allocation
+are unavailable. The gradients are generated by tools/render_lantern_glow.py.
+Dialogue stays readable. Interior floor changes retain illumination; outdoors
+clears it. The Boulder Badge gate is retained.
 
-Validation: `tests/field_tools_emulator.py` runs against the built ROM with a party
-knowing only Tackle. It covers gates, Key Item identity, repeat grants, migration,
-full pockets, TM Case filtering, all seven actions, item banners, Bag/Select use,
-actual flash saving and automatic migration on Continue. Waterfall uses a temporary
-RAM fixture because the retained Kanto maps have no waterfalls. Seven existing
-regressions also pass: title, tablet transitions, Party text, storage visuals,
-release safety, storage actions and story rewards/League access.
-The regular QOL runner includes the tool check.
+Compatibility: original tool IDs 682–688, reward flags, and save structure sizes
+are retained. Seven previously unused persistent flags (0x4A7–0x4AD) record
+collection. Case ID 831 is appended without renumbering existing items. Continue,
+opening the Bag/case, and using Select migrate legacy tool entries from Key Items
+or the TM Case to case ownership. An existing Key Item tool frees the slot needed
+for its case, even in a full pocket. A deferred TM entry is preserved if no case
+slot is available; it continues to authorize the tool and stays hidden behind
+real TMs. Migration retries later and never deletes an unconverted tool.
 
-Acquisition audit: `tests/field_tool_rewards_emulator.py` runs the complete five
-retained NPC reward conversations, checking full-pocket refusal, retry, reward
-flags, one-copy ownership and the Warden's Gold Teeth consumption. The captain
-and Warden now check Key Item space before marking their gifts complete. The
-aide still requires ten caught/owned species; ten merely seen or nine caught
-do not qualify. HM06's Ember Spa gift and HM07's Icefall Cave pickup were retired
-with those Sevii maps during the ROM cleanup. Their replacement items are tested
-through actual purchases at Celadon Department Store 4F, at zero cost.
+Old registered tool slots consolidate to one case shortcut while preserving
+unrelated registered items. Repeated gifts/migration do not duplicate the case or
+tools. Acquiring the first tool with no Key Item space still refuses safely;
+subsequent rewards fit inside an existing case even with a full pocket. Gift
+text names the F.I. Case. Captain/Warden reward flags and Gold Teeth consumption
+advance only on a successful grant. The aide still needs ten caught species.
+Retired Sevii HM06/HM07 gifts remain replaced by free Celadon 4F purchases.
+
+Validation: field_item_case_emulator covers real Bag/back navigation, direct
+Select and multi-item wheel access, seven preview tile buffers, uncollected and
+badge locks, real Lantern use, and flash-save/Continue ownership. The field tool
+suite covers all seven traversal actions, migration/full pockets, legacy TMs,
+field banners, move forgetting, menus, and saving. Waterfall uses a RAM fixture
+because retained Kanto maps have none. The reward suite exercises all five NPC
+conversations and both actual shop purchases. All are in the QOL regression
+runner. Last-usable-Pokémon, Egg, Mail and held-item release protections remain.

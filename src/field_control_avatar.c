@@ -1,4 +1,5 @@
 #include "global.h"
+#include "field_tools.h"
 #include "gflib.h"
 #include "bike.h"
 #include "coord_event_weather.h"
@@ -893,6 +894,23 @@ static const u8 *GetSignpostScriptAtMapPosition(struct MapPosition * position)
     return EventScript_TestSignpostMsg;
 }
 
+static bool8 LanternBlocksWarp(s8 warpEventId)
+{
+    const struct WarpEvent *warp;
+    const struct MapHeader *destination;
+    extern const u8 EventScript_LanternRequired[];
+    if (warpEventId < 0 || gMapHeader.cave || FieldTool_IsOwned(FIELD_MOVE_FLASH))
+        return FALSE;
+    warp = &gMapHeader.events->warps[warpEventId];
+    if (warp->mapNum == MAP_NUM(MAP_DYNAMIC))
+        return FALSE;
+    destination = Overworld_GetMapHeaderByGroupAndId(warp->mapGroup, warp->mapNum);
+    if (!destination->cave)
+        return FALSE;
+    ScriptContext_SetupScript(EventScript_LanternRequired);
+    return TRUE;
+}
+
 static bool8 TryArrowWarp(struct MapPosition *position, u16 metatileBehavior, u8 direction)
 {
     s8 warpEventId = GetWarpEventAtMapPosition(&gMapHeader, position);
@@ -902,6 +920,8 @@ static bool8 TryArrowWarp(struct MapPosition *position, u16 metatileBehavior, u8
     {
         if (IsArrowWarpMetatileBehavior(metatileBehavior, direction) == TRUE)
         {
+            if (LanternBlocksWarp(warpEventId))
+                return TRUE;
             StoreInitialPlayerAvatarState();
             SetupWarp(&gMapHeader, warpEventId, position);
             DoWarp();
@@ -915,6 +935,8 @@ static bool8 TryArrowWarp(struct MapPosition *position, u16 metatileBehavior, u8
                 SetPlayerAvatarTransitionFlags(PLAYER_AVATAR_FLAG_ON_FOOT);
                 delay = 12;
             }
+            if (LanternBlocksWarp(warpEventId))
+                return TRUE;
             StoreInitialPlayerAvatarState();
             SetupWarp(&gMapHeader, warpEventId, position);
             DoStairWarp(metatileBehavior, delay);
@@ -930,6 +952,8 @@ static bool8 TryStartWarpEventScript(struct MapPosition *position, u16 metatileB
 
     if (warpEventId != -1 && IsWarpMetatileBehavior(metatileBehavior) == TRUE)
     {
+        if (LanternBlocksWarp(warpEventId))
+            return TRUE;
         StoreInitialPlayerAvatarState();
         SetupWarp(&gMapHeader, warpEventId, position);
         if (MetatileBehavior_IsEscalator(metatileBehavior) == TRUE)
@@ -1066,6 +1090,8 @@ static bool8 TryDoorWarp(struct MapPosition *position, u16 metatileBehavior, u8 
             warpEventId = GetWarpEventAtMapPosition(&gMapHeader, position);
             if (warpEventId != -1 && IsWarpMetatileBehavior(metatileBehavior) == TRUE)
             {
+                if (LanternBlocksWarp(warpEventId))
+                    return TRUE;
                 StoreInitialPlayerAvatarState();
                 SetupWarp(&gMapHeader, warpEventId, position);
                 DoDoorWarp();

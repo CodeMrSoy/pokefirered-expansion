@@ -11835,8 +11835,8 @@ const struct Item gItemsInfo[] =
         .pocket = POCKET_KEY_ITEMS,
         .type = ITEM_USE_FIELD,
         .fieldUseFunc = ItemUseOutOfBattle_FieldTool,
-        .iconPic = gFieldToolIcon_Shears,
-        .iconPalette = gFieldToolIconPalette_Shears,
+        .iconPic = gItemIcon_TMCase,
+        .iconPalette = gItemIconPalette_TMCase,
     },
 
     [ITEM_HM_FLY] =
@@ -11848,8 +11848,8 @@ const struct Item gItemsInfo[] =
         .pocket = POCKET_KEY_ITEMS,
         .type = ITEM_USE_FIELD,
         .fieldUseFunc = ItemUseOutOfBattle_FieldTool,
-        .iconPic = gFieldToolIcon_Whistle,
-        .iconPalette = gFieldToolIconPalette_Whistle,
+        .iconPic = gItemIcon_TMCase,
+        .iconPalette = gItemIconPalette_TMCase,
     },
 
     [ITEM_HM_SURF] =
@@ -11861,8 +11861,8 @@ const struct Item gItemsInfo[] =
         .pocket = POCKET_KEY_ITEMS,
         .type = ITEM_USE_FIELD,
         .fieldUseFunc = ItemUseOutOfBattle_FieldTool,
-        .iconPic = gFieldToolIcon_WailmerWailer,
-        .iconPalette = gFieldToolIconPalette_WailmerWailer,
+        .iconPic = gItemIcon_TMCase,
+        .iconPalette = gItemIconPalette_TMCase,
     },
 
     [ITEM_HM_STRENGTH] =
@@ -11874,8 +11874,8 @@ const struct Item gItemsInfo[] =
         .pocket = POCKET_KEY_ITEMS,
         .type = ITEM_USE_FIELD,
         .fieldUseFunc = ItemUseOutOfBattle_FieldTool,
-        .iconPic = gFieldToolIcon_Gloves,
-        .iconPalette = gFieldToolIconPalette_Gloves,
+        .iconPic = gItemIcon_TMCase,
+        .iconPalette = gItemIconPalette_TMCase,
     },
 
     [ITEM_HM_FLASH] =
@@ -11887,8 +11887,8 @@ const struct Item gItemsInfo[] =
         .pocket = POCKET_KEY_ITEMS,
         .type = ITEM_USE_FIELD,
         .fieldUseFunc = ItemUseOutOfBattle_FieldTool,
-        .iconPic = gFieldToolIcon_Lantern,
-        .iconPalette = gFieldToolIconPalette_Lantern,
+        .iconPic = gItemIcon_TMCase,
+        .iconPalette = gItemIconPalette_TMCase,
     },
 
     [ITEM_HM_ROCK_SMASH] =
@@ -11900,8 +11900,8 @@ const struct Item gItemsInfo[] =
         .pocket = POCKET_KEY_ITEMS,
         .type = ITEM_USE_FIELD,
         .fieldUseFunc = ItemUseOutOfBattle_FieldTool,
-        .iconPic = gFieldToolIcon_Hammer,
-        .iconPalette = gFieldToolIconPalette_Hammer,
+        .iconPic = gItemIcon_TMCase,
+        .iconPalette = gItemIconPalette_TMCase,
     },
 
     [ITEM_HM_WATERFALL] =
@@ -11913,8 +11913,8 @@ const struct Item gItemsInfo[] =
         .pocket = POCKET_KEY_ITEMS,
         .type = ITEM_USE_FIELD,
         .fieldUseFunc = ItemUseOutOfBattle_FieldTool,
-        .iconPic = gFieldToolIcon_Bait,
-        .iconPalette = gFieldToolIconPalette_Bait,
+        .iconPic = gItemIcon_TMCase,
+        .iconPalette = gItemIconPalette_TMCase,
     },
 
     [ITEM_HM_DIVE] =
@@ -12346,6 +12346,19 @@ const struct Item gItemsInfo[] =
         .fieldUseFunc = ItemUseOutOfBattle_CannotUse,
         .iconPic = gItemIcon_VsSeeker,
         .iconPalette = gItemIconPalette_VsSeeker,
+    },
+
+    [ITEM_FIELD_ITEM_CASE] =
+    {
+        .name = _("F.I. Case"),
+        .price = 0,
+        .description = COMPOUND_STRING("A case for field tools.\nOpen it to select a tool."),
+        .importance = 1,
+        .pocket = POCKET_KEY_ITEMS,
+        .type = ITEM_USE_FIELD,
+        .fieldUseFunc = ItemUseOutOfBattle_FieldItemCase,
+        .iconPic = gFieldItemCaseIcon,
+        .iconPalette = gFieldItemCasePalette,
     },
 
     [ITEM_TM_CASE] =

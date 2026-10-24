@@ -80,6 +80,7 @@ struct BagMenu
     s16 graphicsLoadState;
 };
 
+u16 *RegisteredItemAt(u32 slot);
 extern struct BagMenu *gBagMenu;
 extern u16 gSpecialVar_ItemId;
 

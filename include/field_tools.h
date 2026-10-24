@@ -7,25 +7,19 @@
 #define FIELD_TOOL_ARGUMENT (1 << 13)
 #define FIELD_TOOL_ICON_TAG 0xD130
 
+u8 FieldTool_CreateLargeSprite(u16 item, u16 tag, s16 x, s16 y);
 u16 FieldTool_GetItem(enum FieldMove fieldMove);
 enum FieldMove FieldTool_GetMove(u16 item);
 bool32 FieldTool_IsOwned(enum FieldMove fieldMove);
 void FieldTool_Prepare(enum FieldMove fieldMove);
 void FieldTools_MigrateInventory(void);
+bool32 FieldTool_HasFlag(u16 item);
+bool32 FieldTool_Collect(u16 item);
+bool32 FieldTool_Remove(u16 item);
+extern const u32 gFieldItemCaseIcon[];
+extern const u16 gFieldItemCasePalette[];
+void FieldItemCase_OpenUI(void);
+void FieldItemCase_Return(bool32 use, u16 item);
 
-extern const u32 gFieldToolIcon_Shears[];
-extern const u32 gFieldToolIcon_Whistle[];
-extern const u32 gFieldToolIcon_WailmerWailer[];
-extern const u32 gFieldToolIcon_Gloves[];
-extern const u32 gFieldToolIcon_Lantern[];
-extern const u32 gFieldToolIcon_Hammer[];
-extern const u32 gFieldToolIcon_Bait[];
-extern const u16 gFieldToolIconPalette_Shears[];
-extern const u16 gFieldToolIconPalette_Whistle[];
-extern const u16 gFieldToolIconPalette_WailmerWailer[];
-extern const u16 gFieldToolIconPalette_Gloves[];
-extern const u16 gFieldToolIconPalette_Lantern[];
-extern const u16 gFieldToolIconPalette_Hammer[];
-extern const u16 gFieldToolIconPalette_Bait[];
 
 #endif

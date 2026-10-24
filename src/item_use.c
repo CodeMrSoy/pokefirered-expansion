@@ -458,6 +458,40 @@ static void ItemUseOnFieldCB_FieldTool(u8 taskId)
     callback();
 }
 
+static bool8 sCaseFromRegistered;
+
+static void ItemUseOnFieldCB_FieldItemCase(u8 taskId)
+{
+    CleanupOverworldWindowsAndTilemaps();
+    FieldItemCase_OpenUI();
+    DestroyTask(taskId);
+}
+
+void ItemUseOutOfBattle_FieldItemCase(u8 taskId)
+{
+    sCaseFromRegistered = gTasks[taskId].tUsingRegisteredKeyItem == TRUE;
+    sItemUseOnFieldCB = ItemUseOnFieldCB_FieldItemCase;
+    SetUpItemUseOnFieldCallback(taskId);
+}
+
+void FieldItemCase_Return(bool32 use, u16 item)
+{
+    if (use)
+    {
+        gSpecialVar_ItemId = item;
+        sItemUseOnFieldCB = ItemUseOnFieldCB_FieldTool;
+        gFieldCallback = FieldCB_UseItemOnField;
+        SetMainCallback2(CB2_ReturnToField);
+    }
+    else if (sCaseFromRegistered)
+    {
+        gFieldCallback = NULL;
+        SetMainCallback2(CB2_ReturnToField);
+    }
+    else
+        GoToBagMenu(ITEMMENULOCATION_LAST, POCKET_KEY_ITEMS, CB2_ReturnToField);
+}
+
 void ItemUseOutOfBattle_FieldTool(u8 taskId)
 {
     sItemUseOnFieldCB = ItemUseOnFieldCB_FieldTool;

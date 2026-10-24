@@ -40,6 +40,18 @@ EventScript_BufferItemsPocket::
 	return
 
 EventScript_BufferKeyItemsPocket::
+	compare VAR_0x8000, ITEM_PRUNING_SHEARS
+	goto_if_lt EventScript_BufferOrdinaryKeyItemsPocket
+	compare VAR_0x8000, ITEM_BASCULEGION_BAIT
+	goto_if_gt EventScript_BufferOrdinaryKeyItemsPocket
+	bufferstring STR_VAR_3, Text_FieldItemCasePocket
+	call_if_eq VAR_0x8007, TRUE, EventScript_PlayFanfareObtainedItem
+	return
+
+Text_FieldItemCasePocket:
+	.string "F.I. CASE$"
+
+EventScript_BufferOrdinaryKeyItemsPocket::
 	bufferstdstring STR_VAR_3, STDSTRING_KEY_ITEMS_POCKET
 	call_if_eq VAR_0x8007, TRUE, EventScript_PlayFanfareObtainedItem
 	return

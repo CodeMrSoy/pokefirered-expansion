@@ -3,6 +3,10 @@
 
 #include "global.h"
 
+void UpdateLanternLighting(void);
+bool32 LanternGlow_Update(s16 x, s16 y);
+void LanternGlow_Clear(void);
+void LanternGlow_SetVisible(bool32 visible);
 void AnimateFlash(u8);
 void FieldCB_SafariZoneRanOutOfBalls(void);
 void DoOutwardBarnDoorWipe(void);

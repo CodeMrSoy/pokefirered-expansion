@@ -152,6 +152,8 @@ bool8 CheckBagHasItem(u16 itemId, u16 count)
     u8 i;
     enum Pocket pocket = GetItemPocket(itemId);
 
+    if (count == 1 && FieldTool_HasFlag(itemId))
+        return TRUE;
     if (pocket >= POCKETS_COUNT)
         return FALSE;
 
@@ -215,6 +217,8 @@ bool8 HasAtLeastOnePokeBall(void)
 
 bool8 CheckBagHasSpace(u16 itemId, u16 count)
 {
+    if (FieldTool_GetMove(itemId) != FIELD_MOVE_COUNT)
+        return count <= 1 && (CheckBagHasItem(itemId, 1) || CheckBagHasItem(ITEM_FIELD_ITEM_CASE, 1) || CheckBagHasSpace(ITEM_FIELD_ITEM_CASE, 1));
     if (GetItemPocket(itemId) == POCKET_NONE)
         return FALSE;
 
@@ -257,6 +261,8 @@ bool8 AddBagItem(u16 itemId, u16 count)
         return FALSE;
 
     if (FieldTool_GetMove(itemId) != FIELD_MOVE_COUNT)
+        return FieldTool_Collect(itemId);
+    if (itemId == ITEM_FIELD_ITEM_CASE)
     {
         if (CheckBagHasItem(itemId, 1))
             return TRUE;
@@ -324,6 +330,8 @@ bool8 RemoveBagItem(u16 itemId, u16 count)
     u8 i;
     enum Pocket pocket = GetItemPocket(itemId);
 
+    if (count == 1 && FieldTool_HasFlag(itemId))
+        return FieldTool_Remove(itemId);
     if (pocket >= POCKETS_COUNT)
         return FALSE;
 

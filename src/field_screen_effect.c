@@ -1,4 +1,8 @@
 #include "global.h"
+#include "event_data.h"
+#include "field_effect.h"
+#include "field_player_avatar.h"
+#include "constants/flags.h"
 #include "gflib.h"
 #include "field_screen_effect.h"
 #include "overworld.h"
@@ -208,6 +212,77 @@ void WriteFlashScanlineEffectBuffer(u8 flashLevel)
         SetFlashScanlineEffectWindowBoundaries(&gScanlineEffectRegBuffers[0][0], 120, 80, sFlashLevelToRadius[flashLevel]);
         CpuFastCopy(&gScanlineEffectRegBuffers[0], &gScanlineEffectRegBuffers[1], 240 * 8);
     }
+}
+
+// Soft radial dithering with a low-resource two-window fallback.
+static EWRAM_DATA u16 sLanternRadius = 0;
+static u16 LanternWindow(s32 x, s32 dy, s32 radius)
+{
+    s32 halfWidth, left, right;
+    if (radius <= 0 || dy * dy >= radius * radius)
+        return 0;
+    halfWidth = Sqrt(radius * radius - dy * dy);
+    left = max(0, min(DISPLAY_WIDTH, x - halfWidth));
+    right = max(0, min(DISPLAY_WIDTH, x + halfWidth));
+    return WIN_RANGE(left, right);
+}
+void UpdateLanternLighting(void)
+{
+    s32 x = 120, y = 80, line;
+    u16 *buffer;
+    struct Sprite *player;
+    bool32 gradient = FALSE;
+    if (!gMapHeader.cave)
+    {
+        sLanternRadius = 0;
+        LanternGlow_Clear();
+        return;
+    }
+    if (FieldEffectActiveListContains(FLDEFF_FIELD_MOVE_SHOW_MON))
+    {
+        LanternGlow_SetVisible(FALSE);
+        return;
+    }
+    if (!FlagGet(FLAG_SYS_FLASH_ACTIVE))
+        sLanternRadius = 0;
+    else if (sLanternRadius < 56)
+        sLanternRadius += 2;
+    if (gPlayerAvatar.spriteId < MAX_SPRITES)
+    {
+        player = &gSprites[gPlayerAvatar.spriteId];
+        x = player->x + player->x2;
+        y = player->y + player->y2 - 8;
+        if (player->coordOffsetEnabled)
+        {
+            x += gSpriteCoordOffsetX;
+            y += gSpriteCoordOffsetY;
+        }
+    }
+    if (FlagGet(FLAG_SYS_FLASH_ACTIVE))
+        gradient = LanternGlow_Update(x, y);
+    else
+        LanternGlow_Clear();
+    buffer = gScanlineEffectRegBuffers[gScanlineEffect.srcBuffer];
+    for (line = 0; line <= DISPLAY_HEIGHT; line++)
+    {
+        buffer[line * 2] = LanternWindow(x, line - y, gradient ? sLanternRadius : max(0, sLanternRadius - 14));
+        buffer[line * 2 + 1] = gradient ? 0 : LanternWindow(x, line - y, sLanternRadius);
+    }
+    if (gScanlineEffect.dmaControl != SCANLINE_EFFECT_DMACNT_32BIT || gScanlineEffect.state != 1)
+    {
+        CpuFastCopy(buffer, gScanlineEffectRegBuffers[gScanlineEffect.srcBuffer ^ 1], 240 * 8);
+        ScanlineEffect_SetParams((struct ScanlineEffectParams){
+            .dmaDest = &REG_WIN0H,
+            .dmaControl = SCANLINE_EFFECT_DMACNT_32BIT,
+            .initState = 1,
+        });
+    }
+    SetGpuReg(REG_OFFSET_WIN0V, WIN_RANGE(0, DISPLAY_HEIGHT));
+    SetGpuReg(REG_OFFSET_WIN1V, WIN_RANGE(0, DISPLAY_HEIGHT));
+    SetGpuReg(REG_OFFSET_WININ, WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN1_ALL);
+    SetGpuReg(REG_OFFSET_WINOUT, WINOUT_WIN01_BG0 | WINOUT_WINOBJ_BG0);
+    SetGpuReg(REG_OFFSET_BLDCNT, gradient ? 0 : BLDCNT_TGT1_BG1 | BLDCNT_TGT1_BG2 | BLDCNT_TGT1_BG3 | BLDCNT_TGT1_OBJ | BLDCNT_EFFECT_DARKEN);
+    SetGpuReg(REG_OFFSET_BLDY, gradient ? 0 : 8);
 }
 
 void Script_FadeOutMapMusic(void)

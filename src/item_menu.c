@@ -1864,7 +1864,7 @@ static void Task_RemoveItemFromBag(u8 taskId)
     }
 }
 
-static u16 *RegisteredItemAt(u32 slot)
+u16 *RegisteredItemAt(u32 slot)
 {
     return slot == 0 ? &gSaveBlock1Ptr->registeredItem : &gSaveBlock1Ptr->registeredItemsExtra[slot - 1];
 }
@@ -2311,6 +2311,7 @@ bool8 UseRegisteredKeyItemOnField(void)
     u16 item = ITEM_NONE;
     u8 taskId;
     if (InUnionRoom() == TRUE) return FALSE;
+    FieldTools_MigrateInventory();
     HideMapNamePopUpWindow();
     ChangeBgY(0, 0, 0);
     for (i = 0; i < 4; i++)
