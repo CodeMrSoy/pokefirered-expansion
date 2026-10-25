@@ -35,7 +35,7 @@ static const u16 sPits[] = {PACK(18, 24), PACK(22, 16), PACK(16, 20)};
 // A, B, C, D. A is temporary; B/C/D hold the final gate open.
 static const u16 sPlates[] = {PACK(16, 22), PACK(21, 21), PACK(13, 27), PACK(18, 14)};
 static const u16 sGates[] = {PACK(19, 22), PACK(16, 21), PACK(10, 13)};
-static const u16 sPlateTiles[][2] = {{0x233, 0x234}, {0x235, 0x236}, {0x237, 0x238}, {0x237, 0x238}};
+static const u16 sPlateTiles[][2] = {{0x233, 0x234}, {0x235, 0x236}, {0x237, 0x238}, {0x23c, 0x23d}};
 static const u16 sGateClosedTiles[] = {0x239, 0x23a, 0x23b};
 extern const u8 HavoraNorthQuadrant_PuzzleReset[];
 

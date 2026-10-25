@@ -218,6 +218,8 @@ void LoadPokeGlassBackdrop(void)
 #include "constants/menu.h"
 #include "constants/songs.h"
 
+#define TABLET_PALETTE 13 // Field tilesets own BG palettes 0 through 12.
+
 static const u16 sPalette[16] = {
     RGB(0,0,0), RGB(2,2,3), RGB(5,5,7), RGB(11,12,14), RGB(0,6,11), RGB(0,16,24), RGB(8,25,29), RGB(15,29,31), RGB(26,31,31), RGB(22,2,5), RGB(31,5,7), RGB(31,14,15), RGB(20,21,24), RGB(28,29,30), RGB(14,16,19), RGB(31,31,31)
 };
@@ -239,7 +241,7 @@ static const u8 sHubLabels[][16] = {
 };
 static const struct WindowTemplate sHubTemplate = {
     .bg = 0, .tilemapLeft = 1, .tilemapTop = 1,
-    .width = 28, .height = 18, .paletteNum = 11, .baseBlock = 0x038,
+    .width = 28, .height = 18, .paletteNum = TABLET_PALETTE, .baseBlock = 0x038,
 };
 
 static void TabletRect(u8 *pixels, u8 color, u16 x, u16 y, u16 width, u16 height)
@@ -436,6 +438,7 @@ void DrawPokeGlassFrame(u8 bg)
         }
     // Deduplicate the shared shell into the reserved final 4 KiB of char
     // block 1. Party windows use the space below; the backdrop starts at 0x8000.
+    // The native party screen replaces the field and reserves 13 for borders.
     LoadPalette(sPalette, BG_PLTT_ID(11), sizeof(sPalette));
     CpuCopy16(tiles, (void *)(VRAM + 0x7000), count * 32);
     Free(pixels);
@@ -567,8 +570,8 @@ static void CloseHub(void)
 
 static void RestoreTabletAppearance(void)
 {
-    CpuCopy16(sHubPalette, &gPlttBufferUnfaded[BG_PLTT_ID(11)], 32);
-    CpuCopy16(sHubPalette + 16, &gPlttBufferFaded[BG_PLTT_ID(11)], 32);
+    CpuCopy16(sHubPalette, &gPlttBufferUnfaded[BG_PLTT_ID(TABLET_PALETTE)], 32);
+    CpuCopy16(sHubPalette + 16, &gPlttBufferFaded[BG_PLTT_ID(TABLET_PALETTE)], 32);
     SetGpuReg(REG_OFFSET_BLDCNT, sHubBlend[0]);
     SetGpuReg(REG_OFFSET_BLDALPHA, sHubBlend[1]);
     SetGpuReg(REG_OFFSET_BLDY, sHubBlend[2]);
@@ -674,9 +677,9 @@ static bool8 OpenTabletWindow(void)
     sHubBlend[5] = GetGpuReg(REG_OFFSET_WIN1H);
     sHubBlend[6] = GetGpuReg(REG_OFFSET_WIN1V);
     sHubBlend[7] = GetGpuReg(REG_OFFSET_DISPCNT) & (DISPCNT_WIN0_ON | DISPCNT_WIN1_ON | DISPCNT_OBJWIN_ON);
-    CpuCopy16(&gPlttBufferUnfaded[BG_PLTT_ID(11)], sHubPalette, 32);
-    CpuCopy16(&gPlttBufferFaded[BG_PLTT_ID(11)], sHubPalette + 16, 32);
-    LoadPalette(sPalette, BG_PLTT_ID(11), sizeof(sPalette));
+    CpuCopy16(&gPlttBufferUnfaded[BG_PLTT_ID(TABLET_PALETTE)], sHubPalette, 32);
+    CpuCopy16(&gPlttBufferFaded[BG_PLTT_ID(TABLET_PALETTE)], sHubPalette + 16, 32);
+    LoadPalette(sPalette, BG_PLTT_ID(TABLET_PALETTE), sizeof(sPalette));
     SetPokeGlassBlend(TRUE);
     // Storage's field menu can leave a frame outside our inset window.
     // BG0 belongs to menus here; clear it before drawing the tablet again.
@@ -723,7 +726,6 @@ static const u8 sStatsValueHeader[] = _("Stat");
 static const u8 sStatsEVHeader[] = _("EV");
 static const u8 sStatsIVHeader[] = _("IV");
 static const u8 sStatsAbility[] = _("Ability:");
-static const u8 sStatsHint[] = _("Left/Right: Pokémon   B Back");
 static const u8 sStatsEggAbility[] = _("Unknown");
 static const u8 sStatsDash[] = _("-");
 static const u8 sStatsLevel[] = _("Lv.");
@@ -755,6 +757,10 @@ static void DrawStatsPage(void)
     u8 nickname[POKEMON_NAME_LENGTH + 1];
     u8 row, column;
     u8 paletteSlot;
+    u8 nature = GetMonData(mon, MON_DATA_HIDDEN_NATURE);
+    static const u8 statIds[] = {STAT_HP, STAT_ATK, STAT_DEF, STAT_SPATK, STAT_SPDEF, STAT_SPEED};
+    static const u8 raisedColors[] = {0, 10, 9};
+    static const u8 loweredColors[] = {0, 6, 4};
     bool8 isEgg = GetMonData(mon, MON_DATA_IS_EGG);
     static const u8 rightEdges[] = {160, 185, 207};
     DrawTabletShell((u8 *)GetWindowAttribute(sHubWindow, WINDOW_TILE_DATA));
@@ -778,7 +784,13 @@ static void DrawStatsPage(void)
     {
         u16 y = 33 + row * 11;
         HubRect((row & 1) ? 4 : 5, 92, y, 116, 11);
-        StatsText(94, y, sStatsLabels[row]);
+        if (!isEgg && row != 0 && gNaturesInfo[nature].statUp != gNaturesInfo[nature].statDown
+            && (statIds[row] == gNaturesInfo[nature].statUp || statIds[row] == gNaturesInfo[nature].statDown))
+            AddTextPrinterParameterized3(sHubWindow, FONT_SMALL, 94, y,
+                statIds[row] == gNaturesInfo[nature].statUp ? raisedColors : loweredColors,
+                TEXT_SKIP_DRAW, sStatsLabels[row]);
+        else
+            StatsText(94, y, sStatsLabels[row]);
         for (column = 0; column < 3; column++)
         {
             if (isEgg)
@@ -790,7 +802,8 @@ static void DrawStatsPage(void)
     HubRect(6, 17, 101, 190, 1);
     StatsText(18, 102, sStatsAbility);
     StatsText(64, 102, isEgg ? sStatsEggAbility : gAbilitiesInfo[GetMonAbility(mon)].name);
-    StatsText(28, 114, sStatsHint);
+    if (!isEgg)
+        StatsText(18, 114, gAbilitiesInfo[GetMonAbility(mon)].description);
     PutWindowTilemap(sHubWindow);
     CopyWindowToVram(sHubWindow, COPYWIN_FULL);
     // Reuse the portrait buffer and OBJ tiles when changing party members.

@@ -2,8 +2,8 @@
 import subprocess
 from pathlib import Path
 R=Path(__file__).resolve().parents[1]
-H='c5ee4418b489b9f637043308b1d5a4d5b7e8b5c4'
-Q='f35f5a79aea89e820342844ac46486fe0b9b3d5f'
+H='6776592f07de3f6c25038670df0a2825d5770603'
+Q='6f08125e892ab60451107771958ba05c53400646'
 V='HEAD'
 def contents(ref,path):return subprocess.check_output(['git','show',ref+':'+path],cwd=R)
 def equal(ref,path):
@@ -22,6 +22,7 @@ for p in ['data/scripts/pkmn_center_nurse.inc','include/config/debug.h','src/sta
 for prefix in ['src/poke_glass.c','src/field_tools.c','src/field_item_case.c','src/lantern_glow.c','graphics/field_effects/field_tools','graphics/items/icons/field_item_case','data/scripts/field_moves.inc']:
  for p in subprocess.check_output(['git','ls-tree','-r','--name-only',Q,'--',prefix],cwd=R,text=True).splitlines():equal(Q,p)
 assert subprocess.run(['git','merge-base','--is-ancestor',Q,V],cwd=R).returncode==0,'Latest QOL not contained by V2'
+assert subprocess.run(['git','merge-base','--is-ancestor',H,V],cwd=R).returncode==0,'Latest Havora not contained by V2'
 for file in ['src/scrcmd.c','src/field_control_avatar.c']:
  s=(R/file).read_text();assert '#include "field_tools.h"' in s and '#include "havora_puzzle.h"' in s
 assert 'HavoraPuzzle_RecordCut(localId' in (R/'src/scrcmd.c').read_text()

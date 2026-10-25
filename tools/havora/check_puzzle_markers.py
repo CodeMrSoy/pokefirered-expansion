@@ -4,6 +4,7 @@ from pathlib import Path
 import subprocess,json,struct,io
 from PIL import Image
 R=Path(__file__).resolve().parents[2];BASE='3a4217c7b1ad72a04c246efdd61f34911a94f395'
+TERRAIN='6776592f07de3f6c25038670df0a2825d5770603'
 def old(p):return subprocess.check_output(['git','show',BASE+':'+p],cwd=R)
 def js(p):return json.loads((R/p).read_text())
 d=js('tools/havora/puzzle-markers.json');mids={v for r in d['plates'] for v in r}|set(d['gates']);slots=set(d['graphic_ids'])
@@ -12,6 +13,8 @@ for g,start in [('primary',0),('secondary',640)]:
   p=f'data/tilesets/{g}/havora_city/{f}';a=old(p);b=(R/p).read_bytes();assert len(a)==len(b)
   for i in range(len(a)//size):
    if start+i in mids:assert not any(a[i*size:(i+1)*size]),'Overwrote occupied metatile'
+   elif start+i == 0x232 and f == 'metatile_attributes.bin':
+    assert int.from_bytes(b[i*size:(i+1)*size], 'little') == int.from_bytes(a[i*size:(i+1)*size], 'little') | 0x20000000
    else:assert a[i*size:(i+1)*size]==b[i*size:(i+1)*size],(p,i)
  p=f'data/tilesets/{g}/havora_city/tiles.png';a=Image.open(io.BytesIO(old(p)));b=Image.open(R/p)
  for y in range(0,a.height,8):
@@ -24,6 +27,8 @@ layouts=js('data/layouts/layouts.json')['layouts'];previous=json.loads(old('data
 for l in previous:
  for key in ['blockdata_filepath','border_filepath']:
   p=l[key];a=old(p);b=(R/p).read_bytes()
+  if p in ('data/layouts/HavoraHarbor/map.bin','data/layouts/HavoraWestQuadrant/map.bin'):
+   a=subprocess.check_output(['git','show',TERRAIN+':'+p],cwd=R)
   if p=='data/layouts/HavoraNorthQuadrant/map.bin':
    aa=struct.unpack('<'+'H'*(len(a)//2),a);bb=struct.unpack('<'+'H'*(len(b)//2),b)
    expected={y*l['width']+x for x,y in [(16,22),(21,21),(13,27),(18,14),(19,22),(16,21),(10,13)]}
@@ -37,4 +42,4 @@ for name in ['HavoraDaycare','QuantumHavoraDaycare']:
   target=js('data/maps/'+w['dest_map'].removeprefix('MAP_').replace('QUANTUM_HAVORA_DAYCARE','QuantumHavoraDaycare').replace('HAVORA_DAYCARE','HavoraDaycare')+'/map.json')
   assert 0<=int(w['dest_warp_id'])<len(target['warp_events'])
 assert Image.open(R/'graphics/havora/gate_marked.png').size==(16,240)
-print('PASS only 7 puzzle identities changed; all cliff/terrain/collision, existing metatiles/palettes and graphics preserved; six blank static tiles used; nursery dimensions/events/return warps valid')
+print('PASS only 7 puzzle identities changed; all cliff/terrain/collision, existing metatiles/palettes and graphics preserved; seven blank static tiles used; nursery dimensions/events/return warps valid')

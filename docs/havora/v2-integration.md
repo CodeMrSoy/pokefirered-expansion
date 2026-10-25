@@ -78,3 +78,27 @@ PC deposit/withdraw/Move Items/last-mon protection, Kanto/Vidra page navigation
 and location names/Fly safety, nursery breeding/doors/egg collection, canopy
 and roof occlusion, the complete 37-action puzzle with animation/reset/reload,
 Shears/Gloves in the grove, and both Stellar Ticket walking triggers.
+
+## Menu, Stats, and colored-control integration
+
+QOL `6f08125e892ab60451107771958ba05c53400646` and Havora-Development
+`6776592f07de3f6c25038670df0a2825d5770603` merge into V2 after `ae9094c5`.
+The merge is clean and preserves the latest Havora harbor/west-quadrant Surf
+elevation edits, solid colored buttons, ground-layer resting gates and shared
+cliff tiles. QOL contributes the title-menu spacing/unsigned seed fixes, Stats
+ability descriptions/nature colors, menu-only overlay palette and corrected
+main Gloves picture. Native Kanto/Vidra map pages and PC remain as in V2.
+
+The Stats emulator fixture launches the real Pokeglass script directly, because
+development builds expose DEBUG as the first Start-menu item. Preservation
+checks now pin both source tips and require both as V2 ancestors.
+
+Validation: development ROM compilation passed. All 1,102 checked Havora
+map/layout/event/art files match the source tip, both source ancestries are
+retained, and QOL implementation/assets match its tip. The terrain preservation
+validator now pins the user's latest Harbor/West Surf edits instead of rejecting
+them against the older pre-edit baseline. No game map was changed to satisfy a
+test. Emulator passes: Stats nature-label pixels and palette preservation;
+six-app grid; native PC deposit/withdrawal, Move Items and last-mon protection;
+Kanto/Vidra pages and Fly safety; full 37-action maze, ground control layering,
+gate animation/collision/reset/reload; native Shears/Gloves in Havora.

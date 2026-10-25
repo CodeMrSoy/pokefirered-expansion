@@ -87,7 +87,7 @@ static const struct WindowTemplate sWindowTemplate[] = {
     [MAIN_MENU_WINDOW_NEWGAME_ONLY] = {
         .bg = 0,
         .tilemapLeft = 3,
-        .tilemapTop = 1,
+        .tilemapTop = 5,
         .width = 24,
         .height = 2,
         .paletteNum = 15,
@@ -105,7 +105,7 @@ static const struct WindowTemplate sWindowTemplate[] = {
     [MAIN_MENU_WINDOW_NEWGAME] = {
         .bg = 0,
         .tilemapLeft = 3,
-        .tilemapTop = 8,
+        .tilemapTop = 9,
         .width = 24,
         .height = 2,
         .paletteNum = 15,
@@ -114,7 +114,7 @@ static const struct WindowTemplate sWindowTemplate[] = {
     [MAIN_MENU_WINDOW_RANDOMIZER_ONLY] = {
         .bg = 0,
         .tilemapLeft = 3,
-        .tilemapTop = 4,
+        .tilemapTop = 9,
         .width = 24,
         .height = 2,
         .paletteNum = 15,
@@ -123,7 +123,7 @@ static const struct WindowTemplate sWindowTemplate[] = {
     [MAIN_MENU_WINDOW_RANDOMIZER] = {
         .bg = 0,
         .tilemapLeft = 3,
-        .tilemapTop = 11,
+        .tilemapTop = 13,
         .width = 24,
         .height = 2,
         .paletteNum = 15,
@@ -132,14 +132,14 @@ static const struct WindowTemplate sWindowTemplate[] = {
     [MAIN_MENU_WINDOW_MYSTERYGIFT] = {
         .bg = 0,
         .tilemapLeft = 3,
-        .tilemapTop = 17,
+        .tilemapTop = 21,
         .width = 24,
         .height = 2,
         .paletteNum = 15,
         .baseBlock = 0x1b1
     }, 
-    [MAIN_MENU_WINDOW_OPTIONS_ONLY] = {0, 3, 7, 24, 2, 15, 0x181},
-    [MAIN_MENU_WINDOW_OPTIONS] = {0, 3, 14, 24, 2, 15, 0x181},
+    [MAIN_MENU_WINDOW_OPTIONS_ONLY] = {0, 3, 13, 24, 2, 15, 0x181},
+    [MAIN_MENU_WINDOW_OPTIONS] = {0, 3, 17, 24, 2, 15, 0x181},
     [MAIN_MENU_WINDOW_ERROR] = {
         .bg = 0,
         .tilemapLeft = 3,
@@ -423,9 +423,17 @@ static void Task_WaitFadeAndPrintMainMenuText(u8 taskId)
 
 static void PrintRandomizerInfo(u8 windowId, u32 seed)
 {
-    u8 seedString[32] = {0};
-    ConvertIntToDecimalStringN(seedString, seed, STR_CONV_MODE_LEFT_ALIGN, 10);
-    AddTextPrinterParameterized3(windowId, FONT_NORMAL, 74, 2, sTextColor1, -1, seedString);
+    u8 seedString[11];
+    u8 *digits = seedString + sizeof(seedString) - 1;
+    // Seeds use the full unsigned range; the generic signed formatter shows
+    // a question mark for values above INT32_MAX.
+    *digits = EOS;
+    do
+    {
+        *--digits = CHAR_0 + seed % 10;
+        seed /= 10;
+    } while (seed != 0);
+    AddTextPrinterParameterized3(windowId, FONT_NORMAL, 74, 2, sTextColor1, -1, digits);
 }
 
 static void Task_PrintMainMenuText(u8 taskId)
@@ -455,7 +463,7 @@ static void Task_PrintMainMenuText(u8 taskId)
         if (gRandomizerEnabled)
             PrintRandomizerInfo(MAIN_MENU_WINDOW_RANDOMIZER_ONLY, GetRandomizerSeed());
         else
-            AddTextPrinterParameterized3(MAIN_MENU_WINDOW_RANDOMIZER_ONLY, FONT_NORMAL, 150, 15, sTextColor1, -1, gText_SeedOff);
+            AddTextPrinterParameterized3(MAIN_MENU_WINDOW_RANDOMIZER_ONLY, FONT_NORMAL, 74, 2, sTextColor1, -1, gText_SeedOff);
         MainMenu_DrawWindow(&sWindowTemplate[MAIN_MENU_WINDOW_NEWGAME_ONLY]);
         MainMenu_DrawWindow(&sWindowTemplate[MAIN_MENU_WINDOW_RANDOMIZER_ONLY]);
         PutWindowTilemap(MAIN_MENU_WINDOW_NEWGAME_ONLY);
@@ -474,7 +482,7 @@ static void Task_PrintMainMenuText(u8 taskId)
         if (gRandomizerEnabled)
             PrintRandomizerInfo(MAIN_MENU_WINDOW_RANDOMIZER, GetRandomizerSeed());
         else
-            AddTextPrinterParameterized3(MAIN_MENU_WINDOW_RANDOMIZER, FONT_NORMAL, 150, 15, sTextColor1, -1, gText_SeedOff);
+            AddTextPrinterParameterized3(MAIN_MENU_WINDOW_RANDOMIZER, FONT_NORMAL, 74, 2, sTextColor1, -1, gText_SeedOff);
         PrintContinueStats();
         MainMenu_DrawWindow(&sWindowTemplate[MAIN_MENU_WINDOW_CONTINUE]);
         MainMenu_DrawWindow(&sWindowTemplate[MAIN_MENU_WINDOW_NEWGAME]);
@@ -498,7 +506,7 @@ static void Task_PrintMainMenuText(u8 taskId)
         if (gRandomizerEnabled)
             PrintRandomizerInfo(MAIN_MENU_WINDOW_RANDOMIZER, GetRandomizerSeed());
         else
-            AddTextPrinterParameterized3(MAIN_MENU_WINDOW_RANDOMIZER, FONT_NORMAL, 150, 15, sTextColor1, -1, gText_SeedOff);
+            AddTextPrinterParameterized3(MAIN_MENU_WINDOW_RANDOMIZER, FONT_NORMAL, 74, 2, sTextColor1, -1, gText_SeedOff);
         gTasks[taskId].tMGErrorType = 1;
         AddTextPrinterParameterized3(MAIN_MENU_WINDOW_MYSTERYGIFT, FONT_NORMAL, 2, 2, sTextColor1, -1, gText_MysteryGift);
         PrintContinueStats();
@@ -706,8 +714,13 @@ static void MoveWindowByMenuTypeAndCursorPos(u8 menuType, u8 cursorPos)
     static const u8 noSaveWindows[] = {MAIN_MENU_WINDOW_NEWGAME_ONLY, MAIN_MENU_WINDOW_RANDOMIZER_ONLY, MAIN_MENU_WINDOW_OPTIONS_ONLY};
     static const u8 saveWindows[] = {MAIN_MENU_WINDOW_CONTINUE, MAIN_MENU_WINDOW_NEWGAME, MAIN_MENU_WINDOW_RANDOMIZER, MAIN_MENU_WINDOW_OPTIONS, MAIN_MENU_WINDOW_MYSTERYGIFT};
     const struct WindowTemplate *window = &sWindowTemplate[menuType == MAIN_MENU_NEWGAME ? noSaveWindows[cursorPos] : saveWindows[cursorPos]];
+    // The optional fifth card scrolls rather than sharing another card's
+    // frame or extending beyond the bottom of the screen.
+    u16 scroll = menuType == MAIN_MENU_MYSTERYGIFT && cursorPos == 4 ? 32 : 0;
+    ChangeBgY(0, scroll << 8, BG_COORD_SET);
     SetGpuReg(REG_OFFSET_WIN0H, WIN_RANGE(18, 222));
-    SetGpuReg(REG_OFFSET_WIN0V, WIN_RANGE(window->tilemapTop * 8 - 6, (window->tilemapTop + window->height) * 8 + 6));
+    SetGpuReg(REG_OFFSET_WIN0V, WIN_RANGE(window->tilemapTop * 8 - 6 - scroll,
+        (window->tilemapTop + window->height) * 8 + 6 - scroll));
 }
 
 static bool8 HandleMenuInput(u8 taskId)
@@ -760,6 +773,7 @@ static bool8 HandleMenuInput(u8 taskId)
 
 static void PrintMessageOnWindow4(const u8 *str)
 {
+    ChangeBgY(0, 0, BG_COORD_SET);
     FillWindowPixelBuffer(MAIN_MENU_WINDOW_ERROR, PIXEL_FILL(10));
     MainMenu_DrawWindow(&sWindowTemplate[MAIN_MENU_WINDOW_ERROR]);
     AddTextPrinterParameterized3(MAIN_MENU_WINDOW_ERROR, FONT_NORMAL, 0, 2, sTextColor1, 2, str);
