@@ -45,11 +45,11 @@ def choose_quantum():
     assert text(ptr('sRegionMap')) == expected_name('PORT_CITY')
 
 m.inject(b'\x44' + struct.pack('<HH', 717, 1) + b'\x02')
-m.press(3)
-m.press(8)
+m.inject(b'\x05' + struct.pack('<I', m.symbols['EventScript_AccessPokeGlass']))
+m.run(360)
 m.press(5, 20)
 m.press(8)
-m.press(8)  # Open the native travel guide from the tablet map.
+# Map app opens the native screen directly.
 assert selected_region() == 0
 m.snap('quantum-kanto-preserved')
 choose_quantum()

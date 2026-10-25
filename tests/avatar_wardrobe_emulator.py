@@ -167,9 +167,8 @@ m.press(3)
 m.press(8)
 m.press(5, 20)  # Map is the lower-left app in the six-app grid.
 m.press(8)
-wait_task('Task_GlassMap')
-assert native('GetCurrentAvatarLook') == 3
-m.snap('avatar-tablet-map')
+wait_task('Task_RegionMap')
+m.snap('avatar-town-map')
 m.press(0)
 m.press(0)
 

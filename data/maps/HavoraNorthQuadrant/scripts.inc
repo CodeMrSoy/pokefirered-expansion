@@ -136,7 +136,7 @@ HavoraNorthQuadrant_PlateD::
 
 HavoraNorthQuadrant_PuzzleRules::
 	.string "COUNTERWEIGHT GROVE\nSix stones. Three shafts.\p"
-	.string "Weight the plates to lift gates.\nFilled shafts become paths.\p"
+	.string "Match the colored plate marks\nto the gate marks.\p"
 	.string "The final gate needs all shafts\nfilled and plates B, C, D held.\p"
 	.string "L + R + SELECT opens reset\nfrom anywhere in the grove.$"
 
@@ -144,10 +144,10 @@ HavoraNorthQuadrant_ResetPrompt::
 	.string "Reset the grove and return\nto its entrance?$"
 
 HavoraNorthQuadrant_GateAText::
-	.string "GATE A\nPlate A holds this gate open.$"
+	.string "RED CIRCLE GATE\nWeight the red circle plate.$"
 
 HavoraNorthQuadrant_GateBText::
-	.string "GATE B\nPlate B holds this gate open.$"
+	.string "BLUE DIAMOND GATE\nWeight the blue diamond plate.$"
 
 HavoraNorthQuadrant_GateZText::
 	.string "FOREST GATE\nFill all three shafts and keep\lplates B, C and D weighted.$"

@@ -4572,6 +4572,18 @@
       "secondary_tileset": "gTileset_HavoraCity",
       "border_filepath": "data/layouts/HavoraCoastalCliffs/border.bin",
       "blockdata_filepath": "data/layouts/HavoraCoastalCliffs/map.bin"
+    },
+    {
+      "id": "LAYOUT_QUANTUM_HAVORA_DAYCARE",
+      "name": "QuantumHavoraDaycare_Layout",
+      "width": 12,
+      "height": 9,
+      "border_width": 2,
+      "border_height": 2,
+      "primary_tileset": "gTileset_Building",
+      "secondary_tileset": "gTileset_FanClubDaycare",
+      "border_filepath": "data/layouts/QuantumHavoraDaycare/border.bin",
+      "blockdata_filepath": "data/layouts/QuantumHavoraDaycare/map.bin"
     }
   ]
 }

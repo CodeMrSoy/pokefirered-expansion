@@ -1030,8 +1030,6 @@ void InitRegionMapWithExitCB(u8 type, MainCallback cb)
 static void InitRegionMapType(void)
 {
     u8 i;
-    u8 j;
-    u8 region;
 
     switch (sRegionMap->type)
     {
@@ -1048,21 +1046,12 @@ static void InitRegionMapType(void)
     {
         sRegionMap->permissions[i] = sRegionMapPermissions[sRegionMap->type][i];
     }
-    region = REGIONMAP_KANTO;
-    j = REGIONMAP_KANTO;
-    if (gMapHeader.regionMapSectionId >= QUANTUM_MAPSEC_START
-        && gMapHeader.regionMapSectionId <= QUANTUM_MAPSEC_END)
-        region = REGIONMAP_QUANTUM;
-    else if (gMapHeader.regionMapSectionId >= SEVII_MAPSEC_START)
-    {
-        // Unknown/special map sections must not run beyond this table.
-        for (j = 0; j < ARRAY_COUNT(sSeviiMapsecs); j++)
-            for (i = 0; sSeviiMapsecs[j][i] != MAPSEC_NONE; i++)
-                if (gMapHeader.regionMapSectionId == sSeviiMapsecs[j][i])
-                    region = j + 1;
-    }
-    sRegionMap->selectedRegion = region;
-    sRegionMap->playersRegion = region;
+    // Keep V2's native Kanto/Vidra pages. Retired Sevii flags and locations
+    // cannot select an island page; the existing switch menu skips them.
+    sRegionMap->playersRegion = PokeGlassPlayerRegion();
+    sRegionMap->selectedRegion = sRegionMap->playersRegion == REGIONMAP_QUANTUM
+        ? REGIONMAP_QUANTUM : REGIONMAP_KANTO;
+
 }
 
 static void CB2_OpenRegionMap(void)

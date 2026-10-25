@@ -1901,12 +1901,14 @@ static void ItemMenu_Register(u8 taskId)
     }
     else
     {
+        u8 windowId;
         RemoveContextWindow();
         BagMenu_RemoveWindow(ITEMWIN_SELECTIONTEXT);
-        PutWindowTilemap(WIN_DESCRIPTION);
-        FillWindowPixelBuffer(WIN_DESCRIPTION, PIXEL_FILL(1));
-        BagMenu_Print(WIN_DESCRIPTION, FONT_NORMAL, sText_RegisterDirection, 2, 3, 0, 0, TEXT_SKIP_DRAW, COLORID_BLACK_CURSOR);
-        CopyWindowToVram(WIN_DESCRIPTION, COPYWIN_FULL);
+        windowId = BagMenu_AddWindow(ITEMWIN_SELECTIONTEXT);
+        FillWindowPixelBuffer(windowId, PIXEL_FILL(1));
+        BagMenu_Print(windowId, FONT_NORMAL, sText_RegisterDirection, 0, 2, 0, 0, TEXT_SKIP_DRAW, COLORID_BLACK_CURSOR);
+        PutWindowTilemap(windowId);
+        CopyWindowToVram(windowId, COPYWIN_FULL);
         gTasks[taskId].func = Task_RegisterDirection;
     }
 }

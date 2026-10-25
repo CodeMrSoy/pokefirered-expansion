@@ -10408,6 +10408,8 @@ static const u8 sElevationToSubspriteTableNum[] = {
     1, 1, 1, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 0, 0, 1,
 };
 
+extern const struct Tileset gTileset_HavoraCityPrimary;
+
 static void UpdateObjectEventElevationAndPriority(struct ObjectEvent *objEvent, struct Sprite *sprite)
 {
     if (objEvent->fixedPriority)
@@ -10427,6 +10429,19 @@ static void UpdateObjectEventElevationAndPriority(struct ObjectEvent *objEvent, 
 
     sprite->subspriteTableNum = sElevationToSubspriteTableNum[objEvent->previousElevation];
     sprite->oam.priority = sElevationToPriority[objEvent->previousElevation];
+    // Havora uses even elevations for cliff terraces, not bridge decks. Keep
+    // its physical heights, but use normal ground sprite ordering so canopy
+    // and roof overlays cover people walking behind them. Real bridge layer
+    // handling and every other tileset retain their native priorities.
+    if (gMapHeader.mapLayout != NULL
+        && GetPrimaryTileset(gMapHeader.mapLayout) == &gTileset_HavoraCityPrimary
+        && objEvent->previousElevation >= 4 && objEvent->previousElevation <= 12
+        && !(objEvent->previousElevation & 1)
+        && !MetatileBehavior_IsBridge(MapGridGetMetatileBehaviorAt(objEvent->currentCoords.x, objEvent->currentCoords.y)))
+    {
+        sprite->subspriteTableNum = sElevationToSubspriteTableNum[3];
+        sprite->oam.priority = sElevationToPriority[3];
+    }
 }
 
 static void InitObjectPriorityByElevation(struct Sprite *sprite, u8 elevation)

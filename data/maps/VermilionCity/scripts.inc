@@ -94,12 +94,12 @@ VermilionCity_EventScript_ExitedTicketCheck::
 	end
 
 VermilionCity_EventScript_CheckTicket::
-	checkitem ITEM_STELLAR_TICKET
-	goto_if_eq VAR_RESULT, TRUE, VermilionCity_EventScript_StellarFerry
 	textcolor NPC_TEXT_COLOR_MALE
 	applymovement LOCALID_VERMILION_FERRY_SAILOR, Common_Movement_WalkInPlaceFasterLeft
 	applymovement LOCALID_PLAYER, Common_Movement_WalkInPlaceFasterRight
 	waitmovement 0
+	checkitem ITEM_STELLAR_TICKET
+	goto_if_eq VAR_RESULT, TRUE, VermilionCity_EventScript_StellarFerry
 	goto_if_eq VAR_MAP_SCENE_VERMILION_CITY, 3, VermilionCity_EventScript_CheckSeagallopPresentTrigger
 	msgbox VermilionCity_Text_DoYouHaveATicket
 	goto_if_unset FLAG_GOT_SS_TICKET, VermilionCity_EventScript_DontHaveSSTicket

@@ -9,12 +9,14 @@
 #include "field_tools.h"
 #include "field_move.h"
 #include "constants/sound.h"
+#include "palette.h"
 
 #define CASE_PREVIEW_TAG 0xD131
 static EWRAM_DATA u8 sCaseWindow = 0;
 static EWRAM_DATA u8 sCaseSelection = 0;
 static EWRAM_DATA u8 sCasePreview = 0;
 static const u8 sColors[] = {1, 2, 3};
+static const u8 sDisabledColors[] = {1, 3, 1};
 static const u16 sPalette[] = {RGB(5,10,15), RGB(29,30,28), RGB(3,7,10), RGB(18,21,20)};
 static const struct BgTemplate sBackground = {.bg = 0, .charBaseIndex = 0, .mapBaseIndex = 31, .priority = 1};
 static const struct WindowTemplate sWindow = {.bg = 0, .tilemapLeft = 1, .tilemapTop = 1, .width = 28, .height = 18, .paletteNum = 15, .baseBlock = 1};
@@ -46,12 +48,9 @@ static void CaseDraw(bool32 missingBadge)
     CaseText(COMPOUND_STRING("FIELD ITEM CASE"), 5, 0, FONT_NORMAL);
     for (i = 0; i < 7; i++)
     {
-        const u8 *name;
-        if (FieldTool_IsOwned(i))
-            name = GetItemName(FieldTool_GetItem(i));
-        else
-            name = COMPOUND_STRING("Not collected");
-        CaseText(name, 91, 24 + i * 12, FONT_SMALL);
+        AddTextPrinterParameterized3(sCaseWindow, FONT_SMALL, 91, 24 + i * 12,
+            FieldTool_IsOwned(i) ? sColors : sDisabledColors, TEXT_SKIP_DRAW,
+            GetItemName(FieldTool_GetItem(i)));
         if (i == sCaseSelection)
             CaseText(COMPOUND_STRING(">"), 80, 24 + i * 12, FONT_SMALL);
     }
@@ -59,8 +58,19 @@ static void CaseDraw(bool32 missingBadge)
     CaseText(missingBadge ? COMPOUND_STRING("A GYM BADGE is needed.   B: Back") :
         owned ? COMPOUND_STRING("A: Use tool                 B: Back") : COMPOUND_STRING("Tool not collected.         B: Back"), 4, 127, FONT_SMALL);
     CaseDestroyPreview();
-    if (owned)
-        sCasePreview = FieldTool_CreateLargeSprite(item, CASE_PREVIEW_TAG, 49, 72);
+    sCasePreview = FieldTool_CreateLargeSprite(item, CASE_PREVIEW_TAG, 49, 72);
+    if (!owned && sCasePreview != MAX_SPRITES)
+    {
+        u16 colors[16];
+        u16 offset = 0x100 + gSprites[sCasePreview].oam.paletteNum * 16;
+        for (i = 0; i < 16; i++)
+        {
+            u16 c = gPlttBufferUnfaded[offset + i];
+            u16 gray = (((c & 31) * 3 + ((c >> 5) & 31) * 6 + ((c >> 10) & 31)) / 10 + 21) / 2;
+            colors[i] = RGB(gray, gray, gray);
+        }
+        LoadPalette(colors, offset, sizeof(colors));
+    }
     CopyWindowToVram(sCaseWindow, COPYWIN_FULL);
 }
 static void CaseClose(bool32 use)
@@ -148,8 +158,10 @@ static void CB2_InitFieldItemCase(void)
 void FieldItemCase_OpenUI(void)
 {
     FieldTools_MigrateInventory();
-    for (sCaseSelection = 0; sCaseSelection < 6; sCaseSelection++)
+    for (sCaseSelection = 0; sCaseSelection < FIELD_MOVE_COUNT; sCaseSelection++)
         if (FieldTool_IsOwned(sCaseSelection))
             break;
+    if (sCaseSelection == FIELD_MOVE_COUNT)
+        sCaseSelection = 0;
     SetMainCallback2(CB2_InitFieldItemCase);
 }

@@ -55,3 +55,26 @@ old blanket check incorrectly rejected legitimate QOL reward updates.
 
 These are ROM and native asset checks, not a Porymap UI walkthrough. The build
 uses the existing development gate; a normal release build keeps DEBUG hidden.
+
+## Latest testing-feedback integration
+
+Source tips: QOL `f35f5a79aea89e820342844ac46486fe0b9b3d5f` and
+Havora-Development `c5ee4418b489b9f637043308b1d5a4d5b7e8b5c4`.
+V2 base: `c980f9e01d6ddd9dadb066bdbd4f97b084fccee2`.
+
+The old custom-tablet map conflicted with QOL's native-app restoration. The
+native Pokeglass launcher/PC implementation is taken from QOL. V2 retains its
+native Kanto/Vidra map pages and location/Fly destinations; retired Sevii pages
+remain excluded. The map's startup selects Kanto or Vidra from the current
+location, rather than using QOL's Kanto-only default. Havora's latest marked
+controls, breeding nursery, sailor-facing fix and terrace sprite ordering are
+preserved. The independent puzzle preservation validator is retained from
+Havora. Development emulator fixtures launch Pokeglass through its real script,
+so the Start menu DEBUG entry does not change which app they select.
+
+Verified development ROM build and preservation of 1,102 layout/map/event/art
+files. Native emulator checks passed for the empty case, all launcher apps,
+PC deposit/withdraw/Move Items/last-mon protection, Kanto/Vidra page navigation
+and location names/Fly safety, nursery breeding/doors/egg collection, canopy
+and roof occlusion, the complete 37-action puzzle with animation/reset/reload,
+Shears/Gloves in the grove, and both Stellar Ticket walking triggers.
