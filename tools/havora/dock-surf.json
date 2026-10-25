@@ -1,0 +1,117 @@
+{
+  "base_commit": "6776592f07de3f6c25038670df0a2825d5770603",
+  "changes": [
+    {
+      "layout": "LAYOUT_HAVORA_HARBOR",
+      "x": 11,
+      "y": 8,
+      "before": 4754,
+      "after": 12946
+    },
+    {
+      "layout": "LAYOUT_HAVORA_HARBOR",
+      "x": 12,
+      "y": 8,
+      "before": 4752,
+      "after": 12944
+    },
+    {
+      "layout": "LAYOUT_HAVORA_HARBOR",
+      "x": 13,
+      "y": 8,
+      "before": 4752,
+      "after": 12944
+    },
+    {
+      "layout": "LAYOUT_HAVORA_HARBOR",
+      "x": 14,
+      "y": 8,
+      "before": 4753,
+      "after": 12945
+    },
+    {
+      "layout": "LAYOUT_HAVORA_HARBOR",
+      "x": 29,
+      "y": 8,
+      "before": 4754,
+      "after": 12946
+    },
+    {
+      "layout": "LAYOUT_HAVORA_HARBOR",
+      "x": 30,
+      "y": 8,
+      "before": 4752,
+      "after": 12944
+    },
+    {
+      "layout": "LAYOUT_HAVORA_HARBOR",
+      "x": 31,
+      "y": 8,
+      "before": 4752,
+      "after": 12944
+    },
+    {
+      "layout": "LAYOUT_HAVORA_HARBOR",
+      "x": 32,
+      "y": 8,
+      "before": 4753,
+      "after": 12945
+    },
+    {
+      "layout": "LAYOUT_HAVORA_HARBOR",
+      "x": 23,
+      "y": 10,
+      "before": 4754,
+      "after": 12946
+    },
+    {
+      "layout": "LAYOUT_HAVORA_HARBOR",
+      "x": 24,
+      "y": 10,
+      "before": 4752,
+      "after": 12944
+    },
+    {
+      "layout": "LAYOUT_HAVORA_HARBOR",
+      "x": 25,
+      "y": 10,
+      "before": 4752,
+      "after": 12944
+    },
+    {
+      "layout": "LAYOUT_HAVORA_HARBOR",
+      "x": 26,
+      "y": 10,
+      "before": 4753,
+      "after": 12945
+    },
+    {
+      "layout": "LAYOUT_HAVORA_WEST_QUADRANT",
+      "x": 23,
+      "y": 75,
+      "before": 4754,
+      "after": 12946
+    },
+    {
+      "layout": "LAYOUT_HAVORA_WEST_QUADRANT",
+      "x": 24,
+      "y": 75,
+      "before": 4752,
+      "after": 12944
+    },
+    {
+      "layout": "LAYOUT_HAVORA_WEST_QUADRANT",
+      "x": 25,
+      "y": 75,
+      "before": 4753,
+      "after": 12945
+    }
+  ],
+  "water_alias": {
+    "metatile": 700,
+    "source": 642,
+    "before": 0,
+    "after": 570426389
+  },
+  "integration_base": "8348d0e649333369a9ef1a54f32baa9c4439976c"
+}

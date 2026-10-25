@@ -2,8 +2,8 @@
 import subprocess
 from pathlib import Path
 R=Path(__file__).resolve().parents[1]
-H='6776592f07de3f6c25038670df0a2825d5770603'
-Q='6f08125e892ab60451107771958ba05c53400646'
+H='0b13302d7807bd5df1df20712a77335a6ebf17dd'
+Q='75213b956c7f16db11aa09e33c1de640ba96744a'
 V='HEAD'
 def contents(ref,path):return subprocess.check_output(['git','show',ref+':'+path],cwd=R)
 def equal(ref,path):

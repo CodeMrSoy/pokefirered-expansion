@@ -102,3 +102,9 @@ test. Emulator passes: Stats nature-label pixels and palette preservation;
 six-app grid; native PC deposit/withdrawal, Move Items and last-mon protection;
 Kanto/Vidra pages and Fly safety; full 37-action maze, ground control layering,
 gate animation/collision/reset/reload; native Shears/Gloves in Havora.
+
+## Dock Surf integration
+
+Merged Havora-Development `0b13302d7807bd5df1df20712a77335a6ebf17dd` into the current V2 tip `8348d0e649333369a9ef1a54f32baa9c4439976c`, preserving its newer QOL map/Fly work. The only conflict was the terrain preservation validator: retain the Surf repair-aware Havora version. All game map/art files remain identical to the latest Havora branch.
+
+Validation: V2 development build passed (21,570,644 ROM bytes; 64.29% of 32 MiB). The merged ROM passes all 48 dock Surf entry/dismount trips and Kanto/Vidra region map/Fly checks. All 1,102 checked Havora map/art/event files match the Havora source; latest QOL ancestry and implementations are retained. The dock-only preservation check uses the pre-merge V2 tip as its integration baseline, preserving QOL's newer map text alongside the intentional dock repairs. The independent 37-action grove solver and preservation checks pass.
