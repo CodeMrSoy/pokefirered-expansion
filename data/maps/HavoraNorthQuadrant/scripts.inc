@@ -144,22 +144,22 @@ HavoraNorthQuadrant_ResetPrompt::
 	.string "Reset the grove and return\nto its entrance?$"
 
 HavoraNorthQuadrant_GateAText::
-	.string "RED CIRCLE GATE\nWeight the red circle plate.$"
+	.string "RED GATE\nWeight the red button.$"
 
 HavoraNorthQuadrant_GateBText::
-	.string "BLUE DIAMOND GATE\nWeight the blue diamond plate.$"
+	.string "BLUE GATE\nWeight the blue button.$"
 
 HavoraNorthQuadrant_GateZText::
 	.string "FOREST GATE\nFill all three shafts and keep\lplates B, C and D weighted.$"
 
 HavoraNorthQuadrant_PlateAText::
-	.string "PLATE A\nIts weight raises GATE A.$"
+	.string "RED BUTTON (A)\nIts weight raises GATE A.$"
 
 HavoraNorthQuadrant_PlateBText::
-	.string "PLATE B\nIts weight raises GATE B and\lhelps unlock the FOREST GATE.$"
+	.string "BLUE BUTTON (B)\nIts weight raises GATE B and\lhelps unlock the FOREST GATE.$"
 
 HavoraNorthQuadrant_PlateCText::
-	.string "PLATE C\nA seal for the FOREST GATE.$"
+	.string "YELLOW BUTTON (C)\nA seal for the FOREST GATE.$"
 
 HavoraNorthQuadrant_PlateDText::
-	.string "PLATE D\nA seal for the FOREST GATE.$"
+	.string "GREEN BUTTON (D)\nA seal for the FOREST GATE.$"

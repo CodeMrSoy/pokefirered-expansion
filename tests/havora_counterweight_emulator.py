@@ -44,7 +44,20 @@ def check_world():
   v=tile(p);assert v&1023==(0x232 if o else markers['gates'][gate_index]),(p,'gate art',hex(v),o);assert bool(v&0xc00)==(not o),(p,'gate collision')
  for i,p in enumerate(plan['holes']):
   v=tile(p);done=holes>>i&1;assert v&1023==(0 if done else 0x22e),(p,'pit art');assert bool(v&0xc00)==(not done),(p,'pit collision')
- for i,(p,o) in enumerate(zip(plan['plates'],weights)):assert tile(p)&1023==markers['plates'][min(i,2)][int(o)],(p,'plate art')
+ for i,(p,o) in enumerate(zip(plan['plates'],weights)):assert tile(p)&1023==markers['plates'][i][int(o)],(p,'plate art')
+ # Validate the real renderer, not just the metatile attribute on disk.
+ # Buttons and resting log caps must leave the actor-covering BG empty.
+ sx,sy=struct.unpack('<hh',m.read(saveptr(),4))
+ ox,oy=m.read(m.symbols['sFieldCameraOffset']+2,2)
+ top=struct.unpack('<I',m.read(m.symbols['gBGTilemapBuffers2'],4))[0]
+ middle=struct.unpack('<I',m.read(m.symbols['gBGTilemapBuffers1'],4))[0]
+ for p in list(plan['plates'])+[p for p,o in zip(plan['gates'],opened) if o]:
+  x=(p[0]+7-sx)*2;y=(p[1]+7-sy)*2
+  if not (0<=x<32 and 0<=y<32):continue
+  off=((y+oy)%32)*32+(x+ox)%32
+  cells=[off,off+1,off+32,off+33]
+  assert all(m.read(top+2*k,2)==b'\0\0' for k in cells),('control over actors',p)
+  assert any(m.read(middle+2*k,2)!=b'\0\0' for k in cells),('ground art missing',p)
  return opened
 
 def gate_task():
