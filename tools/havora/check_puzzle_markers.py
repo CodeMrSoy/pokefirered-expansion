@@ -12,6 +12,8 @@ for g,start in [('primary',0),('secondary',640)]:
   p=f'data/tilesets/{g}/havora_city/{f}';a=old(p);b=(R/p).read_bytes();assert len(a)==len(b)
   for i in range(len(a)//size):
    if start+i in mids:assert not any(a[i*size:(i+1)*size]),'Overwrote occupied metatile'
+   elif start+i == 0x2bc and f == 'metatile_attributes.bin':
+    assert int.from_bytes(b[i*size:(i+1)*size], 'little') == js('tools/havora/dock-surf.json')['water_alias']['after']
    elif start+i == 0x232 and f == 'metatile_attributes.bin':
     assert int.from_bytes(b[i*size:(i+1)*size], 'little') == int.from_bytes(a[i*size:(i+1)*size], 'little') | 0x20000000
    else:assert a[i*size:(i+1)*size]==b[i*size:(i+1)*size],(p,i)
@@ -26,6 +28,11 @@ layouts=js('data/layouts/layouts.json')['layouts'];previous=json.loads(old('data
 for l in previous:
  for key in ['blockdata_filepath','border_filepath']:
   p=l[key];a=old(p);b=(R/p).read_bytes()
+  if p in ('data/layouts/HavoraHarbor/map.bin','data/layouts/HavoraWestQuadrant/map.bin'):
+   repair=js('tools/havora/dock-surf.json');a=bytearray(subprocess.check_output(['git','show',repair['base_commit']+':'+p],cwd=R))
+   for f in repair['changes']:
+    if f['layout']==l['id']:struct.pack_into('<H',a,(f['y']*l['width']+f['x'])*2,f['after'])
+   a=bytes(a)
   if p=='data/layouts/HavoraNorthQuadrant/map.bin':
    aa=struct.unpack('<'+'H'*(len(a)//2),a);bb=struct.unpack('<'+'H'*(len(b)//2),b)
    expected={y*l['width']+x for x,y in [(16,22),(21,21),(13,27),(18,14),(19,22),(16,21),(10,13)]}
