@@ -1,23 +1,25 @@
-# Quantum island map
+# Vidra region map
 
-Regenerate the map assets from the repository root:
+Run `python3 tools/quantum_region/generate.py` from the repository root.
+Install `tools/quantum_region/requirements.txt` when needed.
 
-```sh
-python3 -m pip install -r tools/quantum_region/requirements.txt
-python3 tools/quantum_region/generate.py
-```
+The generator uses the original FireRed map palette, striped ocean, red/gold
+city tile and native controls. The original 320 atlas tiles remain byte-for-byte
+intact. The combined atlas is 510 tiles (16,320 bytes), within BG0's 512-tile
+allocation. There is no extra runtime palette or map heap allocation.
 
-The indexed `terrain.png` supplies the simplified island geography. The
-generator overlays the existing 22 by 15 region-map cursor grid at 8 pixels
-per cell, producing a 176 by 120 map image, palette, native 4bpp atlas,
-tilemaps, buttons, region picker, and section metadata.
+The five city positions and eight route hit maps retain their campaign section
+IDs and coordinates. Planned, unregistered cave markers are omitted. The picker
+has exactly two entries: Kanto and Vidra. UI row 1 translates to retained native
+page ID 2; page IDs 1 and 3 have no map data or icons.
 
-Five red circles identify the existing towns at their current Fly positions.
-Hot Springs uses a small square. Seven additional cave/POI squares are
-artwork placeholders recorded in `planned_pois.json`; they do not register
-playable maps, names, warps, or Fly destinations.
+QOL has no island campaign maps or section IDs. It carries the conditional
+shared map code and assets, with only Kanto enabled. Merging with V2 or
+Havora-Development enables Vidra automatically through QUANTUM_MAPSEC_START.
+No campaign items, progression flags, maps or story are imported into QOL.
+Existing campaign names are preserved during regeneration: Havora City is
+confirmed; the other four settlements still have descriptive labels.
 
-The original 320 atlas tiles are preserved. Similar terrain tiles are merged
-to fit BG0's 512-tile allocation; route and marker tiles are protected.
-Exact tile patterns, including hardware flip variants, are reused. The
-generator checks the remaining 192-tile budget before writing the atlas.
+Use `tests/region_map_destinations_emulator.py` on QOL and the V2 integration
+build to exercise real F.I. Case/Sky Whistle entry, all city markers, locked
+travel, independent Center unlocks, completed flights, picker and cancel cleanup.

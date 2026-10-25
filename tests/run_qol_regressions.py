@@ -17,7 +17,7 @@ TESTS = (
     'pokeglass_storage_emulator', 'pokeglass_storage_visual_emulator', 'pokeglass_pokedex_emulator',
     'rom_cleanup_inventory', 'rom_cleanup_storage_emulator',
     'rom_cleanup_migration_emulator', 'rom_cleanup_old_save_emulator',
-    'rom_cleanup_maps_emulator', 'quantum_qol_emulator',
+    'rom_cleanup_maps_emulator', 'region_map_destinations_emulator', 'quantum_qol_emulator',
     'window_lighting_emulator', 'pokeglass_party_return_emulator',
     'rom_cleanup_world_integrity', 'rom_cleanup_safety_emulator',
     'rom_cleanup_progression_emulator', 'field_tools_emulator', 'field_tool_rewards_emulator', 'field_item_case_emulator',
