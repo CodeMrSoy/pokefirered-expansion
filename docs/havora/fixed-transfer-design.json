@@ -1,0 +1,448 @@
+{
+  "status": "mapped three-lock prototype; emulator evidence in docs/havora/three-lock-prototype.md",
+  "reachable_states": 837,
+  "goal_states": 3,
+  "naturally_recoverable_states": 837,
+  "shortest_decision_count": 25,
+  "transfers_on_shortest_route": 10,
+  "water_levels": [
+    "LOW",
+    "MID",
+    "HIGH"
+  ],
+  "transferable_units_above_LOW": 4,
+  "node_names": [
+    "A west quay",
+    "A inner landing",
+    "B west quay",
+    "B upper service berth",
+    "C control quay",
+    "C outer mooring",
+    "Service platform",
+    "Captain deck"
+  ],
+  "dock_levels": {
+    "A west quay": [
+      0,
+      1,
+      2
+    ],
+    "A inner landing": [
+      1
+    ],
+    "B west quay": [
+      0,
+      1,
+      2
+    ],
+    "B upper service berth": [
+      2
+    ],
+    "C control quay": [
+      0,
+      1,
+      2
+    ],
+    "C outer mooring": [
+      1,
+      2
+    ]
+  },
+  "start": [
+    [
+      2,
+      2,
+      0
+    ],
+    0,
+    0,
+    4,
+    0,
+    false
+  ],
+  "required_dependencies": [
+    "cargo_must_move",
+    "AB_transfers_required",
+    "low_C_shore_required",
+    "launch_must_be_reused_from_C",
+    "maintenance_release_required"
+  ],
+  "shortest_solution": [
+    {
+      "action": "Ride launch to B west quay",
+      "state": [
+        [
+          2,
+          2,
+          0
+        ],
+        2,
+        2,
+        4,
+        0,
+        false
+      ]
+    },
+    {
+      "action": "Transfer B > C at B west quay",
+      "state": [
+        [
+          2,
+          1,
+          1
+        ],
+        2,
+        2,
+        4,
+        0,
+        false
+      ]
+    },
+    {
+      "action": "Ride launch to C control quay",
+      "state": [
+        [
+          2,
+          1,
+          1
+        ],
+        4,
+        4,
+        4,
+        0,
+        false
+      ]
+    },
+    {
+      "action": "Ride cargo to B west quay",
+      "state": [
+        [
+          2,
+          1,
+          1
+        ],
+        2,
+        4,
+        2,
+        0,
+        false
+      ]
+    },
+    {
+      "action": "Transfer C > B at B west quay",
+      "state": [
+        [
+          2,
+          2,
+          0
+        ],
+        2,
+        4,
+        2,
+        0,
+        false
+      ]
+    },
+    {
+      "action": "Ride cargo to B upper service berth",
+      "state": [
+        [
+          2,
+          2,
+          0
+        ],
+        3,
+        4,
+        3,
+        0,
+        false
+      ]
+    },
+    {
+      "action": "Secure cargo boat as service bridge",
+      "state": [
+        [
+          2,
+          2,
+          0
+        ],
+        3,
+        4,
+        3,
+        1,
+        false
+      ]
+    },
+    {
+      "action": "Walk to Service platform",
+      "state": [
+        [
+          2,
+          2,
+          0
+        ],
+        6,
+        4,
+        3,
+        1,
+        false
+      ]
+    },
+    {
+      "action": "Transfer B > C at Service platform",
+      "state": [
+        [
+          2,
+          1,
+          1
+        ],
+        6,
+        4,
+        3,
+        1,
+        false
+      ]
+    },
+    {
+      "action": "Release captain-islet mooring chain",
+      "state": [
+        [
+          2,
+          1,
+          1
+        ],
+        6,
+        4,
+        3,
+        1,
+        true
+      ]
+    },
+    {
+      "action": "Transfer C > B at Service platform",
+      "state": [
+        [
+          2,
+          2,
+          0
+        ],
+        6,
+        4,
+        3,
+        1,
+        true
+      ]
+    },
+    {
+      "action": "Walk to B upper service berth",
+      "state": [
+        [
+          2,
+          2,
+          0
+        ],
+        3,
+        4,
+        3,
+        1,
+        true
+      ]
+    },
+    {
+      "action": "Release cargo boat from service bridge",
+      "state": [
+        [
+          2,
+          2,
+          0
+        ],
+        3,
+        4,
+        3,
+        0,
+        true
+      ]
+    },
+    {
+      "action": "Ride cargo to B west quay",
+      "state": [
+        [
+          2,
+          2,
+          0
+        ],
+        2,
+        4,
+        2,
+        0,
+        true
+      ]
+    },
+    {
+      "action": "Transfer B > C at B west quay",
+      "state": [
+        [
+          2,
+          1,
+          1
+        ],
+        2,
+        4,
+        2,
+        0,
+        true
+      ]
+    },
+    {
+      "action": "Ride cargo to C outer mooring",
+      "state": [
+        [
+          2,
+          1,
+          1
+        ],
+        5,
+        4,
+        5,
+        0,
+        true
+      ]
+    },
+    {
+      "action": "Transfer C > B at C outer mooring",
+      "state": [
+        [
+          2,
+          2,
+          0
+        ],
+        5,
+        4,
+        5,
+        0,
+        true
+      ]
+    },
+    {
+      "action": "Walk to C control quay",
+      "state": [
+        [
+          2,
+          2,
+          0
+        ],
+        4,
+        4,
+        5,
+        0,
+        true
+      ]
+    },
+    {
+      "action": "Transfer B > C at C control quay",
+      "state": [
+        [
+          2,
+          1,
+          1
+        ],
+        4,
+        4,
+        5,
+        0,
+        true
+      ]
+    },
+    {
+      "action": "Transfer A > B at C control quay",
+      "state": [
+        [
+          1,
+          2,
+          1
+        ],
+        4,
+        4,
+        5,
+        0,
+        true
+      ]
+    },
+    {
+      "action": "Transfer B > C at C control quay",
+      "state": [
+        [
+          1,
+          1,
+          2
+        ],
+        4,
+        4,
+        5,
+        0,
+        true
+      ]
+    },
+    {
+      "action": "Transfer A > B at C control quay",
+      "state": [
+        [
+          0,
+          2,
+          2
+        ],
+        4,
+        4,
+        5,
+        0,
+        true
+      ]
+    },
+    {
+      "action": "Tension cargo boat as final bridge from control quay",
+      "state": [
+        [
+          0,
+          2,
+          2
+        ],
+        4,
+        4,
+        5,
+        2,
+        true
+      ]
+    },
+    {
+      "action": "Ride launch to B upper service berth",
+      "state": [
+        [
+          0,
+          2,
+          2
+        ],
+        3,
+        3,
+        5,
+        2,
+        true
+      ]
+    },
+    {
+      "action": "Walk to Captain deck",
+      "state": [
+        [
+          0,
+          2,
+          2
+        ],
+        7,
+        3,
+        5,
+        2,
+        true
+      ]
+    }
+  ],
+  "reset": "Return player, water, boats, moorings and maintenance release to START; trainer victories and crest retained outside this model."
+}

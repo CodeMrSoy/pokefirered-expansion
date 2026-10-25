@@ -108,17 +108,26 @@ custom(0x349,t)
 t,d=canvas();d.rectangle((0,4,15,12),fill=13);d.line((0,4,15,4),fill=15);d.line((0,6,15,6),fill=14)
 for x in [2,13]:d.point((x,8),fill=6);d.point((x,9),fill=3)
 custom(0x348,t)
-# Four readable, mechanical controls: wheel winch, lift lever, bridge lever, bell.
-for mid,color in [(0x300,7),(0x301,8),(0x302,9),(0x303,10)]:
- t,d=canvas(3);d.rectangle((1,1,14,14),fill=5,outline=6);d.line((2,13,13,13),fill=3)
- for x,y in [(2,2),(13,2),(2,12),(13,12)]:d.point((x,y),fill=12)
- if mid==0x300:
-  d.ellipse((3,3,12,11),fill=13,outline=color);d.line((4,7,11,7),fill=color);d.line((7,4,7,10),fill=color);d.rectangle((7,6,8,7),fill=12)
- elif mid==0x303:
-  d.rectangle((5,10,10,11),fill=3);d.ellipse((5,4,10,9),fill=color,outline=3);d.line((4,9,11,9),fill=12);d.point((7,3),fill=12)
- else:
-  d.rectangle((6,4,9,11),fill=3);d.line((7,9,10,4),fill=12,width=2);d.rectangle((8,3,12,5),fill=color,outline=3)
- custom(mid,t)
+# Supplied lever sheet: 32px cells are doubled native 16px controls.
+# Keep the original silhouette, use the private GBA palette, and composite its
+# transparent surround onto the same plank floor as the control platforms.
+lever_sheet=Image.open(R/'graphics/havora_gym/source/lever-reference.png').convert('RGBA')
+lever_palette=palette(root/'primary/havora_gym/palettes/02.pal')
+for mid,column,handle in [(0x300,0,7),(0x301,1,8),(0x302,3,9),(0x303,2,10)]:
+ for row in range(3):
+  source=lever_sheet.crop((column*32,row*32,column*32+32,row*32+32)).resize((16,16),Image.Resampling.NEAREST)
+  t,d=canvas(14)
+  for y in [0,5,10,15]:d.line((0,y,15,y),fill=13)
+  for y in range(16):
+   for x in range(16):
+    r,g,b,alpha=source.getpixel((x,y))
+    if alpha<128:continue
+    # Preserve colored handles; neutral housing uses native metal shades.
+    choices=[handle] if max(r,g,b)-min(r,g,b)>32 else [3,5,6,12]
+    index=min(choices,key=lambda i:sum((v-c)**2 for v,c in zip((r,g,b),lever_palette[i])))
+    t.putpixel((x,y),index)
+  custom(0x3a0+(mid-0x300)*3+row,t)
+  if row==1:custom(mid,t)
 # Boarding pads are painted on the existing floor, and stay passable.
 for mid,upper in [(0x370,False),(0x371,True)]:
  # Composite the native 16x16 floor into palette 2's three wood shades.
@@ -142,6 +151,110 @@ t,d=canvas(14)
 for y in [0,5,10,15]:d.line((0,y,15,y),fill=13)
 for box in [(2,3,13,12),(4,5,11,10),(6,7,9,8)]:d.ellipse(box,outline=12)
 d.line((12,10,14,14),fill=12);custom(0x378,t)
+# A recessed masonry lock: dry wall courses are progressively submerged.
+t,d=canvas(5)
+for y in [0,8]:
+ d.line((0,y,15,y),fill=6);d.line((0,y+7,15,y+7),fill=3)
+ for x in ([0,12] if y==0 else [4]):d.line((x,y,x,y+7),fill=3)
+custom(0x380,t)
+t,d=canvas(0)
+for x in range(16):
+ y=1 if x%8<4 else 2;d.line((x,0,x,y),fill=6);d.point((x,y+1),fill=12)
+overlay=[]
+for y in [0,8]:
+ for x in [0,8]:overlay.append(graphic(t.crop((x,y,x+8,y+8)))|0x2000)
+M[0x381*8:0x382*8]=M[0x282*8:0x282*8+4]+overlay;A[0x381]=0x20000000
+# Small sill/level marker cut into the exposed wall; submerged at high water.
+t,d=canvas(5);d.rectangle((12,0,15,15),fill=3)
+for y in [2,6,10,14]:d.line((10,y,15,y),fill=12)
+custom(0x382,t)
+# Lock-mouth shutters: exposed iron gate when closed, recessed jambs when open.
+for mid,closed in [(0x384,False),(0x385,True)]:
+ t,d=canvas(0)
+ for x in [0,13]:d.rectangle((x,0,x+2,15),fill=5);d.line((x,0,x,15),fill=6)
+ if closed:
+  for x in [4,8,12]:d.line((x,1,x,14),fill=6,width=2)
+  d.line((0,4,15,4),fill=3);d.line((0,11,15,11),fill=3)
+ words=[]
+ for y in [0,8]:
+  for x in [0,8]:words.append(graphic(t.crop((x,y,x+8,y+8)))|0x2000)
+ base=0x380 if closed else 0x282
+ M[mid*8:(mid+1)*8]=M[base*8:base*8+4]+words;A[mid]=0x20000000
+# Structural kit: quiet recess, stone coping, supported boardwalk and dock edges.
+t,d=canvas(3);custom(0x3b0,t)
+t,d=canvas(5)
+d.rectangle((0,0,15,3),fill=6);d.line((0,4,15,4),fill=3)
+d.line((0,15,15,15),fill=3);d.line((7,5,7,14),fill=3)
+custom(0x3b1,t)
+# Continuous narrow bridge: rails are inside the walking tile, not extra obstacles.
+t,d=canvas(13)
+for y in [3,7,11]:d.rectangle((0,y,15,y+2),fill=14);d.line((0,y,15,y),fill=15)
+for y in [0,14]:d.line((0,y,15,y),fill=12);d.line((0,y+1,15,y+1),fill=13)
+for x in [2,13]:d.point((x,1),fill=6);d.point((x,14),fill=6)
+custom(0x318,t)
+# Pool-facing lip is part of the existing walkable deck tile.
+for mid,right in [(0x3b2,True),(0x3b3,False)]:
+ t,d=canvas(14)
+ for y in [0,5,10,15]:d.line((0,y,15,y),fill=13)
+ edge=13 if right else 0
+ d.rectangle((edge,0,edge+2,15),fill=13);d.line((edge,0,edge,15),fill=15)
+ custom(mid,t)
+# Flat work launch. Exactly the same 48px artwork is used by map and ride sprite.
+launch=Image.new('P',(64,64),0);d=ImageDraw.Draw(launch)
+d.polygon([(8,29),(14,22),(48,22),(55,29),(55,39),(48,46),(14,46),(8,39)],fill=3)
+d.polygon([(9,29),(15,23),(47,23),(54,29),(54,38),(47,44),(15,44),(9,38)],fill=12)
+d.polygon([(12,29),(17,26),(46,26),(51,29),(51,37),(46,41),(17,41),(12,37)],fill=13)
+d.rectangle((17,28,46,38),fill=14)
+for y in [30,34,38]:d.line((16,y,47,y),fill=13)
+for x in [19,43]:d.rectangle((x,26,x+2,41),fill=15);d.line((x,26,x,40),fill=12)
+d.line((16,44,47,44),fill=13)
+launch.putpalette(sum(palette(root/'primary/havora_gym/palettes/02.pal'),[])+[0]*720)
+asset=R/'graphics/havora_gym';asset.mkdir(exist_ok=True)
+launch.save(asset/'launch.png',bits=4)
+(asset/'launch.pal').write_text((root/'primary/havora_gym/palettes/02.pal').read_text())
+boat=launch.crop((8,8,56,56))
+for yy in range(3):
+ for xx in range(3):
+  words=[]
+  for y in [0,8]:
+   for x in [0,8]:words.append(graphic(boat.crop((xx*16+x,yy*16+y,xx*16+x+8,yy*16+y+8)))|0x2000)
+  mid=0x2bc+yy*3+xx;M[mid*8:(mid+1)*8]=M[0x282*8:0x282*8+4]+words;A[mid]=0x20000000
+# Short metal flight, matching the reviewed terrace study.
+t,d=canvas(5)
+for x in [4,11]:
+ d.line((x,0,x,14),fill=3,width=3);d.line((x,0,x,14),fill=6)
+for y in [2,7,12]:
+ d.line((4,y+1,11,y+1),fill=3);d.line((4,y,11,y),fill=12)
+custom(0x386,t)
+# Rounded masonry front: stepped corners, light coping, two darker courses.
+face=Image.new('P',(80,16),0);d=ImageDraw.Draw(face)
+d.polygon([(4,0),(75,0),(78,3),(79,5),(79,11),(76,14),(73,15),(6,15),(3,14),(0,11),(0,5),(1,3)],fill=3)
+d.polygon([(4,1),(75,1),(78,3),(76,5),(3,5),(1,3)],fill=6)
+d.rectangle((4,3,75,4),fill=5)
+d.polygon([(2,6),(77,6),(77,10),(74,13),(5,13),(2,10)],fill=5)
+for x in range(8,76,14):
+ d.line((x,6,x,9),fill=3);d.line((x+5,10,x+5,13),fill=3)
+d.line((3,9,76,9),fill=3)
+for x in range(5):
+ part=face.crop((x*16,0,x*16+16,16));words=[]
+ for yy in [0,8]:
+  for xx in [0,8]:words.append(graphic(part.crop((xx,yy,xx+8,yy+8)))|0x2000)
+ mid=0x3c0+x
+ M[mid*8:(mid+1)*8]=M[0x282*8:0x282*8+4]+words;A[mid]=0x20000000
+t,d=canvas(13);d.rectangle((2,1,13,14),fill=3,outline=6);d.rectangle((4,3,7,12),fill=5);d.rectangle((4,6,7,12),fill=8);d.rectangle((9,7,11,9),fill=9)
+custom(0x387,t)
+# Wider-looking cargo workboat shares the launch palette but has an open deck.
+cargo=launch.copy();d=ImageDraw.Draw(cargo);d.rectangle((16,26,47,41),fill=14)
+for y in [28,32,36,40]:d.line((16,y,47,y),fill=13)
+for x in [17,45]:d.rectangle((x,26,x+1,41),fill=9)
+cargo.save(asset/'cargo.png',bits=4)
+cb=cargo.crop((8,8,56,56))
+for yy in range(3):
+ for xx in range(3):
+  words=[]
+  for y in [0,8]:
+   for x in [0,8]:words.append(graphic(cb.crop((xx*16+x,yy*16+y,xx*16+x+8,yy*16+y+8)))|0x2000)
+  mid=0x390+yy*3+xx;M[mid*8:(mid+1)*8]=M[0x282*8:0x282*8+4]+words;A[mid]=0x20000000
 im.save(root/'primary/havora_gym/tiles.png',bits=4)
 # Rebuild working surfaces, then place complete furniture at purposeful stations.
 path=R/'data/layouts/HavoraCaptainsTrial/map.bin';B=readwords(path);W=40
@@ -167,6 +280,12 @@ for y in list(range(12,17))+list(range(24,29)):tile(9,y,0x341,False)
 for y in range(12,29):tile(29,y,0x340,False)
 for x in range(10,29):tile(x,12,0x320,True,1)
 for x in range(10,26):tile(x,19,0x327)
+# Low water exposes the chamber's retaining wall above the launch.
+rect(10,13,19,11,0x380,True,1)
+for y in range(13,24):tile(28,y,0x382,True,1)
+for x in range(10,29):tile(x,24,0x381,True,1)
+for x in range(10,26):tile(x,19,0x327)
+for x in range(10,13):tile(x,14,0x385);tile(x,26,0x384)
 # Complete desks, captain's chart station and tall storage cases.
 desk=[[0x360,0x361,0x362],[0x363,0x364,0x365]]
 for x,y in [(4,5),(19,3),(31,5)]:kit(x,y,desk)
@@ -198,5 +317,5 @@ for yy in range(3):
 path.write_bytes(struct.pack('<'+'H'*len(B),*B))
 for group,start,end in [('primary',0,640),('secondary',640,1024)]:
  p=root/group/'havora_gym';(p/'metatiles.bin').write_bytes(struct.pack('<'+'H'*((end-start)*8),*M[start*8:end*8]));(p/'metatile_attributes.bin').write_bytes(struct.pack('<'+'I'*(end-start),*A[start:end]))
-manifest.update({'art_pass':'Covered Nordic shipyard, working captain deck; readable machinery and berth markings','new_pixel_art':True,'extra_packed_graphics':len(packed),'native_imports':['Complete S.S. Anne desks, charts and storage cases','Havora dock edges, seawalls and Slateport hoists'],'derived_art':['Timber posts/rafters cut from native wood posts'],'custom_art':['Framed timber panels and beams','Winch wheel, lock and gangway levers, reset bell','Painted boarding pads, LOW/HIGH gauge, rope coil'],'private_palette_changes':'Walnut wood, weathered stone and eight previously-unused colors in private palette 2; water unchanged','review_before_commit':False})
+manifest.update({'lock_prototype':'Exposed retaining courses, animated fill/drain, interlocked shutters, sail-less launch with standing passenger','art_pass':'Covered Nordic shipyard, working captain deck; readable machinery and berth markings','new_pixel_art':True,'extra_packed_graphics':len(packed),'native_imports':['Complete S.S. Anne desks, charts and storage cases','Havora dock edges, seawalls and Slateport hoists'],'derived_art':['Timber posts/rafters cut from native wood posts'],'custom_art':['Framed timber panels and beams','Supplied lever-sheet controls, reduced to native 16px and private palette','Painted boarding pads, LOW/HIGH gauge, rope coil'],'private_palette_changes':'Walnut wood, weathered stone and eight previously-unused colors in private palette 2; water unchanged','review_before_commit':True})
 (R/'tools/havora/captains-trial.json').write_text(json.dumps(manifest,indent=2)+'\n')

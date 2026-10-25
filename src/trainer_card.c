@@ -79,7 +79,8 @@ struct TrainerCardData
     u16 cardTop;
     bool8 timeColonNeedDraw;
     u8 language;
-}; /* size = 0x7BD0 */
+    u16 crestTextPalette[16];
+}; // Private UI allocation; not serialized or exchanged over link.
 
 // RAM
 EWRAM_DATA struct TrainerCard gTrainerCards[4] = {0};
@@ -154,6 +155,7 @@ static u8 GetCardType(void);
 static void CreateTrainerCardTrainerPic(void);
 static void DrawVidraCrestPage(void);
 static void RestoreKantoCardPage(void);
+static void RestoreCrestTextPalette(void);
 
 static const u32 sTrainerCardStickers_Gfx[]           = INCBIN_U32("graphics/trainer_card/stickers.4bpp.lz");
 static const u32 sHoennTrainerCardFront_Tilemap[]     = INCBIN_U32("graphics/trainer_card/rse/front.bin.lz");
@@ -600,6 +602,7 @@ static void Task_TrainerCard(u8 taskId)
         else if (JOY_NEW(A_BUTTON | DPAD_RIGHT))
         {
             // The original statistics remain the next side of the card.
+            RestoreCrestTextPalette();
             SetHelpContext(HELPCONTEXT_TRAINER_CARD_BACK);
             FlipTrainerCard();
             PlaySE(SE_CARD_FLIP);
@@ -1603,43 +1606,72 @@ static void CrestText(const u8 *text, u8 y, const u8 *colors)
 
 static void DrawCrestSeal(u8 x, u8 y, bool8 earned, bool8 harbor)
 {
-    // Native menu palette; hard pixel edges and a small enamel anchor seal.
-    static const u16 outline[16] = {
-        0x07E0,0x1FF8,0x300C,0x6006,0x4002,0xC003,0x8001,0x8001,
-        0x8001,0x8001,0xC003,0x4002,0x6006,0x300C,0x1FF8,0x07E0
+    // A small GBA enamel shield: stepped silhouette, upper-left gold light,
+    // dark lower-right rim and a readable ivory anchor. No antialiasing.
+    static const u8 inset[24] = {
+        8,5,3,2,1,1,0,0,0,0,0,0,0,1,1,2,3,4,5,6,8,9,10,11
     };
-    u8 xx, yy, color = earned ? TEXT_COLOR_BLUE : TEXT_COLOR_LIGHT_GRAY;
-    for (yy = 0; yy < 16; yy++)
-        for (xx = 0; xx < 16; xx++)
-            if (outline[yy] & (1 << xx))
-                FillWindowPixelRect(1, color, x + xx, y + yy, 1, 1);
-    if (harbor)
+    u8 yy, color = earned ? 4 : 12;
+    if (!harbor)
     {
-        FillWindowPixelRect(1, color, x + 7, y + 3, 2, 9);
-        FillWindowPixelRect(1, color, x + 5, y + 6, 6, 1);
-        FillWindowPixelRect(1, color, x + 4, y + 10, 8, 2);
-        FillWindowPixelRect(1, color, x + 3, y + 8, 2, 3);
-        FillWindowPixelRect(1, color, x + 11, y + 8, 2, 3);
+        // Empty display mount, not a fabricated design for an unfinished gym.
+        for (yy = 0; yy < 18; yy++)
+        {
+            u8 edge = yy < 9 ? 8 - yy : yy - 9;
+            FillWindowPixelRect(1, earned ? 7 : 3, x + 3 + edge, y + 3 + yy, 18 - edge * 2, 1);
+            if (yy > 2 && yy < 15)
+                FillWindowPixelRect(1, 9, x + 5 + edge, y + 3 + yy, 14 - edge * 2, 1);
+        }
+        return;
     }
-    else
+    for (yy = 0; yy < 24; yy++)
     {
-        // Future crests have no assigned design yet; do not invent rewards.
-        FillWindowPixelRect(1, color, x + 6, y + 6, 4, 4);
+        u8 left = inset[yy], width = 24 - left * 2;
+        FillWindowPixelRect(1, earned ? 5 : 12, x + left, y + yy, width, 1);
+        if (yy > 0 && yy < 22 && width > 4)
+        {
+            FillWindowPixelRect(1, color, x + left, y + yy, 1, 1);
+            FillWindowPixelRect(1, earned ? 15 : 9, x + left + 2, y + yy, width - 4, 1);
+        }
     }
+    // Optical centering in the wider bowl, above the drop's tapering point.
+    y -= 2;
+    FillWindowPixelRect(1, color, x + 10, y + 4, 4, 1);
+    FillWindowPixelRect(1, color, x + 9, y + 5, 2, 3);
+    FillWindowPixelRect(1, color, x + 13, y + 5, 2, 3);
+    FillWindowPixelRect(1, color, x + 10, y + 8, 4, 1);
+    FillWindowPixelRect(1, color, x + 11, y + 8, 2, 11);
+    FillWindowPixelRect(1, color, x + 7, y + 11, 10, 2);
+    FillWindowPixelRect(1, color, x + 5, y + 14, 2, 3);
+    FillWindowPixelRect(1, color, x + 17, y + 14, 2, 3);
+    FillWindowPixelRect(1, color, x + 6, y + 17, 3, 2);
+    FillWindowPixelRect(1, color, x + 15, y + 17, 3, 2);
+    FillWindowPixelRect(1, color, x + 8, y + 19, 8, 1);
+    if (earned)
+        FillWindowPixelRect(1, 10, x + 4, y + 6, 2, 1);
 }
 
 static void DrawVidraCrestPage(void)
 {
     static const u8 title[] = _("VIDRA CRESTS");
-    static const u8 subtitle[] = _("Five island gyms. Five trials.");
-    static const u8 harbor[] = _("HARBOR");
+    static const u8 havora[] = _("HAVORA");
     static const u8 future[][4] = {_("II"), _("III"), _("IV"), _("V")};
-    static const u8 earnedText[] = _("Harbor Crest earned!");
-    static const u8 lockedText[] = _("Challenge Havora's captain.");
-    static const u8 futureText[] = _("More island trials await.");
+    static const u8 earnedText[] = _("Captain Eirik's seal of recognition.");
+    static const u8 lockedText[] = _("Win the captain's double battle.");
+    static const u8 detailTitle[] = _("HAVORA CREST");
     static const u8 controls[] = _("A: STATS   B: KANTO");
     static const u8 countSuffix[] = _(" / 5 CRESTS");
-    static const u8 blue[] = {TEXT_COLOR_WHITE, TEXT_COLOR_BLUE, TEXT_COLOR_LIGHT_BLUE};
+    static const u8 blue[] = {0, 6, 3};
+    static const u8 muted[] = {0, 12, 9};
+    static const u8 gold[] = {0, 4, 6};
+    // FireRed Trainer Card blue/cream/gold, with a private text-window palette.
+    // Save/restore all 16 colors so the Kanto front and statistics are identical.
+    static const u16 crestPalette[16] = {
+        RGB(0,0,0), RGB(28,30,30), RGB(7,9,12), RGB(20,23,25),
+        RGB(31,29,21), RGB(22,17,7), RGB(4,9,14), RGB(6,19,18),
+        RGB(13,20,27), RGB(24,27,29), RGB(31,31,31), RGB(27,29,31),
+        RGB(15,19,23), RGB(7,14,19), RGB(29,24,13), RGB(8,16,23)
+    };
     u8 i, mask = TrainerCard_GetVidraCrests(), count = 0;
     u8 buffer[32];
     u8 *end;
@@ -1647,31 +1679,53 @@ static void DrawVidraCrestPage(void)
     FillBgTilemapBufferRect_Palette0(3, 0, 0, 0, 32, 32);
     FillWindowPixelBuffer(2, PIXEL_FILL(0));
     CopyWindowToVram(2, COPYWIN_GFX);
-    FillWindowPixelBuffer(1, PIXEL_FILL(TEXT_COLOR_WHITE));
-    CrestText(title, 5, blue);
-    CrestText(subtitle, 24, sTrainerCardTextColors);
-    FillWindowPixelRect(1, TEXT_COLOR_LIGHT_GRAY, 12, 44, 200, 1);
+    CpuCopy16(&gPlttBufferUnfaded[BG_PLTT_ID(15)], sTrainerCardDataPtr->crestTextPalette, 32);
+    LoadPalette(crestPalette, BG_PLTT_ID(15), sizeof(crestPalette));
+    FillWindowPixelBuffer(1, PIXEL_FILL(8));
+    FillWindowPixelRect(1, 6, 4, 2, 216, 23);
+    FillWindowPixelRect(1, 13, 5, 3, 214, 20);
+    FillWindowPixelRect(1, 14, 8, 25, 208, 1);
+    AddTextPrinterParameterized3(1, FONT_NORMAL, 12, 3, gold, TEXT_SKIP_DRAW, title);
+    // The pale striped inset and recessed holders echo the Kanto badge tray.
+    FillWindowPixelRect(1, 6, 4, 32, 216, 65);
+    FillWindowPixelRect(1, 1, 5, 33, 214, 63);
+    for (i = 35; i < 96; i += 3)
+        FillWindowPixelRect(1, 11, 5, i, 214, 1);
     for (i = 0; i < 5; i++)
     {
         bool8 earned = !!(mask & (1 << i));
+        const u8 *label = i == 0 ? havora : future[i - 1];
+        u8 x = 10 + i * 42;
+        u16 labelWidth = GetStringWidth(FONT_SMALL, label, 0);
         if (earned)
             count++;
-        DrawCrestSeal(24 + i * 40, 58, earned, i == 0);
-        AddTextPrinterParameterized3(1, FONT_SMALL, i == 0 ? 12 : 26 + i * 40, 80,
-            earned ? blue : sTrainerCardTextColors, TEXT_SKIP_DRAW, i == 0 ? harbor : future[i - 1]);
+        FillWindowPixelRect(1, earned ? 5 : 12, x, 38, 36, 38);
+        FillWindowPixelRect(1, earned ? 14 : 3, x + 1, 39, 34, 36);
+        FillWindowPixelRect(1, earned ? 13 : 9, x + 2, 40, 32, 34);
+        DrawCrestSeal(x + 6, 44, earned, i == 0);
+        AddTextPrinterParameterized3(1, FONT_SMALL, x + 18 - labelWidth / 2, 79,
+            earned ? blue : muted, TEXT_SKIP_DRAW, label);
     }
     end = ConvertIntToDecimalStringN(buffer, count, STR_CONV_MODE_LEFT_ALIGN, 1);
     StringCopy(end, countSuffix);
-    CrestText(buffer, 96, sTrainerCardTextColors);
-    CrestText(mask & 1 ? earnedText : lockedText, 108, sTrainerCardTextColors);
-    CrestText(futureText, 120, sTrainerCardTextColors);
-    CrestText(controls, 132, sTrainerCardTextColors);
+    AddTextPrinterParameterized3(1, FONT_SMALL, 150, 8, gold, TEXT_SKIP_DRAW, buffer);
+    FillWindowPixelRect(1, 6, 4, 100, 216, 31);
+    FillWindowPixelRect(1, 1, 5, 101, 214, 29);
+    AddTextPrinterParameterized3(1, FONT_SMALL, 12, 104, blue, TEXT_SKIP_DRAW, detailTitle);
+    AddTextPrinterParameterized3(1, FONT_SMALL, 12, 116, blue, TEXT_SKIP_DRAW, mask & 1 ? earnedText : lockedText);
+    CrestText(controls, 132, gold);
     DrawTrainerCardWindow(1);
     CopyBgTilemapBufferToVram(3);
 }
 
+static void RestoreCrestTextPalette(void)
+{
+    LoadPalette(sTrainerCardDataPtr->crestTextPalette, BG_PLTT_ID(15), 32);
+}
+
 static void RestoreKantoCardPage(void)
 {
+    RestoreCrestTextPalette();
     FillWindowPixelBuffer(1, PIXEL_FILL(0));
     sTrainerCardDataPtr->printState = 0;
     while (!PrintAllOnCardFront())

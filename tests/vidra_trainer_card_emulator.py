@@ -18,12 +18,16 @@ setvar(0x40d8,0);setvar(0x40d9,0xfffe)
 assert native('TrainerCard_GetVidraCrests')==30,'mask escaped its five bits'
 setvar(0x40d9,0)
 open_card();m.snap('vidra-card-kanto');front=m.screen.copy()
+palette_addr=m.symbols['gPlttBufferUnfaded']+15*32
+front_palette=m.read(palette_addr,32)
 m.press(8);assert state()==17;m.snap('vidra-card-locked')
 locked=m.screen.copy()
 m.press(6);assert state()==10,'left did not restore Kanto'
+assert m.read(palette_addr,32)==front_palette,'crest palette leaked onto Kanto card'
 assert front.crop((144,32,230,152)).tobytes()==m.screen.crop((144,32,230,152)).tobytes(),'portrait/badge region changed on restore'
 m.press(7);assert state()==17,'right did not open Vidra'
 m.press(8);assert state()==11,('original statistics inaccessible',state())
+assert m.read(palette_addr,32)==front_palette,'crest palette leaked onto statistics'
 m.snap('vidra-card-stats')
 m.press(0);assert state()==10,'stats B did not return to front'
 m.press(0);m.run(120);assert state() is None,'card did not free its allocation'

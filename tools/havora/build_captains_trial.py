@@ -4,3 +4,4 @@ import runpy
 R=Path(__file__).resolve().parents[2]
 runpy.run_path(str(R/'tools/havora/build_captains_trial_base.py'))
 runpy.run_path(str(R/'tools/havora/style_captains_trial.py'))
+runpy.run_path(str(R/'tools/havora/build_fixed_transfer_gym.py'))

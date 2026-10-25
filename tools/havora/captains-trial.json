@@ -16,8 +16,9 @@
     "FireRed SS Anne wall panels and porthole"
   ],
   "new_pixel_art": true,
+  "lock_prototype": "Exposed retaining courses, animated fill/drain, interlocked shutters, sail-less launch with standing passenger",
   "art_pass": "Covered Nordic shipyard, working captain deck; readable machinery and berth markings",
-  "extra_packed_graphics": 151,
+  "extra_packed_graphics": 244,
   "native_imports": [
     "Complete S.S. Anne desks, charts and storage cases",
     "Havora dock edges, seawalls and Slateport hoists"
@@ -27,9 +28,9 @@
   ],
   "custom_art": [
     "Framed timber panels and beams",
-    "Winch wheel, lock and gangway levers, reset bell",
+    "Supplied lever-sheet controls, reduced to native 16px and private palette",
     "Painted boarding pads, LOW/HIGH gauge, rope coil"
   ],
   "private_palette_changes": "Walnut wood, weathered stone and eight previously-unused colors in private palette 2; water unchanged",
-  "review_before_commit": false
+  "review_before_commit": true
 }

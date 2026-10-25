@@ -15,12 +15,19 @@ for species in [131,68]:fixture+=b'\x23'+struct.pack('<I',(m.symbols['ScrCmd_cre
 m.inject(fixture+b'\x02')
 warp(20,33);native('VarSet',0x40d7,0);native('VarSet',0x40d8,0);control(6);m.snap('trial-entrance')
 assert native('MapGridGetMetatileIdAt',36+7,20+7)&1023==0x376,'LOW gauge not drawn'
+assert native('MapGridGetMetatileIdAt',20+7,16+7)&1023==0x380,'low water did not expose masonry'
 control(1);assert value(0x40d7)==4
 warp(9,26);control(3);assert pos()==(29,26),(pos(),'low ride');assert value(0x40d7)==5;m.snap('trial-east-lock')
 # Crew battles are tested separately; set only their progression result here.
 control(2);assert value(0x40d7)==5,'lock ignored crew requirement'
 native('VarSet',0x40d8,1);control(2);assert value(0x40d7)==7
 assert native('MapGridGetMetatileIdAt',36+7,20+7)&1023==0x377,'HIGH gauge not drawn'
+assert native('MapGridGetMetatileIdAt',20+7,16+7)&1023==0x282,'high water did not submerge masonry'
+assert native('MapGridGetMetatileIdAt',10+7,14+7)&1023==0x384,'upper shutter did not open'
+control(2)
+assert native('MapGridGetMetatileIdAt',20+7,16+7)&1023==0x380,'draining did not expose masonry'
+assert native('MapGridGetMetatileIdAt',10+7,26+7)&1023==0x384,'lower shutter did not open'
+control(2)
 warp(29,14);control(3);assert pos()==(9,14),(pos(),'high ride');assert value(0x40d7)==6;m.snap('trial-upper-berth')
 control(4);assert value(0x40d7)==6,'upper gangway ignored navigator'
 native('VarSet',0x40d8,3);control(4);assert value(0x40d7)==14

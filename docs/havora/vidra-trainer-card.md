@@ -23,3 +23,26 @@ legacy victory, five-bit masking, front/crests/statistics navigation, portrait
 restoration, closing and reopening. Gym tests check Harbor reward recording,
 boat/lock/gangway/reset, exit and native double battle launches. Link behavior
 is guarded in code; no two-console link session was tested.
+
+## Artwork revision awaiting review
+
+The revised page uses a blue-and-gold title panel, a pale striped inset,
+recessed crest holders and a 24-pixel Harbor enamel shield with an ivory anchor.
+The four unassigned crests retain muted empty mounts, rather than fabricated
+badge designs. A framed Harbor description replaces the earlier plain list.
+
+A private 16-color window palette follows the native FireRed card colors.
+All 16 original palette entries are saved in the allocated UI state and restored
+before either the Kanto front or statistics is shown. This adds 32 bytes to the
+card's temporary allocation, no static EWRAM or save data. Development build
+passes (21,623,160 ROM bytes used); mGBA checks palette restoration, card
+navigation, earned/unearned Harbor, portrait restoration, closing and reopening.
+The review previews are `review/vidra-crests-art-review.png` and its locked
+counterpart. This revision is uncommitted for visual review.
+
+The spacing revision renames the displayed reward to Havora (including the
+captain's award text), centers all five labels using measured font widths,
+raises the anchor two pixels within the drop's bowl, and enlarges the description
+panel with padding on both text lines. The latest build and native card tests
+pass; `review/vidra-crests-spacing-review.png` is the earned-state screenshot.
+This revision remains uncommitted for review.
