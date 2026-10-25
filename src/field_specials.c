@@ -74,11 +74,6 @@ void OpenPokeGlassMap(void)
 void OpenPokeGlassMapNative(void)
 {
     CleanupOverworldWindowsAndTilemaps();
-    if (FieldMove_IsUnlocked(FIELD_MOVE_FLY) && FieldMove_SetUpFly())
-    {
-        CB2_OpenFlyMapWithExitCB(CB2_ReturnToFieldContinueScript);
-        return;
-    }
     InitRegionMapWithExitCB(REGIONMAP_TYPE_NORMAL, CB2_ReturnToFieldContinueScript);
 }
 

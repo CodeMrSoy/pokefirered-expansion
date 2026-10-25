@@ -33,7 +33,7 @@ for key, expected in ((4, 0), (6, 0), (7, 1), (7, 2), (7, 2),
 for app, path, task in (
     (0, (), 'Task_PokeGlassPokedex'),
     (1, (7,), 'Task_HandleChooseMonInput'),
-    (2, (7,), 'Task_GlassStorage'),
+    (2, (7,), 'Task_PCMainMenu'),
     (5, (5,), 'Task_PokeGlassWardrobe'),
     (3, (6,), 'Task_PokeGlassStats'),
     (4, (6,), None),
@@ -48,6 +48,7 @@ for app, path, task in (
     m.snap('pokeglass-grid-app-' + str(app))
     m.press(0)
     wait_task('Task_PokeGlassHub')
+    m.run(30)  # Native screens may return on the launcher's first input-debounce frame.
     assert cursor() == app
     m.snap('pokeglass-grid-return-' + str(app))
 m.press(0)

@@ -1015,8 +1015,6 @@ void InitRegionMapWithExitCB(u8 type, MainCallback cb)
 static void InitRegionMapType(void)
 {
     u8 i;
-    u8 j;
-    u8 region;
 
     switch (sRegionMap->type)
     {
@@ -1033,28 +1031,10 @@ static void InitRegionMapType(void)
     {
         sRegionMap->permissions[i] = sRegionMapPermissions[sRegionMap->type][i];
     }
-    if (!FlagGet(FLAG_SYS_SEVII_MAP_123))
-        sRegionMap->permissions[MAPPERM_HAS_SWITCH_BUTTON] = FALSE;
-    region = REGIONMAP_KANTO;
-    j = REGIONMAP_KANTO;
-    if (gMapHeader.regionMapSectionId >= SEVII_MAPSEC_START)
-    {
-        // Mapsec is in Sevii Islands, determine which map to use
-        while (region == REGIONMAP_KANTO)
-        {
-            for (i = 0; sSeviiMapsecs[j][i] != MAPSEC_NONE; i++)
-            {
-                if (gMapHeader.regionMapSectionId == sSeviiMapsecs[j][i])
-                {
-                    region = j + 1;
-                    break;
-                }
-            }
-            j++;
-        }
-    }
-    sRegionMap->selectedRegion = region;
-    sRegionMap->playersRegion = region;
+    // Sevii is retired. Older save flags must not re-enable its map pages.
+    sRegionMap->permissions[MAPPERM_HAS_SWITCH_BUTTON] = FALSE;
+    sRegionMap->selectedRegion = REGIONMAP_KANTO;
+    sRegionMap->playersRegion = PokeGlassPlayerRegion();
 }
 
 static void CB2_OpenRegionMap(void)
