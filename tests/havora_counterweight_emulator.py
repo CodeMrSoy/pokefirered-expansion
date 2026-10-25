@@ -10,6 +10,7 @@ from pathlib import Path
 import havora_emulator_support as m
 R=m.root
 plan=json.loads((R/'tools/havora/counterweight-puzzle.json').read_text())
+markers=json.loads((R/'tools/havora/puzzle-markers.json').read_text())
 # SaveBlock1 has grown in Quantum; compile offsets rather than trusting the
 # original FireRed layout comments.
 probe=R/'build/havora-tests/puzzle-layout.c'
@@ -39,11 +40,11 @@ def snapshot():
 def weighted():return [pack(p) in rockvars() for p in plan['plates']]
 def check_world():
  vals=rockvars();state=var(0x40d6);holes=state>>3&7;weights=weighted();opened=[weights[0],weights[1],holes==7 and all(weights[1:])]
- for p,o in zip(plan['gates'],opened):
-  v=tile(p);assert v&1023==(0x232 if o else 0x231),(p,'gate art',hex(v),o);assert bool(v&0xc00)==(not o),(p,'gate collision')
+ for gate_index,(p,o) in enumerate(zip(plan['gates'],opened)):
+  v=tile(p);assert v&1023==(0x232 if o else markers['gates'][gate_index]),(p,'gate art',hex(v),o);assert bool(v&0xc00)==(not o),(p,'gate collision')
  for i,p in enumerate(plan['holes']):
   v=tile(p);done=holes>>i&1;assert v&1023==(0 if done else 0x22e),(p,'pit art');assert bool(v&0xc00)==(not done),(p,'pit collision')
- for p,o in zip(plan['plates'],weights):assert tile(p)&1023==(0x230 if o else 0x22f),(p,'plate art')
+ for i,(p,o) in enumerate(zip(plan['plates'],weights)):assert tile(p)&1023==markers['plates'][min(i,2)][int(o)],(p,'plate art')
  return opened
 
 def gate_task():
@@ -71,7 +72,7 @@ def observe_animation():
   # The sheet is shared; the sprite's base tile is recorded by its allocation.
   raw=m.read(m.symbols['sSpriteTileRangeTags'],128);tags=struct.unpack('<64H',raw);slot=tags.index(0xfa50)
   start=struct.unpack('<H',m.read(m.symbols['sSpriteTileRanges']+slot*4,2))[0]
-  frame=((attr2&1023)-start)//4;direction='open' if opened>>i&1 else 'close'
+  frame=((attr2&1023)-start-i*20)//4;direction='open' if opened>>i&1 else 'close'
   assert 0<=frame<5,(frame,attr2,start)
   animation_frames[direction].add(frame)
   # A's first opening/closing is on camera and gives a real ROM animation.
@@ -79,7 +80,7 @@ def observe_animation():
    x,y=struct.unpack('<hh',m.read(m.symbols['gSprites']+sid*SPRITE_SIZE+32,4))
    dx=struct.unpack('<h',m.read(m.symbols['gSpriteCoordOffsetX'],2))[0];dy=struct.unpack('<h',m.read(m.symbols['gSpriteCoordOffsetY'],2))[0]
    animation_captures.setdefault(direction,{})[frame]=(m.screen.copy(),(x+dx,y+dy))
- assert m.read(m.symbols['gPlttBufferFaded']+(0x100+palette*16)*2,32)==m.read(m.symbols['gPlttBufferFaded']+32,32),'gate night/fade palette mismatch'
+ assert m.read(m.symbols['gPlttBufferFaded']+(0x100+palette*16)*2,32)==m.read(m.symbols['gPlttBufferFaded']+12*32,32),'gate night/fade palette mismatch'
 
 def advance_animation(n=45):
  for _ in range(n):observe_animation();m.run(1)

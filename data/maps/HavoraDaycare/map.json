@@ -150,7 +150,7 @@
       "y": 14,
       "elevation": 5,
       "dest_map": "MAP_QUANTUM_HAVORA_DAYCARE",
-      "dest_warp_id": "1"
+      "dest_warp_id": "0"
     }
   ],
   "coord_events": [],

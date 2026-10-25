@@ -35,6 +35,8 @@ static const u16 sPits[] = {PACK(18, 24), PACK(22, 16), PACK(16, 20)};
 // A, B, C, D. A is temporary; B/C/D hold the final gate open.
 static const u16 sPlates[] = {PACK(16, 22), PACK(21, 21), PACK(13, 27), PACK(18, 14)};
 static const u16 sGates[] = {PACK(19, 22), PACK(16, 21), PACK(10, 13)};
+static const u16 sPlateTiles[][2] = {{0x233, 0x234}, {0x235, 0x236}, {0x237, 0x238}, {0x237, 0x238}};
+static const u16 sGateClosedTiles[] = {0x239, 0x23a, 0x23b};
 extern const u8 HavoraNorthQuadrant_PuzzleReset[];
 
 static bool8 IsPuzzleMap(u8 mapNum, u8 mapGroup)
@@ -111,11 +113,11 @@ static void PutTile(u16 position, u16 tile, bool8 blocked, bool8 redraw)
 }
 
 // Temporary OBJ graphics animate the barrier above its static grass/cap tile.
-// All three barriers share one 640-byte sheet and one palette during a move.
+// Three marked barriers share one 1,920-byte sheet and one existing palette.
 #define GATE_ANIM_TAG 0xFA50
 #define GATE_FRAME_TICKS 6
 #define GATE_ANIM_TICKS (5 * GATE_FRAME_TICKS)
-static const u32 sGateAnimationTiles[] = INCBIN_U32("graphics/havora/gate.4bpp");
+static const u32 sGateAnimationTiles[] = INCBIN_U32("graphics/havora/gate_marked.4bpp");
 static const struct SpriteSheet sGateSheet = {sGateAnimationTiles, sizeof(sGateAnimationTiles), GATE_ANIM_TAG};
 static const struct OamData sGateOam = {
     .shape = SPRITE_SHAPE(16x16),
@@ -151,11 +153,11 @@ static void Task_AnimateHavoraGates(u8 taskId);
 
 static void CopyGatePalette(u8 paletteNum)
 {
-    // Copy the displayed BG colors, including weather/night/fade tint. The
+    // Copy the marker/wood palette, including weather/night/fade tint. The
     // barrier must not flash to a brighter object palette while retracting.
     u16 offset = 0x100 + paletteNum * 16;
-    CpuCopy16(gPlttBufferUnfaded + 16, gPlttBufferUnfaded + offset, 32);
-    CpuCopy16(gPlttBufferFaded + 16, gPlttBufferFaded + offset, 32);
+    CpuCopy16(gPlttBufferUnfaded + 12 * 16, gPlttBufferUnfaded + offset, 32);
+    CpuCopy16(gPlttBufferFaded + 12 * 16, gPlttBufferFaded + offset, 32);
 }
 
 static void FinishGateAnimation(u8 taskId, bool8 redraw)
@@ -171,7 +173,7 @@ static void FinishGateAnimation(u8 taskId, bool8 redraw)
         if (redraw && (task->data[0] & (1 << i)))
         {
             bool8 open = task->data[1] & (1 << i);
-            PutTile(sGates[i], open ? HAVORA_PUZZLE_GATE_OPEN : HAVORA_PUZZLE_GATE_CLOSED, !open, TRUE);
+            PutTile(sGates[i], open ? HAVORA_PUZZLE_GATE_OPEN : sGateClosedTiles[i], !open, TRUE);
         }
     }
     FreeSpriteTilesByTag(GATE_ANIM_TAG);
@@ -196,7 +198,7 @@ static bool8 StartGateAnimation(u8 open)
     u8 i, changed = 0, taskId, paletteNum;
     for (i = 0; i < 3; i++)
     {
-        u16 tile = open & (1 << i) ? HAVORA_PUZZLE_GATE_OPEN : HAVORA_PUZZLE_GATE_CLOSED;
+        u16 tile = open & (1 << i) ? HAVORA_PUZZLE_GATE_OPEN : sGateClosedTiles[i];
         if (MapGridGetMetatileIdAt((sGates[i] & 0xFF) + MAP_OFFSET, (sGates[i] >> 8) + MAP_OFFSET) != tile)
             changed |= 1 << i;
     }
@@ -239,6 +241,7 @@ static bool8 StartGateAnimation(u8 open)
             return TRUE;
         }
         gTasks[taskId].data[4 + i] = spriteId;
+        gSprites[spriteId].sheetTileStart += i * 20;
         gSprites[spriteId].coordOffsetEnabled = TRUE;
         StartSpriteAnim(&gSprites[spriteId], open & (1 << i) ? 0 : 1);
         // Opening remains blocked until the barrier is flush with the grass;
@@ -248,7 +251,7 @@ static bool8 StartGateAnimation(u8 open)
     return TRUE;
 fallback:
     for (i = 0; i < 3; i++)
-        PutTile(sGates[i], open & (1 << i) ? HAVORA_PUZZLE_GATE_OPEN : HAVORA_PUZZLE_GATE_CLOSED, !(open & (1 << i)), TRUE);
+        PutTile(sGates[i], open & (1 << i) ? HAVORA_PUZZLE_GATE_OPEN : sGateClosedTiles[i], !(open & (1 << i)), TRUE);
     return TRUE;
 }
 
@@ -263,12 +266,12 @@ static void RefreshWorld(bool8 redraw, bool8 sound)
         PutTile(sPits[i], holes & (1 << i) ? HAVORA_PUZZLE_GROUND : HAVORA_PUZZLE_PIT,
             !(holes & (1 << i)), redraw);
     for (i = 0; i < 4; i++)
-        PutTile(sPlates[i], Occupied(rocks, sPlates[i]) ? HAVORA_PUZZLE_PLATE_DOWN : HAVORA_PUZZLE_PLATE_UP, FALSE, redraw);
+        PutTile(sPlates[i], sPlateTiles[i][Occupied(rocks, sPlates[i]) ? 1 : 0], FALSE, redraw);
     if (redraw)
         gateChanged = StartGateAnimation(open);
     else
         for (i = 0; i < 3; i++)
-            PutTile(sGates[i], open & (1 << i) ? HAVORA_PUZZLE_GATE_OPEN : HAVORA_PUZZLE_GATE_CLOSED, !(open & (1 << i)), FALSE);
+            PutTile(sGates[i], open & (1 << i) ? HAVORA_PUZZLE_GATE_OPEN : sGateClosedTiles[i], !(open & (1 << i)), FALSE);
     if (sound && gateChanged)
         PlaySE(SE_SWITCH);
 }
