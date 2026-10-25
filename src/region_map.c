@@ -36,6 +36,9 @@ enum {
     REGIONMAP_COUNT
 };
 
+// Vidra uses the old page number; retired Sevii pages have no selectable data.
+#define REGIONMAP_QUANTUM REGIONMAP_SEVII45
+
 enum {
     MAPSECTYPE_NONE,
     MAPSECTYPE_ROUTE,
@@ -397,6 +400,7 @@ static const u16 sPlayerIcon_RedPal[] = INCBIN_U16("graphics/region_map/player_i
 static const u16 sPlayerIcon_LeafPal[] = INCBIN_U16("graphics/region_map/player_icon_leaf.gbapal");
 static const u16 sMiscIcon_Pal[] = INCBIN_U16("graphics/region_map/misc_icon.gbapal"); // For dungeon and fly icons
 static const u16 sRegionMap_Pal[] = INCBIN_U16("graphics/region_map/region_map.gbapal");
+
 static const u16 sUnusedPalette[] = { RGB(0, 0, 31), RGB(0, 12, 31), RGB_WHITE, RGB_WHITE };
 static const u16 sSwitchMapCursor_Pal[] = INCBIN_U16("graphics/region_map/switch_map_cursor.gbapal");
 static const u16 sMapEdge_Pal[] = INCBIN_U16("graphics/region_map/map_edge.gbapal");
@@ -412,16 +416,15 @@ static const u16 sAvatarMapPal_may[] = INCBIN_U16("graphics/avatars/may/map.gbap
 static const u32 *const sAvatarMapPics[] = {sAvatarMap_brendan, sAvatarMap_may};
 static const u16 *const sAvatarMapPalettes[] = {sAvatarMapPal_brendan, sAvatarMapPal_may};
 static const u32 sRegionMap_Gfx[] = INCBIN_U32("graphics/region_map/region_map.4bpp.lz");
+#ifdef QUANTUM_MAPSEC_START
+static const u32 sQuantumAtlas_Gfx[] = INCBIN_U32("graphics/region_map/quantum_atlas.bin.lz");
+static const u32 sQuantumMap_Tilemap[] = INCBIN_U32("graphics/region_map/quantum_map.bin.lz");
+static const u32 sQuantumSwitch_Gfx[] = INCBIN_U32("graphics/region_map/quantum_switch_tiles.bin.lz");
+static const u32 sQuantumSwitch_Tilemap[] = INCBIN_U32("graphics/region_map/quantum_switch.bin.lz");
+#endif
 static const u32 sMapEdge_Gfx[] = INCBIN_U32("graphics/region_map/map_edge.4bpp.lz");
-static const u32 sSwitchMapMenu_Gfx[] = INCBIN_U32("graphics/region_map/switch_map_menu.4bpp.lz");
 static const u32 sKanto_Tilemap[] = INCBIN_U32("graphics/region_map/kanto.bin.lz");
-static const u32 sSevii123_Tilemap[] = INCBIN_U32("graphics/region_map/sevii_123.bin.lz");
-static const u32 sSevii45_Tilemap[] = INCBIN_U32("graphics/region_map/sevii_45.bin.lz");
-static const u32 sSevii67_Tilemap[] = INCBIN_U32("graphics/region_map/sevii_67.bin.lz");
 static const u32 sMapEdge_Tilemap[] = INCBIN_U32("graphics/region_map/map_edge.bin.lz");
-static const u32 sSwitchMap_KantoSeviiAll_Tilemap[] = INCBIN_U32("graphics/region_map/switch_map_kanto_sevii_all.bin.lz");
-static const u32 sSwitchMap_KantoSevii123_Tilemap[] = INCBIN_U32("graphics/region_map/switch_map_kanto_sevii_123.bin.lz");
-static const u32 sSwitchMap_KantoSeviiAll2_Tilemap[] = INCBIN_U32("graphics/region_map/switch_map_kanto_sevii_all2.bin.lz");
 static const u32 sMapEdge_TopLeft[] = INCBIN_U32("graphics/region_map/map_edge_top_left.4bpp.lz");
 static const u32 sMapEdge_TopRight[] = INCBIN_U32("graphics/region_map/map_edge_top_right.4bpp.lz");
 static const u32 sMapEdge_MidLeft[] = INCBIN_U32("graphics/region_map/map_edge_mid_left.4bpp.lz");
@@ -531,80 +534,12 @@ static const u8 *const sTextColorTable[] = {
     [MAPSECTYPE_NOT_VISITED - 2] = sTextColor_Red
 };
 
-static const u8 sSeviiMapsecs[3][30] = {
-    [REGIONMAP_SEVII123 - 1] =
-    {
-        MAPSEC_ONE_ISLAND,
-        MAPSEC_TWO_ISLAND,
-        MAPSEC_THREE_ISLAND,
-        MAPSEC_KINDLE_ROAD,
-        MAPSEC_TREASURE_BEACH,
-        MAPSEC_CAPE_BRINK,
-        MAPSEC_BOND_BRIDGE,
-        MAPSEC_THREE_ISLE_PORT,
-        MAPSEC_MT_EMBER,
-        MAPSEC_BERRY_FOREST,
-        MAPSEC_THREE_ISLE_PATH,
-        MAPSEC_EMBER_SPA,
-        MAPSEC_NONE
-    }, 
-    [REGIONMAP_SEVII45 - 1] =
-    {
-        MAPSEC_FOUR_ISLAND,
-        MAPSEC_FIVE_ISLAND,
-        MAPSEC_SEVII_ISLE_6,
-        MAPSEC_SEVII_ISLE_7,
-        MAPSEC_SEVII_ISLE_8,
-        MAPSEC_SEVII_ISLE_9,
-        MAPSEC_RESORT_GORGEOUS,
-        MAPSEC_WATER_LABYRINTH,
-        MAPSEC_FIVE_ISLE_MEADOW,
-        MAPSEC_MEMORIAL_PILLAR,
-        MAPSEC_NAVEL_ROCK_FRLG,
-        MAPSEC_ICEFALL_CAVE,
-        MAPSEC_ROCKET_WAREHOUSE,
-        MAPSEC_LOST_CAVE,
-        MAPSEC_NONE
-    }, 
-    [REGIONMAP_SEVII67 - 1] = 
-    {
-        MAPSEC_SEVEN_ISLAND,
-        MAPSEC_SIX_ISLAND,
-        MAPSEC_OUTCAST_ISLAND,
-        MAPSEC_GREEN_PATH,
-        MAPSEC_WATER_PATH,
-        MAPSEC_RUIN_VALLEY,
-        MAPSEC_TRAINER_TOWER,
-        MAPSEC_CANYON_ENTRANCE,
-        MAPSEC_SEVAULT_CANYON,
-        MAPSEC_TANOBY_RUINS,
-        MAPSEC_SEVII_ISLE_22,
-        MAPSEC_SEVII_ISLE_23,
-        MAPSEC_SEVII_ISLE_24,
-        MAPSEC_TRAINER_TOWER_2,
-        MAPSEC_DOTTED_HOLE,
-        MAPSEC_PATTERN_BUSH,
-        MAPSEC_ALTERING_CAVE_FRLG,
-        MAPSEC_TANOBY_CHAMBERS,
-        MAPSEC_TANOBY_KEY,
-        MAPSEC_BIRTH_ISLAND_FRLG,
-        MAPSEC_MONEAN_CHAMBER,
-        MAPSEC_LIPTOO_CHAMBER,
-        MAPSEC_WEEPTH_CHAMBER,
-        MAPSEC_DILFORD_CHAMBER,
-        MAPSEC_SCUFIB_CHAMBER,
-        MAPSEC_RIXY_CHAMBER,
-        MAPSEC_VIAPOIS_CHAMBER,
-        MAPSEC_NONE
-    }
-};
-
 ALIGNED(4) static const bool8 sRegionMapPermissions[REGIONMAP_TYPE_COUNT][MAPPERM_COUNT] = {
     [REGIONMAP_TYPE_NORMAL] = 
     {
-        [MAPPERM_HAS_SWITCH_BUTTON]    = TRUE, 
+        [MAPPERM_HAS_SWITCH_BUTTON]    = TRUE,
         [MAPPERM_HAS_MAP_PREVIEW]      = TRUE, 
-        [MAPPERM_HAS_OPEN_ANIM]        = TRUE, 
+        [MAPPERM_HAS_OPEN_ANIM]        = TRUE,
         [MAPPERM_HAS_FLY_DESTINATIONS] = FALSE
     },
     [REGIONMAP_TYPE_WALL] = 
@@ -616,9 +551,9 @@ ALIGNED(4) static const bool8 sRegionMapPermissions[REGIONMAP_TYPE_COUNT][MAPPER
     },
     [REGIONMAP_TYPE_FLY] = 
     {
-        [MAPPERM_HAS_SWITCH_BUTTON]    = FALSE, 
+        [MAPPERM_HAS_SWITCH_BUTTON]    = TRUE,
         [MAPPERM_HAS_MAP_PREVIEW]      = FALSE, 
-        [MAPPERM_HAS_OPEN_ANIM]        = FALSE, 
+        [MAPPERM_HAS_OPEN_ANIM]        = TRUE,
         [MAPPERM_HAS_FLY_DESTINATIONS] = TRUE 
     }
 };
@@ -806,8 +741,18 @@ static const union AnimCmd sAnim_DungeonIconNotVisited[] = {
     ANIMCMD_JUMP(0)
 };
 
+static const union AnimCmd sAnim_FlyIconLocked[] = {
+    ANIMCMD_FRAME(0, 1),
+    ANIMCMD_END
+};
 static const union AnimCmd *const sAnims_FlyIcon[] = {
-    sAnim_FlyIcon
+    sAnim_FlyIcon, sAnim_FlyIconLocked
+};
+static const u16 sLockedFlyIcon_Pal[16] = {
+    RGB(17,18,21), RGB(18,18,18), RGB(15,15,15), RGB(13,13,13),
+    RGB(11,11,11), RGB(17,17,17), RGB(14,14,14), RGB(11,11,11),
+    RGB(20,20,20), RGB(16,16,16), RGB(10,10,10), RGB(31,0,31),
+    RGB(31,0,31), RGB(31,0,31), RGB(31,0,31), RGB(31,0,31)
 };
 
 static const union AnimCmd *const sAnims_DungeonIcon[] = {
@@ -829,11 +774,19 @@ static const u8 sTextColors[] = {TEXT_DYNAMIC_COLOR_6, TEXT_COLOR_WHITE, TEXT_CO
 
 
 #include "data/region_map/region_map_layout_kanto.h"
-#include "data/region_map/region_map_layout_sevii_123.h"
-#include "data/region_map/region_map_layout_sevii_45.h"
-#include "data/region_map/region_map_layout_sevii_67.h"
+#ifdef QUANTUM_MAPSEC_START
+#include "data/region_map/region_map_layout_quantum.h"
+#endif
 
 static const u8 sMapFlyDestinations[][3] = {
+#ifdef QUANTUM_MAPSEC_START
+    [MAPSEC_QUANTUM_PORT_CITY - KANTO_MAPSEC_START] = {MAP(MAP_HAVORA_NORTH_QUADRANT), HEAL_LOCATION_QUANTUM_PORT_CITY},
+    [MAPSEC_QUANTUM_COASTAL_CITY - KANTO_MAPSEC_START] = {MAP(MAP_QUANTUM_COASTAL_CITY), HEAL_LOCATION_QUANTUM_COASTAL_CITY},
+    [MAPSEC_QUANTUM_FOREST_TOWN - KANTO_MAPSEC_START] = {MAP(MAP_QUANTUM_FOREST_TOWN), HEAL_LOCATION_QUANTUM_FOREST_TOWN},
+    [MAPSEC_QUANTUM_LAKE_TOWN - KANTO_MAPSEC_START] = {MAP(MAP_QUANTUM_LAKE_TOWN), HEAL_LOCATION_QUANTUM_LAKE_TOWN},
+    [MAPSEC_QUANTUM_SNOW_TOWN - KANTO_MAPSEC_START] = {MAP(MAP_QUANTUM_SNOW_TOWN), HEAL_LOCATION_QUANTUM_SNOW_TOWN},
+
+#endif
     [MAPSEC_PALLET_TOWN         - KANTO_MAPSEC_START] = {MAP(MAP_PALLET_TOWN),                           HEAL_LOCATION_PALLET_TOWN},
     [MAPSEC_VIRIDIAN_CITY       - KANTO_MAPSEC_START] = {MAP(MAP_VIRIDIAN_CITY),                         HEAL_LOCATION_VIRIDIAN_CITY},
     [MAPSEC_PEWTER_CITY         - KANTO_MAPSEC_START] = {MAP(MAP_PEWTER_CITY),                           HEAL_LOCATION_PEWTER_CITY},
@@ -1031,10 +984,14 @@ static void InitRegionMapType(void)
     {
         sRegionMap->permissions[i] = sRegionMapPermissions[sRegionMap->type][i];
     }
-    // Sevii is retired. Older save flags must not re-enable its map pages.
+    // Legacy Sevii flags cannot re-enable retired pages. QOL remains Kanto-only
+    // until merged with a campaign that supplies Vidra's map sections.
+#ifndef QUANTUM_MAPSEC_START
     sRegionMap->permissions[MAPPERM_HAS_SWITCH_BUTTON] = FALSE;
-    sRegionMap->selectedRegion = REGIONMAP_KANTO;
+#endif
     sRegionMap->playersRegion = PokeGlassPlayerRegion();
+    sRegionMap->selectedRegion = sRegionMap->playersRegion;
+
 }
 
 static void CB2_OpenRegionMap(void)
@@ -1111,7 +1068,11 @@ static bool8 LoadRegionMapGfx(void)
         ResetTempTileDataBuffers();
         break;
     case 3:
+#ifdef QUANTUM_MAPSEC_START
+        DecompressAndCopyTileDataToVram(0, sQuantumAtlas_Gfx, 0, 0, 0);
+#else
         DecompressAndCopyTileDataToVram(0, sRegionMap_Gfx, 0, 0, 0);
+#endif
         if (sRegionMap->type != REGIONMAP_TYPE_NORMAL)
             DecompressAndCopyTileDataToVram(1, sBackground_Gfx, 0, 0, 0);
         break;
@@ -1123,13 +1084,9 @@ static bool8 LoadRegionMapGfx(void)
         DecompressDataWithHeaderWram(sKanto_Tilemap, sRegionMap->layouts[REGIONMAP_KANTO]);
         break;
     case 6:
-        DecompressDataWithHeaderWram(sSevii123_Tilemap, sRegionMap->layouts[REGIONMAP_SEVII123]);
-        break;
-    case 7:
-        DecompressDataWithHeaderWram(sSevii45_Tilemap, sRegionMap->layouts[REGIONMAP_SEVII45]);
-        break;
-    case 8:
-        DecompressDataWithHeaderWram(sSevii67_Tilemap, sRegionMap->layouts[REGIONMAP_SEVII67]);
+#ifdef QUANTUM_MAPSEC_START
+        DecompressDataWithHeaderWram(sQuantumMap_Tilemap, sRegionMap->layouts[REGIONMAP_QUANTUM]);
+#endif
         break;
     default:
         DecompressDataWithHeaderWram(sBackground_Tilemap, sRegionMap->layouts[REGIONMAP_COUNT]);
@@ -1478,7 +1435,6 @@ static void BufferRegionMapBg(u8 bg, u16 *map)
 {
     s16 i;
     s16 j;
-    u8 whichMap;
     u16 *buffer = sRegionMap->bgTilemapBuffers[bg];
     for (i = 0; i < 20; i++)
     {
@@ -1496,14 +1452,7 @@ static void BufferRegionMapBg(u8 bg, u16 *map)
         WriteSequenceToBgTilemapBuffer(0, 0x100, 0x18, 15, 3, 1, 0x3, 0x001);
         WriteSequenceToBgTilemapBuffer(0, 0x110, 0x18, 16, 3, 1, 0x3, 0x001);
     }
-    if (sSwitchMapMenu != NULL)
-        whichMap = sSwitchMapMenu->currentSelection;
-    else
-        whichMap = sRegionMap->selectedRegion;
-    if (whichMap == REGIONMAP_SEVII45 && !FlagGet(FLAG_WORLD_MAP_NAVEL_ROCK_EXTERIOR))
-        FillBgTilemapBufferRect_Palette0(0, 0x003, 13, 11, 3, 2);
-    if (whichMap == REGIONMAP_SEVII67 && !FlagGet(FLAG_WORLD_MAP_BIRTH_ISLAND_EXTERIOR))
-        FillBgTilemapBufferRect_Palette0(0, 0x003, 21, 16, 3, 3);
+
 }
 
 static bool8 GetRegionMapPermission(u8 attr)
@@ -1526,39 +1475,26 @@ static void SetSelectedRegionMap(u8 region)
     sRegionMap->selectedRegion = region;
 }
 
+static u8 GetSwitchMapRegion(void)
+{
+    return sSwitchMapMenu->currentSelection == 0 ? REGIONMAP_KANTO : REGIONMAP_QUANTUM;
+}
+
 static void InitSwitchMapMenu(u8 whichMap, u8 taskId, TaskFunc taskFunc)
 {
     sSwitchMapMenu = AllocZeroed(sizeof(struct SwitchMapMenu));
-    if (FlagGet(FLAG_SYS_SEVII_MAP_4567))
-        sSwitchMapMenu->maxSelection = 3;
-    else if (FlagGet(FLAG_SYS_SEVII_MAP_123))
-        sSwitchMapMenu->maxSelection = 1;
-    else
-        sSwitchMapMenu->maxSelection = 0;
+    sSwitchMapMenu->maxSelection = 1;
     sSwitchMapMenu->cursorSubsprite[0].x = 88;
     sSwitchMapMenu->cursorSubsprite[1].x = 152;
-
-    switch (sSwitchMapMenu->maxSelection)
-    {
-    case 1:
-        DecompressDataWithHeaderWram(sSwitchMap_KantoSevii123_Tilemap, sSwitchMapMenu->switchMapTilemap);
-        sSwitchMapMenu->yOffset = 6;
-        break;
-    case 2: // never reached
-        DecompressDataWithHeaderWram(sSwitchMap_KantoSeviiAll2_Tilemap, sSwitchMapMenu->switchMapTilemap);
-        sSwitchMapMenu->yOffset = 4;
-        break;
-    case 3:
-    default:
-        sSwitchMapMenu->yOffset = 3;
-        DecompressDataWithHeaderWram(sSwitchMap_KantoSeviiAll_Tilemap, sSwitchMapMenu->switchMapTilemap);
-        break;
-    }
-    DecompressDataWithHeaderWram(sSwitchMapMenu_Gfx, sSwitchMapMenu->switchMapTiles);
+    sSwitchMapMenu->yOffset = 6;
+#ifdef QUANTUM_MAPSEC_START
+    DecompressDataWithHeaderWram(sQuantumSwitch_Tilemap, sSwitchMapMenu->switchMapTilemap);
+    DecompressDataWithHeaderWram(sQuantumSwitch_Gfx, sSwitchMapMenu->switchMapTiles);
+#endif
     sSwitchMapMenu->mainState = 0;
-    sSwitchMapMenu->currentSelection = whichMap;
+    sSwitchMapMenu->currentSelection = whichMap == REGIONMAP_QUANTUM ? 1 : 0;
     sSwitchMapMenu->exitTask = taskFunc;
-    sSwitchMapMenu->chosenRegion = GetRegionMapPlayerIsOn();
+    sSwitchMapMenu->chosenRegion = sSwitchMapMenu->currentSelection;
     SaveRegionMapGpuRegs(0);
     PrintTopBarTextRight(gText_RegionMap_AButtonOK);
     gTasks[taskId].func = Task_SwitchMapMenu;
@@ -1652,13 +1588,12 @@ static void Task_SwitchMapMenu(u8 taskId)
     case 9:
         if (HandleSwitchMapInput() == TRUE)
         {
-            SetSelectedRegionMap(sSwitchMapMenu->currentSelection);
-            if (GetRegionMapPlayerIsOn() == sSwitchMapMenu->currentSelection)
-            {
-                SetPlayerIconInvisibility(FALSE);
-                SetFlyIconInvisibility(sSwitchMapMenu->currentSelection, NELEMS(sMapIcons->flyIcons), FALSE);
-                SetDungeonIconInvisibility(sSwitchMapMenu->currentSelection, NELEMS(sMapIcons->dungeonIcons), FALSE);
-            }
+            SetSelectedRegionMap(GetSwitchMapRegion());
+            SetPlayerIconInvisibility(GetRegionMapPlayerIsOn() != GetSwitchMapRegion());
+            SetFlyIconInvisibility(0xFF, NELEMS(sMapIcons->flyIcons), TRUE);
+            SetDungeonIconInvisibility(0xFF, NELEMS(sMapIcons->dungeonIcons), TRUE);
+            SetFlyIconInvisibility(GetSwitchMapRegion(), NELEMS(sMapIcons->flyIcons), FALSE);
+            SetDungeonIconInvisibility(GetSwitchMapRegion(), NELEMS(sMapIcons->dungeonIcons), FALSE);
             sSwitchMapMenu->mainState++;
         }
         break;
@@ -1690,11 +1625,28 @@ static void FreeSwitchMapMenu(u8 taskId)
 {
     gTasks[taskId].func = sSwitchMapMenu->exitTask;
     HideBg(2);
+    if (sRegionMap->selectedRegion == sRegionMap->playersRegion)
+        GetPlayerPositionOnRegionMap_HandleOverrides();
+    else if (sRegionMap->selectedRegion == REGIONMAP_QUANTUM)
+    {
+        sMapCursor->x = 15;
+        sMapCursor->y = 12;
+    }
+    else
+    {
+        sMapCursor->x = 4;
+        sMapCursor->y = 11;
+    }
+    sMapCursor->spriteX = sMapCursor->x * 8 + 36;
+    sMapCursor->spriteY = sMapCursor->y * 8 + 36;
+    sMapCursor->selectedMapsec = GetSelectedMapSection(sRegionMap->selectedRegion, LAYER_MAP, sMapCursor->y, sMapCursor->x);
+    sMapCursor->selectedMapsecType = GetMapsecType(sMapCursor->selectedMapsec);
+    sMapCursor->selectedDungeonType = GetDungeonMapsecType(GetSelectedMapSection(sRegionMap->selectedRegion, LAYER_DUNGEON, sMapCursor->y, sMapCursor->x));
     PrintTopBarTextLeft(gText_RegionMap_DPadMove);
     PrintTopBarTextRight(gText_RegionMap_AButtonSwitch);
     UpdateMapsecNameBox();
     DrawDungeonNameBox();
-    SetGpuWindowDims(0, &sMapsecNameWindowDims[CLEAR_NAME]);
+    DisplayCurrentMapName();
     FREE_IF_NOT_NULL(sSwitchMapMenu);
 }
 
@@ -1788,7 +1740,7 @@ static bool8 HandleSwitchMapInput(void)
     if (JOY_NEW(B_BUTTON))
     {
         sSwitchMapMenu->currentSelection = sSwitchMapMenu->chosenRegion;
-        BufferRegionMapBg(0, sRegionMap->layouts[sSwitchMapMenu->currentSelection]);
+        BufferRegionMapBg(0, sRegionMap->layouts[GetSwitchMapRegion()]);
         CopyBgTilemapBufferToVram(0);
         SetFlyIconInvisibility(0xFF, NELEMS(sMapIcons->flyIcons), TRUE);
         SetDungeonIconInvisibility(0xFF, NELEMS(sMapIcons->dungeonIcons), TRUE);
@@ -1796,16 +1748,16 @@ static bool8 HandleSwitchMapInput(void)
     }
     if (changedSelection)
     {
-        BufferRegionMapBg(0, sRegionMap->layouts[sSwitchMapMenu->currentSelection]);
+        BufferRegionMapBg(0, sRegionMap->layouts[GetSwitchMapRegion()]);
         PrintTopBarTextRight(gText_RegionMap_AButtonOK);
         CopyBgTilemapBufferToVram(0);
         CopyBgTilemapBufferToVram(3);
         SetFlyIconInvisibility(0xFF, NELEMS(sMapIcons->flyIcons), TRUE);
         SetDungeonIconInvisibility(0xFF, NELEMS(sMapIcons->dungeonIcons), TRUE);
-        SetFlyIconInvisibility(sSwitchMapMenu->currentSelection, NELEMS(sMapIcons->flyIcons), FALSE);
-        SetDungeonIconInvisibility(sSwitchMapMenu->currentSelection, NELEMS(sMapIcons->dungeonIcons), FALSE);
+        SetFlyIconInvisibility(GetSwitchMapRegion(), NELEMS(sMapIcons->flyIcons), FALSE);
+        SetDungeonIconInvisibility(GetSwitchMapRegion(), NELEMS(sMapIcons->dungeonIcons), FALSE);
     }
-    if (sSwitchMapMenu->currentSelection != GetRegionMapPlayerIsOn())
+    if (GetSwitchMapRegion() != GetRegionMapPlayerIsOn())
         SetPlayerIconInvisibility(TRUE);
     else
         SetPlayerIconInvisibility(FALSE);
@@ -2927,6 +2879,14 @@ static u16 GetDungeonMapsecUnderCursor(void)
 
 static u8 GetMapsecType(u8 mapsec)
 {
+#ifdef QUANTUM_MAPSEC_START
+    if (mapsec >= MAPSEC_QUANTUM_PORT_CITY && mapsec <= MAPSEC_QUANTUM_SNOW_TOWN)
+        return FlagGet(FLAG_QUANTUM_ARRIVED)
+            && FlagGet(FLAG_QUANTUM_PORT_CENTER + mapsec - MAPSEC_QUANTUM_PORT_CITY)
+            ? MAPSECTYPE_VISITED : MAPSECTYPE_NOT_VISITED;
+    if (mapsec >= QUANTUM_MAPSEC_START && mapsec <= QUANTUM_MAPSEC_END)
+        return MAPSECTYPE_ROUTE;
+#endif
     switch (mapsec)
     {
     case MAPSEC_PALLET_TOWN:
@@ -3329,16 +3289,16 @@ static void GetPlayerPositionOnRegionMap_HandleOverrides(void)
 
 static u8 GetSelectedMapSection(u8 whichMap, u8 layer, s16 y, s16 x)
 {
+    if (x < 0 || x >= MAP_WIDTH || y < 0 || y >= MAP_HEIGHT || layer >= LAYER_COUNT)
+        return MAPSEC_NONE;
     switch (whichMap)
     {
     case REGIONMAP_KANTO:
         return sRegionMapSections_Kanto[layer][y][x];
-    case REGIONMAP_SEVII123:
-        return sRegionMapSections_Sevii123[layer][y][x];
-    case REGIONMAP_SEVII45:
-        return sRegionMapSections_Sevii45[layer][y][x];
-    case REGIONMAP_SEVII67:
-        return sRegionMapSections_Sevii67[layer][y][x];
+#ifdef QUANTUM_MAPSEC_START
+    case REGIONMAP_QUANTUM:
+        return sRegionMapSections_Quantum[layer][y][x];
+#endif
     default:
         return MAPSEC_NONE;
     }
@@ -3476,7 +3436,7 @@ static void CreateFlyIconSprite(u8 whichMap, u8 numIcons, u16 x, u16 y, u8 tileT
         .tag = tileTag
     };
     struct SpritePalette spritePalette = {
-        .data = sMiscIcon_Pal,
+        .data = palTag == 11 ? sLockedFlyIcon_Pal : sMiscIcon_Pal,
         .tag = palTag
     };
     struct SpriteTemplate template = {
@@ -3492,6 +3452,10 @@ static void CreateFlyIconSprite(u8 whichMap, u8 numIcons, u16 x, u16 y, u8 tileT
     LoadSpriteSheet(&spriteSheet);
     LoadSpritePalette(&spritePalette);
     spriteId = CreateSprite(&template, 8 * x + 36, 8 * y + 36, 1);
+    sMapIcons->flyIcons[numIcons].tileTag = tileTag;
+    sMapIcons->flyIcons[numIcons].palTag = palTag;
+    if (spriteId == MAX_SPRITES)
+        return;
     sMapIcons->flyIcons[numIcons].sprite = &gSprites[spriteId];
     gSprites[spriteId].invisible = TRUE;
     sMapIcons->flyIcons[numIcons].region = whichMap;
@@ -3530,6 +3494,10 @@ static void CreateDungeonIconSprite(u8 whichMap, u8 numIcons, u16 x, u16 y, u8 t
         offset = 2;
 
     spriteId = CreateSprite(&template, 8 * x + 36 + offset, 8 * y + 36 + offset, 3);
+    sMapIcons->dungeonIcons[numIcons].tileTag = tileTag;
+    sMapIcons->dungeonIcons[numIcons].palTag = palTag;
+    if (spriteId == MAX_SPRITES)
+        return;
     sMapIcons->dungeonIcons[numIcons].sprite = &gSprites[spriteId];
     gSprites[spriteId].invisible = TRUE;
     sMapIcons->dungeonIcons[numIcons].region = whichMap;
@@ -3539,6 +3507,7 @@ static void CreateFlyIcons(void)
 {
     u16 i, y, x;
     u8 numIcons = 0;
+    u8 type;
     if (GetRegionMapPermission(MAPPERM_HAS_FLY_DESTINATIONS))
     {
         for (i = 0; i < REGIONMAP_COUNT; i++)
@@ -3547,9 +3516,14 @@ static void CreateFlyIcons(void)
             {
                 for (x = 0; x < MAP_WIDTH; x++)
                 {
-                    if (GetMapsecType(GetSelectedMapSection(i, LAYER_MAP, y, x)) == MAPSECTYPE_VISITED)
+                    type = GetMapsecType(GetSelectedMapSection(i, LAYER_MAP, y, x));
+                    if ((type == MAPSECTYPE_VISITED || type == MAPSECTYPE_NOT_VISITED)
+                     && numIcons < ARRAY_COUNT(sMapIcons->flyIcons))
                     {
-                        CreateFlyIconSprite(i, numIcons, x, y, numIcons + 10, 10);
+                        CreateFlyIconSprite(i, numIcons, x, y, numIcons + 10,
+                            type == MAPSECTYPE_VISITED ? 10 : 11);
+                        if (sMapIcons->flyIcons[numIcons].sprite != NULL && type == MAPSECTYPE_NOT_VISITED)
+                            StartSpriteAnim(sMapIcons->flyIcons[numIcons].sprite, 1);
                         numIcons++;
                     }
                 }
@@ -3570,12 +3544,12 @@ static void CreateDungeonIcons(void)
             for (x = 0; x < MAP_WIDTH; x++)
             {
                 mapsec = GetSelectedMapSection(i, LAYER_DUNGEON, y, x);
-                if (mapsec == MAPSEC_NONE)
+                if (mapsec == MAPSEC_NONE || numIcons >= ARRAY_COUNT(sMapIcons->dungeonIcons))
                     continue;
                 if (mapsec == MAPSEC_CERULEAN_CAVE && !FlagGet(FLAG_SYS_CAN_LINK_WITH_RS))
                     continue;
                 CreateDungeonIconSprite(i, numIcons, x, y, numIcons + 35, 10);
-                if (GetDungeonMapsecType(mapsec) != 2)
+                if (sMapIcons->dungeonIcons[numIcons].sprite != NULL && GetDungeonMapsecType(mapsec) != MAPSECTYPE_VISITED)
                 {
                     StartSpriteAnim(sMapIcons->dungeonIcons[numIcons].sprite, 1);
                 }
@@ -3593,13 +3567,13 @@ static void SetFlyIconInvisibility(u8 whichMap, u8 iconNum, bool8 invisible)
         // Set for all fly icons
         for (i = 0; i < NELEMS(sMapIcons->flyIcons); i++)
         {
-            if (sMapIcons->flyIcons[i].region == whichMap || whichMap == 0xFF)
+            if (sMapIcons->flyIcons[i].sprite != NULL && (sMapIcons->flyIcons[i].region == whichMap || whichMap == 0xFF))
                 sMapIcons->flyIcons[i].sprite->invisible = invisible;
         }
     }
     else
     {
-        if (sMapIcons->flyIcons[iconNum].region == whichMap)
+        if (sMapIcons->flyIcons[iconNum].sprite != NULL && sMapIcons->flyIcons[iconNum].region == whichMap)
             sMapIcons->flyIcons[iconNum].sprite->invisible = invisible;
     }
 }
@@ -3612,13 +3586,13 @@ static void SetDungeonIconInvisibility(u8 whichMap, u8 iconNum, bool8 invisible)
         // Set for all dungeon icons
         for (i = 0; i < NELEMS(sMapIcons->dungeonIcons); i++)
         {
-            if (sMapIcons->dungeonIcons[i].region == whichMap || whichMap == 0xFF)
+            if (sMapIcons->dungeonIcons[i].sprite != NULL && (sMapIcons->dungeonIcons[i].region == whichMap || whichMap == 0xFF))
                 sMapIcons->dungeonIcons[i].sprite->invisible = invisible;
         }
     }
     else
     {
-        if (sMapIcons->dungeonIcons[iconNum].region != whichMap)
+        if (sMapIcons->dungeonIcons[iconNum].sprite != NULL && sMapIcons->dungeonIcons[iconNum].region != whichMap)
             sMapIcons->dungeonIcons[iconNum].sprite->invisible = invisible;
     }
 }
@@ -3783,7 +3757,8 @@ u8 *GetMapName(u8 *dst0, u16 mapsec, u16 fill)
     u8 *dst;
     u16 i;
     u16 idx;
-    if ((idx = mapsec - KANTO_MAPSEC_START) <= MAPSEC_SPECIAL_AREA - KANTO_MAPSEC_START)
+    if ((idx = mapsec - KANTO_MAPSEC_START) < ARRAY_COUNT(gRegionMapEntries)
+        && mapsec != MAPSEC_NONE && gRegionMapEntries[idx].name != NULL)
     {
         if (IsCeladonDeptStoreMapsec(mapsec) == TRUE)
             dst = StringCopy(dst0, sMapName_CELADON_DEPT_);
@@ -4020,6 +3995,8 @@ static void FreeFlyMap(u8 taskId)
 static void SetFlyWarpDestination(u16 mapsec)
 {
     u16 idx = mapsec - KANTO_MAPSEC_START;
+    if (idx >= ARRAY_COUNT(sMapFlyDestinations))
+        return;
     if (sMapFlyDestinations[idx][2])
     {
         SetWarpDestinationToHealLocation(sMapFlyDestinations[idx][2]);
@@ -4043,10 +4020,10 @@ u16 PokeGlassMapSection(u8 region, u8 x, u8 y)
 
 u8 PokeGlassPlayerRegion(void)
 {
-    u8 region, i;
-    if (gMapHeader.regionMapSectionId < SEVII_MAPSEC_START) return REGIONMAP_KANTO;
-    for (region = 0; region < 3; region++)
-        for (i = 0; sSeviiMapsecs[region][i] != MAPSEC_NONE; i++)
-            if (sSeviiMapsecs[region][i] == gMapHeader.regionMapSectionId) return region + 1;
+#ifdef QUANTUM_MAPSEC_START
+    if (gMapHeader.regionMapSectionId >= QUANTUM_MAPSEC_START
+     && gMapHeader.regionMapSectionId <= QUANTUM_MAPSEC_END)
+        return REGIONMAP_QUANTUM;
+#endif
     return REGIONMAP_KANTO;
 }

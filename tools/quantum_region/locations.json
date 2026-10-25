@@ -1,0 +1,114 @@
+[
+  {
+    "id": "MAPSEC_QUANTUM_COASTAL_ROAD",
+    "name": "COASTAL ROAD",
+    "x": 4,
+    "y": 7,
+    "width": 3,
+    "height": 4
+  },
+  {
+    "id": "MAPSEC_QUANTUM_FOREST_PATH",
+    "name": "FOREST PATH",
+    "x": 6,
+    "y": 4,
+    "width": 5,
+    "height": 4
+  },
+  {
+    "id": "MAPSEC_QUANTUM_MOUNTAIN_PASS",
+    "name": "MOUNTAIN PASS",
+    "x": 10,
+    "y": 2,
+    "width": 1,
+    "height": 3
+  },
+  {
+    "id": "MAPSEC_QUANTUM_SNOW_TRAIL",
+    "name": "SNOW TRAIL",
+    "x": 10,
+    "y": 2,
+    "width": 4,
+    "height": 1
+  },
+  {
+    "id": "MAPSEC_QUANTUM_LAKE_ROAD",
+    "name": "LAKE ROAD",
+    "x": 10,
+    "y": 4,
+    "width": 5,
+    "height": 4
+  },
+  {
+    "id": "MAPSEC_QUANTUM_HARBOR_ROAD",
+    "name": "HARBOR ROAD",
+    "x": 14,
+    "y": 7,
+    "width": 2,
+    "height": 6
+  },
+  {
+    "id": "MAPSEC_QUANTUM_RIVER_ROAD",
+    "name": "RIVER ROAD",
+    "x": 4,
+    "y": 10,
+    "width": 12,
+    "height": 3
+  },
+  {
+    "id": "MAPSEC_QUANTUM_WOODLAND_LINK",
+    "name": "WOODLAND LINK",
+    "x": 6,
+    "y": 7,
+    "width": 9,
+    "height": 1
+  },
+  {
+    "id": "MAPSEC_QUANTUM_PORT_CITY",
+    "name": "HAVORA CITY",
+    "x": 15,
+    "y": 12,
+    "width": 1,
+    "height": 1
+  },
+  {
+    "id": "MAPSEC_QUANTUM_COASTAL_CITY",
+    "name": "COASTAL CITY",
+    "x": 4,
+    "y": 10,
+    "width": 1,
+    "height": 1
+  },
+  {
+    "id": "MAPSEC_QUANTUM_FOREST_TOWN",
+    "name": "FOREST TOWN",
+    "x": 6,
+    "y": 7,
+    "width": 1,
+    "height": 1
+  },
+  {
+    "id": "MAPSEC_QUANTUM_LAKE_TOWN",
+    "name": "LAKE TOWN",
+    "x": 14,
+    "y": 7,
+    "width": 1,
+    "height": 1
+  },
+  {
+    "id": "MAPSEC_QUANTUM_SNOW_TOWN",
+    "name": "SNOW TOWN",
+    "x": 10,
+    "y": 2,
+    "width": 1,
+    "height": 1
+  },
+  {
+    "id": "MAPSEC_QUANTUM_HOT_SPRINGS",
+    "name": "HOT SPRINGS",
+    "x": 13,
+    "y": 2,
+    "width": 1,
+    "height": 1
+  }
+]
