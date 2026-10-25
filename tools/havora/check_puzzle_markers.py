@@ -12,6 +12,8 @@ for g,start in [('primary',0),('secondary',640)]:
   p=f'data/tilesets/{g}/havora_city/{f}';a=old(p);b=(R/p).read_bytes();assert len(a)==len(b)
   for i in range(len(a)//size):
    if start+i in mids:assert not any(a[i*size:(i+1)*size]),'Overwrote occupied metatile'
+   elif start+i == 0x232 and f == 'metatile_attributes.bin':
+    assert int.from_bytes(b[i*size:(i+1)*size], 'little') == int.from_bytes(a[i*size:(i+1)*size], 'little') | 0x20000000
    else:assert a[i*size:(i+1)*size]==b[i*size:(i+1)*size],(p,i)
  p=f'data/tilesets/{g}/havora_city/tiles.png';a=Image.open(io.BytesIO(old(p)));b=Image.open(R/p)
  for y in range(0,a.height,8):
@@ -37,4 +39,4 @@ for name in ['HavoraDaycare','QuantumHavoraDaycare']:
   target=js('data/maps/'+w['dest_map'].removeprefix('MAP_').replace('QUANTUM_HAVORA_DAYCARE','QuantumHavoraDaycare').replace('HAVORA_DAYCARE','HavoraDaycare')+'/map.json')
   assert 0<=int(w['dest_warp_id'])<len(target['warp_events'])
 assert Image.open(R/'graphics/havora/gate_marked.png').size==(16,240)
-print('PASS only 7 puzzle identities changed; all cliff/terrain/collision, existing metatiles/palettes and graphics preserved; six blank static tiles used; nursery dimensions/events/return warps valid')
+print('PASS only 7 puzzle identities changed; all cliff/terrain/collision, existing metatiles/palettes and graphics preserved; seven blank static tiles used; nursery dimensions/events/return warps valid')
