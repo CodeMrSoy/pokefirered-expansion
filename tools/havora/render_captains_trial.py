@@ -25,8 +25,10 @@ def render(out):
  for o in sorted(objects,key=lambda v:v['y']):
   root=R/'graphics/object_events';sailor=o['graphics_id']=='OBJ_EVENT_GFX_SAILOR';pic='sailor' if sailor else 'gym_guy';pal='npc_pink' if sailor else 'npc_white'
   sprite=Image.open(root/f'pics/people/{pic}.png').crop((0,0,16,32));colors=[tuple(map(int,line.split())) for line in (root/f'palettes/{pal}.pal').read_text().splitlines()[3:19]];sprite.putpalette(sum((list(c) for c in colors),[])+[0]*720);sprite.info['transparency']=0;im.alpha_composite(sprite.convert('RGBA'),(o['x']*16,o['y']*16-16))
- im=im.convert('RGB').resize((960,864),Image.Resampling.NEAREST);d=ImageDraw.Draw(im)
- for x,y,t in [(17,4,'CAPTAIN'),(2,12,'UPPER BERTH'),(29,18,'LOCK STATION'),(2,24,'LOWER DOCK'),(3,31,'RED WINCH'),(30,31,'RESET BELL')]:d.text((x*24,y*24),t,fill='white',stroke_width=2,stroke_fill='black')
+ im=im.convert('RGB').resize((1280,1152),Image.Resampling.NEAREST)
+ im.save(Path(out).with_name('captains-trial-clean.png'))
+ d=ImageDraw.Draw(im)
+ for x,y,t in [(17,4,'CAPTAIN'),(2,12,'UPPER BERTH'),(29,18,'LOCK STATION'),(2,24,'LOWER DOCK'),(3,31,'RED WINCH'),(30,31,'RESET BELL')]:d.text((x*32,y*32),t,fill='white',stroke_width=2,stroke_fill='black')
  im.save(out)
 if __name__=='__main__':
  p=R/'docs/havora/review/captains-trial.png';p.parent.mkdir(parents=True,exist_ok=True);render(p)

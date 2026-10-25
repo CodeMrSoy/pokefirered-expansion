@@ -28,17 +28,29 @@ static void Rect(u8 x, u8 y, u8 w, u8 h, u16 id, bool8 block, u8 height)
  u8 xx, yy;
  for (yy=y; yy<y+h; yy++) for (xx=x; xx<x+w; xx++) Tile(xx,yy,id,block,height);
 }
+// Art changes keep the original collision/elevation footprint of each portal.
+static void Gangway(u8 x,u8 y,u8 height,bool8 open)
+{
+ u8 xx;
+ Rect(x,y,3,height,open?0x318:0x349,!open,3);
+ if(!open)for(xx=x;xx<x+3;xx++)Tile(xx,y,0x348,TRUE,3);
+}
 static void Draw(s16 boatX, s16 boatY, bool8 redraw)
 {
  u16 s=VarGet(VAR_HAVORA_GYM_STATE), p=VarGet(VAR_HAVORA_GYM_PROGRESS);
  u8 x,y;
  Rect(10,12,19,17,0x282,TRUE,1);
- // A timber divider separates the lower basin from the upper berth.
- Rect(10,19,16,1,0x304,TRUE,3);
- Rect(4,29,3,1,s&GANGWAY?0x281:0x282,!(s&GANGWAY),s&GANGWAY?3:1);
- Rect(4,9,3,3,s&UPPER?0x281:0x304,!(s&UPPER),3);
- Rect(33,9,3,3,p&4?0x281:0x304,!(p&4),3);
- Rect(33,29,3,1,p&4?0x281:0x304,!(p&4),3);
+ for(x=10;x<29;x++)Tile(x,12,0x320,TRUE,1);
+ Rect(10,19,16,1,0x327,TRUE,3);
+ // Berth markings and the lock's level indicator are part of the machinery,
+ // not interactive switches. Redraw after the boat clears its previous berth.
+ Tile(9,26,0x370,FALSE,3);Tile(29,26,0x372,FALSE,3);
+ Tile(9,14,0x371,FALSE,3);Tile(29,14,0x373,FALSE,3);
+ Tile(36,20,s&HIGH?0x377:0x376,TRUE,3);
+ Rect(4,29,3,1,s&GANGWAY?0x318:0x282,!(s&GANGWAY),s&GANGWAY?3:1);
+ Gangway(4,9,3,!!(s&UPPER));
+ Gangway(33,9,3,!!(p&4));
+ Gangway(33,29,1,!!(p&4));
  // Native sailboat pixels; the boat sits below the passenger in this private pair.
  for(y=0;y<3;y++)for(x=0;x<3;x++)Tile(boatX+x-1,boatY+y-1,0x2bc+y*3+x,TRUE,3);
  if(redraw)DrawWholeMapView();
@@ -141,6 +153,10 @@ void HavoraGym_Control(void)
  {
   VarSet(VAR_HAVORA_GYM_STATE,0);HavoraGym_OnLoad();DrawWholeMapView();return;
  }
- else if(command==6){Draw(bx,by,TRUE);return;}
+ else if(command==6)
+ {
+  if(p&4)VarSet(VAR_VIDRA_CRESTS,VarGet(VAR_VIDRA_CRESTS)|1);
+  Draw(bx,by,TRUE);return;
+ }
  VarSet(VAR_HAVORA_GYM_STATE,s);Draw(bx,by,TRUE);
 }

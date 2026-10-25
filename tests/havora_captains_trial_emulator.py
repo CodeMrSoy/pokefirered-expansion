@@ -14,17 +14,20 @@ fixture=b''
 for species in [131,68]:fixture+=b'\x23'+struct.pack('<I',(m.symbols['ScrCmd_createmon']|1)+0x2000000)+struct.pack('<BBHHI',0,6,species,60,0)
 m.inject(fixture+b'\x02')
 warp(20,33);native('VarSet',0x40d7,0);native('VarSet',0x40d8,0);control(6);m.snap('trial-entrance')
+assert native('MapGridGetMetatileIdAt',36+7,20+7)&1023==0x376,'LOW gauge not drawn'
 control(1);assert value(0x40d7)==4
 warp(9,26);control(3);assert pos()==(29,26),(pos(),'low ride');assert value(0x40d7)==5;m.snap('trial-east-lock')
 # Crew battles are tested separately; set only their progression result here.
 control(2);assert value(0x40d7)==5,'lock ignored crew requirement'
 native('VarSet',0x40d8,1);control(2);assert value(0x40d7)==7
+assert native('MapGridGetMetatileIdAt',36+7,20+7)&1023==0x377,'HIGH gauge not drawn'
 warp(29,14);control(3);assert pos()==(9,14),(pos(),'high ride');assert value(0x40d7)==6;m.snap('trial-upper-berth')
 control(4);assert value(0x40d7)==6,'upper gangway ignored navigator'
 native('VarSet',0x40d8,3);control(4);assert value(0x40d7)==14
 # Reenter at a stable dock to verify saved puzzle state reconstructs.
 warp(9,14);assert value(0x40d7)==14;m.snap('trial-captains-gangway')
 native('VarSet',0x40d8,7);control(6)
+assert value(0x40d9)&1,'captain reward did not record the Harbor Crest'
 warp(34,30);m.snap('trial-shortcut')
 # Ring bell from entry hall: clear puzzle state, retain crew/crest progression.
 warp(35,32);control(5);assert value(0x40d7)==0 and value(0x40d8)==7

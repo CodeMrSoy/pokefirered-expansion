@@ -18,7 +18,7 @@ The launch moves along fixed scripted routes while player input is locked; empty
 
 ## State and teams
 
-Two previously-unused variables: 0x40D7 (boat side, water level and gangways) and 0x40D8 (crew, navigator and Crest progress). Three new trainer IDs 743–745 stay below the existing 768 capacity; no save-block expansion. All three use native four-battler doubles. First-pass levels are 49–54, with Machoke/Pelipper, Lanturn/Skarmory, and the captain’s Pelipper/Magnezone/Machamp/Kingdra. Team balance is provisional. The Crest is presently a persistent story achievement; it is not an inventory item or a new Trainer Card badge icon.
+Two previously-unused variables: 0x40D7 (boat side, water level and gangways) and 0x40D8 (crew, navigator and Crest progress). Three new trainer IDs 743–745 stay below the existing 768 capacity; no save-block expansion. All three use native four-battler doubles. First-pass levels are 49–54, with Machoke/Pelipper, Lanturn/Skarmory, and the captain’s Pelipper/Magnezone/Machamp/Kingdra. Team balance is provisional. The Crest is persistent story progress and appears as the Harbor anchor seal on the separate Vidra Trainer Card page. It is not a Bag item or a Kanto badge.
 
 ## Verification
 
