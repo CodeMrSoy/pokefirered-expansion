@@ -4584,6 +4584,18 @@
       "secondary_tileset": "gTileset_FanClubDaycare",
       "border_filepath": "data/layouts/QuantumHavoraDaycare/border.bin",
       "blockdata_filepath": "data/layouts/QuantumHavoraDaycare/map.bin"
+    },
+    {
+      "id": "LAYOUT_HAVORA_CAPTAINS_TRIAL",
+      "name": "HavoraCaptainsTrial_Layout",
+      "width": 40,
+      "height": 36,
+      "border_width": 2,
+      "border_height": 2,
+      "primary_tileset": "gTileset_HavoraGymPrimary",
+      "secondary_tileset": "gTileset_HavoraGym",
+      "border_filepath": "data/layouts/HavoraCaptainsTrial/border.bin",
+      "blockdata_filepath": "data/layouts/HavoraCaptainsTrial/map.bin"
     }
   ]
 }

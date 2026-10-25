@@ -753,7 +753,10 @@
 //       only space for 25 additional trainers before trainer flag space overflows.
 //       MAX_TRAINERS_COUNT can be increased but will take up additional saveblock space
 
-#define TRAINERS_COUNT                           743
+#define TRAINER_HAVORA_DOCK_CREW                 743
+#define TRAINER_HAVORA_NAVIGATOR                 744
+#define TRAINER_HAVORA_CAPTAIN                   745
+#define TRAINERS_COUNT                           746
 #define MAX_TRAINERS_COUNT                       768
 #define TRAINER_PARTNER(partner)           (MAX_TRAINERS_COUNT + partner)
 

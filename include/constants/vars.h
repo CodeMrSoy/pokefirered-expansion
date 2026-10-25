@@ -265,8 +265,8 @@
 #define VAR_HAVORA_PUZZLE_ROCK_5   0x40D4
 #define VAR_HAVORA_PUZZLE_ROCK_6   0x40D5
 #define VAR_HAVORA_PUZZLE_STATE    0x40D6
-#define VAR_0x40D7                 0x40D7
-#define VAR_0x40D8                 0x40D8
+#define VAR_HAVORA_GYM_STATE       0x40D7
+#define VAR_HAVORA_GYM_PROGRESS    0x40D8
 #define VAR_0x40D9                 0x40D9
 #define VAR_0x40DA                 0x40DA
 #define VAR_0x40DB                 0x40DB

@@ -2084,3 +2084,41 @@ const u16 gTilesetPalettes_HavoraCityPrimary[][16] =
 	INCBIN_U16("data/tilesets/primary/havora_city/palettes/14.gbapal"),
 	INCBIN_U16("data/tilesets/primary/havora_city/palettes/15.gbapal"),
 };
+
+const u32 gTilesetTiles_HavoraGymPrimary[] = INCBIN_U32("data/tilesets/primary/havora_gym/tiles.4bpp.lz");
+const u16 gTilesetPalettes_HavoraGymPrimary[][16] = {
+ INCBIN_U16("data/tilesets/primary/havora_gym/palettes/00.gbapal"),
+ INCBIN_U16("data/tilesets/primary/havora_gym/palettes/01.gbapal"),
+ INCBIN_U16("data/tilesets/primary/havora_gym/palettes/02.gbapal"),
+ INCBIN_U16("data/tilesets/primary/havora_gym/palettes/03.gbapal"),
+ INCBIN_U16("data/tilesets/primary/havora_gym/palettes/04.gbapal"),
+ INCBIN_U16("data/tilesets/primary/havora_gym/palettes/05.gbapal"),
+ INCBIN_U16("data/tilesets/primary/havora_gym/palettes/06.gbapal"),
+ INCBIN_U16("data/tilesets/primary/havora_gym/palettes/07.gbapal"),
+ INCBIN_U16("data/tilesets/primary/havora_gym/palettes/08.gbapal"),
+ INCBIN_U16("data/tilesets/primary/havora_gym/palettes/09.gbapal"),
+ INCBIN_U16("data/tilesets/primary/havora_gym/palettes/10.gbapal"),
+ INCBIN_U16("data/tilesets/primary/havora_gym/palettes/11.gbapal"),
+ INCBIN_U16("data/tilesets/primary/havora_gym/palettes/12.gbapal"),
+ INCBIN_U16("data/tilesets/primary/havora_gym/palettes/13.gbapal"),
+ INCBIN_U16("data/tilesets/primary/havora_gym/palettes/14.gbapal"),
+ INCBIN_U16("data/tilesets/primary/havora_gym/palettes/15.gbapal"),
+};
+const u16 gTilesetPalettes_HavoraGym[][16] = {
+ INCBIN_U16("data/tilesets/secondary/havora_gym/palettes/00.gbapal"),
+ INCBIN_U16("data/tilesets/secondary/havora_gym/palettes/01.gbapal"),
+ INCBIN_U16("data/tilesets/secondary/havora_gym/palettes/02.gbapal"),
+ INCBIN_U16("data/tilesets/secondary/havora_gym/palettes/03.gbapal"),
+ INCBIN_U16("data/tilesets/secondary/havora_gym/palettes/04.gbapal"),
+ INCBIN_U16("data/tilesets/secondary/havora_gym/palettes/05.gbapal"),
+ INCBIN_U16("data/tilesets/secondary/havora_gym/palettes/06.gbapal"),
+ INCBIN_U16("data/tilesets/secondary/havora_gym/palettes/07.gbapal"),
+ INCBIN_U16("data/tilesets/secondary/havora_gym/palettes/08.gbapal"),
+ INCBIN_U16("data/tilesets/secondary/havora_gym/palettes/09.gbapal"),
+ INCBIN_U16("data/tilesets/secondary/havora_gym/palettes/10.gbapal"),
+ INCBIN_U16("data/tilesets/secondary/havora_gym/palettes/11.gbapal"),
+ INCBIN_U16("data/tilesets/secondary/havora_gym/palettes/12.gbapal"),
+ INCBIN_U16("data/tilesets/secondary/havora_gym/palettes/13.gbapal"),
+ INCBIN_U16("data/tilesets/secondary/havora_gym/palettes/14.gbapal"),
+ INCBIN_U16("data/tilesets/secondary/havora_gym/palettes/15.gbapal"),
+};

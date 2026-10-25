@@ -476,4 +476,7 @@ gSpecials::
 	def_special HavoraPuzzle_OnLoad
 	def_special HavoraPuzzle_OnResume
 	def_special HavoraPuzzle_ResetState
+	def_special HavoraGym_OnResume
+	def_special HavoraGym_OnLoad
+	def_special HavoraGym_Control
 gSpecialsEnd::

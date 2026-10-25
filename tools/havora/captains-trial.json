@@ -1,0 +1,19 @@
+{
+  "width": 40,
+  "height": 36,
+  "imported_graphics": 35,
+  "palette_mapping": {
+    "7": 0,
+    "0": 2,
+    "11": 3,
+    "5": 6,
+    "8": 7
+  },
+  "state_var": "0x40D7",
+  "progress_var": "0x40D8",
+  "sources": [
+    "Havora/Pacifidlog docks and boat",
+    "FireRed SS Anne wall panels and porthole"
+  ],
+  "new_pixel_art": false
+}

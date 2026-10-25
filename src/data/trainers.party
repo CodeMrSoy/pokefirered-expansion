@@ -15731,3 +15731,94 @@ Muk
 Level: 39
 IVs: 6 HP / 6 Atk / 6 Def / 6 SpA / 6 SpD / 6 Spe
 #endif
+
+=== TRAINER_HAVORA_DOCK_CREW ===
+Name: DOCK CREW
+Class: Sailor
+Pic: Sailor
+Gender: Male
+Music: Swimmer
+Double Battle: Yes
+AI: Check Bad Move / Try To Faint / Check Viability
+
+Machoke
+Level: 49
+IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe
+- Brick Break
+- Rock Slide
+- Protect
+- Helping Hand
+
+Pelipper
+Level: 49
+IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe
+- Water Pulse
+- Air Slash
+- Protect
+- Tailwind
+
+=== TRAINER_HAVORA_NAVIGATOR ===
+Name: NAVIGATOR
+Class: Sailor
+Pic: Sailor
+Gender: Male
+Music: Swimmer
+Double Battle: Yes
+AI: Check Bad Move / Try To Faint / Check Viability
+
+Lanturn
+Level: 50
+IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe
+- Surf
+- Thunderbolt
+- Protect
+- Thunder Wave
+
+Skarmory
+Level: 50
+IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe
+- Steel Wing
+- Aerial Ace
+- Protect
+- Tailwind
+
+=== TRAINER_HAVORA_CAPTAIN ===
+Name: EIRIK
+Class: Sailor
+Pic: Sailor
+Gender: Male
+Music: Swimmer
+Double Battle: Yes
+AI: Check Bad Move / Try To Faint / Check Viability
+
+Pelipper
+Level: 53
+IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe
+- Surf
+- Hurricane
+- Protect
+- Tailwind
+
+Magnezone
+Level: 53
+IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe
+- Thunderbolt
+- Flash Cannon
+- Protect
+- Light Screen
+
+Machamp
+Level: 54
+IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe
+- Brick Break
+- Rock Slide
+- Protect
+- Helping Hand
+
+Kingdra
+Level: 54
+IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe
+- Surf
+- Dragon Pulse
+- Protect
+- Rain Dance
