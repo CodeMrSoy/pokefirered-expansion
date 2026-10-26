@@ -103,7 +103,7 @@
       "type": "object",
       "graphics_id": "OBJ_EVENT_GFX_SAILOR",
       "x": 65,
-      "y": 21,
+      "y": 22,
       "elevation": 3,
       "movement_type": "MOVEMENT_TYPE_FACE_DOWN",
       "movement_range_x": 0,
@@ -270,7 +270,7 @@
     {
       "type": "sign",
       "x": 39,
-      "y": 14,
+      "y": 13,
       "elevation": 3,
       "player_facing_dir": "BG_EVENT_PLAYER_FACING_ANY",
       "script": "HavoraLock_Chain"
@@ -278,7 +278,7 @@
     {
       "type": "sign",
       "x": 3,
-      "y": 6,
+      "y": 5,
       "elevation": 5,
       "player_facing_dir": "BG_EVENT_PLAYER_FACING_ANY",
       "script": "HavoraLock_Status"
@@ -294,7 +294,7 @@
     {
       "type": "sign",
       "x": 24,
-      "y": 6,
+      "y": 5,
       "elevation": 5,
       "player_facing_dir": "BG_EVENT_PLAYER_FACING_ANY",
       "script": "HavoraLock_Status"
@@ -310,7 +310,7 @@
     {
       "type": "sign",
       "x": 30,
-      "y": 6,
+      "y": 5,
       "elevation": 5,
       "player_facing_dir": "BG_EVENT_PLAYER_FACING_ANY",
       "script": "HavoraLock_Status"
