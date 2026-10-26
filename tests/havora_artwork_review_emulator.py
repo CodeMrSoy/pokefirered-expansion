@@ -5,7 +5,7 @@ s=(m.root/'tests/avatar_wardrobe_emulator.py').read_text();exec(s[s.index('nativ
 import sys
 sys.path.insert(0,str(m.root/'tools/havora'));import overhead_lock_geometry as geo
 j=json.loads((m.root/'data/maps/map_groups.json').read_text());ids={name:(g,n) for g,k in enumerate(j['group_order']) for n,name in enumerate(j[k])}
-def warp(x=3,y=27):
+def warp(x=3,y=25):
  g,n=ids['QuantumHavoraGym'];m.inject(b'\x39'+struct.pack('<BBBHH',g,n,255,x,y)+b'\x6b\x02');m.run(120)
 def value(v):return native('VarGet',v)&65535
 def encode(w):return 0x4400+w[0]+3*w[1]+9*w[2]

@@ -104,7 +104,7 @@ HavoraLock_Reset::
  goto_if_ne VAR_RESULT, 1, HavoraLock_Error
  waitstate
  releaseall
- warp MAP_QUANTUM_HAVORA_GYM, 255, 3, 27
+ warp MAP_QUANTUM_HAVORA_GYM, 255, 3, 25
  waitstate
  end
 HavoraLock_Run::

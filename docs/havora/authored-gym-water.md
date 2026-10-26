@@ -1,5 +1,7 @@
 # Havora gym: artwork-first revision
 
+Latest water artwork: see [section-water-profiles.md](section-water-profiles.md), based on the user's 80×27 commit 6ab7bd9e2.
+
 The user's layout and original metatiles are restored. The starting/default
 water levels are **LOW / LOW / LOW**. Platforms and walkways follow the supplied
 pictures; the captain's furnished platform remains below section C's walkway.
@@ -12,7 +14,7 @@ The new kit follows **28 native FireRed cliff silhouettes**, with brick texture
 in the existing gym colors. Each shape has an animated-water background and an
 original-wood background: **56 metatiles, 0x3C5 through 0x3FC**. Convex corners,
 concave corners, side faces, thicker fronts, feet and connecting returns are
-included. No new pieces are placed in the gym automatically.
+included. The water renderer does not place new pieces automatically; it preserves the user's subsequent Porymap placements.
 
 `tools/havora/brick-cliff-kit.json` lists every source cliff and destination ID.
 Run `python tools/havora/add_brick_cliff_kit.py` to reproduce the kit. It preserves
@@ -20,7 +22,7 @@ all existing metatiles and used graphics and does not modify map cells.
 
 Previews:
 
-- `review/restored-all-low.png`: starting map.
+- `review/water-all-low.png`: latest starting map.
 - `review/native-brick-cliff-kit.png`: complete catalog with metatile IDs.
 - `review/native-brick-cliff-example.png`: separate kit assembly example;
   this demonstration is not part of the gym layout.
@@ -36,7 +38,7 @@ and drains as well as where the player travels.
 
 Old transfer, sailing and mooring actions are inactive and report that the lock
 system is being refitted. Trainer teams and victories are retained. A reset
-restores all three pools to LOW. Old gym saves migrate safely to the entrance.
+restores all three pools to LOW at the latest map entrance (3,25). Old gym saves migrate safely to the entrance.
 
 For emulator/authoring review only, special command 26 selects an independent
 chamber (0–2 in VAR_0x8005) and height (0–2 in VAR_0x8006). It animates the artwork;

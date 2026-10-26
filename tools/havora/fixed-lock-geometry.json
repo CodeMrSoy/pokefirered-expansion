@@ -1,6 +1,6 @@
 {
   "width": 80,
-  "height": 29,
+  "height": 27,
   "default_water": [
     0,
     0,
@@ -31,182 +31,182 @@
     -1,
     1
   ],
-  "berth_row": 10,
-  "channel_row": 24,
+  "berth_row": 8,
+  "channel_row": 22,
   "paths": {},
   "consoles": [
     [
       0,
       1,
-      5,
+      3,
       "ABForward"
     ],
     [
       0,
       1,
-      7,
+      5,
       "ABReverse"
     ],
     [
       1,
       25,
-      5,
+      3,
       "ABForward"
     ],
     [
       1,
       26,
-      7,
+      5,
       "ABReverse"
     ],
     [
       2,
       28,
-      5,
+      3,
       "BCForward"
     ],
     [
       2,
       28,
-      7,
+      5,
       "BCReverse"
     ],
     [
       5,
       55,
-      5,
+      3,
       "BCForward"
     ],
     [
       5,
       55,
-      7,
+      5,
       "BCReverse"
     ],
     [
       4,
       76,
-      5,
+      3,
       "ABForward"
     ],
     [
       4,
       78,
-      5,
+      3,
       "ABReverse"
     ],
     [
       4,
       76,
-      7,
+      5,
       "BCForward"
     ],
     [
       4,
       78,
-      7,
+      5,
       "BCReverse"
     ],
     [
       3,
       52,
-      5,
+      3,
       "ServiceMoor"
     ],
     [
       4,
       78,
-      6,
+      4,
       "FinalMoor"
     ],
     [
       6,
       39,
-      11,
+      9,
       "BCForward"
     ],
     [
       6,
       40,
-      11,
+      9,
       "BCReverse"
     ],
     [
       6,
       39,
-      14,
+      11,
       "Chain"
     ],
     [
       0,
       3,
-      6,
+      3,
       "Status"
     ],
     [
       0,
       2,
-      5,
+      3,
       "Reset"
     ],
     [
       1,
       24,
-      6,
+      3,
       "Status"
     ],
     [
       1,
       26,
-      5,
+      3,
       "Reset"
     ],
     [
       2,
       30,
-      6,
+      3,
       "Status"
     ],
     [
       2,
       29,
-      5,
+      3,
       "Reset"
     ],
     [
       3,
       51,
-      5,
+      3,
       "Status"
     ],
     [
       3,
       53,
-      5,
+      3,
       "Reset"
     ],
     [
       4,
       76,
-      6,
+      4,
       "Status"
     ],
     [
       5,
       57,
-      5,
+      3,
       "Status"
     ],
     [
       5,
       56,
-      5,
+      3,
       "Reset"
     ],
     [
       6,
       41,
-      11,
+      9,
       "Reset"
     ]
   ]

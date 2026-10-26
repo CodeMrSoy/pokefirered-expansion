@@ -16,6 +16,7 @@
 #include "data/havora_lock_geometry.h"
 #include "constants/maps.h"
 #include "constants/vars.h"
+#include "constants/flags.h"
 #include "pokemon.h"
 #include "malloc.h"
 #include "script_pokemon_util.h"
@@ -84,6 +85,25 @@ static u8 Node(s16 x,s16 y)
  return 255;
 }
 static void Tile(s16 x,s16 y,u16 tile,bool8 blocked,u8 z){MapGridSetMetatileEntryAt(x+MAP_OFFSET,y+MAP_OFFSET,tile|(blocked?0x400:0)|(z<<12));}
+// The captain is inside the flooded bunker. Hide him as soon as its water
+// starts rising, and restore him only after the LOW profile is fully exposed.
+static void UpdateWaterOcclusion(u8 taskId,bool8 objectsReady)
+{
+ bool8 submerged=Water(2)!=0;
+ if(taskId!=TASK_NONE&&gTasks[taskId].data[0]==4&&gTasks[taskId].data[1]==2
+    &&gTasks[taskId].data[2]>0&&gTasks[taskId].data[3]>0)submerged=TRUE;
+ if(submerged)
+ {
+  FlagSet(FLAG_TEMP_1F);
+  RemoveObjectEventByLocalIdAndMap(LOCK_CAPTAIN_LOCAL_ID,MAP_NUM(MAP_QUANTUM_HAVORA_GYM),MAP_GROUP(MAP_QUANTUM_HAVORA_GYM));
+ }
+ else
+ {
+  FlagClear(FLAG_TEMP_1F);
+  if(objectsReady&&GetObjectEventIdByLocalIdAndMap(LOCK_CAPTAIN_LOCAL_ID,MAP_NUM(MAP_QUANTUM_HAVORA_GYM),MAP_GROUP(MAP_QUANTUM_HAVORA_GYM))==OBJECT_EVENTS_COUNT)
+   TrySpawnObjectEvent(LOCK_CAPTAIN_LOCAL_ID,MAP_NUM(MAP_QUANTUM_HAVORA_GYM),MAP_GROUP(MAP_QUANTUM_HAVORA_GYM));
+ }
+}
 // Water-profile differences overlay the compiled Porymap map. All-LOW is the
 // authored default, so future Porymap edits survive entry, resume and reset.
 static void Draw(bool8 redraw)
@@ -118,6 +138,7 @@ static void Draw(bool8 redraw)
   u8 elevation=MapGridGetElevationAt(t->data[8]+MAP_OFFSET,t->data[9]+MAP_OFFSET);
   Tile(t->data[8],t->data[9],0x3a0+(t->data[10]-0x300)*3+frames[t->data[3]&7],TRUE,elevation);
  }
+ UpdateWaterOcclusion(tid,redraw);
  if(redraw)DrawWholeMapView();
 }
 void HavoraGym_OnLoad(void)
@@ -125,6 +146,7 @@ void HavoraGym_OnLoad(void)
  if(!Here())return;
  if(VarGet(VAR_HAVORA_GYM_PROGRESS)&4)VarSet(VAR_HAVORA_GYM_PROGRESS,63);
  if(!Valid()){ResetLock();gSaveBlock1Ptr->pos.x=LOCK_ENTRY_X;gSaveBlock1Ptr->pos.y=LOCK_ENTRY_Y;}
+ if(gSaveBlock1Ptr->pos.x>=LOCK_WIDTH||gSaveBlock1Ptr->pos.y>=LOCK_HEIGHT){gSaveBlock1Ptr->pos.x=LOCK_ENTRY_X;gSaveBlock1Ptr->pos.y=LOCK_ENTRY_Y;}
  Draw(FALSE);
 }
 void HavoraGym_OnResume(void){if(Here()){if(!Valid())ResetLock();Draw(TRUE);}}

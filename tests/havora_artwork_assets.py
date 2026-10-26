@@ -1,4 +1,4 @@
-"""Protect the user's existing art while adding unplaced cliff-shaped pieces."""
+"""Protect original tile assets and the latest Porymap-authored default."""
 import subprocess,struct,itertools,sys
 from pathlib import Path
 from io import BytesIO
@@ -20,9 +20,9 @@ for n in used:
   assert source.crop(box).tobytes()==current.crop(box).tobytes(),('existing graphic changed',n)
 print('PASS existing metatiles and used graphics restored byte-for-byte')
 for levels in itertools.product(range(3),repeat=3):
- b=geo.draw((levels,0,0,4,0,False));assert len(b)==80*29 and all(0<=v<65536 for v in b)
+ b=geo.draw((levels,0,0,4,0,False));assert len(b)==geo.W*geo.H and all(0<=v<65536 for v in b)
 b=geo.draw(((0,0,0),0,0,4,0,False))
-assert all(not 0x3c5<=v&1023<=0x3fc for v in b),'new kit was automatically placed'
+assert (R/'data/layouts/HavoraCaptainsTrial/authored.bin').read_bytes()==subprocess.check_output(['git','show','6ab7bd9e2:data/layouts/HavoraCaptainsTrial/map.bin'],cwd=R),'latest authored baseline changed'
 assert all(v&1023!=0x318 for v in b),'generated bridge/gallery remains'
-assert struct.pack('<2320H',*b)==(R/'data/layouts/HavoraCaptainsTrial/map.bin').read_bytes()
-print('PASS all 27 independent height combinations; all-LOW default has no generated paths or new kit placements')
+assert struct.pack('<'+'H'*len(b),*b)==(R/'data/layouts/HavoraCaptainsTrial/map.bin').read_bytes()
+print('PASS all 27 independent height combinations; all-LOW default retains latest authored layout without generated paths')
