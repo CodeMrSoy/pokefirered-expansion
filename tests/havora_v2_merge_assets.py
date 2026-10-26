@@ -3,7 +3,7 @@ import subprocess
 from pathlib import Path
 R=Path(__file__).resolve().parents[1]
 H='77370b825f4d1affc4b6fc3bc51ccc39f4de11b9'
-Q='75213b956c7f16db11aa09e33c1de640ba96744a'
+Q='07f6ebdb4cdf1f4a53d0b701628cc9184bbed5cf'
 V='HEAD'
 def contents(ref,path):return subprocess.check_output(['git','show',ref+':'+path],cwd=R)
 def equal(ref,path):
@@ -19,7 +19,7 @@ for p in ['data/scripts/pkmn_center_nurse.inc','include/config/debug.h','src/sta
  equal(H,p)
 # These are QOL's actual traversal/case/lighting implementations, not copied
 # substitutes. Shared hook files intentionally combine both branches.
-for prefix in ['src/poke_glass.c','src/field_tools.c','src/field_item_case.c','src/lantern_glow.c','graphics/field_effects/field_tools','graphics/items/icons/field_item_case','data/scripts/field_moves.inc']:
+for prefix in ['graphics/avatars/cody','src/poke_glass.c','src/field_tools.c','src/field_item_case.c','src/lantern_glow.c','graphics/field_effects/field_tools','graphics/items/icons/field_item_case','data/scripts/field_moves.inc']:
  for p in subprocess.check_output(['git','ls-tree','-r','--name-only',Q,'--',prefix],cwd=R,text=True).splitlines():equal(Q,p)
 assert subprocess.run(['git','merge-base','--is-ancestor',Q,V],cwd=R).returncode==0,'Latest QOL not contained by V2'
 assert subprocess.run(['git','merge-base','--is-ancestor',H,V],cwd=R).returncode==0,'Latest Havora not contained by V2'
