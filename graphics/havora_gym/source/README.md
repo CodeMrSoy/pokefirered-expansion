@@ -1,0 +1,1 @@
+Lever reference supplied by the user in this conversation. The build retains the original sheet here and derives three native 16×16 poses per handle color, using the existing private gym palette. No assertion about the original game/source of the supplied sheet is made.

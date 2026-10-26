@@ -24,7 +24,7 @@ for g,start in [('primary',0),('secondary',640)]:
    if tid in slots:assert not any(a.crop((x,y,x+8,y+8)).tobytes())
    else:assert a.crop((x,y,x+8,y+8)).tobytes()==b.crop((x,y,x+8,y+8)).tobytes(),tid
  for p in (R/f'data/tilesets/{g}/havora_city/palettes').glob('*.pal'):assert p.read_text().splitlines()==old(str(p.relative_to(R))).decode().splitlines()
-layouts=js('data/layouts/layouts.json')['layouts'];previous=json.loads(old('data/layouts/layouts.json'))['layouts'];assert layouts[:-1]==previous
+layouts=js('data/layouts/layouts.json')['layouts'];previous=json.loads(old('data/layouts/layouts.json'))['layouts'];assert [l for l in layouts if l['id']!='LAYOUT_HAVORA_CAPTAINS_TRIAL'][:-1]==previous
 for l in previous:
  for key in ['blockdata_filepath','border_filepath']:
   p=l[key];a=old(p);b=(R/p).read_bytes()
