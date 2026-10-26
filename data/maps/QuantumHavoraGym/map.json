@@ -373,7 +373,7 @@
     },
     {
       "type": "sign",
-      "x": 5,
+      "x": 4,
       "y": 10,
       "elevation": 5,
       "player_facing_dir": "BG_EVENT_PLAYER_FACING_ANY",
@@ -381,7 +381,7 @@
     },
     {
       "type": "sign",
-      "x": 5,
+      "x": 4,
       "y": 13,
       "elevation": 5,
       "player_facing_dir": "BG_EVENT_PLAYER_FACING_ANY",
@@ -389,7 +389,7 @@
     },
     {
       "type": "sign",
-      "x": 22,
+      "x": 23,
       "y": 10,
       "elevation": 5,
       "player_facing_dir": "BG_EVENT_PLAYER_FACING_ANY",
@@ -397,7 +397,7 @@
     },
     {
       "type": "sign",
-      "x": 22,
+      "x": 23,
       "y": 13,
       "elevation": 5,
       "player_facing_dir": "BG_EVENT_PLAYER_FACING_ANY",
@@ -405,7 +405,7 @@
     },
     {
       "type": "sign",
-      "x": 32,
+      "x": 31,
       "y": 10,
       "elevation": 5,
       "player_facing_dir": "BG_EVENT_PLAYER_FACING_ANY",
@@ -413,7 +413,7 @@
     },
     {
       "type": "sign",
-      "x": 32,
+      "x": 31,
       "y": 13,
       "elevation": 5,
       "player_facing_dir": "BG_EVENT_PLAYER_FACING_ANY",
@@ -421,7 +421,7 @@
     },
     {
       "type": "sign",
-      "x": 49,
+      "x": 50,
       "y": 10,
       "elevation": 5,
       "player_facing_dir": "BG_EVENT_PLAYER_FACING_ANY",
@@ -429,7 +429,7 @@
     },
     {
       "type": "sign",
-      "x": 49,
+      "x": 50,
       "y": 13,
       "elevation": 5,
       "player_facing_dir": "BG_EVENT_PLAYER_FACING_ANY",
@@ -437,7 +437,7 @@
     },
     {
       "type": "sign",
-      "x": 74,
+      "x": 75,
       "y": 10,
       "elevation": 5,
       "player_facing_dir": "BG_EVENT_PLAYER_FACING_ANY",
@@ -445,7 +445,7 @@
     },
     {
       "type": "sign",
-      "x": 74,
+      "x": 75,
       "y": 13,
       "elevation": 5,
       "player_facing_dir": "BG_EVENT_PLAYER_FACING_ANY",
@@ -453,7 +453,7 @@
     },
     {
       "type": "sign",
-      "x": 59,
+      "x": 58,
       "y": 10,
       "elevation": 5,
       "player_facing_dir": "BG_EVENT_PLAYER_FACING_ANY",
@@ -461,7 +461,7 @@
     },
     {
       "type": "sign",
-      "x": 59,
+      "x": 58,
       "y": 13,
       "elevation": 5,
       "player_facing_dir": "BG_EVENT_PLAYER_FACING_ANY",

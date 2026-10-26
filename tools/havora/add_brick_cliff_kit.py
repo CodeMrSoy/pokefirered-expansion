@@ -1,53 +1,67 @@
-"""Extend the existing private brick tiles with native 16px cliff contours.
-Uses the gym's existing palette and graphic allocator; no other tilesets change.
+"""Brick-material versions of the native FireRed cliff shape catalog.
+
+Only unused metatiles in the private gym tileset are populated. The authored
+map and all existing brick pieces remain unchanged. Run explicitly to rebuild.
 """
 from pathlib import Path
-import struct
-from PIL import Image,ImageDraw
+import json,struct,sys
+from PIL import Image,ImageFilter
 R=Path(__file__).resolve().parents[2]
 P=R/'data/tilesets/primary/havora_gym';S=R/'data/tilesets/secondary/havora_gym'
+N=R/'data/tilesets/primary/general'
+SHAPES=[('upper_left',0x68),('upper',0x69),('upper_right',0x6a),('rising_left',0x6b),('rising_middle',0x6c),('rising_right',0x6d),('inset_upper_left',0x6e),('inset_upper_right',0x6f),('side_left',0x70),('face',0x71),('side_right',0x72),('narrow_left',0x73),('narrow_right',0x75),('foot_left',0x78),('foot',0x79),('foot_right',0x7a),('deep_foot_left',0x7b),('deep_foot',0x7c),('deep_foot_right',0x7d),('thin_cap_left',0x83),('thin_cap_right',0x84),('inset_side_left',0x85),('inset_side_right',0x86),('inset_front',0x87),('inset_lower_left',0x8b),('inset_lower_right',0x8c),('deep_inset_left',0x8d),('deep_inset_right',0x8e)]
+FIRST=0x3c5;COUNT=len(SHAPES)
 def words(p,fmt='H'):
  b=p.read_bytes();return list(struct.unpack('<'+fmt*(len(b)//struct.calcsize(fmt)),b))
 m=words(P/'metatiles.bin')+words(S/'metatiles.bin');attrs=words(S/'metatile_attributes.bin','I')
-im=Image.open(P/'tiles.png');used={w&1023 for w in m};free=iter(i for i in range(128,640) if i not in used)
-# Idempotent: graphics already assigned to the kit can be reused on the next run.
-kit=set(range(0x3c5,0x3d3));other={w&1023 for n in range(len(m)//8) if n not in kit for w in m[n*8:n*8+8]}
-free=iter(i for i in range(128,640) if i not in other);packed={}
+srcm=words(N/'metatiles.bin');srci=Image.open(N/'tiles.png')
+pals=[]
+for i in range(7):pals.append([tuple(map(int,l.split())) for l in (N/f'palettes/{i:02}.pal').read_text().splitlines()[3:19]])
+def native(mid):
+ out=Image.new('RGB',(16,16))
+ for k,v in enumerate(srcm[mid*8:mid*8+8]):
+  n=v&1023
+  for y in range(8):
+   for x in range(8):
+    c=srci.getpixel((n%16*8+(7-x if v&1024 else x),n//16*8+(7-y if v&2048 else y)))
+    if c or k<4:out.putpixel((k%2*8+x,k%4//2*8+y),pals[v>>12][c])
+ return out
+im=Image.open(P/'tiles.png').copy();kit=set(range(FIRST,FIRST+COUNT*2))
+used={w&1023 for n in range(len(m)//8) if n not in kit for w in m[n*8:n*8+8]}
+free=iter(i for i in range(128,640) if i not in used);packed={}
 def graphic(t):
  key=t.tobytes()
  if key not in packed:
   idx=next(free);packed[key]=idx;im.paste(t,(idx%16*8,idx//16*8))
  return packed[key]
-def store(mid,t):
- overlay=[graphic(t.crop((x,y,x+8,y+8)))|0x2000 for y in [0,8] for x in [0,8]]
- m[mid*8:(mid+1)*8]=m[0x282*8:0x282*8+4]+overlay;attrs[mid-640]=0x20000000
-# Straight sides, convex caps/feet and concave returns are directional variants
-# of one brick fabric. The light upper lip and dark lower rim imply depth.
-for mid,side,kind in [(0x3c5,'L','side'),(0x3c6,'R','side'),(0x3c7,'L','top'),(0x3c8,'R','top'),(0x3c9,'L','foot'),(0x3ca,'R','foot'),(0x3cb,'L','inner'),(0x3cc,'R','inner'),(0x3cd,'C','front'),(0x3ce,'L','front'),(0x3cf,'R','front'),(0x3d0,'C','cap'),(0x3d1,'L','return'),(0x3d2,'R','return')]:
- t=Image.new('P',(16,16),0);d=ImageDraw.Draw(t)
- if side=='C':mask=[(0,0),(15,0),(15,15),(0,15)]
- elif kind in ['foot','front']:
-  mask=[(2,0),(15,0),(15,15),(6,15),(2,12),(1,9)]
- elif kind=='top':mask=[(6,0),(15,0),(15,15),(2,15),(2,4)]
- else:mask=[(2,0),(15,0),(15,15),(2,15)]
- d.polygon(mask,fill=5)
- if side=='C':
-  d.rectangle((0,0,15,2),fill=6);d.line((0,3,15,3),fill=3)
-  d.line((0,15,15,15),fill=3)
- else:
-  d.line((2,0,2,11 if kind in ['foot','front'] else 15),fill=6)
-  d.line((3,0,3,11 if kind in ['foot','front'] else 15),fill=5)
- # Subtle mortar keeps long courses coherent; dark courses model the side plane.
- for y in [6,14]:d.line((4,y,15,y),fill=3)
- for x,y in [(9,0),(5,7)]:d.line((x,y,x,y+5),fill=3)
- if kind in ['foot','front']:
-  d.line((3,12,6,15),fill=3);d.line((6,15,15,15),fill=3)
- if kind in ['top','cap']:d.line((6 if side!='C' else 0,0,15,0),fill=6)
- if kind in ['inner','return']:
-  d.rectangle((0,0,6,4),fill=6);d.line((0,5,5,5),fill=3)
- if side=='R':t=t.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
- store(mid,t)
+def brick(mid):
+ original=native(mid);mask=Image.new('1',(16,16));lum=original.convert('L').filter(ImageFilter.BoxBlur(1))
+ for y in range(16):
+  for x in range(16):
+   r,g,b=original.getpixel((x,y))
+   if r>g+5 and r>b+5:mask.putpixel((x,y),1)
+ t=Image.new('P',(16,16),0)
+ for y in range(16):
+  for x in range(16):
+   if not mask.getpixel((x,y)):continue
+   level=lum.getpixel((x,y));color=6 if level>=168 else 5 if level>=90 else 3
+   # Two staggered brick courses use the source wall's plane shading.
+   if y%8==7 or (x-(0 if y<8 else 6))%12==0:color=3
+   elif y%8==0 and level>=115:color=6
+   # Keep the native convex/concave silhouette pixel-for-pixel.
+   if y<15 and not mask.getpixel((x,y+1)):color=3
+   if x>0 and not mask.getpixel((x-1,y)) and color!=3:color=6
+   t.putpixel((x,y),color)
+ return t
+catalog=[]
+for i,(name,src) in enumerate(SHAPES):
+ t=brick(src);overlay=[graphic(t.crop((x,y,x+8,y+8)))|0x2000 for y in [0,8] for x in [0,8]]
+ entry={'shape':name,'source_cliff':hex(src)}
+ for variant,base,offset in [('water',0x282,0),('wood',0x281,COUNT)]:
+  mid=FIRST+i+offset;m[mid*8:mid*8+8]=m[base*8:base*8+4]+overlay;attrs[mid-640]=0x20000000;entry[variant]=hex(mid)
+ catalog.append(entry)
 im.save(P/'tiles.png',bits=4)
 (S/'metatiles.bin').write_bytes(struct.pack('<'+'H'*(len(m)-640*8),*m[640*8:]))
 (S/'metatile_attributes.bin').write_bytes(struct.pack('<'+'I'*len(attrs),*attrs))
-print('Added 14 brick cliff pieces at 0x3C5–0x3D2 using',len(packed),'8px graphics')
+(R/'tools/havora/brick-cliff-kit.json').write_text(json.dumps({'first':hex(FIRST),'last':hex(FIRST+COUNT*2-1),'shapes':catalog,'placement':'Manual placement in Porymap; no map cells changed','backgrounds':['animated water','original wood floor']},indent=2)+'\n')
+print('Added',COUNT*2,'native cliff-shaped brick pieces at',hex(FIRST),'through',hex(FIRST+COUNT*2-1),'using',len(packed),'graphics; map untouched')

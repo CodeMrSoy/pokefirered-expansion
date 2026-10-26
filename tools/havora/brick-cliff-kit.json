@@ -1,0 +1,179 @@
+{
+  "first": "0x3c5",
+  "last": "0x3fc",
+  "shapes": [
+    {
+      "shape": "upper_left",
+      "source_cliff": "0x68",
+      "water": "0x3c5",
+      "wood": "0x3e1"
+    },
+    {
+      "shape": "upper",
+      "source_cliff": "0x69",
+      "water": "0x3c6",
+      "wood": "0x3e2"
+    },
+    {
+      "shape": "upper_right",
+      "source_cliff": "0x6a",
+      "water": "0x3c7",
+      "wood": "0x3e3"
+    },
+    {
+      "shape": "rising_left",
+      "source_cliff": "0x6b",
+      "water": "0x3c8",
+      "wood": "0x3e4"
+    },
+    {
+      "shape": "rising_middle",
+      "source_cliff": "0x6c",
+      "water": "0x3c9",
+      "wood": "0x3e5"
+    },
+    {
+      "shape": "rising_right",
+      "source_cliff": "0x6d",
+      "water": "0x3ca",
+      "wood": "0x3e6"
+    },
+    {
+      "shape": "inset_upper_left",
+      "source_cliff": "0x6e",
+      "water": "0x3cb",
+      "wood": "0x3e7"
+    },
+    {
+      "shape": "inset_upper_right",
+      "source_cliff": "0x6f",
+      "water": "0x3cc",
+      "wood": "0x3e8"
+    },
+    {
+      "shape": "side_left",
+      "source_cliff": "0x70",
+      "water": "0x3cd",
+      "wood": "0x3e9"
+    },
+    {
+      "shape": "face",
+      "source_cliff": "0x71",
+      "water": "0x3ce",
+      "wood": "0x3ea"
+    },
+    {
+      "shape": "side_right",
+      "source_cliff": "0x72",
+      "water": "0x3cf",
+      "wood": "0x3eb"
+    },
+    {
+      "shape": "narrow_left",
+      "source_cliff": "0x73",
+      "water": "0x3d0",
+      "wood": "0x3ec"
+    },
+    {
+      "shape": "narrow_right",
+      "source_cliff": "0x75",
+      "water": "0x3d1",
+      "wood": "0x3ed"
+    },
+    {
+      "shape": "foot_left",
+      "source_cliff": "0x78",
+      "water": "0x3d2",
+      "wood": "0x3ee"
+    },
+    {
+      "shape": "foot",
+      "source_cliff": "0x79",
+      "water": "0x3d3",
+      "wood": "0x3ef"
+    },
+    {
+      "shape": "foot_right",
+      "source_cliff": "0x7a",
+      "water": "0x3d4",
+      "wood": "0x3f0"
+    },
+    {
+      "shape": "deep_foot_left",
+      "source_cliff": "0x7b",
+      "water": "0x3d5",
+      "wood": "0x3f1"
+    },
+    {
+      "shape": "deep_foot",
+      "source_cliff": "0x7c",
+      "water": "0x3d6",
+      "wood": "0x3f2"
+    },
+    {
+      "shape": "deep_foot_right",
+      "source_cliff": "0x7d",
+      "water": "0x3d7",
+      "wood": "0x3f3"
+    },
+    {
+      "shape": "thin_cap_left",
+      "source_cliff": "0x83",
+      "water": "0x3d8",
+      "wood": "0x3f4"
+    },
+    {
+      "shape": "thin_cap_right",
+      "source_cliff": "0x84",
+      "water": "0x3d9",
+      "wood": "0x3f5"
+    },
+    {
+      "shape": "inset_side_left",
+      "source_cliff": "0x85",
+      "water": "0x3da",
+      "wood": "0x3f6"
+    },
+    {
+      "shape": "inset_side_right",
+      "source_cliff": "0x86",
+      "water": "0x3db",
+      "wood": "0x3f7"
+    },
+    {
+      "shape": "inset_front",
+      "source_cliff": "0x87",
+      "water": "0x3dc",
+      "wood": "0x3f8"
+    },
+    {
+      "shape": "inset_lower_left",
+      "source_cliff": "0x8b",
+      "water": "0x3dd",
+      "wood": "0x3f9"
+    },
+    {
+      "shape": "inset_lower_right",
+      "source_cliff": "0x8c",
+      "water": "0x3de",
+      "wood": "0x3fa"
+    },
+    {
+      "shape": "deep_inset_left",
+      "source_cliff": "0x8d",
+      "water": "0x3df",
+      "wood": "0x3fb"
+    },
+    {
+      "shape": "deep_inset_right",
+      "source_cliff": "0x8e",
+      "water": "0x3e0",
+      "wood": "0x3fc"
+    }
+  ],
+  "placement": "Manual placement in Porymap; no map cells changed",
+  "backgrounds": [
+    "animated water",
+    "original wood floor"
+  ]
+}

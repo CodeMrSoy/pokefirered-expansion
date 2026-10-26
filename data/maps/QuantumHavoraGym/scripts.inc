@@ -128,6 +128,7 @@ HavoraLock_BridgeDone::
  msgbox HavoraLock_BridgeDoneText
  goto HavoraLock_Release
 HavoraLock_Error::
+ goto_if_eq VAR_RESULT, 9, HavoraLock_ArtworkReview
  goto_if_eq VAR_RESULT, 2, HavoraLock_CrewError
  goto_if_eq VAR_RESULT, 6, HavoraLock_NavError
  goto_if_eq VAR_RESULT, 7, HavoraLock_LevelError
@@ -135,6 +136,11 @@ HavoraLock_Error::
  goto_if_eq VAR_RESULT, 8, HavoraLock_MoorError
  msgbox HavoraLock_BlockedText
  goto HavoraLock_Release
+HavoraLock_ArtworkReview::
+ msgbox HavoraLock_ArtworkReviewText
+ goto HavoraLock_Release
+HavoraLock_ArtworkReviewText::
+ .string "The lock system is being refitted.\nWater controls are offline.$"
 HavoraLock_CrewError::
  msgbox HavoraLock_CrewText
  goto HavoraLock_Release

@@ -6,6 +6,9 @@ R=Path(__file__).resolve().parents[1]
 def module(name):
  s=importlib.util.spec_from_file_location(name,R/'tools/havora'/f'{name}.py');m=importlib.util.module_from_spec(s);s.loader.exec_module(m);return m
 geo=module('overhead_lock_geometry');model=module('solve_fixed_transfer_design')
+if getattr(geo,'ARTWORK_REVIEW',False):
+ print('SKIP retired puzzle geometry; use havora_artwork_assets.py and havora_artwork_review_emulator.py')
+ raise SystemExit(0)
 cache={};checked=0
 for state in model.search()[0]:
  w,p,a,c,moor,released=state

@@ -12,6 +12,9 @@ if hasattr(m,'record_step'):
  m.record_stateaddr=native('GetVarPointer',0x40d7)
  m.record_stateoffset=m.record_stateaddr-struct.unpack('<I',m.read(m.symbols['gSaveBlock1Ptr'],4))[0]
 spec=importlib.util.spec_from_file_location('geo',m.root/'tools/havora/build_fixed_transfer_gym.py');geo=importlib.util.module_from_spec(spec);spec.loader.exec_module(geo)
+if getattr(geo,'ARTWORK_REVIEW',False):
+ print('SKIP retired 25-action puzzle; use havora_artwork_review_emulator.py')
+ raise SystemExit(0)
 plan=json.loads((m.root/'docs/havora/fixed-transfer-design.json').read_text())
 groups=json.loads((m.root/'data/maps/map_groups.json').read_text());ids={n:(g,i) for g,k in enumerate(groups['group_order']) for i,n in enumerate(groups[k])}
 anchors=geo.ANCHORS
