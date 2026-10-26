@@ -257,7 +257,7 @@ for yy in range(3):
   mid=0x390+yy*3+xx;M[mid*8:(mid+1)*8]=M[0x282*8:0x282*8+4]+words;A[mid]=0x20000000
 im.save(root/'primary/havora_gym/tiles.png',bits=4)
 # Rebuild working surfaces, then place complete furniture at purposeful stations.
-path=R/'data/layouts/HavoraCaptainsTrial/map.bin';B=readwords(path);W=40
+path=R/'data/layouts/Havora_Gym/map.bin';B=readwords(path);W=40
 def tile(x,y,mid,blocked=True,z=3):B[y*W+x]=(z<<12)|(0x400 if blocked else 0)|mid
 def rect(x,y,w,h,mid,blocked=True,z=3):
  for yy in range(y,y+h):

@@ -352,8 +352,8 @@ extern const u32 gMetatileAttributes_IndigoPlateauAutumn[176] __attribute__((ali
 const u16 gMetatiles_IndigoPlateauWinter[] = INCBIN_U16("data/tilesets/secondary/indigo_plateau_winter/metatiles.bin");
 const u32 gMetatileAttributes_IndigoPlateauWinter[] = INCBIN_U32("data/tilesets/secondary/indigo_plateau_winter/metatile_attributes.bin");
 
-const u16 gMetatiles_HavoraHarbor[] = INCBIN_U16("data/tilesets/secondary/havora_harbor/metatiles.bin");
-const u32 gMetatileAttributes_HavoraHarbor[] = INCBIN_U32("data/tilesets/secondary/havora_harbor/metatile_attributes.bin");
+const u16 gMetatiles_Havora_Harbor[] = INCBIN_U16("data/tilesets/secondary/havora_harbor/metatiles.bin");
+const u32 gMetatileAttributes_Havora_Harbor[] = INCBIN_U32("data/tilesets/secondary/havora_harbor/metatile_attributes.bin");
 
 const u16 gMetatiles_HavoraPrimary[] = INCBIN_U16("data/tilesets/primary/havora_harbor/metatiles.bin");
 const u32 gMetatileAttributes_HavoraPrimary[] = INCBIN_U32("data/tilesets/primary/havora_harbor/metatile_attributes.bin");

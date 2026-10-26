@@ -1,0 +1,18 @@
+Iskora_Village_PokemonCenter_1F_MapScripts::
+	map_script MAP_SCRIPT_ON_TRANSITION, Iskora_Village_PokemonCenter_1F_OnTransition
+	map_script MAP_SCRIPT_ON_RESUME, CableClub_OnResume
+	.byte 0
+
+Iskora_Village_PokemonCenter_1F_OnTransition::
+	goto_if_unset FLAG_QUANTUM_ARRIVED, Iskora_Village_PokemonCenter_1F_End
+	setflag FLAG_QUANTUM_SNOW_CENTER
+	setrespawn HEAL_LOCATION_QUANTUM_SNOW_TOWN
+Iskora_Village_PokemonCenter_1F_End::
+	end
+
+Iskora_Village_PokemonCenter_1F_Nurse::
+	lock
+	faceplayer
+	call EventScript_PkmnCenterNurse
+	release
+	end

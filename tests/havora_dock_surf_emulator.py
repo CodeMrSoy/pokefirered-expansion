@@ -30,7 +30,7 @@ for group in ['primary','secondary']:
  b=(m.root/f'data/tilesets/{group}/havora_city/metatile_attributes.bin').read_bytes();attrs+=struct.unpack('<'+'I'*(len(b)//4),b)
 count=0
 for fix in fixes:
- l=layouts[fix['layout']];name={'LAYOUT_HAVORA_HARBOR':'HavoraHarbor','LAYOUT_HAVORA_WEST_QUADRANT':'HavoraWestQuadrant'}[fix['layout']]
+ l=layouts[fix['layout']];name={'LAYOUT_HAVORA_HARBOR':'Havora_Harbor','LAYOUT_HAVORA_WEST_QUADRANT':'Havora_WestQuadrant'}[fix['layout']]
  data=(m.root/l['blockdata_filepath']).read_bytes();blocks=struct.unpack('<'+'H'*(len(data)//2),data)
  x,y=fix['x'],fix['y'];tested=0
  for dx,dy,direction,key,back in [(0,1,1,5,4),(0,-1,2,4,5),(-1,0,3,6,7),(1,0,4,7,6)]:

@@ -7,14 +7,14 @@ Work targets Havora-Development only. The current housing update starts from
 
 | Previous name | Current name |
 | --- | --- |
-| QuantumHarbor | HavoraHarbor |
-| QuantumHavoraNorthQuay | HavoraMarket |
-| QuantumHavoraNorthDistrict | HavoraNorthQuadrant |
-| QuantumPortCity | HavoraWestQuadrant |
-| QuantumHavoraCoastalDaycare | HavoraDaycare |
-| QuantumHavoraWestQuay | HavoraRiver |
-| QuantumHavoraNorthWalk | HavoraLookout |
-| QuantumHavoraCliffs | HavoraCoastalCliffs |
+| QuantumHarbor | Havora_Harbor |
+| QuantumHavoraNorthQuay | Havora_Market |
+| QuantumHavoraNorthDistrict | Havora_NorthQuadrant |
+| QuantumPortCity | Havora_WestQuadrant |
+| QuantumHavoraCoastalDaycare | Havora_DaycareExterior |
+| QuantumHavoraWestQuay | Havora_River |
+| QuantumHavoraNorthWalk | Havora_Lookout |
+| QuantumHavoraCliffs | Havora_CoastalCliffs |
 
 Map directories, layout directories/IDs, scripts, connections, incoming return
 warps, ferry references and the map group table use the new names. The map group
@@ -45,7 +45,7 @@ shows the same junction from all four active districts.
 
 The active residential designs outside the harbor are the long Cerulean house
 and the plain / garden-front Viridian houses shown in the reference. The blue
-Lilycove houses remain on HavoraHarbor. The unused Pallet option is superseded.
+Lilycove houses remain on Havora_Harbor. The unused Pallet option is superseded.
 
 Eight existing buildings were replaced within reviewed plots: four in Market,
 two in North Quadrant, one in West Quadrant and the Daycare frontage. The long

@@ -5,7 +5,7 @@ import json
 from PIL import Image,ImageDraw,ImageFont
 from render import render
 R=Path(__file__).resolve().parents[2];B=R/'build';render('LAYOUT_HAVORA_HARBOR',B/'havora-map-native.png');im=Image.open(B/'havora-map-native.png').convert('RGBA')
-objs=json.loads((R/'data/maps/HavoraHarbor/map.json').read_text())['object_events']
+objs=json.loads((R/'data/maps/Havora_Harbor/map.json').read_text())['object_events']
 spec={'OBJ_EVENT_GFX_FISHER':('people/fisher.png','npc_white',16,32),'OBJ_EVENT_GFX_SEAGALLOP':('misc/seagallop.png','seagallop',64,64),'OBJ_EVENT_GFX_SAILOR':('people/sailor.png','npc_pink',16,32),'OBJ_EVENT_GFX_MAN':('people/man.png','npc_white',16,32),'OBJ_EVENT_GFX_WOMAN_1':('people/woman_1.png','npc_green',16,32)}
 for o in sorted(objs,key=lambda v:v['y']):
  file,pal,w,h=spec[o['graphics_id']];p=R/'graphics/object_events';s=Image.open(p/'pics'/file);s=s.crop((16 if w==16 and o['movement_type']=='MOVEMENT_TYPE_FACE_UP' else 0,0,(32 if w==16 and o['movement_type']=='MOVEMENT_TYPE_FACE_UP' else w),h))

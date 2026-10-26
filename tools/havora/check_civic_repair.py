@@ -30,10 +30,10 @@ assert not any(7 in Image.open(p).tobytes() for p in (R/'data/tilesets/primary/g
 assert not any(w>>12==0 and 416<=w&1023<482 for w in OM)
 assert len(new['assets']['center'])==4 and all(len(row)==5 for row in new['assets']['center'])
 assert len(new['assets']['mart'])==4 and all(len(row)==4 for row in new['assets']['mart'])
-l=next(l for l in js('data/layouts/layouts.json')['layouts'] if l['name']=='HavoraNorthQuadrant_Layout');v=ww((R/l['blockdata_filepath']).read_bytes())
+l=next(l for l in js('data/layouts/layouts.json')['layouts'] if l['name']=='Havora_NorthQuadrant_Layout');v=ww((R/l['blockdata_filepath']).read_bytes())
 for name,x,y in [('center',73,5),('mart',80,5)]:
  for j,row in enumerate(new['assets'][name]):
   for i,mid in enumerate(row):assert v[(y+j)*90+x+i]&1023==mid
-h=next(l for l in js('data/layouts/layouts.json')['layouts'] if l['name']=='HavoraHarbor_Layout');used={v&1023 for v in ww((R/h['blockdata_filepath']).read_bytes())}
+h=next(l for l in js('data/layouts/layouts.json')['layouts'] if l['name']=='Havora_Harbor_Layout');used={v&1023 for v in ww((R/h['blockdata_filepath']).read_bytes())}
 assert used.isdisjoint(allowed)
 print(json.dumps({'center_complete_size':[5,4],'mart_complete_size':[4,4],'unused_palette_entry_repurposed':'0:7 dark red','all_other_existing_metatiles_and_graphics_preserved_except_archived_unplaced_modules':True,'all_water_flower_and_fountain_animation_graphics_preserved':True,'harbor_graphics_and_attributes_unchanged':True},indent=2))

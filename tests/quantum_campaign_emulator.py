@@ -36,7 +36,7 @@ for name in retired['maps']:
     group, index = map_ids[name]
     assert native('QuantumIsRetiredMap', group, index) == 1, name
 for name in ('PalletTown', 'PokemonLeague_ChampionsRoom', 'PokemonLeague_HallOfFame',
-             'IndigoPlateau_Exterior', 'QuantumPortCity', 'QuantumHarbor'):
+             'IndigoPlateau_Exterior', 'Havora_WestQuadrant', 'Havora_Harbor'):
     assert native('QuantumIsRetiredMap', *map_ids[name]) == 0, name
 
 def constant(name, header):

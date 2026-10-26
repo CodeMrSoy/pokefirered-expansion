@@ -1,4 +1,4 @@
-# Quantum island map
+# Pokémon Quantum — Vidra island map
 
 Regenerate the map assets from the repository root:
 

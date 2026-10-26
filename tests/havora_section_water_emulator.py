@@ -5,7 +5,7 @@ source=source[:source.index("native('VarSet',0x40d8")].replace('def warp(x=3,y=2
 exec(compile(source,'water-review-setup','exec'))
 from PIL import ImageDraw
 out=m.root/'docs/havora/review';out.mkdir(parents=True,exist_ok=True)
-g,n=ids['QuantumHavoraGym']
+g,n=ids['Havora_Gym']
 def captain():return native('GetObjectEventIdByLocalIdAndMap',7,n,g)&255
 def hidden_player():native('SetObjectInvisibility',255,0,0,1)
 native('VarSet',0x40d7,encode((0,0,0)));warp(66,20);hidden_player();assert captain()!=16

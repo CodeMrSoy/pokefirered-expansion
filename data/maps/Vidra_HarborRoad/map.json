@@ -1,0 +1,32 @@
+{
+  "id": "MAP_VIDRA_HARBOR_ROAD",
+  "name": "Vidra_HarborRoad",
+  "layout": "LAYOUT_VIDRA_HARBOR_ROAD",
+  "music": "MUS_SEVII_123",
+  "region_map_section": "MAPSEC_QUANTUM_HARBOR_ROAD",
+  "requires_flash": false,
+  "weather": "WEATHER_SUNNY",
+  "map_type": "MAP_TYPE_ROUTE",
+  "allow_cycling": true,
+  "allow_escaping": false,
+  "allow_running": true,
+  "show_map_name": true,
+  "floor_number": 0,
+  "battle_scene": "MAP_BATTLE_SCENE_NORMAL",
+  "connections": [
+    {
+      "map": "MAP_HAVORA_WEST_QUADRANT",
+      "offset": -60,
+      "direction": "right"
+    },
+    {
+      "map": "MAP_CORVALA_TOWN",
+      "offset": 0,
+      "direction": "left"
+    }
+  ],
+  "object_events": [],
+  "warp_events": [],
+  "coord_events": [],
+  "bg_events": []
+}

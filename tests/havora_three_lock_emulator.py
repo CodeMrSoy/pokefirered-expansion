@@ -26,7 +26,7 @@ def value(v):return native('VarGet',v)&65535
 def pos():
  i=m.read(m.symbols['gPlayerAvatar']+5,1)[0];x,y=struct.unpack('<hh',m.read(m.symbols['gObjectEvents']+i*36+16,4));return x-7,y-7
 def warp(x,y):
- g,n=ids['QuantumHavoraGym'];m.inject(b'\x39'+struct.pack('<BBBHH',g,n,255,x,y)+b'\x6b\x02');m.run(100)
+ g,n=ids['Havora_Gym'];m.inject(b'\x39'+struct.pack('<BBBHH',g,n,255,x,y)+b'\x6b\x02');m.run(100)
 def command(cmd,a=0,b=0):
  for v,n in [(0x8004,cmd),(0x8005,a),(0x8006,b)]:native('VarSet',v,n)
  native('HavoraGym_Control')
@@ -100,7 +100,7 @@ native('VarSet',0x40d8,63);command(6);assert value(0x40d9)&1
 command(15);assert value(0x40d7)==encode(((2,2,0),0,0,4,0,False)) and value(0x40d8)==63
 warp(3,27);m.keys.add(5);m.run(15);m.keys.clear();m.run(180)
 save=struct.unpack('<I',m.read(m.symbols['gSaveBlock1Ptr'],4))[0]
-assert tuple(m.read(save+4,2))==ids['HavoraWestQuadrant'],'exit warp'
+assert tuple(m.read(save+4,2))==ids['Havora_WestQuadrant'],'exit warp'
 print('PASS saved configuration, crest award, reset preserving victories and exterior exit',flush=True)
 # Old gym saves are relocated to the safe entry while retaining their victories.
 native('VarSet',0x40d7,0);warp(20,33)

@@ -7,7 +7,7 @@ layouts=json.loads((R/'data/layouts/layouts.json').read_text())['layouts']
 old=lambda p:subprocess.check_output(['git','show',d['base_commit']+':'+p],cwd=R)
 count=0
 for l in layouts:
- if l['id']=='LAYOUT_HAVORA_CAPTAINS_TRIAL':continue # Covered by check_captains_trial.py.
+ if l['id']=='LAYOUT_HAVORA_GYM':continue # Covered by check_captains_trial.py.
  for key in ['blockdata_filepath','border_filepath']:
   p=l[key];a=old(p);b=(R/p).read_bytes();expected=bytearray(a)
   if key=='blockdata_filepath':
@@ -20,7 +20,7 @@ for l in layouts:
     struct.pack_into('<H',expected,off,f['after']);count+=1
   assert bytes(expected)==b,p
 for p in subprocess.check_output(['git','ls-tree','-r','--name-only',d['base_commit'],'--','data/maps','data/tilesets'],cwd=R,text=True).splitlines():
- if p.startswith('data/maps/QuantumHavoraGym/'):continue # Approved interior replacement.
+ if p.startswith('data/maps/Havora_Gym/'):continue # Approved interior replacement.
  a=old(p);b=(R/p).read_bytes()
  if p=='data/tilesets/secondary/havora_city/metatile_attributes.bin':
   a=bytearray(a);v=d['water_alias'];assert struct.unpack_from('<I',a,(v['metatile']-640)*4)[0]==v['before'];struct.pack_into('<I',a,(v['metatile']-640)*4,v['after']);a=bytes(a)

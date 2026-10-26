@@ -5,7 +5,7 @@ from pathlib import Path
 from collections import deque
 R=Path(__file__).resolve().parents[2]
 BASE='a85c6562'
-RENAMES={'QuantumHarbor':'HavoraHarbor','QuantumHavoraNorthQuay':'HavoraMarket','QuantumHavoraNorthDistrict':'HavoraNorthQuadrant','QuantumPortCity':'HavoraWestQuadrant','QuantumHavoraCoastalDaycare':'HavoraDaycare','QuantumHavoraWestQuay':'HavoraRiver','QuantumHavoraNorthWalk':'HavoraLookout','QuantumHavoraCliffs':'HavoraCoastalCliffs'}
+RENAMES={'Havora_Harbor':'Havora_Harbor','Havora_Market':'Havora_Market','Havora_NorthQuadrant':'Havora_NorthQuadrant','Havora_WestQuadrant':'Havora_WestQuadrant','Havora_DaycareExterior':'Havora_DaycareExterior','Havora_River':'Havora_River','Havora_Lookout':'Havora_Lookout','Havora_CoastalCliffs':'Havora_CoastalCliffs'}
 def load(p):return json.loads((R/p).read_text())
 def source(p):return subprocess.check_output(['git','show',BASE+':'+p],cwd=R)
 def words(b):return [v[0] for v in struct.iter_unpack('<H',b)]
@@ -38,7 +38,7 @@ a=json.loads(source('data/maps/map_groups.json'));b=load('data/maps/map_groups.j
 for key,value in a.items():
  expected=[RENAMES.get(v,v) for v in value] if isinstance(value,list) else value
  assert b[key]==expected,key
-pos={'HavoraMarket':(0,0)};q=deque(pos);opposite={'left':'right','right':'left','up':'down','down':'up'};pairs=set()
+pos={'Havora_Market':(0,0)};q=deque(pos);opposite={'left':'right','right':'left','up':'down','down':'up'};pairs=set()
 while q:
  n=q.popleft();l=L[M[n]['layout']];x,y=pos[n]
  for c in M[n]['connections'] or []:
@@ -51,6 +51,6 @@ while q:
   else:pos[m]=p;q.append(m)
   pairs.add(tuple(sorted([n,m])))
 assert len(pos)==8 and len(pairs)==11
-assert pos['HavoraDaycare'][0]==pos['HavoraCoastalCliffs'][0]==pos['HavoraMarket'][0]+L[M['HavoraMarket']['layout']]['width']
-assert pos['HavoraDaycare'][1]+L[M['HavoraDaycare']['layout']]['height']==0
+assert pos['Havora_DaycareExterior'][0]==pos['Havora_CoastalCliffs'][0]==pos['Havora_Market'][0]+L[M['Havora_Market']['layout']]['width']
+assert pos['Havora_DaycareExterior'][1]+L[M['Havora_DaycareExterior']['layout']]['height']==0
 print(json.dumps({'maps':8,'consistent_connection_pairs':len(pairs),'map_group_numbers_preserved':True,'authored_cells_preserved_outside_reviewed_house_plots':art,'original_border_files_preserved':True,'north_quadrant_added_edge_columns':1,'origins':pos,'existing_out_of_bounds_events_needing_later_review':events},indent=2))

@@ -10,7 +10,7 @@ def player():return m.symbols['gObjectEvents']+m.read(m.symbols['gPlayerAvatar']
 def sprite():return m.symbols['gSprites']+m.read(player()+35,1)[0]*68
 def priority():return (struct.unpack('<H',m.read(sprite()+4,2))[0]>>10)&3
 frames=[]
-for name,n,x,y in [('tree','HavoraWestQuadrant',7,1),('roof4','HavoraWestQuadrant',23,31),('roof6','HavoraNorthQuadrant',34,16)]:
+for name,n,x,y in [('tree','Havora_WestQuadrant',7,1),('roof4','Havora_WestQuadrant',23,31),('roof6','Havora_NorthQuadrant',34,16)]:
  warp(n,x,y);o=player();s=sprite();height=m.read(o+11,1)[0]
  assert priority()==2 and m.read(s+66,1)[0]&63==1,(name,'not below canopy',priority(),height)
  m.snap('occlusion-'+name);after=m.screen.copy()
@@ -24,7 +24,7 @@ for name,n,x,y in [('tree','HavoraWestQuadrant',7,1),('roof4','HavoraWestQuadran
  assert m.read(o+11,1)[0]==height,'Changed physical elevation'
  m.write(o+3,bytes([flags]))
 # Dock decks at native elevation 2 and stock Kanto retain their ordering.
-warp('HavoraHarbor',12,5);assert priority()==2
+warp('Havora_Harbor',12,5);assert priority()==2
 warp('PalletTown',10,9);assert priority()==2
 out=Image.new('RGB',(960,len(frames)*348),'#183139');d=ImageDraw.Draw(out)
 for i,(name,before,after) in enumerate(frames):

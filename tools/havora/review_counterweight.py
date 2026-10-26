@@ -6,7 +6,7 @@ from PIL import Image,ImageDraw,ImageFont
 from review_market import scene
 R=Path(__file__).resolve().parents[2];d=json.loads((R/'tools/havora/counterweight-puzzle.json').read_text());dest=R/'docs/havora';dest.mkdir(parents=True,exist_ok=True)
 font=lambda n:ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',n)
-mapim=scene('HavoraNorthQuadrant','LAYOUT_HAVORA_NORTH_QUADRANT').crop((3*16,9*16,32*16,28*16)).resize((928,608),Image.Resampling.NEAREST)
+mapim=scene('Havora_NorthQuadrant','LAYOUT_HAVORA_NORTH_QUADRANT').crop((3*16,9*16,32*16,28*16)).resize((928,608),Image.Resampling.NEAREST)
 out=Image.new('RGB',(1370,795),'#172d34');out.paste(mapim,(24,112));draw=ImageDraw.Draw(out)
 draw.text((24,20),'HAVORA / WORKING COUNTERWEIGHT GROVE',font=font(28),fill='#f3dfbc');draw.text((24,66),'Your placed maze • Native gate art and interactive objects • Reference labels added',font=font(19),fill='#c7d9cd')
 for kind,coords in [('plate',d['plates']),('gate',d['gates'])]:

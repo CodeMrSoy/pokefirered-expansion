@@ -1186,7 +1186,7 @@
     14
   ],
   "base_commit": "fdef80b36a071bfe453a8a7f0f5ea135b10f7e2a",
-  "layout": "HavoraNorthQuadrant",
+  "layout": "Havora_NorthQuadrant",
   "local_ids": {
     "boulders": [
       11,

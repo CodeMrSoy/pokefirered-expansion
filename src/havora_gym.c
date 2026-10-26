@@ -50,10 +50,10 @@ static const struct SpriteTemplate sLaunchTemplate={
 };
 // State is versioned; existing victories and crest flags are independent.
 #define VERSION 0x4000
-static const u16 sLockBase[]=INCBIN_U16("data/layouts/HavoraCaptainsTrial/map.bin");
+static const u16 sLockBase[]=INCBIN_U16("data/layouts/Havora_Gym/map.bin");
 static bool8 Here(void)
 {
- return gSaveBlock1Ptr->location.mapGroup==MAP_GROUP(MAP_QUANTUM_HAVORA_GYM)&&gSaveBlock1Ptr->location.mapNum==MAP_NUM(MAP_QUANTUM_HAVORA_GYM);
+ return gSaveBlock1Ptr->location.mapGroup==MAP_GROUP(MAP_HAVORA_GYM)&&gSaveBlock1Ptr->location.mapNum==MAP_NUM(MAP_HAVORA_GYM);
 }
 static u8 Water(u8 ch){u16 n=VarGet(VAR_HAVORA_GYM_STATE)&31;while(ch--)n/=3;return n%3;}
 static u8 Boat(u8 b){return (VarGet(VAR_HAVORA_GYM_STATE)>>(b?8:5))&7;}
@@ -95,13 +95,13 @@ static void UpdateWaterOcclusion(u8 taskId,bool8 objectsReady)
  if(submerged)
  {
   FlagSet(FLAG_TEMP_1F);
-  RemoveObjectEventByLocalIdAndMap(LOCK_CAPTAIN_LOCAL_ID,MAP_NUM(MAP_QUANTUM_HAVORA_GYM),MAP_GROUP(MAP_QUANTUM_HAVORA_GYM));
+  RemoveObjectEventByLocalIdAndMap(LOCK_CAPTAIN_LOCAL_ID,MAP_NUM(MAP_HAVORA_GYM),MAP_GROUP(MAP_HAVORA_GYM));
  }
  else
  {
   FlagClear(FLAG_TEMP_1F);
-  if(objectsReady&&GetObjectEventIdByLocalIdAndMap(LOCK_CAPTAIN_LOCAL_ID,MAP_NUM(MAP_QUANTUM_HAVORA_GYM),MAP_GROUP(MAP_QUANTUM_HAVORA_GYM))==OBJECT_EVENTS_COUNT)
-   TrySpawnObjectEvent(LOCK_CAPTAIN_LOCAL_ID,MAP_NUM(MAP_QUANTUM_HAVORA_GYM),MAP_GROUP(MAP_QUANTUM_HAVORA_GYM));
+  if(objectsReady&&GetObjectEventIdByLocalIdAndMap(LOCK_CAPTAIN_LOCAL_ID,MAP_NUM(MAP_HAVORA_GYM),MAP_GROUP(MAP_HAVORA_GYM))==OBJECT_EVENTS_COUNT)
+   TrySpawnObjectEvent(LOCK_CAPTAIN_LOCAL_ID,MAP_NUM(MAP_HAVORA_GYM),MAP_GROUP(MAP_HAVORA_GYM));
  }
 }
 // Water-profile differences overlay the compiled Porymap map. All-LOW is the

@@ -31,9 +31,9 @@ rect(33,9,3,3,0x304,True);rect(33,29,3,1,0x304,True)
 for x,y,t in [(5,31,0x300),(33,20,0x301),(5,14,0x302),(35,31,0x303)]:rect(x,y,1,1,t,True)
 for x,y in [(2,3),(37,3),(2,8),(37,8),(2,24),(2,28),(37,12),(37,28)]:rect(x,y,1,1,0x304,True)
 for x in [19,20,21]:rect(x,34,1,1,0x305)
-p=R/'data/layouts/HavoraCaptainsTrial';p.mkdir(exist_ok=True);(p/'map.bin').write_bytes(struct.pack('<'+'H'*len(b),*b));(p/'border.bin').write_bytes(struct.pack('<4H',*[blocked(0x33)]*4))
-p=R/'data/layouts/layouts.json';ls=json.loads(p.read_text());ls['layouts']=[l for l in ls['layouts'] if l['id']!='LAYOUT_HAVORA_CAPTAINS_TRIAL'];ls['layouts'].append({'id':'LAYOUT_HAVORA_CAPTAINS_TRIAL','name':'HavoraCaptainsTrial_Layout','width':W,'height':H,'border_width':2,'border_height':2,'primary_tileset':'gTileset_HavoraGymPrimary','secondary_tileset':'gTileset_HavoraGym','border_filepath':'data/layouts/HavoraCaptainsTrial/border.bin','blockdata_filepath':'data/layouts/HavoraCaptainsTrial/map.bin'});p.write_text(json.dumps(ls,indent=2)+'\n')
-p=R/'data/maps/QuantumHavoraGym/map.json';m=json.loads(p.read_text());m['layout']='LAYOUT_HAVORA_CAPTAINS_TRIAL';m['allow_running']=True
+p=R/'data/layouts/Havora_Gym';p.mkdir(exist_ok=True);(p/'map.bin').write_bytes(struct.pack('<'+'H'*len(b),*b));(p/'border.bin').write_bytes(struct.pack('<4H',*[blocked(0x33)]*4))
+p=R/'data/layouts/layouts.json';ls=json.loads(p.read_text());ls['layouts']=[l for l in ls['layouts'] if l['id']!='LAYOUT_HAVORA_GYM'];ls['layouts'].append({'id':'LAYOUT_HAVORA_GYM','name':'Havora_Gym_Layout','width':W,'height':H,'border_width':2,'border_height':2,'primary_tileset':'gTileset_HavoraGymPrimary','secondary_tileset':'gTileset_HavoraGym','border_filepath':'data/layouts/Havora_Gym/border.bin','blockdata_filepath':'data/layouts/Havora_Gym/map.bin'});p.write_text(json.dumps(ls,indent=2)+'\n')
+p=R/'data/maps/Havora_Gym/map.json';m=json.loads(p.read_text());m['layout']='LAYOUT_HAVORA_GYM';m['allow_running']=True
 m['object_events']=[]
 for gfx,x,y,script in [('GYM_GUY',17,32,'Welcome'),('SAILOR',32,24,'Crew'),('SAILOR',7,13,'Navigator'),('SAILOR',20,5,'Captain')]:
  m['object_events'].append({'type':'object','graphics_id':'OBJ_EVENT_GFX_'+gfx,'x':x,'y':y,'elevation':3,'movement_type':'MOVEMENT_TYPE_FACE_DOWN','movement_range_x':0,'movement_range_y':0,'trainer_type':'TRAINER_TYPE_NONE','trainer_sight_or_berry_tree_id':'0','script':'HavoraTrial_'+script,'flag':'0'})
@@ -73,7 +73,7 @@ for sourcepal,destpal in palmap.items():
 for group,start,end in [('primary',0,640),('secondary',640,1024)]:
  p=R/f'data/tilesets/{group}/havora_gym';(p/'metatiles.bin').write_bytes(struct.pack('<'+'H'*((end-start)*8),*M[start*8:end*8]));(p/'metatile_attributes.bin').write_bytes(struct.pack('<'+'I'*(end-start),*A[start:end]))
 # Give the outline a dark void, ship wall panels, and matching corner trim.
-p=R/'data/layouts/HavoraCaptainsTrial/map.bin';raw=p.read_bytes();blocks=list(struct.unpack('<'+'H'*(len(raw)//2),raw))
+p=R/'data/layouts/Havora_Gym/map.bin';raw=p.read_bytes();blocks=list(struct.unpack('<'+'H'*(len(raw)//2),raw))
 for i,v in enumerate(blocks):
  if v&1023==0x33:blocks[i]=(v&~1023)|0x308
 for yy in [2,11,23,29]:

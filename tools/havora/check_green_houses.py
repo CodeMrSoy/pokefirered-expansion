@@ -54,12 +54,12 @@ for e in report['placements']:
  warp=m['warp_events'][e['warp_index']];assert (warp['x'],warp['y'],warp['elevation'])==(x,y,block>>12)
  interior=allmaps[warp['dest_map']];assert any(w['dest_map']==m['id'] and int(w['dest_warp_id'])==e['warp_index'] for w in interior['warp_events'])
  for row in kits[e['kit']]:assert all(0<=i<1024 for i in row)
-assert not subprocess.check_output(['git','diff','--name-only',BASE,'--','data/layouts/HavoraHarbor','data/maps/HavoraHarbor','data/layouts/layouts.json','data/maps/map_groups.json','src/fieldmap.c'],cwd=R).strip()
+assert not subprocess.check_output(['git','diff','--name-only',BASE,'--','data/layouts/Havora_Harbor','data/maps/Havora_Harbor','data/layouts/layouts.json','data/maps/map_groups.json','src/fieldmap.c'],cwd=R).strip()
 # The fountain adds a separate shared-city callback; legacy ocean functions
 # must remain byte-for-byte equivalent as C source.
 import re
 animpath='src/tileset_anims.c';oldsrc=source(animpath).decode();newsrc=(R/animpath).read_text()
-for function in ['TilesetAnim_HavoraHarbor','InitTilesetAnim_HavoraHarbor']:
+for function in ['TilesetAnim_Havora_Harbor','InitTilesetAnim_Havora_Harbor']:
  pattern=r'(?:static )?void '+function+r'\([^)]*\)\s*\{.*?\n\}'
  assert re.search(pattern,oldsrc,re.S).group()==re.search(pattern,newsrc,re.S).group()
 result={'residences_replaced':len(report['placements']),'changed_cells_within_reviewed_plots':changed,'existing_placed_metatiles_preserved':len(placed),'cliff_and_stair_cells_preserved':cliff_cells,'all_borders_connections_and_harbor_unchanged':True,'door_collision_elevation_behavior_and_return_warps_checked':True,'fixed_animation_graphics_and_palettes_unchanged':True,'emulator_or_porymap_ui_test':False}

@@ -1,4 +1,5 @@
 #include "global.h"
+#include "vidra_maps.h"
 #include "quantum_cleanup.h"
 #include "pokemon.h"
 #include "pokemon_storage_system.h"
@@ -519,7 +520,9 @@ void QuantumRecoverWarpDestination(struct WarpData *warp)
 void QuantumMigrateLoadedWorld(void)
 {
     u32 readScene, writeScene = 0;
-    bool8 relocated = RetiredMap(&gSaveBlock1Ptr->location);
+    bool8 relocated;
+    VidraMigrateMapIds();
+    relocated = RetiredMap(&gSaveBlock1Ptr->location);
     if (relocated)
     {
         gSaveBlock1Ptr->pos.x = 10;

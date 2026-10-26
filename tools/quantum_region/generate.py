@@ -5,6 +5,9 @@ from PIL import Image, ImageDraw, ImageFont
 import json, struct
 import numpy as np
 ROOT = Path(__file__).resolve().parents[2]
+SECTION_IDS = {'PORT_CITY': 'MAPSEC_HAVORA_CITY', 'COASTAL_CITY': 'MAPSEC_CORVALA_TOWN', 'FOREST_TOWN': 'MAPSEC_ELDERVALE_VILLAGE', 'LAKE_TOWN': 'MAPSEC_MYRDAL_CITY', 'SNOW_TOWN': 'MAPSEC_ISKORA_VILLAGE', 'FOREST_PATH': 'MAPSEC_ELDERVIK_WOODS', 'MOUNTAIN_PASS': 'MAPSEC_FROSTFELL_MOUNTAINS', 'LAKE_ROAD': 'MAPSEC_LAKE_MYRVATN'}
+def section_id(ident):
+ return SECTION_IDS.get(ident, "MAPSEC_QUANTUM_"+ident)
 OUT = ROOT / 'graphics/region_map'
 COLORS = [(0,0,0),(115,189,247),(140,206,255),(24,90,41),
           (41,140,33),(82,181,41),(140,214,57),(115,123,115),
@@ -16,25 +19,25 @@ im.putpalette(sum((list(c) for c in COLORS),[])+[0]*720)
 d = ImageDraw.Draw(im)
 # Route centers share the exact selectable grid coordinates below.
 segments = [([(4,10),(4,9),(5,9),(5,8),(6,8),(6,7)],'COASTAL_ROAD','COASTAL ROAD'),
- ([(6,7),(6,6),(7,6),(8,6),(8,5),(9,5),(9,4),(10,4)],'FOREST_PATH','FOREST PATH'),
- ([(10,4),(10,3),(10,2)],'MOUNTAIN_PASS','MOUNTAIN PASS'),
+ ([(6,7),(6,6),(7,6),(8,6),(8,5),(9,5),(9,4),(10,4)],'FOREST_PATH','ELDERVIK WOODS'),
+ ([(10,4),(10,3),(10,2)],'MOUNTAIN_PASS','FROSTFELL MOUNTAINS'),
  ([(10,2),(11,2),(12,2),(13,2)],'SNOW_TRAIL','SNOW TRAIL'),
- ([(10,4),(11,4),(12,4),(13,4),(13,5),(14,5),(14,6),(14,7)],'LAKE_ROAD','LAKE ROAD'),
+ ([(10,4),(11,4),(12,4),(13,4),(13,5),(14,5),(14,6),(14,7)],'LAKE_ROAD','LAKE MYRVATN'),
  ([(14,7),(14,8),(15,8),(15,9),(15,10),(15,11),(15,12)],'HARBOR_ROAD','HARBOR ROAD'),
  ([(4,10),(5,10),(6,10),(7,10),(8,10),(9,10),(10,11),(11,11),(12,11),(13,12),(14,12),(15,12)],'RIVER_ROAD','RIVER ROAD'),
- ([(6,7),(7,7),(8,7),(9,7),(10,7),(11,7),(12,7),(13,7),(14,7)],'WOODLAND_LINK','WOODLAND LINK')]
+ ([(6,7),(7,7),(8,7),(9,7),(10,7),(11,7),(12,7),(13,7),(14,7)],'WOODLAND_LINK','ELDERVIK WOODS')]
 sections = [['MAPSEC_NONE']*22 for _ in range(15)];metadata=[]
 for points,ident,name in segments:
  pix=[(x*8+4,y*8+4) for x,y in points];d.line(pix,fill=12,width=3);d.line(pix,fill=11,width=1)
- for x,y in points:sections[y][x]='MAPSEC_QUANTUM_'+ident
+ for x,y in points:sections[y][x]=section_id(ident)
  xs=[x for x,y in points];ys=[y for x,y in points]
- metadata.append(dict(id='MAPSEC_QUANTUM_'+ident,name=name,x=min(xs),y=min(ys),width=max(xs)-min(xs)+1,height=max(ys)-min(ys)+1))
-towns=[(15,12,'PORT_CITY','PORT CITY'),(4,10,'COASTAL_CITY','COASTAL CITY'),
-       (6,7,'FOREST_TOWN','FOREST TOWN'),(14,7,'LAKE_TOWN','LAKE TOWN'),(10,2,'SNOW_TOWN','SNOW TOWN')]
+ metadata.append(dict(id=section_id(ident),name=name,x=min(xs),y=min(ys),width=max(xs)-min(xs)+1,height=max(ys)-min(ys)+1))
+towns=[(15,12,'PORT_CITY','HAVORA CITY'),(4,10,'COASTAL_CITY','CORVALA TOWN'),
+       (6,7,'FOREST_TOWN','ELDERVALE VILLAGE'),(14,7,'LAKE_TOWN','MYRDAL CITY'),(10,2,'SNOW_TOWN','ISKORA VILLAGE')]
 for x,y,ident,name in towns:
  cx,cy=x*8+4,y*8+4;d.ellipse((cx-4,cy-4,cx+4,cy+4),fill=15);d.ellipse((cx-3,cy-3,cx+3,cy+3),fill=10);d.ellipse((cx-2,cy-2,cx+2,cy+2),fill=13);d.point((cx-1,cy-1),fill=14)
- sections[y][x]='MAPSEC_QUANTUM_'+ident
- metadata.append(dict(id='MAPSEC_QUANTUM_'+ident,name=name,x=x,y=y,width=1,height=1))
+ sections[y][x]=section_id(ident)
+ metadata.append(dict(id=section_id(ident),name=name,x=x,y=y,width=1,height=1))
 # Hot springs: warm pools next to the snow settlement, separate named map area.
 x,y=13,2;cx,cy=x*8+4,y*8+4;d.rectangle((cx-2,cy-2,cx+2,cy+2),fill=10);d.rectangle((cx-1,cy-1,cx+1,cy+1),fill=7);d.point((cx,cy),fill=9)
 sections[y][x]='MAPSEC_QUANTUM_HOT_SPRINGS';metadata.append(dict(id='MAPSEC_QUANTUM_HOT_SPRINGS',name='HOT SPRINGS',x=x,y=y,width=1,height=1))
@@ -143,7 +146,7 @@ assert len(tiles)<=192,('BG0 tile overflow',len(tiles))
 (OUT/'quantum_map.pal').write_text('JASC-PAL\n0100\n16\n'+''.join(f'{r} {g} {b}\n' for r,g,b in COLORS))
 # Three-card region picker, using the same dedicated BG palette.
 menu=Image.new('P',(240,160),0);menu.putpalette(im.getpalette());md=ImageDraw.Draw(menu);font=ImageFont.load_default(size=9)
-for i,label in enumerate(('KANTO','SEVII ISLANDS','QUANTUM ISLAND')):
+for i,label in enumerate(('KANTO','SEVII ISLANDS','VIDRA')):
  yy=32+i*32;md.rectangle((72,yy,167,yy+31),fill=8);md.rectangle((74,yy+2,165,yy+29),fill=10)
  mask=Image.new('1',(96,32));draw=ImageDraw.Draw(mask);box=draw.textbbox((0,0),label,font=font);draw.text(((96-(box[2]-box[0]))//2,10),label,font=font,fill=1)
  menu.paste(8,(72,yy),mask)

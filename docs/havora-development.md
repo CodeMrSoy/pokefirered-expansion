@@ -18,7 +18,7 @@ collision recommendations and protected ferry coordinates. Imported building
 parts are reusable metatiles, not a single flattened scene. Source cutouts and
 attribution are committed under `tools/havora/source_art/emerald_harbor`.
 
-The map uses `gTileset_HavoraPrimary` + `gTileset_HavoraHarbor`. Both connected
+The map uses `gTileset_HavoraPrimary` + `gTileset_Havora_Harbor`. Both connected
 approaches use the same pair. General graphics needed when scrolling into the
 older city, plus every General animation destination, remain reserved. Palette
 banks 0, 1 and 6 remain byte-compatible with General.
@@ -45,7 +45,7 @@ colors, except the sea now uses genuine Emerald animation frames.
 
 ## Animated water
 
-`InitTilesetAnim_HavoraHarbor` updates a dedicated 128-tile range at tile 896 every
+`InitTilesetAnim_Havora_Harbor` updates a dedicated 128-tile range at tile 896 every
 16 frames through the engine DMA queue. Eight source phases animate exposed sea
 pixels in ocean blocks, dock feet, rocks and boat surroundings. The rest of each
 prop remains fixed. Catalog building colors are excluded from water animation

@@ -2,7 +2,7 @@
   "base": "ac291bc1",
   "buildings": [
     {
-      "map": "HavoraMarket",
+      "map": "Havora_Market",
       "kind": "viridian_home",
       "origin": [
         31,
@@ -15,7 +15,7 @@
       "warp": 1
     },
     {
-      "map": "HavoraMarket",
+      "map": "Havora_Market",
       "kind": "viridian_garden",
       "origin": [
         4,
@@ -28,7 +28,7 @@
       "warp": 2
     },
     {
-      "map": "HavoraMarket",
+      "map": "Havora_Market",
       "kind": "fountain",
       "origin": [
         19,
@@ -36,7 +36,7 @@
       ]
     },
     {
-      "map": "HavoraMarket",
+      "map": "Havora_Market",
       "kind": "department_store",
       "origin": [
         27,
@@ -55,7 +55,7 @@
       "interior": "existing Havora provisions shop"
     },
     {
-      "map": "HavoraWestQuadrant",
+      "map": "Havora_WestQuadrant",
       "kind": "viridian_garden",
       "origin": [
         5,
@@ -68,7 +68,7 @@
       "warp": 1
     },
     {
-      "map": "HavoraWestQuadrant",
+      "map": "Havora_WestQuadrant",
       "kind": "viridian_home",
       "origin": [
         25,
@@ -81,7 +81,7 @@
       "warp": 2
     },
     {
-      "map": "HavoraWestQuadrant",
+      "map": "Havora_WestQuadrant",
       "kind": "long",
       "origin": [
         15,
@@ -94,7 +94,7 @@
       "warp": 3
     },
     {
-      "map": "HavoraWestQuadrant",
+      "map": "Havora_WestQuadrant",
       "kind": "viridian_home",
       "origin": [
         23,
@@ -107,7 +107,7 @@
       "warp": 4
     },
     {
-      "map": "HavoraWestQuadrant",
+      "map": "Havora_WestQuadrant",
       "kind": "viridian_garden",
       "origin": [
         8,
@@ -120,7 +120,7 @@
       "warp": 5
     },
     {
-      "map": "HavoraWestQuadrant",
+      "map": "Havora_WestQuadrant",
       "kind": "viridian_home",
       "origin": [
         15,
@@ -133,7 +133,7 @@
       "warp": 6
     },
     {
-      "map": "HavoraWestQuadrant",
+      "map": "Havora_WestQuadrant",
       "kind": "viridian_garden",
       "origin": [
         23,
@@ -146,7 +146,7 @@
       "warp": 7
     },
     {
-      "map": "HavoraWestQuadrant",
+      "map": "Havora_WestQuadrant",
       "kind": "fountain",
       "origin": [
         13,
@@ -154,7 +154,7 @@
       ]
     },
     {
-      "map": "HavoraNorthQuadrant",
+      "map": "Havora_NorthQuadrant",
       "kind": "viridian_garden",
       "origin": [
         6,
@@ -167,7 +167,7 @@
       "warp": 3
     },
     {
-      "map": "HavoraNorthQuadrant",
+      "map": "Havora_NorthQuadrant",
       "kind": "viridian_home",
       "origin": [
         5,
@@ -180,7 +180,7 @@
       "warp": 2
     },
     {
-      "map": "HavoraNorthQuadrant",
+      "map": "Havora_NorthQuadrant",
       "kind": "long",
       "origin": [
         73,
@@ -193,7 +193,7 @@
       "warp": 4
     },
     {
-      "map": "HavoraNorthQuadrant",
+      "map": "Havora_NorthQuadrant",
       "kind": "viridian_garden",
       "origin": [
         49,
@@ -206,7 +206,7 @@
       "warp": 7
     },
     {
-      "map": "HavoraNorthQuadrant",
+      "map": "Havora_NorthQuadrant",
       "kind": "fountain",
       "origin": [
         68,
@@ -216,109 +216,109 @@
   ],
   "doors": [
     [
-      "HavoraMarket",
+      "Havora_Market",
       32,
       8,
       1
     ],
     [
-      "HavoraMarket",
+      "Havora_Market",
       5,
       16,
       2
     ],
     [
-      "HavoraMarket",
+      "Havora_Market",
       29,
       52,
       6
     ],
     [
-      "HavoraMarket",
+      "Havora_Market",
       33,
       52,
       7
     ],
     [
-      "HavoraWestQuadrant",
+      "Havora_WestQuadrant",
       6,
       8,
       1
     ],
     [
-      "HavoraWestQuadrant",
+      "Havora_WestQuadrant",
       26,
       7,
       2
     ],
     [
-      "HavoraWestQuadrant",
+      "Havora_WestQuadrant",
       17,
       35,
       3
     ],
     [
-      "HavoraWestQuadrant",
+      "Havora_WestQuadrant",
       24,
       40,
       4
     ],
     [
-      "HavoraWestQuadrant",
+      "Havora_WestQuadrant",
       9,
       38,
       5
     ],
     [
-      "HavoraWestQuadrant",
+      "Havora_WestQuadrant",
       16,
       45,
       6
     ],
     [
-      "HavoraWestQuadrant",
+      "Havora_WestQuadrant",
       24,
       34,
       7
     ],
     [
-      "HavoraWestQuadrant",
+      "Havora_WestQuadrant",
       21,
       13,
       0
     ],
     [
-      "HavoraNorthQuadrant",
+      "Havora_NorthQuadrant",
       7,
       8,
       3
     ],
     [
-      "HavoraNorthQuadrant",
+      "Havora_NorthQuadrant",
       6,
       18,
       2
     ],
     [
-      "HavoraNorthQuadrant",
+      "Havora_NorthQuadrant",
       75,
       19,
       4
     ],
     [
-      "HavoraNorthQuadrant",
+      "Havora_NorthQuadrant",
       50,
       18,
       7
     ],
     [
-      "HavoraNorthQuadrant",
+      "Havora_NorthQuadrant",
       75,
       8,
       0
     ],
     [
-      "HavoraNorthQuadrant",
+      "Havora_NorthQuadrant",
       82,
       8,
       1

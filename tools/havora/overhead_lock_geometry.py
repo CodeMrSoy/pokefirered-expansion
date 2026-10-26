@@ -14,7 +14,7 @@ POOLS=[(5,18),(32,18),(59,16)];CORE=[14,40,66]
 BERTH_ROW=8;CHANNEL_ROW=22;HULL_OFFSET=4;ENTRY=(3,25)
 DOCK=[{0,1,2},{1},{0,1,2},{2},{0,1,2},{1,2}]
 ANCHORS=[(2,6),(25,6),(29,6),(52,6),(77,6),(56,6),(40,10),(65,20)]
-layout=R/'data/layouts/HavoraCaptainsTrial';mp=R/'data/maps/QuantumHavoraGym/map.json'
+layout=R/'data/layouts/Havora_Gym';mp=R/'data/maps/Havora_Gym/map.json'
 def words(p):
  b=p.read_bytes();return list(struct.unpack('<'+'H'*(len(b)//2),b))
 authored=words(layout/'authored.bin')

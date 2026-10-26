@@ -30,7 +30,7 @@ def atlas(secondary="vermilion_city",primary="general"):
 def render(name,out):
  l=next(x for x in json.loads((ROOT/'data/layouts/layouts.json').read_text())['layouts'] if x['id']==name)
  primary={'gTileset_HavoraPrimary':'havora_harbor','gTileset_HavoraCityPrimary':'havora_city'}.get(l['primary_tileset'],'general')
- secondary={'gTileset_HavoraHarbor':'havora_harbor','gTileset_HavoraCity':'havora_city'}.get(l['secondary_tileset'],'vermilion_city')
+ secondary={'gTileset_Havora_Harbor':'havora_harbor','gTileset_HavoraCity':'havora_city'}.get(l['secondary_tileset'],'vermilion_city')
  ims=atlas(secondary,primary);ws=words(ROOT/l['blockdata_filepath']);im=Image.new('RGB',(l['width']*16,l['height']*16))
  for i,w in enumerate(ws):im.paste(ims[w&1023],((i%l['width'])*16,(i//l['width'])*16))
  im.save(out)

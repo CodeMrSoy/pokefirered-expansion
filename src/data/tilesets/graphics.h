@@ -2000,8 +2000,8 @@ const u16 gTilesetPalettes_IndigoPlateauWinter[][16] =
 const u32 gTilesetTiles_IndigoPlateauWinter[] = INCBIN_U32("data/tilesets/secondary/indigo_plateau_winter/tiles.4bpp.lz");
 
 // Dedicated Havora artwork: General remains the primary tileset.
-const u32 gTilesetTiles_HavoraHarbor[] = INCBIN_U32("data/tilesets/secondary/havora_harbor/tiles.4bpp.lz");
-const u16 gTilesetPalettes_HavoraHarbor[][16] =
+const u32 gTilesetTiles_Havora_Harbor[] = INCBIN_U32("data/tilesets/secondary/havora_harbor/tiles.4bpp.lz");
+const u16 gTilesetPalettes_Havora_Harbor[][16] =
 {
 	INCBIN_U16("data/tilesets/secondary/havora_harbor/palettes/00.gbapal"),
 	INCBIN_U16("data/tilesets/secondary/havora_harbor/palettes/01.gbapal"),

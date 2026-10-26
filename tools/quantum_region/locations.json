@@ -8,16 +8,16 @@
     "height": 4
   },
   {
-    "id": "MAPSEC_QUANTUM_FOREST_PATH",
-    "name": "FOREST PATH",
+    "id": "MAPSEC_ELDERVIK_WOODS",
+    "name": "ELDERVIK WOODS",
     "x": 6,
     "y": 4,
     "width": 5,
     "height": 4
   },
   {
-    "id": "MAPSEC_QUANTUM_MOUNTAIN_PASS",
-    "name": "MOUNTAIN PASS",
+    "id": "MAPSEC_FROSTFELL_MOUNTAINS",
+    "name": "FROSTFELL MOUNTAINS",
     "x": 10,
     "y": 2,
     "width": 1,
@@ -32,8 +32,8 @@
     "height": 1
   },
   {
-    "id": "MAPSEC_QUANTUM_LAKE_ROAD",
-    "name": "LAKE ROAD",
+    "id": "MAPSEC_LAKE_MYRVATN",
+    "name": "LAKE MYRVATN",
     "x": 10,
     "y": 4,
     "width": 5,
@@ -57,47 +57,47 @@
   },
   {
     "id": "MAPSEC_QUANTUM_WOODLAND_LINK",
-    "name": "WOODLAND LINK",
+    "name": "ELDERVIK WOODS",
     "x": 6,
     "y": 7,
     "width": 9,
     "height": 1
   },
   {
-    "id": "MAPSEC_QUANTUM_PORT_CITY",
-    "name": "PORT CITY",
+    "id": "MAPSEC_HAVORA_CITY",
+    "name": "HAVORA CITY",
     "x": 15,
     "y": 12,
     "width": 1,
     "height": 1
   },
   {
-    "id": "MAPSEC_QUANTUM_COASTAL_CITY",
-    "name": "COASTAL CITY",
+    "id": "MAPSEC_CORVALA_TOWN",
+    "name": "CORVALA TOWN",
     "x": 4,
     "y": 10,
     "width": 1,
     "height": 1
   },
   {
-    "id": "MAPSEC_QUANTUM_FOREST_TOWN",
-    "name": "FOREST TOWN",
+    "id": "MAPSEC_ELDERVALE_VILLAGE",
+    "name": "ELDERVALE VILLAGE",
     "x": 6,
     "y": 7,
     "width": 1,
     "height": 1
   },
   {
-    "id": "MAPSEC_QUANTUM_LAKE_TOWN",
-    "name": "LAKE TOWN",
+    "id": "MAPSEC_MYRDAL_CITY",
+    "name": "MYRDAL CITY",
     "x": 14,
     "y": 7,
     "width": 1,
     "height": 1
   },
   {
-    "id": "MAPSEC_QUANTUM_SNOW_TOWN",
-    "name": "SNOW TOWN",
+    "id": "MAPSEC_ISKORA_VILLAGE",
+    "name": "ISKORA VILLAGE",
     "x": 10,
     "y": 2,
     "width": 1,

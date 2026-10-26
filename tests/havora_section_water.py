@@ -3,7 +3,7 @@ from pathlib import Path
 import sys,struct,subprocess,itertools
 R=Path(__file__).resolve().parents[1];sys.path.insert(0,str(R/'tools/havora'))
 import overhead_lock_geometry as g
-latest=subprocess.check_output(['git','show','6ab7bd9e2:data/layouts/HavoraCaptainsTrial/map.bin'],cwd=R)
+latest=subprocess.check_output(['git','show','6ab7bd9e2:data/layouts/Havora_Gym/map.bin'],cwd=R)
 base=g.draw(((0,0,0),0,0,4,0,False))
 assert struct.pack('<2160H',*base)==latest,'LOW layout differs from latest Porymap commit'
 assert (g.W,g.H)==(80,27)

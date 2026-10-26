@@ -1,6 +1,6 @@
 # Havora Harbor — Porymap editing guide
 
-Open `QuantumHarbor` on `Havora-Development`. The map is 40×32. Its tileset pair is `gTileset_HavoraPrimary` + `gTileset_HavoraHarbor`. The two city approaches use this same pair.
+Open `QuantumHarbor` on `Havora-Development`. The map is 40×32. Its tileset pair is `gTileset_HavoraPrimary` + `gTileset_Havora_Harbor`. The two city approaches use this same pair.
 
 ## Reusable blocks
 

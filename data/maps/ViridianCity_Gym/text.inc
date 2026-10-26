@@ -15,14 +15,14 @@ ViridianCity_Gym_Text_GiovanniDefeat::
 
 
 ViridianCity_Gym_Text_GiovanniPostBattle::
-    .string "My next move is on QUANTUM ISLAND.\p"
+    .string "My next move is on VIDRA.\p"
     .string "The League will have to wait.\n"
     .string "Catch me if you can!$"
 
 
 ViridianCity_Gym_Text_ExplainEarthBadgeTakeThis::
     .string "If you want the EARTHBADGE,\n"
-    .string "follow me to QUANTUM ISLAND.\p"
+    .string "follow me to VIDRA.\p"
     .string "First, take this TM.$"
 
 
@@ -161,4 +161,4 @@ ViridianCity_Gym_Text_GymStatuePlayerWon::
 ViridianCity_Gym_Text_StellarTicket::
     .string "GIOVANNI dropped this ticket!\p"
     .string "The ferry at VERMILION's port can\n"
-    .string "take you to QUANTUM ISLAND.$"
+    .string "take you to VIDRA.$"

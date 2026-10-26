@@ -121,7 +121,7 @@ chalk=Image.new('P',(128,96),0);d=ImageDraw.Draw(chalk)
 d.rectangle((6,6,121,89),outline=1,width=2);d.ellipse((48,32,80,64),outline=1,width=2);d.ellipse((59,43,69,53),outline=1,width=2)
 d.line((6,48,48,48),fill=1,width=2);d.line((80,48,121,48),fill=1,width=2);d.line((50,48,59,48),fill=1,width=2);d.line((69,48,78,48),fill=1,width=2)
 white=min(((sum((int(c)-248)**2 for c in P[b][i]),b,i) for b in range(13) for i in range(1,16)));_,whitebank,whiteidx=white
-l=next(l for l in js('data/layouts/layouts.json')['layouts'] if l['name']=='HavoraWestQuadrant_Layout');blocks=words(l['blockdata_filepath']);oldblocks=blocks[:];court=[];sand=js('tools/havora/gym-garden.json')['added_metatiles']['sand']
+l=next(l for l in js('data/layouts/layouts.json')['layouts'] if l['name']=='Havora_WestQuadrant_Layout');blocks=words(l['blockdata_filepath']);oldblocks=blocks[:];court=[];sand=js('tools/havora/gym-garden.json')['added_metatiles']['sand']
 for y in range(6):
  row=[]
  for x in range(8):

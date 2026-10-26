@@ -4,7 +4,7 @@ import numpy as np
 from PIL import Image
 import havora_emulator_support as m
 asset=json.loads((m.root/'tools/havora/assets.json').read_text());anim=asset['animation']
-m.inject(b'\x39'+struct.pack('<BBBHH',43,19,255,20,18)+b'\x6b\x02');m.run(300)
+m.inject(b'\x39'+struct.pack('<BBBHH',43, 11,255,20,18)+b'\x6b\x02');m.run(300)
 mid=asset['assets']['zz_water_boulder']['metatiles'][0][0]
 path=m.root/'data/tilesets/primary/havora_harbor'
 words=struct.unpack_from('<8H',(path/'metatiles.bin').read_bytes(),mid*16)

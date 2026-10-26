@@ -1,7 +1,7 @@
-# Quantum Island regional map
+# Vidra regional map
 
 The new island is a native GBA region-map page, available through PokéGlass Map
-and the Fly map's region switch icon. The tablet preview switches between Kanto and Quantum Island with L/R; A
+and the Fly map's region switch icon. The tablet preview switches between Kanto and Vidra with L/R; A
 opens the native guide. The native picker retains its historical Sevii preview,
 but retired destinations cannot be used for travel. Viewing a map does not
 unlock travel.

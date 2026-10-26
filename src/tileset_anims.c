@@ -334,7 +334,7 @@ void InitTilesetAnim_CeladonGym(void)
 // Havora's ocean animation also updates water pixels in dock/boat edge tiles.
 #include "data/havora_water_anim.h"
 
-static void TilesetAnim_HavoraHarbor(u16 timer)
+static void TilesetAnim_Havora_Harbor(u16 timer)
 {
     if (timer % 16 == 0)
         AppendTilesetAnimToBuffer(sHavoraWaterFrames[(timer / 16) % ARRAY_COUNT(sHavoraWaterFrames)],
@@ -342,11 +342,11 @@ static void TilesetAnim_HavoraHarbor(u16 timer)
             HAVORA_WATER_ANIM_TILES * TILE_SIZE_4BPP);
 }
 
-void InitTilesetAnim_HavoraHarbor(void)
+void InitTilesetAnim_Havora_Harbor(void)
 {
     sSecondaryTilesetAnimCounter = 0;
     sSecondaryTilesetAnimCounterMax = 128;
-    sSecondaryTilesetAnimCallback = TilesetAnim_HavoraHarbor;
+    sSecondaryTilesetAnimCallback = TilesetAnim_Havora_Harbor;
 }
 
 // Havora City's fountain uses free static slots, independently of ocean tiles.

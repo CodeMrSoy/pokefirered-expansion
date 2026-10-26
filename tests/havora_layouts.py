@@ -6,14 +6,14 @@ R=Path(__file__).resolve().parents[1];ls=json.loads((R/'data/layouts/layouts.jso
 def read(name):
  m=json.loads((R/f'data/maps/{name}/map.json').read_text());l=next(l for l in ls if l['id']==m['layout']);b=(R/l['blockdata_filepath']).read_bytes();w,h=l['width'],l['height']
  assert len(b)==2*w*h;assert (w+15)*(h+14)<=0x2800
- a=struct.unpack('<'+'H'*(len(b)//2),b);limit=1024 if l['secondary_tileset'] in ['gTileset_HavoraHarbor','gTileset_HavoraCity'] else 808
+ a=struct.unpack('<'+'H'*(len(b)//2),b);limit=1024 if l['secondary_tileset'] in ['gTileset_Havora_Harbor','gTileset_HavoraCity'] else 808
  assert all((v&1023)<limit for v in a)
  for k in ['object_events','warp_events','coord_events','bg_events']:
   for e in m[k]:assert 0<=e['x']<w and 0<=e['y']<h
  assert m['map_type'] in ['MAP_TYPE_CITY','MAP_TYPE_TOWN'];maps[m['id']]=(m,l,a);return m,l,a
-h,hl,ha=read('QuantumHarbor');c,cl,ca=read('QuantumPortCity');read('QuantumHavoraWestQuay');read('QuantumHavoraNorthQuay')
+h,hl,ha=read('Havora_Harbor');c,cl,ca=read('Havora_WestQuadrant');read('Havora_River');read('Havora_Market')
 assert (hl['width'],hl['height'])==(40,32);assert not h['warp_events'] and not h['coord_events'];assert not any(w['dest_map']=='MAP_QUANTUM_HARBOR' for w in c['warp_events'])
-assert h['object_events'][0]['graphics_id']=='OBJ_EVENT_GFX_SEAGALLOP';assert h['object_events'][1]['script']=='QuantumHarbor_Sailor'
+assert h['object_events'][0]['graphics_id']=='OBJ_EVENT_GFX_SEAGALLOP';assert h['object_events'][1]['script']=='Havora_Harbor_Sailor'
 assert (h['object_events'][1]['x'],h['object_events'][1]['y'])==(21,18)
 for mid,(m,l,a) in maps.items():
  for co in m['connections']:

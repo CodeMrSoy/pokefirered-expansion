@@ -6,14 +6,14 @@
   "door_warp_references_checked": 26,
   "collision_route_reachable_cells": 6534,
   "reachable_cells_by_district": {
-    "HavoraMarket": 1825,
-    "HavoraHarbor": 487,
-    "HavoraRiver": 32,
-    "HavoraWestQuadrant": 1465,
-    "HavoraNorthQuadrant": 1893,
-    "HavoraDaycare": 467,
-    "HavoraLookout": 365,
-    "HavoraCoastalCliffs": 0
+    "Havora_Market": 1825,
+    "Havora_Harbor": 487,
+    "Havora_River": 32,
+    "Havora_WestQuadrant": 1465,
+    "Havora_NorthQuadrant": 1893,
+    "Havora_DaycareExterior": 467,
+    "Havora_Lookout": 365,
+    "Havora_CoastalCliffs": 0
   },
   "door_approaches_without_a_collision_route_from_market": [],
   "all_npc_and_warp_coordinates_in_bounds": true,

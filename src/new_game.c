@@ -136,6 +136,7 @@ void NewGameInitData(void)
     PlayTimeCounter_Reset();
     ClearPokedexFlags();
     InitEventData();
+    VarSet(VAR_VIDRA_MAP_VERSION, 1);
     SetCurrentAvatarLook(avatar);
     InitTimeBasedEvents(); // remove if wallclock
     ResetFameChecker();

@@ -16,7 +16,7 @@ atlas edits must keep those slots reserved. Palette files are unchanged.
 
 HavoraCity has its own secondary callback, combining the existing ocean update
 with the fountain. A 1,920-tick common cycle preserves both animation phases.
-The legacy HavoraHarbor callback stays unchanged. Peak transfer scheduling is
+The legacy Havora_Harbor callback stays unchanged. Peak transfer scheduling is
 seven secondary DMA entries, or eight including General's primary animation,
 within the engine's 20-entry queue.
 

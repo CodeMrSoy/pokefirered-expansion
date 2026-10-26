@@ -18,11 +18,11 @@ def render(out):
       c=source.getpixel((n%16*8+(7-x if v&1024 else x),n//16*8+(7-y if v&2048 else y)))
       if c or k<4:im.putpixel((k%2*8+x,k%4//2*8+y),pals[v>>12][c])
    metas.append(im)
- layout=next(l for l in json.loads((R/'data/layouts/layouts.json').read_text())['layouts'] if l['id']=='LAYOUT_HAVORA_CAPTAINS_TRIAL');W,H=layout['width'],layout['height']
- b=(R/'data/layouts/HavoraCaptainsTrial/map.bin').read_bytes();w=struct.unpack('<'+'H'*(len(b)//2),b);im=Image.new('RGB',(W*16,H*16))
+ layout=next(l for l in json.loads((R/'data/layouts/layouts.json').read_text())['layouts'] if l['id']=='LAYOUT_HAVORA_GYM');W,H=layout['width'],layout['height']
+ b=(R/'data/layouts/Havora_Gym/map.bin').read_bytes();w=struct.unpack('<'+'H'*(len(b)//2),b);im=Image.new('RGB',(W*16,H*16))
  for i,v in enumerate(w):im.paste(metas[v&1023],(i%W*16,i//W*16))
  im=im.convert('RGBA')
- objects=json.loads((R/'data/maps/QuantumHavoraGym/map.json').read_text())['object_events']
+ objects=json.loads((R/'data/maps/Havora_Gym/map.json').read_text())['object_events']
  for o in sorted(objects,key=lambda v:v['y']):
   root=R/'graphics/object_events';sailor=o['graphics_id']=='OBJ_EVENT_GFX_SAILOR';pic='sailor' if sailor else 'gym_guy';pal='npc_pink' if sailor else 'npc_white'
   sprite=Image.open(root/f'pics/people/{pic}.png').crop((0,0,16,32));colors=[tuple(map(int,line.split())) for line in (root/f'palettes/{pal}.pal').read_text().splitlines()[3:19]];sprite.putpalette(sum((list(c) for c in colors),[])+[0]*720);sprite.info['transparency']=0;im.alpha_composite(sprite.convert('RGBA'),(o['x']*16,o['y']*16-16))

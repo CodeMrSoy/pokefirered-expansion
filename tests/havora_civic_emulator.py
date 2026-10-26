@@ -1,7 +1,7 @@
 """mGBA civic services, connected districts, every new stair and building door."""
 import json,struct,subprocess,os
 import havora_emulator_support as m
-groups=json.loads((m.root/'data/maps/map_groups.json').read_text())['gMapGroup_QuantumIsland']
+groups=json.loads((m.root/'data/maps/map_groups.json').read_text())['gMapGroup_Havora']
 def number(name):return groups.index(name)
 def warp(name,x,y):
  m.inject(b'\x39'+struct.pack('<BBBHH',43,number(name),255,x,y)+b'\x6b\x02');m.run(240)
@@ -20,13 +20,13 @@ def step(key):
   if loc()!=before:break
  m.keys.clear();m.run(100);assert loc()!=before,('blocked',before,key)
 for source,x,y,key,dest in [
- ('QuantumPortCity',1,69,6,'QuantumHarborRoad'),('QuantumHarborRoad',22,9,7,'QuantumPortCity'),
- ('QuantumHavoraWestQuay',1,67,6,'QuantumPortCity'),('QuantumPortCity',46,67,7,'QuantumHavoraWestQuay'),
- ('QuantumHavoraWestQuay',3,1,4,'QuantumHavoraNorthDistrict'),('QuantumHavoraNorthDistrict',51,38,5,'QuantumHavoraWestQuay'),
- ('QuantumPortCity',17,1,4,'QuantumHavoraNorthDistrict'),('QuantumHavoraNorthDistrict',17,38,5,'QuantumPortCity'),
- ('QuantumHavoraNorthQuay',13,1,4,'QuantumHavoraNorthDistrict'),('QuantumHavoraNorthDistrict',69,38,5,'QuantumHavoraNorthQuay'),
- ('QuantumHavoraNorthDistrict',94,23,7,'QuantumHavoraCoastalDaycare'),('QuantumHavoraCoastalDaycare',1,23,6,'QuantumHavoraNorthDistrict'),
- ('QuantumHavoraNorthDistrict',69,1,4,'QuantumHavoraNorthWalk'),('QuantumHavoraNorthWalk',7,30,5,'QuantumHavoraNorthDistrict')]:
+ ('Havora_WestQuadrant',1,69,6,'Vidra_HarborRoad'),('Vidra_HarborRoad',22,9,7,'Havora_WestQuadrant'),
+ ('Havora_River',1,67,6,'Havora_WestQuadrant'),('Havora_WestQuadrant',46,67,7,'Havora_River'),
+ ('Havora_River',3,1,4,'Havora_NorthQuadrant'),('Havora_NorthQuadrant',51,38,5,'Havora_River'),
+ ('Havora_WestQuadrant',17,1,4,'Havora_NorthQuadrant'),('Havora_NorthQuadrant',17,38,5,'Havora_WestQuadrant'),
+ ('Havora_Market',13,1,4,'Havora_NorthQuadrant'),('Havora_NorthQuadrant',69,38,5,'Havora_Market'),
+ ('Havora_NorthQuadrant',94,23,7,'Havora_DaycareExterior'),('Havora_DaycareExterior',1,23,6,'Havora_NorthQuadrant'),
+ ('Havora_NorthQuadrant',69,1,4,'Havora_Lookout'),('Havora_Lookout',7,30,5,'Havora_NorthQuadrant')]:
  warp(source,x,y);walk(key,35);assert loc()[0]==(43,number(dest)),(source,dest,loc())
  m.snap('civic-connection-'+source+'-'+dest)
 print('PASS: fourteen seamless civic and coastal-road crossings',flush=True)
@@ -40,7 +40,7 @@ for stair in json.loads((m.root/'tools/havora/civic-districts.json').read_text()
  assert loc()[1]==(x,y+2) and elevation()==stair['lower'],('descent',stair,loc(),elevation())
 print('PASS: all nine civic stairs change actual player elevations in both directions',flush=True)
 allmaps={json.loads((m.root/f'data/maps/{n}/map.json').read_text())['id']:n for n in groups}
-for source in ['QuantumPortCity','QuantumHavoraNorthDistrict','QuantumHavoraCoastalDaycare']:
+for source in ['Havora_WestQuadrant','Havora_NorthQuadrant','Havora_DaycareExterior']:
  outdoor=json.loads((m.root/f'data/maps/{source}/map.json').read_text())
  for i,e in enumerate(outdoor['warp_events']):
   warp(source,e['x'],e['y']+1);step(4);dest=allmaps[e['dest_map']]
@@ -63,16 +63,16 @@ size=partybytes//6;hp=m.symbols['gPlayerParty']+size-14
 maxhp=struct.unpack('<H',m.read(hp+2,2))[0];assert maxhp>1
 m.write(hp,struct.pack('<H',1))
 m.inject(b'\x29'+struct.pack('<H',0x4E1)+b'\x02') # FLAG_QUANTUM_ARRIVED
-warp('QuantumPortCityPokemonCenter1F',7,4);walk(4,1);m.press(8)
+warp('Havora_PokemonCenter_1F',7,4);walk(4,1);m.press(8)
 for _ in range(18):
  m.press(8,150)
  if struct.unpack('<H',m.read(hp,2))[0]==maxhp:break
 assert struct.unpack('<H',m.read(hp,2))[0]==maxhp,'Center nurse did not heal'
 save=struct.unpack('<I',m.read(m.symbols['gSaveBlock1Ptr'],4))[0]
-assert tuple(m.read(save+0x1C,2))==(43,number('QuantumHavoraNorthDistrict')),'wrong outdoor respawn map'
+assert tuple(m.read(save+0x1C,2))==(43,number('Havora_NorthQuadrant')),'wrong outdoor respawn map'
 m.snap('civic-center-healing');m.press(0);m.press(0);m.press(0)
 print('PASS: real nurse healing and relocated outdoor respawn storage',flush=True)
-warp('QuantumHavoraMart',3,3);walk(6,1);m.press(8)
+warp('Havora_Mart',3,3);walk(6,1);m.press(8)
 for _ in range(5):
  m.press(8,120);cb=struct.unpack('<I',m.read(m.symbols['gMain']+4,4))[0]
  if cb&~1==m.symbols['CB2_BuyMenu']&~1:break
@@ -82,15 +82,15 @@ print('PASS: northern Pokemart opens the native Buy menu',flush=True)
 # The coastal attendant reuses the live FireRed raising service and save slot.
 before=count();identities={m.read(m.symbols['gPlayerParty']+i*size,4) for i in range(before)}
 levels={m.read(m.symbols['gPlayerParty']+i*size,4):m.read(m.symbols['gPlayerParty']+(i+1)*size-16,1)[0] for i in range(before)}
-warp('QuantumHavoraDaycare',4,5);walk(4,1);m.press(8)
+warp('Havora_DaycareInterior',4,5);walk(4,1);m.press(8)
 for _ in range(35):
  m.press(8,110)
  if count()==before-1:break
 assert count()==before-1,('daycare deposit',before,count())
 m.snap('civic-daycare-deposit');m.press(0);m.press(0);m.press(0)
-warp('QuantumHavoraCoastalDaycare',2,31)
+warp('Havora_DaycareExterior',2,31)
 for _ in range(20):walk(7,192);walk(6,192)
-warp('QuantumHavoraDaycare',4,5);walk(4,1);m.press(8)
+warp('Havora_DaycareInterior',4,5);walk(4,1);m.press(8)
 for _ in range(35):
  m.press(8,110)
  if count()==before:break
@@ -100,5 +100,5 @@ assert identities==after,'daycare did not return the original Pokemon'
 assert any(m.read(m.symbols['gPlayerParty']+(i+1)*size-16,1)[0]>levels[m.read(m.symbols['gPlayerParty']+i*size,4)] for i in range(before)),'daycare walking did not increase a returned Pokemon level'
 m.snap('civic-daycare-return');m.press(0);m.press(0);m.press(0)
 print('PASS: coastal daycare deposits, raises while walking, and returns the same Pokemon through the actual attendant UI',flush=True)
-for name,x,y in [('QuantumPortCity',23,16),('QuantumHavoraNorthDistrict',69,22),('QuantumHavoraCoastalDaycare',29,16),('QuantumHavoraNorthWalk',7,6)]:
+for name,x,y in [('Havora_WestQuadrant',23,16),('Havora_NorthQuadrant',69,22),('Havora_DaycareExterior',29,16),('Havora_Lookout',7,6)]:
  warp(name,x,y);m.snap('civic-overview-'+name)

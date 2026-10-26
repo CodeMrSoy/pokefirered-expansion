@@ -15,14 +15,14 @@ kits['long_home']=[[row[i] for i in [0,4,4,1,2,3,5,6]] for row in cerulean]
 layouts={l['name'].replace('_Layout',''):l for l in js('data/layouts/layouts.json')['layouts']}
 # old rectangle, new origin, source kit, doorway in kit, existing warp index
 plan=[
- ('HavoraMarket',(4,5,4,4),(5,5),'viridian_home',(1,3),0),
- ('HavoraMarket',(31,13,4,4),(31,12),'viridian_garden',(1,3),3),
- ('HavoraMarket',(16,3,8,5),(16,4),'long_home',(4,3),4),
- ('HavoraMarket',(3,21,8,4),(3,21),'long_home',(4,3),5),
- ('HavoraNorthQuadrant',(16,17,6,4),(17,17),'viridian_home',(1,3),5),
- ('HavoraNorthQuadrant',(31,16,6,4),(32,16),'viridian_garden',(1,3),6),
- ('HavoraWestQuadrant',(7,49,6,4),(8,49),'viridian_home',(1,3),8),
- ('HavoraDaycare',(3,11,8,4),(3,11),'long_home',(4,3),0),
+ ('Havora_Market',(4,5,4,4),(5,5),'viridian_home',(1,3),0),
+ ('Havora_Market',(31,13,4,4),(31,12),'viridian_garden',(1,3),3),
+ ('Havora_Market',(16,3,8,5),(16,4),'long_home',(4,3),4),
+ ('Havora_Market',(3,21,8,4),(3,21),'long_home',(4,3),5),
+ ('Havora_NorthQuadrant',(16,17,6,4),(17,17),'viridian_home',(1,3),5),
+ ('Havora_NorthQuadrant',(31,16,6,4),(32,16),'viridian_garden',(1,3),6),
+ ('Havora_WestQuadrant',(7,49,6,4),(8,49),'viridian_home',(1,3),8),
+ ('Havora_DaycareExterior',(3,11,8,4),(3,11),'long_home',(4,3),0),
 ]
 # Native terrain IDs include cliffs and waterfall edges; protect every one
 # except the explicit flat grass/path material used for a house plot.

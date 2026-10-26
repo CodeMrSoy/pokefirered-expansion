@@ -84,7 +84,7 @@ assert ptr('sRegionMap')==0
 header=m.read(m.symbols['gMapHeader'],28)
 # Enum values come from the actual generated order, keeping the old NONE stable.
 entries=json.loads((m.root/'src/data/region_map/region_map_sections.json').read_text())['map_sections']
-snow=next(i for i,e in enumerate(entries) if e['id']=='MAPSEC_QUANTUM_SNOW_TOWN')
+snow=next(i for i,e in enumerate(entries) if e['id']=='MAPSEC_ISKORA_VILLAGE')
 m.write(m.symbols['gMapHeader']+20,bytes([snow]))
 m.write(m.symbols['gMapHeader']+23,b'\x01') # MAP_TYPE_TOWN
 native('InitRegionMapWithExitCB',0,m.symbols['CB2_ReturnToField']|1)

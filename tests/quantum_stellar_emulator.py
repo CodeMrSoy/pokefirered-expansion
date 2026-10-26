@@ -34,7 +34,7 @@ for i in range(1,8):native('FlagSet',constant(f'FLAG_BADGE0{i}_GET'))
 assert flag('BADGE08_GET')==0
 assert native('GetItemPocket',829)==1
 # Viewing/warping to a Center without a ticketed arrival cannot unlock Fly.
-warp('QuantumPortCityPokemonCenter1F',7,7)
+warp('Havora_PokemonCenter_1F',7,7)
 assert flag('QUANTUM_PORT_CENTER')==0
 # No ticket and wrong embarkation port are independently rejected by the ferry.
 ferry(0,11);assert current()==ids['VermilionCity'];assert flag('QUANTUM_ARRIVED')==0
@@ -68,21 +68,21 @@ warp('ViridianCity_Gym',3,3);assert flag('HIDE_STELLAR_TICKET')==1
 warp('VermilionCity',23,30)
 script('VermilionCity_EventScript_FerrySailor');m.snap('stellar-vermilion-ticket-prompt')
 m.press(8);finish();m.run(1200)
-m.snap('stellar-after-ferry');assert current()==ids['QuantumHarbor'],current()
+m.snap('stellar-after-ferry');assert current()==ids['Havora_Harbor'],current()
 assert flag('QUANTUM_ARRIVED')==1
 assert native('CheckBagHasItem',829,1)==1
 m.snap('stellar-island-arrival')
 # Walk from the ferry pier, through the port, and into its real Center door.
-walk(4,55);assert current()==ids['QuantumPortCity'],current()
-warp('QuantumPortCity',11,11);m.snap('stellar-port-before-door');walk(4,40);m.snap('stellar-port-after-door')
-assert current()==ids['QuantumPortCityPokemonCenter1F'],current()
+walk(4,55);assert current()==ids['Havora_WestQuadrant'],current()
+warp('Havora_WestQuadrant',11,11);m.snap('stellar-port-before-door');walk(4,40);m.snap('stellar-port-after-door')
+assert current()==ids['Havora_PokemonCenter_1F'],current()
 assert flag('QUANTUM_PORT_CENTER')==1
 assert flag('QUANTUM_COASTAL_CENTER')==0
 m.snap('stellar-port-center')
 # The city door returns to the same harbor without bouncing through its exit.
-warp('QuantumPortCity',19,22);walk(4,40);assert current()==ids['QuantumHarbor'],current()
-walk(5,16);assert current()==ids['QuantumHarbor'],current()
-walk(4,24);assert current()==ids['QuantumPortCity'],current()
+warp('Havora_WestQuadrant',19,22);walk(4,40);assert current()==ids['Havora_Harbor'],current()
+walk(5,16);assert current()==ids['Havora_Harbor'],current()
+walk(4,24);assert current()==ids['Havora_WestQuadrant'],current()
 # Every Center has independent flags, a valid healing location, and working exits.
 sections=['PORT_CITY','COASTAL_CITY','FOREST_TOWN','LAKE_TOWN','SNOW_TOWN']
 towns=['PortCity','CoastalCity','ForestTown','LakeTown','SnowTown']
@@ -113,7 +113,7 @@ for a,b,route,key in [('PortCity','CoastalCity','HarborRoad',6),('CoastalCity','
  warp('Quantum'+b,rx,ry);walk(reverse,55);assert current()==ids['Quantum'+route],(b,'reverse',current())
  warp('Quantum'+route,rx,ry);walk(reverse,55);assert current()==ids['Quantum'+a],(a,'reverse',current())
 # The return boat works and does not consume the Stellar Ticket.
-warp('QuantumHarbor',8,5);ferry(11,0);assert current()==ids['VermilionCity']
+warp('Havora_Harbor',8,5);ferry(11,0);assert current()==ids['VermilionCity']
 assert native('CheckBagHasItem',829,1)==1
 # Fly the unlocked port from Kanto using the real map cursor and selection task.
 native('CB2_OpenFlyMapWithExitCB',m.symbols['CB2_ReturnToField']|1);m.run(240)
@@ -126,12 +126,12 @@ def move_to(x,y):
  raise AssertionError(('cursor',x,y))
 move_to(21,11);m.press(8);m.press(5,30);m.press(5,30);m.press(8)
 move_to(15,12);m.snap('stellar-fly-unlocked');m.press(8);m.run(600)
-assert current()==ids['QuantumPortCity'],current()
+assert current()==ids['Havora_WestQuadrant'],current()
 assert flag('BADGE08_GET')==0
 assert native('TrySavingData',0)==1
 m.lib.retro_reset();m.run(360);m.press(3);m.press(8);m.press(8);m.run(360)
 m.snap('stellar-continue-recap');m.press(0);m.run(600);m.snap('stellar-continue-island')
-assert current()==ids['QuantumPortCity'],current()
+assert current()==ids['Havora_WestQuadrant'],current()
 assert native('CheckBagHasItem',829,1)==1
 assert flag('BADGE08_GET')==0
 for sec in sections:assert flag('QUANTUM_'+sec.split('_')[0]+'_CENTER')==1

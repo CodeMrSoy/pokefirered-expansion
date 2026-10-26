@@ -5,7 +5,7 @@ from pathlib import Path
 R=Path(__file__).resolve().parents[2]
 def js(p):return json.loads((R/p).read_text())
 def ww(b):return list(struct.unpack('<'+'H'*(len(b)//2),b))
-l=next(l for l in js('data/layouts/layouts.json')['layouts'] if l['name']=='HavoraMarket_Layout');v=ww((R/l['blockdata_filepath']).read_bytes());before=v[:];w=l['width'];m=js('data/maps/HavoraMarket/map.json');coast=set()
+l=next(l for l in js('data/layouts/layouts.json')['layouts'] if l['name']=='Havora_Market_Layout');v=ww((R/l['blockdata_filepath']).read_bytes());before=v[:];w=l['width'];m=js('data/maps/Havora_Market/map.json');coast=set()
 def tile(x,y,mid,solid=False,elev=None):
  i=y*w+x;v[i]=((v[i]&0xf000) if elev is None else elev<<12)|(1024 if solid else 0)|mid
 
@@ -35,7 +35,7 @@ for x,y in [(26,43),(26,44),(26,45),(37,43),(37,44),(36,55),(37,55),(26,55)]:til
 for x,y in [(26,44),(37,43),(36,55)]:tile(x,y,3,True)
 # Borrow a complete native cliff diagonal from the authored western coast.
 # This preserves FireRed's existing corner pieces rather than inventing bevels.
-wl=next(l for l in js('data/layouts/layouts.json')['layouts'] if l['name']=='HavoraWestQuadrant_Layout');src=ww(subprocess.check_output(['git','show','ac291bc1:'+wl['blockdata_filepath']],cwd=R))
+wl=next(l for l in js('data/layouts/layouts.json')['layouts'] if l['name']=='Havora_WestQuadrant_Layout');src=ww(subprocess.check_output(['git','show','ac291bc1:'+wl['blockdata_filepath']],cwd=R))
 for yy in range(5):
  for xx in range(7):
   x,y=34+xx,35+yy;source=src[(45+yy)*wl['width']+20+xx];i=y*w+x
@@ -53,7 +53,7 @@ for y,row in [(45,[107,169,642]),(46,[0,46,642]),(47,[0,107,169]),(48,[0,44,46])
 # Outside the only unconnected edge is sea. All cardinal connections and their
 # shared edge strips remain intact; the harbor and river layouts are untouched.
 border=ww((R/l['border_filepath']).read_bytes());(R/l['border_filepath']).write_bytes(struct.pack('<'+'H'*len(border),*([0x1282]*len(border))))
-vendors=[e for e in m['object_events'] if e['script']=='HavoraMarket_Supplies']
+vendors=[e for e in m['object_events'] if e['script']=='Havora_Market_Supplies']
 for e,(x,y) in zip(vendors,positions):
  tile(x+1,y+3,449)
  e.update(x=x+1,y=y+3,movement_type='MOVEMENT_TYPE_FACE_UP',elevation=v[(y+3)*w+x+1]>>12)
@@ -69,5 +69,5 @@ for e in m['object_events']:
   if options:break
  assert options
  xx,yy=min(options,key=lambda a:abs(a[0]-x)+abs(a[1]-y));e.update(x=xx,y=yy,elevation=v[yy*w+xx]>>12);occupied.add((xx,yy))
-(R/l['blockdata_filepath']).write_bytes(struct.pack('<'+'H'*len(v),*v));(R/'data/maps/HavoraMarket/map.json').write_text(json.dumps(m,indent=2)+'\n');(R/'tools/havora/market-naturalization.json').write_text(json.dumps({'uncommitted':True,'coast_edit_cells':sorted(coast),'stalls':positions,'fountain':[18,18],'native_cliff_stencil':'HavoraWestQuadrant (20,45) 7x5','market_border':'ocean beyond eastern coastline','source':'ac291bc1','modified_terrain_cells':sum(before[y*w+x]!=v[y*w+x] for x,y in coast)},indent=2)+'\n')
+(R/l['blockdata_filepath']).write_bytes(struct.pack('<'+'H'*len(v),*v));(R/'data/maps/Havora_Market/map.json').write_text(json.dumps(m,indent=2)+'\n');(R/'tools/havora/market-naturalization.json').write_text(json.dumps({'uncommitted':True,'coast_edit_cells':sorted(coast),'stalls':positions,'fountain':[18,18],'native_cliff_stencil':'Havora_WestQuadrant (20,45) 7x5','market_border':'ocean beyond eastern coastline','source':'ac291bc1','modified_terrain_cells':sum(before[y*w+x]!=v[y*w+x] for x,y in coast)},indent=2)+'\n')
 print('Staggered market and native cliff inlet written without commit.')

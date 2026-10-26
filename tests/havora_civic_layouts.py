@@ -4,9 +4,9 @@ from pathlib import Path
 from collections import deque
 R=Path(__file__).resolve().parents[1]
 def read(p):return json.loads((R/p).read_text())
-layouts=read('data/layouts/layouts.json')['layouts'];groups=read('data/maps/map_groups.json')['gMapGroup_QuantumIsland']
+layouts=read('data/layouts/layouts.json')['layouts'];groups=read('data/maps/map_groups.json')['gMapGroup_Havora']
 allmaps={read(f'data/maps/{n}/map.json')['id']:n for n in groups}
-names=['QuantumPortCity','QuantumHavoraNorthDistrict','QuantumHavoraCoastalDaycare','QuantumHavoraNorthWalk','QuantumHavoraNorthQuay','QuantumHavoraWestQuay','QuantumHarbor','QuantumHarborRoad']
+names=['Havora_WestQuadrant','Havora_NorthQuadrant','Havora_DaycareExterior','Havora_Lookout','Havora_Market','Havora_River','Havora_Harbor','Vidra_HarborRoad']
 cache={}
 def load(name):
  if name in cache:return cache[name]
@@ -17,7 +17,7 @@ def load(name):
  for kind in ['object_events','warp_events','coord_events','bg_events']:
   for e in m[kind]:assert 0<=e['x']<l['width'] and 0<=e['y']<l['height'],(name,e)
  cache[name]=m,l,a;return m,l,a
-starts={'QuantumHavoraWestQuay':(3,67),'QuantumPortCity':(42,66),'QuantumHavoraNorthDistrict':(69,38),'QuantumHavoraCoastalDaycare':(2,24),'QuantumHavoraNorthWalk':(7,30)}
+starts={'Havora_River':(3,67),'Havora_WestQuadrant':(42,66),'Havora_NorthQuadrant':(69,38),'Havora_DaycareExterior':(2,24),'Havora_Lookout':(7,30)}
 for name in names:load(name)
 for name,start in starts.items():
  m,l,a=load(name);w,h=l['width'],l['height'];occupied={(o['x'],o['y']) for o in m['object_events']}
@@ -64,11 +64,11 @@ print('PASS: civic map sizes/buffers, elevation-aware circulation, accessible se
 
 # Regression: the coastal quay must occupy the former gap and allow its
 # stair route all the way from the north square to the harbor.
-qm,ql,qa=load('QuantumHavoraWestQuay')
+qm,ql,qa=load('Havora_River')
 assert (ql['width'],ql['height'])==(8,96)
 assert ql['primary_tileset']=='gTileset_HavoraCityPrimary'
 assert next(c['offset'] for c in qm['connections'] if c['map']=='MAP_QUANTUM_HARBOR')==64
-for name in ['QuantumPortCity','QuantumHavoraWestQuay']:
+for name in ['Havora_WestQuadrant','Havora_River']:
  _,_,aa=load(name)
  assert not any((v&1023)==0x1c1 and v&0xc00 for v in aa), (name,'invisible pavement wall')
 print('PASS: terraced quay circulation, expanded-map origin, and no invisible pavement barriers in the western seam')

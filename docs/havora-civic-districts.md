@@ -42,10 +42,10 @@ QuantumHavoraNorthQuay. It replaces part of the former northern boundary.
 
 | Service | Outdoor map | Door x,y | Interior |
 | --- | --- | --- | --- |
-| Gym | QuantumPortCity | 23,13 | QuantumHavoraGym |
-| Center | QuantumHavoraNorthDistrict | 64,17 | QuantumPortCityPokemonCenter1F |
-| Mart | QuantumHavoraNorthDistrict | 82,17 | QuantumHavoraMart |
-| Daycare | QuantumHavoraCoastalDaycare | 30,13 | QuantumHavoraDaycare |
+| Gym | QuantumPortCity | 23,13 | Havora_Gym |
+| Center | QuantumHavoraNorthDistrict | 64,17 | Havora_PokemonCenter_1F |
+| Mart | QuantumHavoraNorthDistrict | 82,17 | Havora_Mart |
+| Daycare | QuantumHavoraCoastalDaycare | 30,13 | Havora_DaycareInterior |
 
 Five additional homes have private interiors and matching return destinations.
 Stock multi-tile entrances use their center entry mat; warp IDs are zero-based.
@@ -140,7 +140,7 @@ consistency and includes native object sprites.
 
 The visual runtime review exposed an engine assumption: camera connections
 only reloaded the secondary tileset. Walking from General to HavoraCity, or
-HavoraHarbor to HavoraCity, could therefore reach the correct map while drawing
+Havora_Harbor to HavoraCity, could therefore reach the correct map while drawing
 it with stale primary VRAM. `LoadMapFromCameraTransition` now compares the
 resolved old/new primary tilesets and reloads both banks, palettes, weather
 colors and animation callbacks when they differ. Same-primary transitions

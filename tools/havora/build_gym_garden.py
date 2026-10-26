@@ -8,8 +8,8 @@ def js(p):return json.loads((R/p).read_text())
 def old(p):return subprocess.check_output(['git','show',BASE+':'+p],cwd=R)
 def words(b):return list(struct.unpack('<'+'H'*(len(b)//2),b))
 def write(p,data):(R/p).write_bytes(struct.pack('<'+'H'*len(data),*data))
-l=next(l for l in js('data/layouts/layouts.json')['layouts'] if l['name']=='HavoraWestQuadrant_Layout');w=l['width'];path=l['blockdata_filepath'];before=words(old(path));blocks=before.copy()
-meta=json.loads(old('data/maps/HavoraWestQuadrant/map.json'))
+l=next(l for l in js('data/layouts/layouts.json')['layouts'] if l['name']=='Havora_WestQuadrant_Layout');w=l['width'];path=l['blockdata_filepath'];before=words(old(path));blocks=before.copy()
+meta=json.loads(old('data/maps/Havora_WestQuadrant/map.json'))
 M=[];A=[]
 for group in ['primary','secondary']:
  p=f'data/tilesets/{group}/havora_city/';v=words(old(p+'metatiles.bin'));M += [tuple(v[i:i+8]) for i in range(0,len(v),8)];b=old(p+'metatile_attributes.bin');A += list(struct.unpack('<'+'I'*(len(b)//4),b))
@@ -91,7 +91,7 @@ for x,y in [(9,2),(6,8),(14,3),(16,5),(18,5),(28,3),(30,8),(28,13),(21,14),(23,1
 for x,y in [(4,4),(5,9),(19,20)]:
  if (x,y) not in reserved:put(x,y,18,True)
 put(8,17,1,True)
-meta['bg_events'].append({'type':'sign','x':8,'y':17,'elevation':6,'player_facing_dir':'BG_EVENT_PLAYER_FACING_ANY','script':'HavoraWestQuadrant_GymSign'})
+meta['bg_events'].append({'type':'sign','x':8,'y':17,'elevation':6,'player_facing_dir':'BG_EVENT_PLAYER_FACING_ANY','script':'Havora_WestQuadrant_GymSign'})
 # Place the Gym Guide beside the front door, never on its doorway or wall.
 for index,x,y,direction in [(0,18,16,'DOWN'),(3,8,6,'LEFT'),(4,19,14,'RIGHT')]:
  e=meta['object_events'][index];e.update(x=x,y=y,elevation=6,movement_type='MOVEMENT_TYPE_FACE_'+direction,movement_range_x=0,movement_range_y=0)
@@ -99,11 +99,11 @@ for index,x,y,direction in [(0,18,16,'DOWN'),(3,8,6,'LEFT'),(4,19,14,'RIGHT')]:
  if (blocks[y*w+x]>>10)&3:put(x,y,449 if (x,y) in paths else 0)
 # Pair members face each other across the doubles court, dialogue only.
 for i,(x,y,direction,gfx) in enumerate([(23,7,'DOWN','SAILOR'),(26,7,'DOWN','SAILOR'),(23,10,'UP','MAN'),(26,10,'UP','WOMAN_1')]):
- e=copy.deepcopy(meta['object_events'][0]);e.update(graphics_id='OBJ_EVENT_GFX_'+gfx,x=x,y=y,elevation=6,movement_type='MOVEMENT_TYPE_FACE_'+direction,script='HavoraWestQuadrant_Practice'+str(i+1));meta['object_events'].append(e)
+ e=copy.deepcopy(meta['object_events'][0]);e.update(graphics_id='OBJ_EVENT_GFX_'+gfx,x=x,y=y,elevation=6,movement_type='MOVEMENT_TYPE_FACE_'+direction,script='Havora_WestQuadrant_Practice'+str(i+1));meta['object_events'].append(e)
 assert len(meta['object_events'])<=16
 # The existing door uses terrace elevation 6; keep its coordinates and destination.
 meta['warp_events'][0]['elevation']=6
-write(path,blocks);(R/'data/maps/HavoraWestQuadrant/map.json').write_text(json.dumps(meta,indent=2)+'\n')
+write(path,blocks);(R/'data/maps/Havora_WestQuadrant/map.json').write_text(json.dumps(meta,indent=2)+'\n')
 for group,offset,count in [('primary',0,640),('secondary',640,384)]:
  p=f'data/tilesets/{group}/havora_city/';write(p+'metatiles.bin',[v for m in M[offset:offset+count] for v in m]);(R/p/'metatile_attributes.bin').write_bytes(struct.pack('<'+'I'*count,*A[offset:offset+count]))
 manifest.write_text(json.dumps({'base_commit':BASE,'added_metatiles':{'sand':sand,'bench':bench},'features':features,'path_cells':[list(p) for p in sorted(paths)],'changed_cells':sum(a!=b for a,b in zip(before,blocks)),'scope':'West gym plateau only; no terrain reshaping or new exits; practice trainers use dialogue, not battles.'},indent=2)+'\n')
