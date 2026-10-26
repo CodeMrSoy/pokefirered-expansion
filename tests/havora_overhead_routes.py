@@ -14,7 +14,7 @@ for state in model.search()[0]:
   boat=int(action.startswith('Ride cargo'));src=(a,c)[boat];dst=nxt[1]
   key=(w,a,c,moor,boat)
   if key not in cache:
-   tiles=geo.draw(state);sx=geo.SHORE[src]+2*geo.DIR[src];sy=geo.BERTH_ROW+3*boat
+   tiles=geo.draw(state);sx=geo.SHORE[src]+geo.HULL_OFFSET*geo.DIR[src];sy=geo.BERTH_ROW+3*boat
    def clear(x,y):
     if not(1<=x<geo.W-1 and 1<=y<geo.H-1):return False
     return all(abs(xx-sx)<=1 and abs(yy-sy)<=1 or tiles[yy*geo.W+xx]&1023==0x282 for yy in range(y-1,y+2) for xx in range(x-1,x+2))
@@ -24,7 +24,7 @@ for state in model.search()[0]:
     for at in [(x-1,y),(x+1,y),(x,y-1),(x,y+1)]:
      if at not in seen and clear(*at):seen.add(at);todo.append(at)
    cache[key]=seen
-  goal=(geo.SHORE[dst]+2*geo.DIR[dst],geo.BERTH_ROW+3*boat)
+  goal=(geo.SHORE[dst]+geo.HULL_OFFSET*geo.DIR[dst],geo.BERTH_ROW+3*boat)
   assert goal in cache[key],('hull route blocked',state,action,goal)
   checked+=1
 print('PASS',checked,'legal boat trips: whole hull clears islands, banks, other boat and gates')

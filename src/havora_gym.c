@@ -48,7 +48,7 @@ static const struct SpriteTemplate sLaunchTemplate={
  .anims=gDummySpriteAnimTable,.images=NULL,.affineAnims=gDummySpriteAffineAnimTable,.callback=LaunchPassenger
 };
 // State is versioned; existing victories and crest flags are independent.
-#define VERSION 0xC000
+#define VERSION 0x8000
 static const u16 sLockBase[]=INCBIN_U16("data/layouts/HavoraCaptainsTrial/base.bin");
 static bool8 Here(void)
 {
@@ -72,15 +72,15 @@ static void ResetLock(void){VarSet(VAR_HAVORA_GYM_STATE,VERSION|8|(4<<8));}
 static bool8 Valid(void)
 {
  u16 s=VarGet(VAR_HAVORA_GYM_STATE);
- return (s&VERSION)==VERSION&&(s&31)<27&&Water(0)+Water(1)+Water(2)==4&&Boat(0)<6&&Boat(1)<6&&Moor()<3;
+ return (s&0xC000)==VERSION&&(s&31)<27&&Water(0)+Water(1)+Water(2)==4&&Boat(0)<6&&Boat(1)<6&&Moor()<3;
 }
 static u8 Node(s16 x,s16 y)
 {
  u8 n;
- if(x>=40&&x<=43&&y>=21&&y<=25)return 6;
- if(x>=64&&x<=68&&y>=22&&y<=25)return 7;
- for(n=0;n<6;n++)if(x>=sBank[n]&&x<sBank[n]+5&&y>=11&&y<=29)return n;
- if(x>=1&&x<=5&&y>=24&&y<=37)return 0;
+ if(x>=39&&x<=42&&y>=11&&y<=14)return 6;
+ if(x>=63&&x<=68&&y>=21&&y<=24)return 7;
+ for(n=0;n<6;n++)if(x>=sBank[n]&&x<sBank[n]+5&&y>=4&&y<=17)return n;
+ if(x>=1&&x<=5&&y>=18&&y<=28)return 0;
  return 255;
 }
 static void Tile(s16 x,s16 y,u16 tile,bool8 blocked,u8 z){MapGridSetMetatileEntryAt(x+MAP_OFFSET,y+MAP_OFFSET,tile|(blocked?0x400:0)|(z<<12));}
@@ -113,13 +113,13 @@ static void Draw(bool8 redraw)
  }
  for(b=0;b<2;b++)
  {
-  u8 berth=Boat(b);s16 bx=sShore[berth]+2*sBankDirection[berth],by=LOCK_BERTH_ROW+3*b;
+  u8 berth=Boat(b);s16 bx=sShore[berth]+LOCK_HULL_OFFSET*sBankDirection[berth],by=LOCK_BERTH_ROW+3*b;
   if(occupied&&gTasks[tid].data[1]==b)continue;
   for(y=0;y<3;y++)for(x=0;x<3;x++)Tile(bx+x-1,by+y-1,(b?0x390:0x2bc)+y*3+x,TRUE,1);
  }
- if(m==1&&Boat(1)==3&&Water(1)==2&&!transfer)Line(49,22,44,22,0x318,9);
- if(m==2&&Boat(1)==5&&Water(1)==2&&Water(2)==2&&!transfer)Line(53,22,64,22,0x318,9);
- if(tid!=TASK_NONE&&gTasks[tid].data[10])
+ if(m==1&&Boat(1)==3&&Water(1)==2&&!transfer){Line(50,13,42,13,0x318,5);Tile(42,13,0x386,FALSE,0);}
+ if(m==2&&Boat(1)==5&&Water(1)==2&&Water(2)==2&&!transfer){Line(52,17,67,17,0x281,4);Line(67,18,67,20,0x386,0);Tile(54,17,0x318,FALSE,4);}
+ if(tid!=TASK_NONE&&gTasks[tid].data[10]>=0x300&&gTasks[tid].data[10]<=0x303)
  {
   struct Task *t=&gTasks[tid];static const u8 frames[]={1,0,0,1,2,2,1,1};
   u8 elevation=MapGridGetElevationAt(t->data[8]+MAP_OFFSET,t->data[9]+MAP_OFFSET);
@@ -164,8 +164,8 @@ static bool8 PlanBoatRoute(u8 id,u8 boat,u8 src,u8 dst)
  u8 *previous=AllocZeroed(cells);
  u16 *queue=Alloc(cells*sizeof(u16)),*path;
  u16 head=0,tail=0,start,goal,at,count=0,i;
- s16 sx=sShore[src]+2*sBankDirection[src],sy=LOCK_BERTH_ROW+3*boat;
- s16 dx=sShore[dst]+2*sBankDirection[dst];
+ s16 sx=sShore[src]+LOCK_HULL_OFFSET*sBankDirection[src],sy=LOCK_BERTH_ROW+3*boat;
+ s16 dx=sShore[dst]+LOCK_HULL_OFFSET*sBankDirection[dst];
  static const s8 ox[]={0,-1,1,0,0},oy[]={0,0,0,-1,1};
  if(!previous||!queue){Free(previous);Free(queue);return FALSE;}
  start=sy*LOCK_WIDTH+sx;goal=sy*LOCK_WIDTH+dx;queue[tail++]=start;previous[start]=255;
@@ -194,13 +194,13 @@ static void Waypoint(struct Task *t,s16 *x,s16 *y)
 {
  u8 boat=t->data[1],src=t->data[2],dst=t->data[3],phase=t->data[4];
  *y=LOCK_BERTH_ROW+boat*3;
- if(phase==0){*x=sShore[src]+2*sBankDirection[src];return;}
+ if(phase==0){*x=sShore[src]+LOCK_HULL_OFFSET*sBankDirection[src];return;}
  if(phase==1&&t->data[14]<t->data[13])
  {
   u16 *path=(u16 *)GetWordTaskArg(t-gTasks,11),at=path[t->data[14]];
   *x=at%LOCK_WIDTH;*y=at/LOCK_WIDTH;return;
  }
- *x=phase==8?sShore[dst]:sShore[dst]+2*sBankDirection[dst];
+ *x=phase==8?sShore[dst]:sShore[dst]+LOCK_HULL_OFFSET*sBankDirection[dst];
 }
 static void MoveBoat(u8 id)
 {

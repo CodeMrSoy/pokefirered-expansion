@@ -1,131 +1,188 @@
-"""Overhead yard geometry. Importing is read-only; build() writes the gym."""
+"""Runtime water overlays for the 80x29 Porymap-authored Havora gym.
+
+The authored plan is never regenerated. Reference maps provide the three local
+water silhouettes; only masonry/water cells are imported, not screenshot props.
+Run build() explicitly after changing authored.bin or the geometry below.
+"""
 from pathlib import Path
 import struct,json
 R=Path(__file__).resolve().parents[2]
-W,H=80,40
-BANK=[1,22,28,49,74,55];SHORE=[5,22,32,49,74,59]
-DIR=[1,-1,1,-1,-1,1];STAIR=[2,26,28,53,78,55]
-POOLS=[(6,16),(33,16),(60,14)];CORE=[13,35,72]
-BERTH_ROW=19;CHANNEL_ROW=34;ENTRY=(3,35)
+W,H=80,29
+BANK=[1,23,28,50,75,55];SHORE=[4,23,31,50,75,58]
+DIR=[1,-1,1,-1,-1,1];STAIR=[2,25,29,52,78,55]
+POOLS=[(5,18),(32,18),(59,16)];CORE=[14,40,66]
+BERTH_ROW=10;CHANNEL_ROW=24;HULL_OFFSET=4;ENTRY=(3,27)
 DOCK=[{0,1,2},{1},{0,1,2},{2},{0,1,2},{1,2}]
-ANCHORS=[(3,14),(24,14),(30,14),(51,15),(76,13),(57,14),(41,22),(65,23)]
-ACTOR_DEFS=[('GYM_GUY',3,33,9,'Welcome'),('SAILOR',31,20,9,'Crew'),('SAILOR',76,20,9,'Navigator'),('SAILOR',51,17,9,'Engineer'),('SAILOR',40,21,9,'Diver'),('SAILOR',57,17,9,'FirstMate'),('SAILOR',67,24,9,'Captain')]
+ANCHORS=[(2,8),(25,8),(29,8),(52,8),(77,8),(56,8),(40,12),(65,22)]
+mp=R/'data/maps/QuantumHavoraGym/map.json'
+objects=json.loads(mp.read_text())['object_events']
+ACTOR_DEFS=[(o['graphics_id'].removeprefix('OBJ_EVENT_GFX_'),o['x'],o['y'],o['elevation'],o['script'].removeprefix('HavoraTrial_')) for o in objects]
 ACTORS={(x,y) for _,x,y,_,_ in ACTOR_DEFS}
-base=[0x97b0]*(W*H)
-def cell(b,x,y,t,block=False,z=9):b[y*W+x]=(z<<12)|(0x400 if block else 0)|t
-def rect(b,x,y,w,h,t,block=False,z=9):
+layout=R/'data/layouts/HavoraCaptainsTrial'
+def words(p):
+ b=p.read_bytes();return list(struct.unpack('<'+'H'*(len(b)//2),b))
+authored=words(layout/'authored.bin')
+refs=[words(layout/'reference_states'/f) for f in ['high-low-low.bin','mid-high-mid.bin','low-mid-high.bin']]
+# Each picture supplies one water profile for each pool.
+PROFILE=[[2,1,0],[0,2,1],[0,1,2]]
+STRUCTURE={0x282,0x380,0x3b1,0x3c0,0x3c1,0x3c2,0x3c3,0x3c4}
+base=authored.copy()
+for i,v in enumerate(base):
+ if 0x2bc<=v&1023<=0x2c4 or 0x390<=v&1023<=0x398:base[i]=0x1682
+# Correct the cargo's accidentally varying elevation and use the original
+# platform elevation for every person on the authored decks.
+def cell(b,x,y,t,block=False,z=5):b[y*W+x]=(z<<12)|(0x400 if block else 0)|t
+def rect(b,x,y,w,h,t,block=False,z=5):
  for yy in range(y,y+h):
   for xx in range(x,x+w):cell(b,xx,yy,t,block,z)
-def line(b,points,t,z=9):
+def line(b,points,t,z=5):
  for (x,y),(xx,yy) in zip(points,points[1:]):
   assert x==xx or y==yy
   for a in range(min(x,xx),max(x,xx)+1):
    for v in range(min(y,yy),max(y,yy)+1):cell(b,a,v,t,False,z)
-rect(base,0,8,W,2,0x349,True);rect(base,0,9,W,1,0x348,True)
-rect(base,0,10,W,26,0x380,True)
-for x in [0,20,40,60,79]:cell(base,x,9,0x347,True)
-for x,width in POOLS:
- rect(base,x,17,width,19,0x282,True,1);rect(base,x,16,width,1,0x3b1,True)
-# Fixed high decks, short south-facing retaining walls, lower floodable aprons.
-for n,x in enumerate(BANK):
- rect(base,x,13 if n==5 else 11,5,11 if n==5 else 13,0x281);rect(base,x,25,5,4,0x281,False,5)
- for dx in range(5):
-  cell(base,x+dx,24,0x3c0+dx,True);cell(base,x+dx,29,0x3c0+dx,True,5)
- cell(base,STAIR[n],24,0x386,False,0)
-# A dry entrance corridor is structurally independent of the submerged shelves.
-rect(base,1,24,2,13,0x281);cell(base,2,25,0x386,False,0)
-rect(base,1,35,5,2,0x281)
-for x in [2,3,4]:cell(base,x,37,0x305)
-paths={'permanent':[(30,13),(30,12),(51,12),(51,13)],'shoreA':[(5,28),(22,28)],'shoreC':[(59,28),(74,28)],'midAB':[(26,17),(28,17)],'midBC':[(30,13),(30,10),(76,10),(76,13)],'service':[(49,22),(44,22)],'final':[(53,22),(64,22)]}
-for key in ['permanent','midAB','midBC']:line(base,paths[key],0x318)
-# Galleries remain visible; physical gates control access.
-cell(base,27,17,0x385,True);cell(base,54,10,0x385,True)
-for x in [22,49]:rect(base,x,33,11,3,0x282,True,1)
-# Service island: the same low winch shelf is exposed and submerged in place.
-rect(base,39,20,6,6,0x380,True);rect(base,40,21,4,2,0x281)
-rect(base,40,24,3,2,0x281,False,5)
-cell(base,40,23,0x386,False,0);cell(base,40,24,0x386,False,0)
-for x in [39,44]:cell(base,x,25,0x3c0 if x==39 else 0x3c4,True)
-# Three water cells, rather than an invented eleven-cell vessel, separate this
-# captain's quay from the cargo berth. The staging gangway is a separate hinge.
-rect(base,63,21,7,5,0x380,True);rect(base,64,22,5,3,0x281)
-for x in range(63,70):cell(base,x,25,0x3c0 if x==63 else 0x3c4 if x==69 else 0x3c2,True)
+paths={'permanent':[(29,6),(29,4),(52,4),(52,6)],'shoreA':[(2,17),(25,17)],'shoreC':[(56,17),(77,17)],'midAB':[(26,8),(28,8)],'midBC':[(52,4),(77,4),(77,6)],'service':[(50,13),(42,13)],'final':[(52,17),(67,17),(67,21)]}
 consoles=[]
-def console(n,x,y,script,mid):
- cell(base,x,y,mid,True);consoles.append((n,x,y,script))
-for n in [0,1,2,5]:
- x=BANK[n]+2;pair='AB' if n<2 else 'BC'
- console(n,x,13,pair+'Forward',0x300 if pair=='AB' else 0x301)
- console(n,x,15,pair+'Reverse',0x302 if pair=='AB' else 0x301)
-for x,y,s,t in [(75,13,'ABForward',0x300),(77,13,'ABReverse',0x302),(75,15,'BCForward',0x301),(77,15,'BCReverse',0x301)]:console(4,x,y,s,t)
-console(3,51,14,'ServiceMoor',0x302);console(4,76,14,'FinalMoor',0x302)
-console(6,41,21,'BCForward',0x301);console(6,42,21,'BCReverse',0x301)
-consoles.append((6,41,25,'Chain'))
-for n,x in enumerate(BANK):
- console(n,x+(4 if n in [0,1,2,5] else 1),14,'Status',0x377)
- if n!=4:console(n,x+3,13 if n in [0,1,2,5] else 14,'Reset',0x303)
-console(6,43,21,'Reset',0x303)
+for e in json.loads(mp.read_text())['bg_events']:
+ s=e['script'].removeprefix('HavoraLock_');x,y=e['x'],e['y']
+ if s.startswith('Board'):continue
+ if x<=4:n=0
+ elif x<=26:n=1
+ elif x<=31:n=2
+ elif x>=75:n=4
+ elif x>=55:n=5
+ elif x>=49:n=3
+ else:n=6
+ consoles.append((n,x,y,s))
+# A compact leader quay, below section 3, matching the supplied reference.
+rect(base,63,21,6,3,0x281,False,3)
+for x in range(63,69):cell(base,x,24,0x3b1,True,2)
+for y in [19,20]:cell(base,67,y,0x386,False,0)
+# Reroute the entry's existing ladder down to its authored exit.
+rect(base,1,18,2,9,0x281,False,3)
+rect(base,1,26,5,2,0x281,False,3)
+for x in [2,3,4]:cell(base,x,28,0x305,False,3)
+for y in [15,16,17]:cell(base,2,y,0x386,False,0)
 def berth(node,boat):return SHORE[node],BERTH_ROW+boat*3
 def draw(state,include_boats=True):
  levels,p,a,c,moor,released=state;b=base.copy()
- for n,x in enumerate(BANK):
-  w=levels[n//2];cut=30 if w==0 else 27 if w==1 else 25
-  if cut<30:rect(b,x,cut,5,30-cut,0x282,True,1)
-  if w==2:cell(b,STAIR[n],24,0x3c0+STAIR[n]-x,True)
-  cell(b,x+(4 if n in [0,1,2,5] else 1),14,[0x376,0x387,0x377][w],True)
+ for x in range(6,79):cell(b,x,27,0x282,True,1)
+ for ch,(left,right) in enumerate([(1,27),(28,54),(55,79)]):
+  ref=refs[PROFILE[ch][levels[ch]]]
+  for y in range(5,19):
+   for x in range(left,right):
+    i=y*W+x;old=base[i]&1023;new=ref[i]&1023
+    if old in STRUCTURE and new in STRUCTURE:
+     b[i]=0x1682 if new==0x282 else (base[i]&0xf000)|0x400|new
+ # Permanent upper gallery joins the two B quays, with solid supports underneath.
+ line(b,paths['permanent'],0x318)
+ for x in [29,52]:cell(b,x,5,0x386,False,0)
+ for key,x,ch in [('midAB',27,0),('midBC',54,1)]:
+  line(b,paths[key],0x318)
+  cell(b,x,8 if ch==0 else 4,0x318 if levels[ch]==levels[ch+1]==1 else 0x385,not(levels[ch]==levels[ch+1]==1))
+  if ch==1:cell(b,77,5,0x386,False,0)
+ if levels[0]==0:
+  line(b,paths['shoreA'],0x318)
+  for x in [2,25]:cell(b,x,16,0x386,False,0)
+ else:
+  for x in range(5,23):cell(b,x,17,0x282,True,1)
+ cell(b,2,17,0x386,False,0)
+ if levels[2]==0:
+  line(b,paths['shoreC'],0x281,4)
+  for x in [56,77]:cell(b,x,16,0x386,False,0)
+ else:
+  for x in range(59,75):cell(b,x,17,0x282,True,1)
+ # Service deck remains above water. Its lower chain shelf floods in place.
+ rect(b,39,12,3,2,0x281,False,4)
+ for x in [39,40,41]:cell(b,x,14,0x282 if levels[1]==2 else 0x281,levels[1]==2,1 if levels[1]==2 else 3)
+ if levels[1]!=2:cell(b,39,14,0x302,True,3);cell(b,40,13,0x386,False,0)
+ # Gates at the lock mouths span the navigable opening, below the authored baffles.
+ for x,ch in [(27,0),(54,1)]:
+  for y in range(21,28):cell(b,x,y,0x282 if levels[ch]==levels[ch+1] else 0x385,True,1)
+ # Gangplanks cover only the fixed side-face approach to each berth. The hull
+ # sits beyond the widest LOW profile, so sailing never cuts through masonry.
+ for n in range(6):
   for boat in range(2):
-   y=BERTH_ROW+boat*3;valid=w in DOCK[n]
+   y=BERTH_ROW+boat*3;valid=levels[n//2] in DOCK[n]
    cell(b,SHORE[n],y,(0x370 if DIR[n]>0 else 0x372) if valid else 0x385,not valid)
- rect(b,1,24,2,13,0x281);cell(b,2,25,0x386,False,0)
- if levels[0]==0:line(b,paths['shoreA'],0x280,5)
- if levels[2]==0:line(b,paths['shoreC'],0x280,5)
- cell(b,27,17,0x318 if levels[0]==levels[1]==1 else 0x385,not(levels[0]==levels[1]==1))
- cell(b,54,10,0x318 if levels[1]==levels[2]==1 else 0x385,not(levels[1]==levels[2]==1))
- for x,ch in [(22,0),(49,1)]:
-  if levels[ch]!=levels[ch+1]:rect(b,x+5,33,1,3,0x385,True,1)
- if levels[1]==2:rect(b,40,24,3,2,0x282,True,1)
- else:cell(b,41,25,0x302,True,5)
+   for step in range(1,HULL_OFFSET-1):
+    cell(b,SHORE[n]+step*DIR[n],y,0x318 if valid else 0x380,True,5)
+ if moor==1 and c==3 and levels[1]==2:
+  line(b,paths['service'],0x318)
+  cell(b,42,13,0x386,False,0)
+ # Final walkway exists visually from the start, with explicit locked access.
+ for x in range(52,68):cell(b,x,17,0x281,False,4)
+ for x in [52,56]:
+  for y in [15,16]:cell(b,x,y,0x386,False,0)
+ cell(b,67,18,0x386,False,0)
+ final=moor==2 and c==5 and levels[1]==levels[2]==2
+ cell(b,54,17,0x318 if final else 0x385,not final,4)
+ cell(b,67,18,0x386 if final else 0x385,not final,0 if final else 4)
+ # Keep C's low shore route isolated from B until the final bridge is tensioned.
+ if levels[2]!=0 and not final:
+  for x in range(59,75):cell(b,x,17,0x282,True,1)
+  cell(b,54,17,0x385,True,4)
+ # The lower C apron floods with its central span, leaving a hull-width
+ # opening through the submerged wall rather than an invisible water barrier.
+ if levels[2]!=0:
+  for x in range(59,75):
+   if x!=67 or not final:cell(b,x,18,0x282,True,1)
+ # Level gauges keep the manually placed coordinates.
+ for n,x,y,s in consoles:
+  if s=='Status' and n<6:cell(b,x,y,[0x376,0x387,0x377][levels[n//2]],True)
+ # Dress exposed masonry boundaries with the private cliff kit. This changes
+ # only art: the authored collision and elevation bits remain intact.
+ snapshot=b.copy();walls={0x380,0x3b1,0x3c0,0x3c1,0x3c2,0x3c3,0x3c4}
+ for y in range(5,25):
+  for x in range(1,79):
+   i=y*W+x
+   if snapshot[i]&1023 not in walls:continue
+   wet=lambda xx,yy:snapshot[yy*W+xx]&1023==0x282
+   left,right,below,above=wet(x-1,y),wet(x+1,y),wet(x,y+1),wet(x,y-1)
+   mid=None
+   if left:mid=0x3c9 if below else 0x3c7 if above else 0x3c5
+   elif right:mid=0x3ca if below else 0x3c8 if above else 0x3c6
+   elif below:mid=0x3cd
+   if mid is not None:b[i]=(b[i]&~1023)|mid
  if include_boats:
   for boat,node in [(0,a),(1,c)]:
-   cx=SHORE[node]+2*DIR[node];cy=BERTH_ROW+boat*3
+   cx=SHORE[node]+HULL_OFFSET*DIR[node];cy=BERTH_ROW+boat*3
    for yy in range(3):
     for xx in range(3):cell(b,cx+xx-1,cy+yy-1,(0x2bc if boat==0 else 0x390)+yy*3+xx,True,1)
- if moor==1 and c==3 and levels[1]==2:line(b,paths['service'],0x318)
- if moor==2 and c==5 and levels[1]==levels[2]==2:line(b,paths['final'],0x318)
- for n in range(6):
-  for y in range(17,24):
-   at=y*W+SHORE[n]
-   if b[at]&1023==0x281:b[at]=(b[at]&~1023)|(0x3b2 if DIR[n]>0 else 0x3b3)
+ if moor==1 and c==3 and levels[1]==2:
+  line(b,paths['service'],0x318)
+  cell(b,42,13,0x386,False,0)
  return b
+
 def build():
- layout=R/'data/layouts/HavoraCaptainsTrial'
  for name,tiles in [('base',base),('map',draw(((2,2,0),0,0,4,0,False)))]:
   (layout/(name+'.bin')).write_bytes(struct.pack('<'+'H'*len(tiles),*tiles))
- (layout/'border.bin').write_bytes(struct.pack('<4H',*[0x97b0]*4))
- ls=R/'data/layouts/layouts.json';j=json.loads(ls.read_text());l=next(l for l in j['layouts'] if l['id']=='LAYOUT_HAVORA_CAPTAINS_TRIAL');l.update(width=W,height=H);ls.write_text(json.dumps(j,indent=2)+'\n')
- mp=R/'data/maps/QuantumHavoraGym/map.json';j=json.loads(mp.read_text())
- for i,warp in enumerate(j['warp_events']):warp.update(x=2+i,y=37,elevation=9)
- j['object_events']=[dict(type='object',graphics_id='OBJ_EVENT_GFX_'+g,x=x,y=y,elevation=z,movement_type='MOVEMENT_TYPE_FACE_DOWN',movement_range_x=0,movement_range_y=0,trainer_type='TRAINER_TYPE_NONE',trainer_sight_or_berry_tree_id='0',script='HavoraTrial_'+s,flag='0') for g,x,y,z,s in ACTOR_DEFS]
- bgs=[dict(type='sign',x=x,y=y,elevation=5 if s=='Chain' else 9,player_facing_dir='BG_EVENT_PLAYER_FACING_ANY',script='HavoraLock_'+s) for n,x,y,s in consoles]
+ j=json.loads(mp.read_text())
+ for o in j['object_events']:
+  o['elevation']=3 if o['script'].endswith(('Captain','Welcome')) else 5
+  o['trainer_type']='TRAINER_TYPE_NONE'
+  o['trainer_sight_or_berry_tree_id']='0'
+ for e in j['bg_events']:
+  if e['script'].startswith('HavoraLock_Board'):continue
+  e['elevation']=3 if e['script'].endswith('Chain') else 4 if 37<=e['x']<=43 else 5
+ j['bg_events']=[e for e in j['bg_events'] if not e['script'].startswith('HavoraLock_Board')]
  for n in range(6):
-  for boat in range(2):bgs.append(dict(type='sign',x=SHORE[n]+DIR[n],y=BERTH_ROW+boat*3,elevation=9,player_facing_dir='BG_EVENT_PLAYER_FACING_ANY',script='HavoraLock_Board'+str(boat)))
- j['bg_events']=bgs;mp.write_text(json.dumps(j,indent=2)+'\n')
- header='// Generated by overhead_lock_geometry.py.\n#define LOCK_WIDTH 80\n#define LOCK_HEIGHT 40\n#define LOCK_BERTH_ROW 19\n#define LOCK_CHANNEL_ROW 34\n#define LOCK_ENTRY_X 3\n#define LOCK_ENTRY_Y 35\n'
+  for boat in range(2):j['bg_events'].append(dict(type='sign',x=SHORE[n]+DIR[n],y=BERTH_ROW+boat*3,elevation=5,player_facing_dir='BG_EVENT_PLAYER_FACING_ANY',script='HavoraLock_Board'+str(boat)))
+ for warp in j['warp_events']:warp['elevation']=3
+ mp.write_text(json.dumps(j,indent=2)+'\n')
+ header='// Generated from the Porymap-authored 80x29 plan.\n'
+ for key,value in [('WIDTH',W),('HEIGHT',H),('BERTH_ROW',BERTH_ROW),('CHANNEL_ROW',CHANNEL_ROW),('ENTRY_X',ENTRY[0]),('ENTRY_Y',ENTRY[1]),('HULL_OFFSET',HULL_OFFSET)]:header+=f'#define LOCK_{key} {value}\n'
  for typ,name,values in [('u8','sBank',BANK),('u8','sStair',STAIR),('u8','sShore',SHORE),('s8','sBankDirection',DIR),('u8','sCoreX',CORE)]:header+=f'static const {typ} {name}[] = {{'+','.join(map(str,values))+'};\n'
  header+='static const u8 sDockMask[] = {7,2,7,4,7,6};\n'
  controls={'ABForward':(10,0,1),'ABReverse':(10,1,0),'BCForward':(10,1,2),'BCReverse':(10,2,1),'ServiceMoor':(12,0,0),'Chain':(13,0,0),'FinalMoor':(14,0,0),'Reset':(15,0,0)}
  header+='static const u8 sLockControls[][5] = {\n'
  for n,x,y,s in consoles:
   if s in controls:header+=' {'+','.join(map(str,(x,y,*controls[s])))+'},\n'
- header+='};\n';(R/'src/data/havora_lock_geometry.h').write_text(header)
- # RLE map overlays make Python validation and native rendering share one
- # geometry source. Six legal water configurations need only a few KB of runs.
+ header+='};\n'
  runs=[];offsets=[]
  for value in range(27):
   levels=(value%3,value//3%3,value//9)
   if sum(levels)!=4:offsets.append(0);continue
-  offsets.append(len(runs))
-  tiles=draw((levels,0,0,4,0,False),include_boats=False)
+  offsets.append(len(runs));tiles=draw((levels,0,0,4,0,False),include_boats=False)
   for tile in tiles:
    if runs and len(runs)>offsets[-1] and runs[-1][1]==tile:runs[-1][0]+=1
    else:runs.append([1,tile])
@@ -133,5 +190,5 @@ def build():
  header+='static const struct LockMapRun sLockMapRuns[] = {\n'+''.join(' {%d,0x%04x},\n'%tuple(v) for v in runs)+'};\n'
  (R/'src/data/havora_lock_geometry.h').write_text(header)
  (R/'tools/havora/fixed-lock-geometry.json').write_text(json.dumps(dict(width=W,height=H,banks=BANK,shore=SHORE,direction=DIR,berth_row=BERTH_ROW,channel_row=CHANNEL_ROW,paths=paths,consoles=consoles),indent=2)+'\n')
- print('Built overhead lock yard',W,H,'with fixed berths and',len(bgs),'controls')
+ print('Built authored 80x29 water overlays; Porymap source preserved in authored.bin')
 if __name__=='__main__':build()

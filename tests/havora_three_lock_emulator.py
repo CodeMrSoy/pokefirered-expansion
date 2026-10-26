@@ -18,7 +18,7 @@ anchors=geo.ANCHORS
 actors=geo.ACTORS
 state=((2,2,0),0,0,4,0,False)
 def encode(s):
- w,p,a,b,mo,r=s;return 0xC000|w[0]+3*w[1]+9*w[2]|a<<5|b<<8|mo<<11|int(r)<<13
+ w,p,a,b,mo,r=s;return 0x8000|w[0]+3*w[1]+9*w[2]|a<<5|b<<8|mo<<11|int(r)<<13
 def value(v):return native('VarGet',v)&65535
 def pos():
  i=m.read(m.symbols['gPlayerAvatar']+5,1)[0];x,y=struct.unpack('<hh',m.read(m.symbols['gObjectEvents']+i*36+16,4));return x-7,y-7
@@ -79,11 +79,11 @@ for i,step in enumerate(plan['shortest_solution'],1):
   console=next(c for c in geo.consoles if c[0]==p and c[3]==kind);beside(console[1],console[2]);command(10,src,dst)
  elif action.startswith('Walk'):route(anchors[nextstate[1]])
  elif action.startswith('Secure') or action.startswith('Release cargo'):
-  beside(51,14);command(12)
+  beside(52,5);command(12)
  elif action.startswith('Release captain'):
-  beside(41,25);command(13)
+  beside(39,14);command(13)
  elif action.startswith('Tension'):
-  beside(76,14);command(14)
+  beside(78,6);command(14)
  else:raise AssertionError(action)
  state=(tuple(nextstate[0]),*nextstate[1:])
  assert value(0x40d7)==encode(state),('state mismatch',i,action,hex(value(0x40d7)),hex(encode(state)))
@@ -95,7 +95,7 @@ assert state[1]==7
 warp(*anchors[7]);assert value(0x40d7)==encode(state)
 native('VarSet',0x40d8,63);command(6);assert value(0x40d9)&1
 command(15);assert value(0x40d7)==encode(((2,2,0),0,0,4,0,False)) and value(0x40d8)==63
-warp(3,36);m.keys.add(5);m.run(15);m.keys.clear();m.run(180)
+warp(3,27);m.keys.add(5);m.run(15);m.keys.clear();m.run(180)
 save=struct.unpack('<I',m.read(m.symbols['gSaveBlock1Ptr'],4))[0]
 assert tuple(m.read(save+4,2))==ids['HavoraWestQuadrant'],'exit warp'
 print('PASS saved configuration, crest award, reset preserving victories and exterior exit',flush=True)
@@ -107,17 +107,17 @@ def active(name):
  addr=m.symbols[name]|1
  return any(t[4] and struct.unpack_from('<I',t)[0]==addr for t in [m.read(m.symbols['gTasks']+i*40,40) for i in range(16)])
 # Real A-button boarding and native destination menu, selecting B west quay.
-warp(5,19);m.press(7,20);m.press(8,180)
+warp(4,10);m.press(7,20);m.press(8,180)
 assert active('Task_HandleMultichoiceInput'),'boarding menu did not open'
 m.press(5,20);m.press(5,20);m.press(8,30)
 for _ in range(5000):
  if not m.read(m.symbols['gPlayerAvatar']+6,1)[0]:break
  m.run(1)
 m.run(80)
-assert pos()==(32,19),('destination menu ride',pos())
+assert pos()==(31,10),('destination menu ride',pos())
 assert value(0x40d7)==encode(((2,2,0),2,2,4,0,False))
 # Real valve Yes/No prompt and transfer; invalid receiver/donor leaves save intact.
-warp(30,14);m.press(4,20);m.press(8,600)
+warp(28,6);m.press(4,20);m.press(8,600)
 assert active('Task_YesNoMenu_HandleInput'),'valve prompt did not open'
 m.press(8,30)
 for _ in range(5000):
@@ -129,3 +129,11 @@ assert value(0x40d7)==encode(((2,1,1),2,2,4,0,False)),'valve A interaction faile
 before=value(0x40d7);assert command(10,0,1)==3,'B station operated A/B valve'
 assert value(0x40d7)==before
 print('PASS legacy save migration, actual boat menu, valve Yes/No prompt and invalid-operation rejection',flush=True)
+
+# Reset through the real lever prompt, including its scripted relocation.
+warp(29,6);m.press(4,20);m.press(8,600)
+assert active('Task_YesNoMenu_HandleInput'),'reset confirmation missing'
+m.press(8,600);m.run(240)
+assert pos()==geo.ENTRY,('reset warped outside the shorter map',pos())
+assert value(0x40d8)==63
+print('PASS actual reset prompt returns to the authored entrance and retains crew victories',flush=True)
