@@ -164,6 +164,9 @@ extern const struct SpriteFrameImage gTrainerBackPicTable_RSMay[];
 extern const struct SpriteFrameImage gTrainerBackPicTable_Steven[];
 extern const struct SpriteFrameImage gTrainerBackPicTable_QuantumBrendan[];
 extern const struct SpriteFrameImage gTrainerBackPicTable_QuantumMay[];
+extern const struct SpriteFrameImage gTrainerBackPicTable_QuantumCody[];
+extern const struct SpriteFrameImage gTrainerBackPicTable_QuantumBen[];
+extern const struct SpriteFrameImage gTrainerBackPicTable_QuantumBrandon[];
 
 extern const union AffineAnimCmd *const gAffineAnims_BattleSpritePlayerSide[];
 extern const union AffineAnimCmd *const gAffineAnims_BattleSpriteOpponentSide[];

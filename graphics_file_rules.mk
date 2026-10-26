@@ -698,6 +698,15 @@ $(WALLPAPERGFXDIR)/volcano/tiles.4bpp: %.4bpp: %.png
 	$(GFX) $< $@ -num_tiles 57 -Wnum_tiles
 
 # Hoenn character animation sheets retain whole-sprite frame ordering.
+graphics/avatars/cody/normal.4bpp graphics/avatars/cody/surf_run.4bpp graphics/avatars/cody/item.4bpp: %.4bpp: %.png
+	$(GFX) $< $@ -mwidth 2 -mheight 4
+
+graphics/avatars/cody/bike.4bpp graphics/avatars/cody/fish.4bpp graphics/avatars/cody/vs_seeker_bike.4bpp: %.4bpp: %.png
+	$(GFX) $< $@ -mwidth 4 -mheight 4
+
+graphics/avatars/cody/back.4bpp: %.4bpp: %.png
+	$(GFX) $< $@ -mwidth 8 -mheight 8
+
 graphics/avatars/brendan/walking.4bpp graphics/avatars/brendan/running.4bpp graphics/avatars/may/walking.4bpp graphics/avatars/may/running.4bpp graphics/avatars/rsbrendan/normal.4bpp graphics/avatars/rsmay/normal.4bpp: %.4bpp: %.png
 	$(GFX) $< $@ -mwidth 2 -mheight 4
 
@@ -705,4 +714,22 @@ graphics/avatars/brendan/mach_bike.4bpp graphics/avatars/brendan/surfing.4bpp gr
 	$(GFX) $< $@ -mwidth 4 -mheight 4
 
 graphics/avatars/brendan/back.4bpp graphics/avatars/may/back.4bpp: %.4bpp: %.png
+	$(GFX) $< $@ -mwidth 8 -mheight 8
+
+graphics/avatars/ben/normal.4bpp graphics/avatars/ben/surf_run.4bpp graphics/avatars/ben/item.4bpp: %.4bpp: %.png
+	$(GFX) $< $@ -mwidth 2 -mheight 4
+
+graphics/avatars/ben/bike.4bpp graphics/avatars/ben/fish.4bpp graphics/avatars/ben/vs_seeker_bike.4bpp: %.4bpp: %.png
+	$(GFX) $< $@ -mwidth 4 -mheight 4
+
+graphics/avatars/ben/back.4bpp: %.4bpp: %.png
+	$(GFX) $< $@ -mwidth 8 -mheight 8
+
+graphics/avatars/brandon/normal.4bpp graphics/avatars/brandon/surf_run.4bpp graphics/avatars/brandon/item.4bpp: %.4bpp: %.png
+	$(GFX) $< $@ -mwidth 2 -mheight 4
+
+graphics/avatars/brandon/bike.4bpp graphics/avatars/brandon/fish.4bpp graphics/avatars/brandon/vs_seeker_bike.4bpp: %.4bpp: %.png
+	$(GFX) $< $@ -mwidth 4 -mheight 4
+
+graphics/avatars/brandon/back.4bpp: %.4bpp: %.png
 	$(GFX) $< $@ -mwidth 8 -mheight 8

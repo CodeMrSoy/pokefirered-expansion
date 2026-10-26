@@ -1058,6 +1058,27 @@ static const struct SpriteTemplate sTrainerBackSpriteTemplates[] =
         .affineAnims = gAffineAnims_BattleSpritePlayerSide,
         .callback = SpriteCB_BattleSpriteStartSlideLeft,
     },
+    [TRAINER_BACK_PIC_QUANTUM_BEN] = {
+        .tileTag = TAG_NONE, .paletteTag = 0,
+        .oam = &gOamData_BattleSpritePlayerSide, .anims = NULL,
+        .images = gTrainerBackPicTable_QuantumBen,
+        .affineAnims = gAffineAnims_BattleSpritePlayerSide,
+        .callback = SpriteCB_BattleSpriteStartSlideLeft,
+    },
+    [TRAINER_BACK_PIC_QUANTUM_BRANDON] = {
+        .tileTag = TAG_NONE, .paletteTag = 0,
+        .oam = &gOamData_BattleSpritePlayerSide, .anims = NULL,
+        .images = gTrainerBackPicTable_QuantumBrandon,
+        .affineAnims = gAffineAnims_BattleSpritePlayerSide,
+        .callback = SpriteCB_BattleSpriteStartSlideLeft,
+    },
+    [TRAINER_BACK_PIC_QUANTUM_CODY] = {
+        .tileTag = TAG_NONE, .paletteTag = 0,
+        .oam = &gOamData_BattleSpritePlayerSide, .anims = NULL,
+        .images = gTrainerBackPicTable_QuantumCody,
+        .affineAnims = gAffineAnims_BattleSpritePlayerSide,
+        .callback = SpriteCB_BattleSpriteStartSlideLeft,
+    },
 };
 
 #define NUM_SECRET_BASE_CLASSES 5

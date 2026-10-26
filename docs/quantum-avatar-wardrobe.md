@@ -49,3 +49,27 @@ creation, Wardrobe, movement, battle portraits, and reload were inspected.
 
 The new creation step adds one A press to the standard emulator bootstrap.
 This is a cosmetic feature; no full-game playthrough was performed.
+
+## Custom playable avatars
+
+Cody, Ben and Brandon are available in character creation and Wardrobe.
+Saved look values 7, 8 and 9 identify them; legacy values 5/6 continue to
+migrate to the Emerald looks. Name, gender and OT identity are independent.
+
+Ben and Brandon use the corrected approved artwork in
+`graphics/avatars/{ben,brandon}/source/approved.png`. Both have neutral black
+hair. Ben's trainer stance is narrower, and rear-facing Poké Balls hide the
+front button. Additional activity and rear throw poses are generated FireRed
+template adaptations in `source/poses.png`. Run
+`python3 tools/import_quantum_avatar_art.py` to regenerate native indexed
+sprites, palettes, trainer portraits and map icons. Native overworld frame
+order is down/up/left idle, down steps, up steps, left steps. Right-facing
+frames use the existing engine mirroring. Index zero is transparent; assets
+use at most 15 visible colors. The artwork still benefits from a longer
+in-game visual playtest, especially fishing and throwing motion.
+
+After importing the source art, run `python3 tools/polish_quantum_avatars.py`
+for the revised FireRed-scale walking art, aligned action silhouettes, trainer
+and trainer ground shadows. Cody retains his original trainer artwork and palette. This command
+reruns the importer before applying the corrections so exports are repeatable.
+The revised walking silhouettes use Red's 19-pixel visible height and baseline.

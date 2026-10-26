@@ -413,8 +413,14 @@ static const u32 sAvatarMap_brendan[] = INCBIN_U32("graphics/avatars/brendan/map
 static const u16 sAvatarMapPal_brendan[] = INCBIN_U16("graphics/avatars/brendan/map.gbapal");
 static const u32 sAvatarMap_may[] = INCBIN_U32("graphics/avatars/may/map.4bpp.lz");
 static const u16 sAvatarMapPal_may[] = INCBIN_U16("graphics/avatars/may/map.gbapal");
-static const u32 *const sAvatarMapPics[] = {sAvatarMap_brendan, sAvatarMap_may};
-static const u16 *const sAvatarMapPalettes[] = {sAvatarMapPal_brendan, sAvatarMapPal_may};
+static const u32 sAvatarMap_cody[] = INCBIN_U32("graphics/avatars/cody/map.4bpp.lz");
+static const u32 sAvatarMap_ben[] = INCBIN_U32("graphics/avatars/ben/map.4bpp.lz");
+static const u32 sAvatarMap_brandon[] = INCBIN_U32("graphics/avatars/brandon/map.4bpp.lz");
+static const u16 sAvatarMapPal_cody[] = INCBIN_U16("graphics/avatars/cody/map.gbapal");
+static const u16 sAvatarMapPal_ben[] = INCBIN_U16("graphics/avatars/ben/map.gbapal");
+static const u16 sAvatarMapPal_brandon[] = INCBIN_U16("graphics/avatars/brandon/map.gbapal");
+static const u32 *const sAvatarMapPics[] = {sAvatarMap_brendan, sAvatarMap_may, sAvatarMap_cody, sAvatarMap_ben, sAvatarMap_brandon};
+static const u16 *const sAvatarMapPalettes[] = {sAvatarMapPal_brendan, sAvatarMapPal_may, sAvatarMapPal_cody, sAvatarMapPal_ben, sAvatarMapPal_brandon};
 static const u32 sRegionMap_Gfx[] = INCBIN_U32("graphics/region_map/region_map.4bpp.lz");
 #ifdef QUANTUM_MAPSEC_START
 static const u32 sQuantumAtlas_Gfx[] = INCBIN_U32("graphics/region_map/quantum_atlas.bin.lz");

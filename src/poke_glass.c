@@ -916,7 +916,8 @@ static void DrawWardrobePage(void)
     StatsText(107, 72, sWardrobeLook == GetCurrentAvatarLook() ? COMPOUND_STRING("Currently worn") : COMPOUND_STRING("Preview"));
     StatsText(107, 88, COMPOUND_STRING("Look"));
     StatsNumber(148, 88, sWardrobeLook + 1);
-    StatsText(153, 88, COMPOUND_STRING("/ 4"));
+    StatsText(153, 88, COMPOUND_STRING("/"));
+    StatsNumber(164, 88, AVATAR_LOOK_COUNT);
     for (i = 0; i < AVATAR_LOOK_COUNT; i++)
         HubRect(i == sWardrobeLook ? 8 : 6, 107 + i * 14, 103, 6, 3);
     StatsText(30, 114, COMPOUND_STRING("Left/Right: Look   A Wear   B Back"));
