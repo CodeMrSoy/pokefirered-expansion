@@ -15739,23 +15739,29 @@ Pic: Sailor
 Gender: Male
 Music: Swimmer
 Double Battle: Yes
-AI: Check Bad Move / Try To Faint / Check Viability
+AI: Check Bad Move / Try To Faint / Check Viability / HP Aware
 
-Machoke
-Level: 49
-IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe
-- Brick Break
+Hariyama @ Coba Berry
+Level: 47
+Ability: Thick Fat
+Nature: Adamant
+EVs: 128 HP / 128 Atk
+IVs: 20 HP / 20 Atk / 20 Def / 20 SpA / 20 SpD / 20 Spe
+- Fake Out
+- Close Combat
+- Knock Off
+- Protect
+
+Machamp @ Lum Berry
+Level: 48
+Ability: No Guard
+Nature: Adamant
+EVs: 128 HP / 128 Atk
+IVs: 20 HP / 20 Atk / 20 Def / 20 SpA / 20 SpD / 20 Spe
+- Dynamic Punch
+- Knock Off
 - Rock Slide
 - Protect
-- Helping Hand
-
-Pelipper
-Level: 49
-IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe
-- Water Pulse
-- Air Slash
-- Protect
-- Tailwind
 
 === TRAINER_HAVORA_NAVIGATOR ===
 Name: NAVIGATOR
@@ -15764,23 +15770,188 @@ Pic: Sailor
 Gender: Male
 Music: Swimmer
 Double Battle: Yes
-AI: Check Bad Move / Try To Faint / Check Viability
+AI: Check Bad Move / Try To Faint / Check Viability / HP Aware / Smart Mon Choices
 
-Lanturn
-Level: 50
-IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe
-- Surf
+Magnezone @ Air Balloon
+Level: 49
+Ability: Sturdy
+Nature: Modest
+EVs: 168 HP / 168 SpA
+IVs: 24 HP / 0 Atk / 24 Def / 24 SpA / 24 SpD / 24 Spe
+- Discharge
+- Flash Cannon
 - Thunderbolt
 - Protect
-- Thunder Wave
 
-Skarmory
-Level: 50
-IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe
-- Steel Wing
-- Aerial Ace
+Lanturn @ Sitrus Berry
+Level: 49
+Ability: Volt Absorb
+Nature: Modest
+EVs: 168 HP / 168 SpA
+IVs: 24 HP / 0 Atk / 24 Def / 24 SpA / 24 SpD / 24 Spe
+- Scald
+- Thunderbolt
+- Icy Wind
 - Protect
+
+Seismitoad @ Rindo Berry
+Level: 48
+Ability: Water Absorb
+Nature: Modest
+EVs: 168 HP / 168 SpA
+IVs: 24 HP / 0 Atk / 24 Def / 24 SpA / 24 SpD / 24 Spe
+- Scald
+- Earth Power
+- Sludge Bomb
+- Protect
+
+=== TRAINER_HAVORA_ENGINEER ===
+Name: ENGINEER
+Class: Sailor
+Pic: Sailor
+Gender: Male
+Music: Swimmer
+Double Battle: Yes
+AI: Check Bad Move / Try To Faint / Check Viability / HP Aware / Smart Mon Choices
+
+Skarmory @ Rocky Helmet
+Level: 50
+Ability: Sturdy
+Nature: Impish
+EVs: 200 HP / 200 Def / 4 SpD
+IVs: 28 HP / 28 Atk / 28 Def / 0 SpA / 28 SpD / 28 Spe
+- Brave Bird
+- Body Press
 - Tailwind
+- Protect
+
+Rotom-Wash @ Sitrus Berry
+Level: 50
+Ability: Levitate
+Nature: Modest
+EVs: 200 HP / 200 SpA / 4 SpD
+IVs: 28 HP / 0 Atk / 28 Def / 28 SpA / 28 SpD / 28 Spe
+- Hydro Pump
+- Thunderbolt
+- Will-O-Wisp
+- Protect
+
+Scizor @ Metal Coat
+Level: 49
+Ability: Technician
+Nature: Adamant
+EVs: 200 HP / 200 Atk / 4 SpD
+IVs: 28 HP / 28 Atk / 28 Def / 0 SpA / 28 SpD / 28 Spe
+- Bullet Punch
+- Bug Bite
+- Close Combat
+- Protect
+
+=== TRAINER_HAVORA_DIVER ===
+Name: DIVER
+Class: Sailor
+Pic: Sailor
+Gender: Male
+Music: Swimmer
+Double Battle: Yes
+AI: Check Bad Move / Try To Faint / Check Viability / HP Aware / Smart Mon Choices / Smart Switching / PP Stall Prevention
+
+Bronzong @ Mental Herb
+Level: 51
+Ability: Levitate
+Nature: Relaxed
+EVs: 252 HP / 156 Def / 100 SpD
+IVs: 31 HP / 31 Atk / 31 Def / 0 SpA / 31 SpD / 0 Spe
+- Trick Room
+- Gyro Ball
+- Body Press
+- Protect
+
+Araquanid @ Mystic Water
+Level: 51
+Ability: Water Bubble
+Nature: Brave
+EVs: 252 HP / 252 Atk / 4 SpD
+IVs: 31 HP / 31 Atk / 31 Def / 0 SpA / 31 SpD / 0 Spe
+- Liquidation
+- Leech Life
+- Wide Guard
+- Protect
+
+Crawdaunt @ Life Orb
+Level: 51
+Ability: Adaptability
+Nature: Brave
+EVs: 252 HP / 252 Atk / 4 SpD
+IVs: 31 HP / 31 Atk / 31 Def / 0 SpA / 31 SpD / 0 Spe
+- Crabhammer
+- Knock Off
+- Aqua Jet
+- Protect
+
+Cradily @ Sitrus Berry
+Level: 50
+Ability: Suction Cups
+Nature: Quiet
+EVs: 252 HP / 252 SpA / 4 SpD
+IVs: 31 HP / 0 Atk / 31 Def / 31 SpA / 31 SpD / 0 Spe
+- Giga Drain
+- Earth Power
+- Recover
+- Protect
+
+=== TRAINER_HAVORA_FIRST_MATE ===
+Name: FIRST MATE
+Class: Sailor
+Pic: Sailor
+Gender: Male
+Music: Swimmer
+Double Battle: Yes
+AI: Check Bad Move / Try To Faint / Check Viability / HP Aware / Smart Mon Choices / Smart Switching / PP Stall Prevention
+
+Pelipper @ Damp Rock
+Level: 52
+Ability: Drizzle
+Nature: Modest
+EVs: 252 HP / 156 Def / 100 SpA
+IVs: 31 HP / 0 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
+- Hurricane
+- Weather Ball
+- Tailwind
+- Wide Guard
+
+Kingdra @ Mystic Water
+Level: 52
+Ability: Swift Swim
+Nature: Modest
+EVs: 4 HP / 252 SpA / 252 Spe
+IVs: 31 HP / 0 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
+- Muddy Water
+- Dragon Pulse
+- Ice Beam
+- Protect
+
+Scizor @ Metal Coat
+Level: 51
+Ability: Technician
+Nature: Adamant
+EVs: 252 HP / 252 Atk / 4 SpD
+IVs: 31 HP / 31 Atk / 31 Def / 0 SpA / 31 SpD / 31 Spe
+- Bullet Punch
+- Bug Bite
+- Swords Dance
+- Protect
+
+Lanturn @ Sitrus Berry
+Level: 51
+Ability: Volt Absorb
+Nature: Modest
+EVs: 252 HP / 252 SpA / 4 SpD
+IVs: 31 HP / 0 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
+- Thunder
+- Scald
+- Icy Wind
+- Protect
 
 === TRAINER_HAVORA_CAPTAIN ===
 Name: EIRIK
@@ -15789,36 +15960,70 @@ Pic: Sailor
 Gender: Male
 Music: Swimmer
 Double Battle: Yes
-AI: Check Bad Move / Try To Faint / Check Viability
+AI: Check Bad Move / Try To Faint / Check Viability / HP Aware / Smart Mon Choices / Smart Switching / PP Stall Prevention
 
-Pelipper
+Pelipper @ Focus Sash
 Level: 53
-IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe
-- Surf
+Ability: Drizzle
+Nature: Timid
+EVs: 4 HP / 252 SpA / 252 Spe
+IVs: 31 HP / 0 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
 - Hurricane
-- Protect
+- Weather Ball
 - Tailwind
+- Wide Guard
 
-Magnezone
+Archaludon @ Assault Vest
 Level: 53
-IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe
-- Thunderbolt
+Ability: Stamina
+Nature: Modest
+EVs: 252 HP / 252 SpA / 4 SpD
+IVs: 31 HP / 0 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
+- Electro Shot
 - Flash Cannon
-- Protect
-- Light Screen
-
-Machamp
-Level: 54
-IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe
-- Brick Break
-- Rock Slide
-- Protect
-- Helping Hand
-
-Kingdra
-Level: 54
-IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe
-- Surf
 - Dragon Pulse
+- Body Press
+
+Kingdra @ Life Orb
+Level: 53
+Ability: Swift Swim
+Nature: Modest
+EVs: 4 HP / 252 SpA / 252 Spe
+IVs: 31 HP / 0 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
+- Muddy Water
+- Scald
+- Draco Meteor
 - Protect
-- Rain Dance
+
+Hariyama @ Flame Orb
+Level: 52
+Ability: Guts
+Nature: Adamant
+EVs: 252 Atk / 128 Def / 128 SpD
+IVs: 31 HP / 31 Atk / 31 Def / 0 SpA / 31 SpD / 31 Spe
+- Fake Out
+- Close Combat
+- Knock Off
+- Wide Guard
+
+Jellicent @ Sitrus Berry
+Level: 52
+Ability: Water Absorb
+Nature: Bold
+EVs: 252 HP / 156 Def / 100 SpD
+IVs: 31 HP / 0 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
+- Scald
+- Shadow Ball
+- Icy Wind
+- Recover
+
+Dhelmise @ Clear Amulet
+Level: 54
+Ability: Steelworker
+Nature: Jolly
+EVs: 4 HP / 252 Atk / 252 Spe
+IVs: 31 HP / 31 Atk / 31 Def / 0 SpA / 31 SpD / 31 Spe
+- Anchor Shot
+- Power Whip
+- Shadow Claw
+- Protect

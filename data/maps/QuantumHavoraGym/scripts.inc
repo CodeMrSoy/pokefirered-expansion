@@ -9,7 +9,13 @@ HavoraTrial_Resume::
  special HavoraGym_OnResume
  end
 HavoraTrial_Welcome::
- msgbox HavoraTrial_WelcomeText, MSGBOX_NPC
+ lockall
+ msgbox HavoraTrial_WelcomeText, MSGBOX_YESNO
+ goto_if_eq VAR_RESULT, NO, HavoraLock_Release
+ setvar VAR_0x8004, 25
+ special HavoraGym_Control
+ msgbox HavoraTrial_HealedText
+ releaseall
  end
 HavoraLock_ABForward::
  lockall
@@ -98,7 +104,7 @@ HavoraLock_Reset::
  goto_if_ne VAR_RESULT, 1, HavoraLock_Error
  waitstate
  releaseall
- warp MAP_QUANTUM_HAVORA_GYM, 255, 3, 48
+ warp MAP_QUANTUM_HAVORA_GYM, 255, 3, 35
  waitstate
  end
 HavoraLock_Run::
@@ -184,38 +190,108 @@ HavoraLock_DockText::
  .string "No free boat is moored at this\nlanding and water level.$"
 
 HavoraTrial_Crew::
-	trainerbattle_double TRAINER_HAVORA_DOCK_CREW, HavoraTrial_CrewIntro, HavoraTrial_CrewLoss, HavoraTrial_TwoMons, HavoraTrial_CrewWon
-	msgbox HavoraTrial_CrewAfter, MSGBOX_NPC
-	end
+ trainerbattle_double TRAINER_HAVORA_DOCK_CREW, HavoraTrial_CrewIntro, HavoraTrial_CrewLoss, HavoraTrial_TwoMons, HavoraTrial_CrewWon
+ msgbox HavoraTrial_CrewAfter, MSGBOX_NPC
+ end
 HavoraTrial_CrewWon::
-	setvar VAR_HAVORA_GYM_PROGRESS, 1
-	msgbox HavoraTrial_CrewAfter
-	releaseall
-	end
+ setvar VAR_0x8004, 22
+ setvar VAR_0x8005, 1
+ special HavoraGym_Control
+ msgbox HavoraTrial_CrewAfter
+ releaseall
+ end
 HavoraTrial_Navigator::
-	trainerbattle_double TRAINER_HAVORA_NAVIGATOR, HavoraTrial_NavIntro, HavoraTrial_NavLoss, HavoraTrial_TwoMons, HavoraTrial_NavWon
-	msgbox HavoraTrial_NavAfter, MSGBOX_NPC
-	end
-HavoraTrial_NavWon::
-	setvar VAR_HAVORA_GYM_PROGRESS, 3
-	msgbox HavoraTrial_NavAfter
-	releaseall
-	end
+ setvar VAR_0x8004, 23
+ setvar VAR_0x8005, 1
+ special HavoraGym_Control
+ goto_if_ne VAR_RESULT, 1, HavoraTrial_Clearance
+ trainerbattle_double TRAINER_HAVORA_NAVIGATOR, HavoraTrial_NavIntro, HavoraTrial_NavLoss, HavoraTrial_TwoMons, HavoraTrial_NavigatorWon
+ msgbox HavoraTrial_NavAfter, MSGBOX_NPC
+ end
+HavoraTrial_NavigatorWon::
+ setvar VAR_0x8004, 22
+ setvar VAR_0x8005, 2
+ special HavoraGym_Control
+ msgbox HavoraTrial_NavAfter
+ releaseall
+ end
+HavoraTrial_Engineer::
+ setvar VAR_0x8004, 23
+ setvar VAR_0x8005, 3
+ special HavoraGym_Control
+ goto_if_ne VAR_RESULT, 1, HavoraTrial_Clearance
+ trainerbattle_double TRAINER_HAVORA_ENGINEER, HavoraTrial_EngineerIntro, HavoraTrial_EngineerLoss, HavoraTrial_TwoMons, HavoraTrial_EngineerWon
+ msgbox HavoraTrial_EngineerAfter, MSGBOX_NPC
+ end
+HavoraTrial_EngineerWon::
+ setvar VAR_0x8004, 22
+ setvar VAR_0x8005, 8
+ special HavoraGym_Control
+ msgbox HavoraTrial_EngineerAfter
+ releaseall
+ end
+HavoraTrial_Diver::
+ setvar VAR_0x8004, 23
+ setvar VAR_0x8005, 11
+ special HavoraGym_Control
+ goto_if_ne VAR_RESULT, 1, HavoraTrial_Clearance
+ trainerbattle_double TRAINER_HAVORA_DIVER, HavoraTrial_DiverIntro, HavoraTrial_DiverLoss, HavoraTrial_TwoMons, HavoraTrial_DiverWon
+ msgbox HavoraTrial_DiverAfter, MSGBOX_NPC
+ end
+HavoraTrial_DiverWon::
+ setvar VAR_0x8004, 22
+ setvar VAR_0x8005, 16
+ special HavoraGym_Control
+ msgbox HavoraTrial_DiverAfter
+ releaseall
+ end
+HavoraTrial_FirstMate::
+ setvar VAR_0x8004, 23
+ setvar VAR_0x8005, 27
+ special HavoraGym_Control
+ goto_if_ne VAR_RESULT, 1, HavoraTrial_Clearance
+ trainerbattle_double TRAINER_HAVORA_FIRST_MATE, HavoraTrial_FirstMateIntro, HavoraTrial_FirstMateLoss, HavoraTrial_TwoMons, HavoraTrial_FirstMateWon
+ msgbox HavoraTrial_FirstMateAfter, MSGBOX_NPC
+ end
+HavoraTrial_FirstMateWon::
+ setvar VAR_0x8004, 22
+ setvar VAR_0x8005, 32
+ special HavoraGym_Control
+ msgbox HavoraTrial_FirstMateAfter
+ releaseall
+ end
 HavoraTrial_Captain::
-	trainerbattle_double TRAINER_HAVORA_CAPTAIN, HavoraTrial_CaptainIntro, HavoraTrial_CaptainLoss, HavoraTrial_TwoMons, HavoraTrial_CaptainWon
-	msgbox HavoraTrial_CaptainAfter, MSGBOX_NPC
-	end
+ setvar VAR_0x8004, 24
+ special HavoraGym_Control
+ goto_if_eq VAR_RESULT, 2, HavoraTrial_Clearance
+ goto_if_eq VAR_RESULT, 3, HavoraTrial_FullCrew
+ trainerbattle_double TRAINER_HAVORA_CAPTAIN, HavoraTrial_CaptainIntro, HavoraTrial_CaptainLoss, HavoraTrial_TwoMons, HavoraTrial_CaptainWon
+ msgbox HavoraTrial_CaptainAfter, MSGBOX_NPC
+ end
 HavoraTrial_CaptainWon::
-	setvar VAR_HAVORA_GYM_PROGRESS, 7
-	setvar VAR_0x8004, 6
-	special HavoraGym_Control
-	msgbox HavoraTrial_CrestText
-	msgbox HavoraTrial_CaptainAfter
-	releaseall
-	end
-
+ setvar VAR_0x8004, 22
+ setvar VAR_0x8005, 4
+ special HavoraGym_Control
+ setvar VAR_0x8004, 6
+ special HavoraGym_Control
+ msgbox HavoraTrial_CrestText
+ msgbox HavoraTrial_CaptainAfter
+ releaseall
+ end
+HavoraTrial_Clearance::
+ msgbox HavoraTrial_ClearanceText, MSGBOX_NPC
+ end
+HavoraTrial_FullCrew::
+ msgbox HavoraTrial_FullCrewText, MSGBOX_NPC
+ end
 HavoraTrial_WelcomeText::
- .string "Welcome to the CAPTAIN'S TRIAL!\nEvery battle here is a double.\pMove one water level at a time.\nEqual levels open boat gates.\pClimb ladders to dry controls.\nLow docks flood as water rises.\pBoth boats matter. Green levers\nreset locks, but keep victories.$"
+ .string "Welcome to the CAPTAIN'S TRIAL!\nSix crews test your teamwork.\pBoats stay at fixed berths.\nEqual water opens lock gates.\pLower shelves flood in place.\nGreen levers reset machinery.\pNeed your crew healed before\nyou set sail?$"
+HavoraTrial_HealedText::
+ .string "Your crew is ready to sail!$"
+HavoraTrial_ClearanceText::
+ .string "Earn clearance in this order:\nDeckhand, Navigator, Engineer,\pDiver, then First Mate.\nThe captain awaits them all.$"
+HavoraTrial_FullCrewText::
+ .string "My trial is six against six!\nBring six battle-ready POKéMON.\pThe steward at the entrance\nwill heal your crew for free.$"
 HavoraTrial_TwoMons::
 	.string "A crew needs two partners.\nBring two battle-ready POKéMON.$"
 HavoraTrial_CrewIntro::
@@ -238,3 +314,22 @@ HavoraTrial_CrestText::
 	.string "You earned the HAVORA CREST!$"
 HavoraTrial_CaptainAfter::
 	.string "The HAVORA CREST marks you as\na trusted partner of this port.\pBoth partners earned this seal.\nUse a green lever to return.$"
+
+HavoraTrial_EngineerIntro::
+ .string "Steel, wind, and good timing.\nLet's put your crew to work!$"
+HavoraTrial_EngineerLoss::
+ .string "Fine work on both stations!$"
+HavoraTrial_EngineerAfter::
+ .string "The diver waits on the service\nisland. Secure the cargo deck.$"
+HavoraTrial_DiverIntro::
+ .string "Down in a wreck, slow and\nsteady wins the salvage!$"
+HavoraTrial_DiverLoss::
+ .string "You kept your bearings!$"
+HavoraTrial_DiverAfter::
+ .string "Find the First Mate on C's\nouter quay before the captain.$"
+HavoraTrial_FirstMateIntro::
+ .string "A storm's coming. Can your\npartners sail through it?$"
+HavoraTrial_FirstMateLoss::
+ .string "You're ready for the captain!$"
+HavoraTrial_FirstMateAfter::
+ .string "You may tension the final\ncargo bridge. Bring six aboard!$"

@@ -1,3 +1,5 @@
+> Superseded by [the implemented overhead rebuild](overhead-rebuild.md). The notes below describe earlier iterations.
+
 # Three-lock Captain's Trial — playable prototype, uncommitted
 
 The dedicated indoor layout is now 80x54. Outdoor Havora layouts, cliffs,

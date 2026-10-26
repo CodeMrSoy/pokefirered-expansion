@@ -6,8 +6,8 @@ R=Path(__file__).resolve().parents[2]
 def module(name):
  spec=importlib.util.spec_from_file_location(name,R/'tools/havora'/f'{name}.py');m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m);return m
 geo=module('build_fixed_transfer_gym');model=module('solve_fixed_transfer_design')
-anchors=[(3,14),(24,14),(30,14),(51,15),(76,13),(57,14),(41,22),(65,23)]
-actors={(31,20),(76,20),(67,24),(3,47)}
+anchors=geo.ANCHORS
+actors=geo.ACTORS
 def flood(b,start):
  todo=deque([start]);seen={start}
  while todo:
@@ -32,12 +32,12 @@ for state in states:
   n=todo.popleft();ss=(w,n,a,b,m,r)
   for act,nextstate in model.edges(ss):
    if act.startswith('Walk') and nextstate[1] not in reachable:reachable.add(nextstate[1]);todo.append(nextstate[1])
- assert (3,48) in components[0],('entry/exit disconnected',state)
+ assert geo.ENTRY in components[0],('entry/exit disconnected',state)
  actual={n for n,anchor in enumerate(anchors) if anchor in components[p]}
  assert actual==reachable,('walk graph mismatch',state,'expected',reachable,'actual',actual)
  for boat,node in [(0,a),(1,b)]:
   if node==p and not(boat and m) and w[node//2] in model.DOCK[node]:
-   port=(geo.SHORE[node],geo.ROWS[w[node//2]]+boat*3)
+   port=geo.berth(node,boat)
    assert port in components[p],('legal boat port unreachable',state,boat,port)
  checked+=1
 print('PASS',checked,'states: mapped walking connections, elevations and legal boat landings match solver')

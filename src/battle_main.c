@@ -2003,7 +2003,11 @@ u8 CreateNPCTrainerPartyFromTrainer(struct Pokemon *party, const struct Trainer 
             u16 species = partyData[monIndex].species;
 
             #if (RANDOMIZER_AVAILABLE)
-                if (RandomizerFeatureEnabled(RANDOMIZE_TRAINER_MON)
+                if (seed >= TRAINER_HAVORA_DOCK_CREW && seed <= TRAINER_HAVORA_FIRST_MATE)
+                {
+                    // Havora crews teach specific partner interactions.
+                }
+                else if (RandomizerFeatureEnabled(RANDOMIZE_TRAINER_MON)
                     && (trainer->trainerClass == TRAINER_CLASS_RIVAL_EARLY
                         || trainer->trainerClass == TRAINER_CLASS_RIVAL_LATE
                         || trainer->trainerClass == TRAINER_CLASS_CHAMPION))
@@ -2071,7 +2075,11 @@ u8 CreateNPCTrainerPartyFromTrainer(struct Pokemon *party, const struct Trainer 
                 }
             }
             SetMonData(&party[i], MON_DATA_ABILITY_NUM, &abilityNum);
-            SetMonData(&party[i], MON_DATA_CANT_RANDOMIZE_ABILITY, &abilityNum);
+            {
+                // Other trainer parties retain the normal randomizer behavior.
+                u32 fixedAbility = seed >= TRAINER_HAVORA_DOCK_CREW && seed <= TRAINER_HAVORA_FIRST_MATE;
+                SetMonData(&party[i], MON_DATA_CANT_RANDOMIZE_ABILITY, &fixedAbility);
+            }
             SetMonData(&party[i], MON_DATA_FRIENDSHIP, &(partyData[monIndex].friendship));
             if (partyData[monIndex].ball != ITEM_NONE)
             {

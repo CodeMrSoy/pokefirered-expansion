@@ -29,7 +29,7 @@ def render(out):
  im=im.convert('RGB')
  im.save(Path(out).with_name('captains-trial-clean.png'))
  d=ImageDraw.Draw(im)
- for x,y,t in [(7,14,'A'),(34,14,'B'),(64,14,'C'),(39,18,'SERVICE WINCH'),(64,18,'CAPTAIN'),(1,45,'ENTRANCE')]:d.text((x*16,y*16),t,fill='white',stroke_width=2,stroke_fill='black')
+ for x,y,t in [(7,14,'A'),(34,14,'B'),(64,14,'C'),(39,18,'SERVICE WINCH'),(64,18,'CAPTAIN'),(1,35,'ENTRANCE')]:d.text((x*16,y*16),t,fill='white',stroke_width=2,stroke_fill='black')
  im.save(out)
 if __name__=='__main__':
  p=R/'docs/havora/review/captains-trial.png';p.parent.mkdir(parents=True,exist_ok=True);render(p)

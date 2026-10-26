@@ -16,6 +16,9 @@
 #include "data/havora_lock_geometry.h"
 #include "constants/maps.h"
 #include "constants/vars.h"
+#include "pokemon.h"
+#include "malloc.h"
+#include "script_pokemon_util.h"
 
 static void MoveBoat(u8 id);
 static void LaunchPassenger(struct Sprite *sprite)
@@ -45,7 +48,7 @@ static const struct SpriteTemplate sLaunchTemplate={
  .anims=gDummySpriteAnimTable,.images=NULL,.affineAnims=gDummySpriteAffineAnimTable,.callback=LaunchPassenger
 };
 // State is versioned; existing victories and crest flags are independent.
-#define VERSION 0x8000
+#define VERSION 0xC000
 static const u16 sLockBase[]=INCBIN_U16("data/layouts/HavoraCaptainsTrial/base.bin");
 static bool8 Here(void)
 {
@@ -69,133 +72,135 @@ static void ResetLock(void){VarSet(VAR_HAVORA_GYM_STATE,VERSION|8|(4<<8));}
 static bool8 Valid(void)
 {
  u16 s=VarGet(VAR_HAVORA_GYM_STATE);
- return (s&VERSION)&&(s&31)<27&&Water(0)+Water(1)+Water(2)==4&&Boat(0)<6&&Boat(1)<6&&Moor()<3;
+ return (s&VERSION)==VERSION&&(s&31)<27&&Water(0)+Water(1)+Water(2)==4&&Boat(0)<6&&Boat(1)<6&&Moor()<3;
 }
 static u8 Node(s16 x,s16 y)
 {
  u8 n;
  if(x>=40&&x<=43&&y>=21&&y<=25)return 6;
- if(x>=65&&x<=69&&y>=22&&y<=25)return 7;
- for(n=0;n<6;n++)if(x>=sBank[n]&&x<sBank[n]+5&&y>=11&&y<=40)return n;
- if(x>=1&&x<=5&&y>=41&&y<=50)return 0;
+ if(x>=64&&x<=68&&y>=22&&y<=25)return 7;
+ for(n=0;n<6;n++)if(x>=sBank[n]&&x<sBank[n]+5&&y>=11&&y<=29)return n;
+ if(x>=1&&x<=5&&y>=24&&y<=37)return 0;
  return 255;
 }
 static void Tile(s16 x,s16 y,u16 tile,bool8 blocked,u8 z){MapGridSetMetatileEntryAt(x+MAP_OFFSET,y+MAP_OFFSET,tile|(blocked?0x400:0)|(z<<12));}
-static void Rect(u8 x,u8 y,u8 w,u8 h,u16 t,bool8 b,u8 z){u8 xx,yy;for(yy=y;yy<y+h;yy++)for(xx=x;xx<x+w;xx++)Tile(xx,yy,t,b,z);}
 static void Line(u8 x,u8 y,u8 xx,u8 yy,u16 t,u8 z)
 {
  s8 dx=x<xx?1:x>xx?-1:0,dy=y<yy?1:y>yy?-1:0;
  while(TRUE){Tile(x,y,t,FALSE,z);if(x==xx&&y==yy)break;x+=dx;y+=dy;}
 }
+// Decode both endpoints during transfers. Only changed cells transition; high
+// platforms, berths and galleries keep their exact plan coordinates throughout.
 static void Draw(bool8 redraw)
 {
- u8 x,y,n,b,ch,tid=FindTaskIdByFunc(MoveBoat),m=Moor();
+ u16 i,oldIndex=sLockMapOffsets[VarGet(VAR_HAVORA_GYM_STATE)&31],newIndex=oldIndex;
+ u16 left=0,nextLeft=0,tile=0,nextTile=0;
+ u8 x,y,b,tid=FindTaskIdByFunc(MoveBoat),m=Moor();
  bool8 transfer=tid!=TASK_NONE&&gTasks[tid].data[0]==2;
  bool8 occupied=tid!=TASK_NONE&&gTasks[tid].data[0]==1&&gTasks[tid].data[7];
- s16 surface[3], deckCut[3];
- for(y=0;y<LOCK_HEIGHT;y++)for(x=0;x<LOCK_WIDTH;x++)MapGridSetMetatileEntryAt(x+7,y+7,sLockBase[y*LOCK_WIDTH+x]);
- for(ch=0;ch<3;ch++)
+ if(transfer)
  {
-  u8 w=Water(ch);surface[ch]=33-8*w;
-  if(transfer){if(ch==gTasks[tid].data[1])surface[ch]+=gTasks[tid].data[3];if(ch==gTasks[tid].data[2])surface[ch]-=gTasks[tid].data[3];}
-  // Deck flooding follows the same transfer phase as the moving waterline.
-  deckCut[ch]=w==0?41:w==1?32:24;
-  if(transfer&&(ch==gTasks[tid].data[1]||ch==gTasks[tid].data[2]))
-  {
-   s16 target=w+(ch==gTasks[tid].data[1]?-1:1);
-   target=target==0?41:target==1?32:24;
-   deckCut[ch]+=(target-deckCut[ch])*gTasks[tid].data[3]/8;
-  }
-  Rect(sPoolX[ch],17,sPoolWidth[ch],27,0x282,TRUE,3+2*w);
-  // Fixed basin: expose only a shallow rear retaining face.
-  if(surface[ch]>17)Rect(sPoolX[ch],17,sPoolWidth[ch],(surface[ch]-17)/8,0x380,TRUE,1);
-  Rect(sPoolX[ch],17+(surface[ch]-17)/8,sPoolWidth[ch],1,0x381,TRUE,1);
+  static const u8 weight[]={1,3,9};
+  u8 next=(VarGet(VAR_HAVORA_GYM_STATE)&31)-weight[gTasks[tid].data[1]]+weight[gTasks[tid].data[2]];
+  newIndex=sLockMapOffsets[next];
  }
- for(y=21;y<26;y++)for(x=39;x<45;x++)MapGridSetMetatileEntryAt(x+7,y+7,sLockBase[y*LOCK_WIDTH+x]);
- for(y=21;y<26;y++)for(x=64;x<71;x++)MapGridSetMetatileEntryAt(x+7,y+7,sLockBase[y*LOCK_WIDTH+x]);
- Tile(41,25,0x302,TRUE,5);
- for(y=24;y<26;y++)if(y>=deckCut[1])Rect(40,y,3,1,0x282,TRUE,1);
- // Lower decks and the submerged ladder sections vanish beneath the tide.
- for(n=0;n<6;n++)
+ for(i=0;i<LOCK_WIDTH*LOCK_HEIGHT;i++)
  {
-  u8 w=Water(n/2),cut=deckCut[n/2];
-  if(cut<41)Rect(sBank[n],cut,5,41-cut,0x282,TRUE,1);
-  Rect(sStair[n],15,1,n==0?35:24,0x281,FALSE,0);
-  for(y=16;y<=32;y+=8)Tile(sStair[n],y,0x386,FALSE,0);
-  Tile(sBank[n]+((n==0||n==1||n==2||n==5)?4:1),14,w==0?0x376:w==1?0x387:0x377,TRUE,9);
-  for(ch=0;ch<3;ch++)for(b=0;b<2;b++)
-  {
-   y=sWaterRow[ch]+3*b;
-   if(y>=cut)Tile(sShore[n],y,0x282,TRUE,1);
-   else Tile(sShore[n],y,(sDockMask[n]&(1<<ch))?(sBankDirection[n]>0?0x370:0x372):0x385,!(sDockMask[n]&(1<<ch)),3+ch*2);
-  }
- }
- // Canal gates are shut while the paired chambers transfer water.
- Rect(22,42,11,1,!transfer&&Water(0)==Water(1)?0x282:0x385,TRUE,3+2*Water(0));
- Rect(49,42,11,1,!transfer&&Water(1)==Water(2)?0x282:0x385,TRUE,3+2*Water(1));
- if(Water(0)==0&&!transfer)Line(5,32,22,32,0x280,3);
- if(Water(2)==0&&!transfer)Line(59,32,74,32,0x280,3);
- if(Water(0)==1&&Water(1)==1&&!transfer)Line(26,28,28,28,0x318,5);
- if(Water(1)==1&&Water(2)==1&&!transfer)
- {
-  Line(30,13,30,10,0x318,9);Line(30,10,76,10,0x318,9);Line(76,10,76,13,0x318,9);
+  if(!left){left=sLockMapRuns[oldIndex].count;tile=sLockMapRuns[oldIndex++].tile;}left--;
+  if(!nextLeft){nextLeft=sLockMapRuns[newIndex].count;nextTile=sLockMapRuns[newIndex++].tile;}nextLeft--;
+  x=i%LOCK_WIDTH;y=i/LOCK_WIDTH;
+  MapGridSetMetatileEntryAt(x+7,y+7,transfer&&gTasks[tid].data[3]>=1+x%7?nextTile:tile);
  }
  for(b=0;b<2;b++)
  {
-  u8 berth=Boat(b);s16 bx=sShore[berth]+2*sBankDirection[berth],by=surface[berth/2]+2+3*b;
+  u8 berth=Boat(b);s16 bx=sShore[berth]+2*sBankDirection[berth],by=LOCK_BERTH_ROW+3*b;
   if(occupied&&gTasks[tid].data[1]==b)continue;
-  for(y=0;y<3;y++)for(x=0;x<3;x++)Tile(bx+x-1,by+y-1,(b?0x390:0x2bc)+y*3+x,TRUE,3+2*Water(berth/2));
+  for(y=0;y<3;y++)for(x=0;x<3;x++)Tile(bx+x-1,by+y-1,(b?0x390:0x2bc)+y*3+x,TRUE,1);
  }
- // These overlays make the secured cargo deck walkable rather than colliding.
- if(m==1&&Boat(1)==3&&Water(1)==2&&!transfer){Line(49,22,43,22,0x318,7);Tile(43,22,0x386,FALSE,0);}
- if(m==2&&Boat(1)==5&&Water(1)==2&&Water(2)==2&&!transfer){Line(53,22,64,22,0x318,7);Tile(64,22,0x386,FALSE,0);}
- // Finish the deck edges after landing/bridge overlays, without blocking them.
- for(n=0;n<6;n++)for(y=17;y<41;y++)
- {
-  x=sShore[n];
-  if(MapGridGetMetatileIdAt(x+MAP_OFFSET,y+MAP_OFFSET)==0x281)
-   Tile(x,y,sBankDirection[n]>0?0x3b2:0x3b3,FALSE,MapGridGetElevationAt(x+MAP_OFFSET,y+MAP_OFFSET));
- }
- // Animate only the lever the player used, preserving its collision/elevation.
+ if(m==1&&Boat(1)==3&&Water(1)==2&&!transfer)Line(49,22,44,22,0x318,9);
+ if(m==2&&Boat(1)==5&&Water(1)==2&&Water(2)==2&&!transfer)Line(53,22,64,22,0x318,9);
  if(tid!=TASK_NONE&&gTasks[tid].data[10])
  {
-  struct Task *t=&gTasks[tid];
-  static const u8 frames[]={1,0,0,1,2,2,1,1};
-  u8 frame=frames[t->data[3]&7];
+  struct Task *t=&gTasks[tid];static const u8 frames[]={1,0,0,1,2,2,1,1};
   u8 elevation=MapGridGetElevationAt(t->data[8]+MAP_OFFSET,t->data[9]+MAP_OFFSET);
-  Tile(t->data[8],t->data[9],0x3a0+(t->data[10]-0x300)*3+frame,TRUE,elevation);
+  Tile(t->data[8],t->data[9],0x3a0+(t->data[10]-0x300)*3+frames[t->data[3]&7],TRUE,elevation);
  }
  if(redraw)DrawWholeMapView();
 }
 void HavoraGym_OnLoad(void)
 {
  if(!Here())return;
- if(!Valid()){ResetLock();gSaveBlock1Ptr->pos.x=3;gSaveBlock1Ptr->pos.y=48;}
+ if(VarGet(VAR_HAVORA_GYM_PROGRESS)&4)VarSet(VAR_HAVORA_GYM_PROGRESS,63);
+ if(!Valid()){ResetLock();gSaveBlock1Ptr->pos.x=LOCK_ENTRY_X;gSaveBlock1Ptr->pos.y=LOCK_ENTRY_Y;}
  Draw(FALSE);
 }
 void HavoraGym_OnResume(void){if(Here()){if(!Valid())ResetLock();Draw(TRUE);}}
 static void Finish(u8 id)
 {
- if(gTasks[id].data[6])DestroySpriteAndFreeResources(&gSprites[gTasks[id].data[6]-1]);
+ if(gTasks[id].data[0]==1)Free((void *)GetWordTaskArg(id,11));
+ if(gTasks[id].data[6])
+ {
+  DestroySpriteAndFreeResources(&gSprites[gTasks[id].data[6]-1]);
+ }
  gSprites[gObjectEvents[gPlayerAvatar.objectEventId].spriteId].animPaused=FALSE;
  gPlayerAvatar.preventStep=FALSE;UnfreezeObjectEvents();UnlockPlayerFieldControls();DestroyTask(id);Draw(TRUE);ScriptContext_Enable();
+}
+// A route is searched in the actual overhead water footprint. Both hulls,
+// islands, submerged shelves and the real lock openings participate in routing.
+static bool8 HullClear(s16 x,s16 y,s16 ownX,s16 ownY)
+{
+ s16 xx,yy;
+ if(x<1||y<1||x>=LOCK_WIDTH-1||y>=LOCK_HEIGHT-1)return FALSE;
+ for(yy=y-1;yy<=y+1;yy++)for(xx=x-1;xx<=x+1;xx++)
+ {
+  if(abs(xx-ownX)<=1&&abs(yy-ownY)<=1)continue;
+  if(MapGridGetMetatileIdAt(xx+7,yy+7)!=0x282)return FALSE;
+ }
+ return TRUE;
+}
+static bool8 PlanBoatRoute(u8 id,u8 boat,u8 src,u8 dst)
+{
+ const u16 cells=LOCK_WIDTH*LOCK_HEIGHT;
+ u8 *previous=AllocZeroed(cells);
+ u16 *queue=Alloc(cells*sizeof(u16)),*path;
+ u16 head=0,tail=0,start,goal,at,count=0,i;
+ s16 sx=sShore[src]+2*sBankDirection[src],sy=LOCK_BERTH_ROW+3*boat;
+ s16 dx=sShore[dst]+2*sBankDirection[dst];
+ static const s8 ox[]={0,-1,1,0,0},oy[]={0,0,0,-1,1};
+ if(!previous||!queue){Free(previous);Free(queue);return FALSE;}
+ start=sy*LOCK_WIDTH+sx;goal=sy*LOCK_WIDTH+dx;queue[tail++]=start;previous[start]=255;
+ while(head<tail&&!previous[goal])
+ {
+  at=queue[head++];
+  for(i=1;i<=4;i++)
+  {
+   s16 x=at%LOCK_WIDTH+ox[i],y=at/LOCK_WIDTH+oy[i];
+   u16 next=y*LOCK_WIDTH+x;
+   if(x<1||y<1||x>=LOCK_WIDTH-1||y>=LOCK_HEIGHT-1||previous[next]||!HullClear(x,y,sx,sy))continue;
+   previous[next]=i;queue[tail++]=next;
+  }
+ }
+ if(!previous[goal]){Free(previous);Free(queue);return FALSE;}
+ for(at=goal;at!=start;at-=oy[previous[at]]*LOCK_WIDTH+ox[previous[at]])count++;
+ path=Alloc(count*sizeof(u16));
+ if(!path){Free(previous);Free(queue);return FALSE;}
+ at=goal;
+ for(i=count;i;i--){path[i-1]=at;at-=oy[previous[at]]*LOCK_WIDTH+ox[previous[at]];}
+ Free(previous);Free(queue);
+ SetWordTaskArg(id,11,(u32)path);gTasks[id].data[13]=count;gTasks[id].data[14]=0;
+ return TRUE;
 }
 static void Waypoint(struct Task *t,s16 *x,s16 *y)
 {
  u8 boat=t->data[1],src=t->data[2],dst=t->data[3],phase=t->data[4];
- u8 sr=sWaterRow[Water(src/2)]+boat*3,dr=sWaterRow[Water(dst/2)]+boat*3;
- s16 sx=sShore[src]+2*sBankDirection[src],dx=sShore[dst]+2*sBankDirection[dst];
- bool8 ss=boat&&Water(src/2)==2&&(src==3||src==5),ds=boat&&Water(dst/2)==2&&(dst==3||dst==5);
- *x=sx;*y=sr;
- if(phase==0)return;
- if(phase==1){*x=ss?sx:sCoreX[src/2];*y=ss?29:sr;return;}
- if(phase==2){*x=sCoreX[src/2];*y=ss?29:sr;return;}
- if(phase==3){*x=sCoreX[src/2];*y=42;return;}
- if(phase==4){*x=sCoreX[dst/2];*y=42;return;}
- if(phase==5){*x=sCoreX[dst/2];*y=ds?29:dr;return;}
- if(phase==6){*x=dx;*y=ds?29:dr;return;}
- if(phase==7){*x=dx;*y=dr;return;}
- *x=sShore[dst];*y=dr;
+ *y=LOCK_BERTH_ROW+boat*3;
+ if(phase==0){*x=sShore[src]+2*sBankDirection[src];return;}
+ if(phase==1&&t->data[14]<t->data[13])
+ {
+  u16 *path=(u16 *)GetWordTaskArg(t-gTasks,11),at=path[t->data[14]];
+  *x=at%LOCK_WIDTH;*y=at/LOCK_WIDTH;return;
+ }
+ *x=phase==8?sShore[dst]:sShore[dst]+2*sBankDirection[dst];
 }
 static void MoveBoat(u8 id)
 {
@@ -226,23 +231,36 @@ static void MoveBoat(u8 id)
   if(x==tx&&y==ty)
   {
    if(t->data[4]==0){t->data[7]=1;gSprites[t->data[6]-1].data[0]=1;Draw(TRUE);}
+   if(t->data[4]==1){if(++t->data[14]<t->data[13])continue;t->data[4]=7;continue;}
    if(t->data[4]==7){t->data[7]=0;gSprites[t->data[6]-1].data[0]=0;SetBoat(t->data[1],t->data[3]);Draw(TRUE);}
    t->data[4]++;continue;
   }
   direction=x<tx?DIR_EAST:x>tx?DIR_WEST:y<ty?DIR_SOUTH:DIR_NORTH;
+  if(t->data[7])
+  {
+   u8 matrix=gSprites[t->data[6]-1].oam.matrixNum;
+   if(direction==DIR_NORTH)SetOamMatrix(matrix,0,256,-256,0);
+   else if(direction==DIR_SOUTH)SetOamMatrix(matrix,0,-256,256,0);
+   else if(direction==DIR_WEST)SetOamMatrix(matrix,-256,0,0,-256);
+   else SetOamMatrix(matrix,256,0,0,256);
+  }
   ObjectEventSetHeldMovement(p,GetWalkNormalMovementAction(direction));t->data[5]=1;return;
  }
  Finish(id);
 }
 static bool8 Start(u8 mode,u8 a,u8 b,u8 c)
 {
- u8 id=CreateTask(MoveBoat,80),sid;
+ u8 id=CreateTask(MoveBoat,80),sid,matrix;
  if(id==TASK_NONE)return FALSE;
  gTasks[id].data[0]=mode;gTasks[id].data[1]=a;gTasks[id].data[2]=b;gTasks[id].data[3]=c;
  if(mode==1)
  {
+  if(!PlanBoatRoute(id,a,b,c)){DestroyTask(id);return FALSE;}
   if(LoadSpriteSheet(&sLaunchSheet[a])==0xFFFF||LoadSpritePalette(&sLaunchPalette)==0xFF)goto failed;
   sid=CreateSprite(&sLaunchTemplate,0,0,0);if(sid==MAX_SPRITES)goto failed;
+  matrix=AllocOamMatrix();if(matrix==0xFF){DestroySprite(&gSprites[sid]);goto failed;}
+  gSprites[sid].oam.affineMode=ST_OAM_AFFINE_NORMAL;gSprites[sid].oam.matrixNum=matrix;
+  SetOamMatrix(matrix,256,0,0,256);
   gTasks[id].data[6]=sid+1;gSprites[sid].invisible=TRUE;
  }
  if(mode!=1)
@@ -265,6 +283,7 @@ static bool8 Start(u8 mode,u8 a,u8 b,u8 c)
  }
  LockPlayerFieldControls();FreezeObjectEvents();gPlayerAvatar.preventStep=TRUE;Draw(TRUE);return TRUE;
 failed:
+ if(mode==1)Free((void *)GetWordTaskArg(id,11));
  FreeSpriteTilesByTag(LAUNCH_TAG);FreeSpritePaletteByTag(LAUNCH_TAG);DestroyTask(id);return FALSE;
 }
 static bool8 CanReach(u8 src,u8 dst)
@@ -276,7 +295,7 @@ static bool8 CanReach(u8 src,u8 dst)
 }
 static bool8 AtDock(u8 boat,u8 node,s16 x,s16 y)
 {
- return node<6&&boat<2&&Boat(boat)==node&&x==sShore[node]&&y==sWaterRow[Water(node/2)]+boat*3&&(sDockMask[node]&(1<<Water(node/2)))&&!(boat&&Moor());
+ return node<6&&boat<2&&Boat(boat)==node&&x==sShore[node]&&y==LOCK_BERTH_ROW+boat*3&&(sDockMask[node]&(1<<Water(node/2)))&&!(boat&&Moor());
 }
 static const u8 sADock[] = _("A WEST QUAY");static const u8 sAInner[] = _("A INNER LANDING");
 static const u8 sBDock[] = _("B WEST QUAY");static const u8 sBUpper[] = _("B SERVICE BERTH");
@@ -292,6 +311,18 @@ void HavoraGym_Control(void)
  u16 progress=VarGet(VAR_HAVORA_GYM_PROGRESS),s=VarGet(VAR_HAVORA_GYM_STATE);
  gSpecialVar_Result=0;if(!Here())return;if(!Valid())ResetLock();
  if(FindTaskIdByFunc(MoveBoat)!=TASK_NONE){gSpecialVar_Result=4;return;}
+ // Progress bits preserve the original crew/navigator/captain assignments.
+ if(cmd==22){VarSet(VAR_HAVORA_GYM_PROGRESS,progress|a);gSpecialVar_Result=1;return;}
+ if(cmd==23){gSpecialVar_Result=(progress&a)==a;return;}
+ if(cmd==24)
+ {
+  u8 i,count=0;
+  if(progress&4){gSpecialVar_Result=1;return;}
+  if((progress&59)!=59){gSpecialVar_Result=2;return;}
+  for(i=0;i<PARTY_SIZE;i++)if(GetMonData(&gPlayerParty[i],MON_DATA_SPECIES)&&!GetMonData(&gPlayerParty[i],MON_DATA_IS_EGG)&&GetMonData(&gPlayerParty[i],MON_DATA_HP))count++;
+  gSpecialVar_Result=count==6?1:3;return;
+ }
+ if(cmd==25){HealPlayerParty();gSpecialVar_Result=1;return;}
  if(cmd==6){if(progress&4)VarSet(VAR_VIDRA_CRESTS,VarGet(VAR_VIDRA_CRESTS)|1);Draw(TRUE);return;}
  if(cmd==21)
  {
@@ -327,7 +358,7 @@ void HavoraGym_Control(void)
  }
  if(cmd==14)
  {
-  if(node!=4||Boat(1)!=5||Water(1)!=2||Water(2)!=2||!Released()||Moor()!=0){gSpecialVar_Result=8;return;}
+  if(node!=4||Boat(1)!=5||Water(1)!=2||Water(2)!=2||!Released()||Moor()!=0||!(progress&32)){gSpecialVar_Result=8;return;}
   if(!Start(3,cmd,0,0)){gSpecialVar_Result=4;return;}
   SetMoor(2);Draw(TRUE);gSpecialVar_Result=1;return;
  }

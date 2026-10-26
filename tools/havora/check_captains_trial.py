@@ -12,9 +12,9 @@ for p in subprocess.check_output(['git','ls-tree','-r','--name-only',BASE,'--','
  a=old(p);b=(R/p).read_bytes()
  if p.endswith('.pal'):a=a.replace(b'\r\n',b'\n');b=b.replace(b'\r\n',b'\n')
  assert a==b,p
-l=ls[-1];assert (l['width'],l['height'])==(80,54)
-w=struct.unpack('<4320H',(R/l['blockdata_filepath']).read_bytes());m=json.loads((R/'data/maps/QuantumHavoraGym/map.json').read_text());actors={(o['x'],o['y']) for o in m['object_events']}
-for e in m['object_events']+m['bg_events']+m['warp_events']:assert 0<=e['x']<80 and 0<=e['y']<54
+l=ls[-1];assert (l['width'],l['height'])==(80,40)
+w=struct.unpack('<3200H',(R/l['blockdata_filepath']).read_bytes());m=json.loads((R/'data/maps/QuantumHavoraGym/map.json').read_text());actors={(o['x'],o['y']) for o in m['object_events']}
+for e in m['object_events']+m['bg_events']+m['warp_events']:assert 0<=e['x']<80 and 0<=e['y']<40
 assert len(m['warp_events'])==3 and all(e['dest_map']=='MAP_HAVORA_WEST_QUADRANT' and e['dest_warp_id']=='0' for e in m['warp_events'])
 
 import runpy

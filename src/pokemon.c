@@ -2819,6 +2819,9 @@ u32 GetBoxMonData3(struct BoxPokemon *boxMon, s32 field, u8 *data)
         case MON_DATA_ABILITY_NUM:
             retVal = substruct3->abilityNum;
             break;
+        case MON_DATA_CANT_RANDOMIZE_ABILITY:
+            retVal = substruct3->cantRandomizeAbility;
+            break;
         case MON_DATA_COOL_RIBBON:
             retVal = substruct3->coolRibbon;
             break;

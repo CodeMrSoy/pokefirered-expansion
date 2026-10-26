@@ -1,8 +1,9 @@
 """Record the verified mapped solution; automated controls/battles are labeled."""
-import os,pathlib,struct,subprocess,runpy
+import os,pathlib,struct,subprocess,runpy,sys
 from PIL import Image,ImageDraw,ImageFont
 import havora_emulator_support as m
-out=pathlib.Path('/workspace/scratch/53b0ac21dfa3/deliverables/havora-three-lock-puzzle.mp4')
+out=pathlib.Path(sys.argv[1]) if len(sys.argv)>1 else m.d/'havora-overhead-walkthrough.mp4'
+out.parent.mkdir(parents=True,exist_ok=True)
 ff=subprocess.Popen(['ffmpeg','-y','-loglevel','error','-f','rawvideo','-pix_fmt','rgb24','-s','960x640','-r','30','-i','-','-an','-c:v','libx264','-preset','fast','-crf','22','-pix_fmt','yuv420p','-movflags','+faststart',str(out)],stdin=subprocess.PIPE)
 fp='/usr/share/fonts/truetype/dejavu/DejaVuSans';f=ImageFont.truetype(fp+'.ttf',16);small=ImageFont.truetype(fp+'.ttf',14);b=ImageFont.truetype(fp+'-Bold.ttf',18);title=ImageFont.truetype(fp+'-Bold.ttf',24)
 ref=Image.open(m.root/'docs/havora/review/captains-trial-clean.png').convert('RGB').resize((216,146),Image.Resampling.NEAREST)
@@ -19,7 +20,7 @@ def run(n):
   old_run(1);clock+=1
   if not m.recording or m.pause_capture or clock%4:continue
   im=Image.new('RGB',(960,640),'#122131');d=ImageDraw.Draw(im)
-  d.text((18,10),'HAVORA — THREE-LOCK TRIAL',font=title,fill='white')
+  d.text((18,10),'HAVORA — OVERHEAD LOCK YARD',font=title,fill='white')
   d.text((18,48),f'{number:02}/25  '+caption,font=b,fill='#ffdc93')
   im.paste(m.screen.resize((720,480),Image.Resampling.NEAREST),(0,94));im.paste(ref,(732,100))
   d.text((734,257),'Layout reference',font=small,fill='#a9bfd0')
@@ -42,7 +43,7 @@ def run(n):
   d.text((734,500),'Launch + cargo',font=f,fill='#ffdc93')
   d.text((734,527),'Four water units',font=f,fill='#dceaf2')
   d.text((18,589),'Actual emulator route: walking, ladders, boat travel and fixed water transfers.',font=f,fill='white')
-  d.text((18,617),'2x speed  |  Automated controls  |  Battles preset as won  |  Idle pauses shortened',font=small,fill='#a9bfd0')
+  d.text((18,617),'2x speed  |  Automated controls  |  All six battles preset as won  |  Idle pauses shortened',font=small,fill='#a9bfd0')
   ff.stdin.write(im.tobytes());frames+=1
 m.run=run
 try:
