@@ -10,270 +10,481 @@ HavoraTrial_Resume::
  end
 HavoraTrial_Welcome::
  lockall
- msgbox HavoraTrial_WelcomeText, MSGBOX_YESNO
- goto_if_eq VAR_RESULT, NO, HavoraLock_Release
+ msgbox HavoraTide_WelcomeText
+ msgbox HavoraTide_HealText, MSGBOX_YESNO
+ goto_if_eq VAR_RESULT, NO, HavoraTide_Release
  setvar VAR_0x8004, 25
  special HavoraGym_Control
  msgbox HavoraTrial_HealedText
- releaseall
- end
-HavoraLock_ABForward::
+ goto HavoraTide_Release
+HavoraTide_Switch0_0::
  lockall
- msgbox HavoraLock_ABForwardText, MSGBOX_YESNO
- goto_if_eq VAR_RESULT, NO, HavoraLock_Release
- setvar VAR_0x8004, 10
+ msgbox HavoraTide_Help0_0, MSGBOX_YESNO
+ goto_if_eq VAR_RESULT, NO, HavoraTide_Release
+ setvar VAR_0x8004, 30
+ setvar VAR_0x8005, 0
+ setvar VAR_0x8006, 0
+ special HavoraGym_Control
+ goto_if_ne VAR_RESULT, 1, HavoraTide_Error
+ waitstate
+ goto HavoraTide_Release
+HavoraTide_Help0_0::
+ .string "GREEN: A up, B down, C down.\nOperate this switch?$"
+HavoraTide_Switch0_1::
+ lockall
+ msgbox HavoraTide_Help0_1, MSGBOX_YESNO
+ goto_if_eq VAR_RESULT, NO, HavoraTide_Release
+ setvar VAR_0x8004, 30
  setvar VAR_0x8005, 0
  setvar VAR_0x8006, 1
- goto HavoraLock_Run
-HavoraLock_ABReverse::
+ special HavoraGym_Control
+ goto_if_ne VAR_RESULT, 1, HavoraTide_Error
+ waitstate
+ goto HavoraTide_Release
+HavoraTide_Help0_1::
+ .string "RED: A down, C up.\nOperate this switch?$"
+HavoraTide_Switch0_2::
  lockall
- msgbox HavoraLock_ABReverseText, MSGBOX_YESNO
- goto_if_eq VAR_RESULT, NO, HavoraLock_Release
- setvar VAR_0x8004, 10
+ msgbox HavoraTide_Help0_2, MSGBOX_YESNO
+ goto_if_eq VAR_RESULT, NO, HavoraTide_Release
+ setvar VAR_0x8004, 30
+ setvar VAR_0x8005, 0
+ setvar VAR_0x8006, 2
+ special HavoraGym_Control
+ goto_if_ne VAR_RESULT, 1, HavoraTide_Error
+ waitstate
+ goto HavoraTide_Release
+HavoraTide_Help0_2::
+ .string "YELLOW: B up.\nOperate this switch?$"
+HavoraTide_Switch1_0::
+ lockall
+ msgbox HavoraTide_Help1_0, MSGBOX_YESNO
+ goto_if_eq VAR_RESULT, NO, HavoraTide_Release
+ setvar VAR_0x8004, 30
  setvar VAR_0x8005, 1
  setvar VAR_0x8006, 0
- goto HavoraLock_Run
-HavoraLock_BCForward::
+ special HavoraGym_Control
+ goto_if_ne VAR_RESULT, 1, HavoraTide_Error
+ waitstate
+ goto HavoraTide_Release
+HavoraTide_Help1_0::
+ .string "GREEN: A up, B down, C down.\nOperate this switch?$"
+HavoraTide_Switch1_1::
  lockall
- msgbox HavoraLock_BCForwardText, MSGBOX_YESNO
- goto_if_eq VAR_RESULT, NO, HavoraLock_Release
- setvar VAR_0x8004, 10
+ msgbox HavoraTide_Help1_1, MSGBOX_YESNO
+ goto_if_eq VAR_RESULT, NO, HavoraTide_Release
+ setvar VAR_0x8004, 30
+ setvar VAR_0x8005, 1
+ setvar VAR_0x8006, 1
+ special HavoraGym_Control
+ goto_if_ne VAR_RESULT, 1, HavoraTide_Error
+ waitstate
+ goto HavoraTide_Release
+HavoraTide_Help1_1::
+ .string "RED: A down, C up.\nOperate this switch?$"
+HavoraTide_Switch1_2::
+ lockall
+ msgbox HavoraTide_Help1_2, MSGBOX_YESNO
+ goto_if_eq VAR_RESULT, NO, HavoraTide_Release
+ setvar VAR_0x8004, 30
  setvar VAR_0x8005, 1
  setvar VAR_0x8006, 2
- goto HavoraLock_Run
-HavoraLock_BCReverse::
+ special HavoraGym_Control
+ goto_if_ne VAR_RESULT, 1, HavoraTide_Error
+ waitstate
+ goto HavoraTide_Release
+HavoraTide_Help1_2::
+ .string "YELLOW: B up.\nOperate this switch?$"
+HavoraTide_Switch2_0::
  lockall
- msgbox HavoraLock_BCReverseText, MSGBOX_YESNO
- goto_if_eq VAR_RESULT, NO, HavoraLock_Release
- setvar VAR_0x8004, 10
+ msgbox HavoraTide_Help2_0, MSGBOX_YESNO
+ goto_if_eq VAR_RESULT, NO, HavoraTide_Release
+ setvar VAR_0x8004, 30
+ setvar VAR_0x8005, 2
+ setvar VAR_0x8006, 0
+ special HavoraGym_Control
+ goto_if_ne VAR_RESULT, 1, HavoraTide_Error
+ waitstate
+ goto HavoraTide_Release
+HavoraTide_Help2_0::
+ .string "GREEN: A up, B down, C down.\nOperate this switch?$"
+HavoraTide_Switch2_1::
+ lockall
+ msgbox HavoraTide_Help2_1, MSGBOX_YESNO
+ goto_if_eq VAR_RESULT, NO, HavoraTide_Release
+ setvar VAR_0x8004, 30
  setvar VAR_0x8005, 2
  setvar VAR_0x8006, 1
- goto HavoraLock_Run
-HavoraLock_Board0::
- lockall
- setvar VAR_0x8005, 0
- setvar VAR_0x8004, 20
  special HavoraGym_Control
- goto_if_ne VAR_RESULT, 1, HavoraLock_Error
+ goto_if_ne VAR_RESULT, 1, HavoraTide_Error
  waitstate
- goto_if_eq VAR_RESULT, 127, HavoraLock_Release
- copyvar VAR_0x8006, VAR_RESULT
- setvar VAR_0x8004, 11
- goto HavoraLock_Run
-HavoraLock_Board1::
+ goto HavoraTide_Release
+HavoraTide_Help2_1::
+ .string "RED: A down, C up.\nOperate this switch?$"
+HavoraTide_Switch2_2::
  lockall
- setvar VAR_0x8005, 1
- setvar VAR_0x8004, 20
+ msgbox HavoraTide_Help2_2, MSGBOX_YESNO
+ goto_if_eq VAR_RESULT, NO, HavoraTide_Release
+ setvar VAR_0x8004, 30
+ setvar VAR_0x8005, 2
+ setvar VAR_0x8006, 2
  special HavoraGym_Control
- goto_if_ne VAR_RESULT, 1, HavoraLock_Error
+ goto_if_ne VAR_RESULT, 1, HavoraTide_Error
  waitstate
- goto_if_eq VAR_RESULT, 127, HavoraLock_Release
- copyvar VAR_0x8006, VAR_RESULT
- setvar VAR_0x8004, 11
- goto HavoraLock_Run
-HavoraLock_ServiceMoor::
+ goto HavoraTide_Release
+HavoraTide_Help2_2::
+ .string "YELLOW: B up.\nOperate this switch?$"
+HavoraTide_Switch3_0::
  lockall
- msgbox HavoraLock_ServiceMoorText, MSGBOX_YESNO
- goto_if_eq VAR_RESULT, NO, HavoraLock_Release
- setvar VAR_0x8004, 12
- goto HavoraLock_Run
-HavoraLock_Chain::
+ msgbox HavoraTide_Help3_0, MSGBOX_YESNO
+ goto_if_eq VAR_RESULT, NO, HavoraTide_Release
+ setvar VAR_0x8004, 30
+ setvar VAR_0x8005, 3
+ setvar VAR_0x8006, 0
+ special HavoraGym_Control
+ goto_if_ne VAR_RESULT, 1, HavoraTide_Error
+ waitstate
+ goto HavoraTide_Release
+HavoraTide_Help3_0::
+ .string "GREEN: A up, B down, C down.\nOperate this switch?$"
+HavoraTide_Switch3_1::
  lockall
- msgbox HavoraLock_ChainText, MSGBOX_YESNO
- goto_if_eq VAR_RESULT, NO, HavoraLock_Release
- setvar VAR_0x8004, 13
- goto HavoraLock_Run
-HavoraLock_FinalMoor::
+ msgbox HavoraTide_Help3_1, MSGBOX_YESNO
+ goto_if_eq VAR_RESULT, NO, HavoraTide_Release
+ setvar VAR_0x8004, 30
+ setvar VAR_0x8005, 3
+ setvar VAR_0x8006, 1
+ special HavoraGym_Control
+ goto_if_ne VAR_RESULT, 1, HavoraTide_Error
+ waitstate
+ goto HavoraTide_Release
+HavoraTide_Help3_1::
+ .string "RED: A down, C up.\nOperate this switch?$"
+HavoraTide_Switch3_2::
  lockall
- msgbox HavoraLock_FinalMoorText, MSGBOX_YESNO
- goto_if_eq VAR_RESULT, NO, HavoraLock_Release
- setvar VAR_0x8004, 14
- goto HavoraLock_Run
-HavoraLock_Status::
+ msgbox HavoraTide_Help3_2, MSGBOX_YESNO
+ goto_if_eq VAR_RESULT, NO, HavoraTide_Release
+ setvar VAR_0x8004, 30
+ setvar VAR_0x8005, 3
+ setvar VAR_0x8006, 2
+ special HavoraGym_Control
+ goto_if_ne VAR_RESULT, 1, HavoraTide_Error
+ waitstate
+ goto HavoraTide_Release
+HavoraTide_Help3_2::
+ .string "YELLOW: B up.\nOperate this switch?$"
+HavoraTide_Switch4_0::
+ lockall
+ msgbox HavoraTide_Help4_0, MSGBOX_YESNO
+ goto_if_eq VAR_RESULT, NO, HavoraTide_Release
+ setvar VAR_0x8004, 30
+ setvar VAR_0x8005, 4
+ setvar VAR_0x8006, 0
+ special HavoraGym_Control
+ goto_if_ne VAR_RESULT, 1, HavoraTide_Error
+ waitstate
+ goto HavoraTide_Release
+HavoraTide_Help4_0::
+ .string "GREEN: A up, B down, C down.\nOperate this switch?$"
+HavoraTide_Switch4_1::
+ lockall
+ msgbox HavoraTide_Help4_1, MSGBOX_YESNO
+ goto_if_eq VAR_RESULT, NO, HavoraTide_Release
+ setvar VAR_0x8004, 30
+ setvar VAR_0x8005, 4
+ setvar VAR_0x8006, 1
+ special HavoraGym_Control
+ goto_if_ne VAR_RESULT, 1, HavoraTide_Error
+ waitstate
+ goto HavoraTide_Release
+HavoraTide_Help4_1::
+ .string "RED: A down, C up.\nOperate this switch?$"
+HavoraTide_Switch4_2::
+ lockall
+ msgbox HavoraTide_Help4_2, MSGBOX_YESNO
+ goto_if_eq VAR_RESULT, NO, HavoraTide_Release
+ setvar VAR_0x8004, 30
+ setvar VAR_0x8005, 4
+ setvar VAR_0x8006, 2
+ special HavoraGym_Control
+ goto_if_ne VAR_RESULT, 1, HavoraTide_Error
+ waitstate
+ goto HavoraTide_Release
+HavoraTide_Help4_2::
+ .string "YELLOW: B up.\nOperate this switch?$"
+HavoraTide_Switch5_0::
+ lockall
+ msgbox HavoraTide_Help5_0, MSGBOX_YESNO
+ goto_if_eq VAR_RESULT, NO, HavoraTide_Release
+ setvar VAR_0x8004, 30
+ setvar VAR_0x8005, 5
+ setvar VAR_0x8006, 0
+ special HavoraGym_Control
+ goto_if_ne VAR_RESULT, 1, HavoraTide_Error
+ waitstate
+ goto HavoraTide_Release
+HavoraTide_Help5_0::
+ .string "GREEN: A up, B down, C down.\nOperate this switch?$"
+HavoraTide_Switch5_1::
+ lockall
+ msgbox HavoraTide_Help5_1, MSGBOX_YESNO
+ goto_if_eq VAR_RESULT, NO, HavoraTide_Release
+ setvar VAR_0x8004, 30
+ setvar VAR_0x8005, 5
+ setvar VAR_0x8006, 1
+ special HavoraGym_Control
+ goto_if_ne VAR_RESULT, 1, HavoraTide_Error
+ waitstate
+ goto HavoraTide_Release
+HavoraTide_Help5_1::
+ .string "RED: A down, C up.\nOperate this switch?$"
+HavoraTide_Switch5_2::
+ lockall
+ msgbox HavoraTide_Help5_2, MSGBOX_YESNO
+ goto_if_eq VAR_RESULT, NO, HavoraTide_Release
+ setvar VAR_0x8004, 30
+ setvar VAR_0x8005, 5
+ setvar VAR_0x8006, 2
+ special HavoraGym_Control
+ goto_if_ne VAR_RESULT, 1, HavoraTide_Error
+ waitstate
+ goto HavoraTide_Release
+HavoraTide_Help5_2::
+ .string "YELLOW: B up.\nOperate this switch?$"
+HavoraTide_Switch6_0::
+ lockall
+ msgbox HavoraTide_Help6_0, MSGBOX_YESNO
+ goto_if_eq VAR_RESULT, NO, HavoraTide_Release
+ setvar VAR_0x8004, 30
+ setvar VAR_0x8005, 6
+ setvar VAR_0x8006, 0
+ special HavoraGym_Control
+ goto_if_ne VAR_RESULT, 1, HavoraTide_Error
+ waitstate
+ goto HavoraTide_Release
+HavoraTide_Help6_0::
+ .string "BLUE: A up, B up, C down.\nOperate this switch?$"
+HavoraTide_Switch6_1::
+ lockall
+ msgbox HavoraTide_Help6_1, MSGBOX_YESNO
+ goto_if_eq VAR_RESULT, NO, HavoraTide_Release
+ setvar VAR_0x8004, 30
+ setvar VAR_0x8005, 6
+ setvar VAR_0x8006, 1
+ special HavoraGym_Control
+ goto_if_ne VAR_RESULT, 1, HavoraTide_Error
+ waitstate
+ goto HavoraTide_Release
+HavoraTide_Help6_1::
+ .string "BLUE: A up, B up, C down.\nOperate this switch?$"
+HavoraTide_Switch6_2::
+ lockall
+ msgbox HavoraTide_Help6_2, MSGBOX_YESNO
+ goto_if_eq VAR_RESULT, NO, HavoraTide_Release
+ setvar VAR_0x8004, 30
+ setvar VAR_0x8005, 6
+ setvar VAR_0x8006, 2
+ special HavoraGym_Control
+ goto_if_ne VAR_RESULT, 1, HavoraTide_Error
+ waitstate
+ goto HavoraTide_Release
+HavoraTide_Help6_2::
+ .string "GREEN: A up, B down, C down.\nOperate this switch?$"
+HavoraTide_Travel::
+ lockall
+ msgbox HavoraTide_TravelText, MSGBOX_YESNO
+ goto_if_eq VAR_RESULT, NO, HavoraTide_Release
+ setvar VAR_0x8004, 31
+ special HavoraGym_Control
+ goto_if_ne VAR_RESULT, 1, HavoraTide_Error
+ waitstate
+ goto HavoraTide_Release
+HavoraTide_Status::
  lockall
  setvar VAR_0x8004, 21
  special HavoraGym_Control
- msgbox HavoraLock_StatusText
- goto HavoraLock_Release
-HavoraLock_Reset::
- lockall
- msgbox HavoraLock_ResetText, MSGBOX_YESNO
- goto_if_eq VAR_RESULT, NO, HavoraLock_Release
+ msgbox HavoraTide_StatusText
+ goto HavoraTide_Recovery
+HavoraTide_Recovery::
+ msgbox HavoraTide_ResetText, MSGBOX_YESNO
+ goto_if_eq VAR_RESULT, NO, HavoraTide_Release
  setvar VAR_0x8004, 15
  special HavoraGym_Control
- goto_if_ne VAR_RESULT, 1, HavoraLock_Error
+ goto_if_ne VAR_RESULT, 1, HavoraTide_Error
  waitstate
  releaseall
  warp MAP_HAVORA_GYM, 255, 3, 25
  waitstate
  end
-HavoraLock_Run::
- special HavoraGym_Control
- goto_if_eq VAR_RESULT, 1, HavoraLock_Wait
- goto_if_eq VAR_RESULT, 0, HavoraLock_Release
- goto HavoraLock_Error
-HavoraLock_Wait::
- waitstate
- goto_if_eq VAR_0x8004, 12, HavoraLock_MoorDone
- goto_if_eq VAR_0x8004, 13, HavoraLock_ChainDone
- goto_if_eq VAR_0x8004, 14, HavoraLock_BridgeDone
- goto HavoraLock_Release
-HavoraLock_MoorDone::
- msgbox HavoraLock_MoorDoneText
- goto HavoraLock_Release
-HavoraLock_ChainDone::
- msgbox HavoraLock_ChainDoneText
- goto HavoraLock_Release
-HavoraLock_BridgeDone::
- msgbox HavoraLock_BridgeDoneText
- goto HavoraLock_Release
-HavoraLock_Error::
- goto_if_eq VAR_RESULT, 9, HavoraLock_ArtworkReview
- goto_if_eq VAR_RESULT, 2, HavoraLock_CrewError
- goto_if_eq VAR_RESULT, 6, HavoraLock_NavError
- goto_if_eq VAR_RESULT, 7, HavoraLock_LevelError
- goto_if_eq VAR_RESULT, 5, HavoraLock_DockError
- goto_if_eq VAR_RESULT, 8, HavoraLock_MoorError
- msgbox HavoraLock_BlockedText
- goto HavoraLock_Release
-HavoraLock_ArtworkReview::
- msgbox HavoraLock_ArtworkReviewText
- goto HavoraLock_Release
-HavoraLock_ArtworkReviewText::
- .string "The lock system is being refitted.\nWater controls are offline.$"
-HavoraLock_CrewError::
- msgbox HavoraLock_CrewText
- goto HavoraLock_Release
-HavoraLock_NavError::
- msgbox HavoraLock_NavText
- goto HavoraLock_Release
-HavoraLock_LevelError::
- msgbox HavoraLock_LimitText
- goto HavoraLock_Release
-HavoraLock_MoorError::
- msgbox HavoraLock_MoorErrorText
- goto HavoraLock_Release
-HavoraLock_DockError::
- msgbox HavoraLock_DockText
-HavoraLock_Release::
+HavoraTide_Error::
+ goto_if_eq VAR_RESULT, 2, HavoraTide_NeedClearance
+ goto_if_eq VAR_RESULT, 7, HavoraTide_NeedLevels
+ msgbox HavoraTide_LimitText
+ goto HavoraTide_Release
+HavoraTide_NeedClearance::
+ msgbox HavoraTide_ClearanceText
+ goto HavoraTide_Release
+HavoraTide_NeedLevels::
+ msgbox HavoraTide_RouteText
+HavoraTide_Release::
  releaseall
  end
-HavoraLock_MoorDoneText::
- .string "The mooring has been adjusted.\nCheck the cargo bridge.$"
-HavoraLock_ChainDoneText::
- .string "The outer chain is free!$"
-HavoraLock_BridgeDoneText::
- .string "The cargo bridge is secured!\nYou can reach the captain now.$"
-HavoraLock_MoorErrorText::
- .string "The mooring cannot move yet.\nCheck the cargo boat and water.\pThe outer mooring also needs\nits maintenance chain released.$"
-HavoraLock_ABForwardText::
- .string "TRANSFER A TO B\nMove one water level?$"
-HavoraLock_ABReverseText::
- .string "TRANSFER B TO A\nMove one water level?$"
-HavoraLock_BCForwardText::
- .string "TRANSFER B TO C\nMove one water level?$"
-HavoraLock_BCReverseText::
- .string "TRANSFER C TO B\nMove one water level?$"
-HavoraLock_ServiceMoorText::
- .string "SERVICE MOORING\nSecure or release the bridge?$"
-HavoraLock_ChainText::
- .string "MAINTENANCE WINCH\nRelease the outer chain?$"
-HavoraLock_FinalMoorText::
- .string "OUTER MOORING\nTension the final cargo bridge?$"
-HavoraLock_StatusText::
- .string "{STR_VAR_1}\pEach transfer moves one level.\nEqual levels open a boat gate.$"
-HavoraLock_ResetText::
- .string "Reset the whole lock system?\nTrainer victories are kept.$"
-HavoraLock_BlockedText::
- .string "This route is blocked.\nCheck the water and moorings.$"
-HavoraLock_CrewText::
- .string "The dock crew must clear you\nto operate this manifold.$"
-HavoraLock_NavText::
- .string "The navigator must clear you\nto operate the control terrace.$"
-HavoraLock_LimitText::
- .string "The donor is already LOW, or\nthe receiver is already HIGH.$"
-HavoraLock_DockText::
- .string "No free boat is moored at this\nlanding and water level.$"
-
+HavoraTrial_Harbormaster::
+ trainerbattle_double TRAINER_HAVORA_HARBORMASTER, HavoraTrial_HarbormasterIntro, HavoraTrial_HarbormasterLoss, HavoraTrial_TwoMons, HavoraTrial_HarbormasterWon
+ msgbox HavoraTrial_HarbormasterAfter
+ goto HavoraTide_Recovery
+HavoraTrial_HarbormasterWon::
+ setvar VAR_0x8004, 22
+ setvar VAR_0x8005, 64
+ special HavoraGym_Control
+ msgbox HavoraTrial_HarbormasterAfter
+ goto HavoraTide_Release
+HavoraTrial_HarbormasterHint::
+ msgbox HavoraTrial_HarbormasterHintText
+ goto HavoraTide_Recovery
+HavoraTrial_HarbormasterHintText::
+ .string "Battle this crew, then operate\na switch to unlock departure.$"
+HavoraTrial_HarbormasterIntro::
+ .string "I've spotted a challenger!\nShow me your teamwork!$"
+HavoraTrial_HarbormasterLoss::
+ .string "This station is cleared!$"
+HavoraTrial_HarbormasterAfter::
+ .string "AL1 sails to AR2.\nGREEN raises A and drains B/C.$"
 HavoraTrial_Crew::
  trainerbattle_double TRAINER_HAVORA_DOCK_CREW, HavoraTrial_CrewIntro, HavoraTrial_CrewLoss, HavoraTrial_TwoMons, HavoraTrial_CrewWon
- msgbox HavoraTrial_CrewAfter, MSGBOX_NPC
- end
+ msgbox HavoraTrial_CrewAfter
+ goto HavoraTide_Recovery
 HavoraTrial_CrewWon::
  setvar VAR_0x8004, 22
  setvar VAR_0x8005, 1
  special HavoraGym_Control
  msgbox HavoraTrial_CrewAfter
- releaseall
- end
-HavoraTrial_Navigator::
- setvar VAR_0x8004, 23
- setvar VAR_0x8005, 1
- special HavoraGym_Control
- goto_if_ne VAR_RESULT, 1, HavoraTrial_Clearance
- trainerbattle_double TRAINER_HAVORA_NAVIGATOR, HavoraTrial_NavIntro, HavoraTrial_NavLoss, HavoraTrial_TwoMons, HavoraTrial_NavigatorWon
- msgbox HavoraTrial_NavAfter, MSGBOX_NPC
- end
-HavoraTrial_NavigatorWon::
- setvar VAR_0x8004, 22
- setvar VAR_0x8005, 2
- special HavoraGym_Control
- msgbox HavoraTrial_NavAfter
- releaseall
- end
-HavoraTrial_Engineer::
- setvar VAR_0x8004, 23
- setvar VAR_0x8005, 3
- special HavoraGym_Control
- goto_if_ne VAR_RESULT, 1, HavoraTrial_Clearance
- trainerbattle_double TRAINER_HAVORA_ENGINEER, HavoraTrial_EngineerIntro, HavoraTrial_EngineerLoss, HavoraTrial_TwoMons, HavoraTrial_EngineerWon
- msgbox HavoraTrial_EngineerAfter, MSGBOX_NPC
- end
-HavoraTrial_EngineerWon::
- setvar VAR_0x8004, 22
- setvar VAR_0x8005, 8
- special HavoraGym_Control
- msgbox HavoraTrial_EngineerAfter
- releaseall
- end
+ goto HavoraTide_Release
+HavoraTrial_CrewHint::
+ msgbox HavoraTrial_CrewHintText
+ goto HavoraTide_Recovery
+HavoraTrial_CrewHintText::
+ .string "Battle this crew, then operate\na switch to unlock departure.$"
+HavoraTrial_CrewIntro::
+ .string "I've spotted a challenger!\nShow me your teamwork!$"
+HavoraTrial_CrewLoss::
+ .string "This station is cleared!$"
+HavoraTrial_CrewAfter::
+ .string "AR3 sails to BL3 at MID.\nAR1 opens after every crew.$"
 HavoraTrial_Diver::
- setvar VAR_0x8004, 23
- setvar VAR_0x8005, 11
- special HavoraGym_Control
- goto_if_ne VAR_RESULT, 1, HavoraTrial_Clearance
  trainerbattle_double TRAINER_HAVORA_DIVER, HavoraTrial_DiverIntro, HavoraTrial_DiverLoss, HavoraTrial_TwoMons, HavoraTrial_DiverWon
- msgbox HavoraTrial_DiverAfter, MSGBOX_NPC
- end
+ msgbox HavoraTrial_DiverAfter
+ goto HavoraTide_Recovery
 HavoraTrial_DiverWon::
  setvar VAR_0x8004, 22
  setvar VAR_0x8005, 16
  special HavoraGym_Control
  msgbox HavoraTrial_DiverAfter
- releaseall
- end
-HavoraTrial_FirstMate::
- setvar VAR_0x8004, 23
- setvar VAR_0x8005, 27
+ goto HavoraTide_Release
+HavoraTrial_DiverHint::
+ msgbox HavoraTrial_DiverHintText
+ goto HavoraTide_Recovery
+HavoraTrial_DiverHintText::
+ .string "Battle this crew, then operate\na switch to unlock departure.$"
+HavoraTrial_DiverIntro::
+ .string "I've spotted a challenger!\nShow me your teamwork!$"
+HavoraTrial_DiverLoss::
+ .string "This station is cleared!$"
+HavoraTrial_DiverAfter::
+ .string "BL1 reaches the switch island.\nDrain C for EIRIK's bunker.$"
+HavoraTrial_Engineer::
+ trainerbattle_double TRAINER_HAVORA_ENGINEER, HavoraTrial_EngineerIntro, HavoraTrial_EngineerLoss, HavoraTrial_TwoMons, HavoraTrial_EngineerWon
+ msgbox HavoraTrial_EngineerAfter
+ goto HavoraTide_Recovery
+HavoraTrial_EngineerWon::
+ setvar VAR_0x8004, 22
+ setvar VAR_0x8005, 8
  special HavoraGym_Control
- goto_if_ne VAR_RESULT, 1, HavoraTrial_Clearance
+ msgbox HavoraTrial_EngineerAfter
+ goto HavoraTide_Release
+HavoraTrial_EngineerHint::
+ msgbox HavoraTrial_EngineerHintText
+ goto HavoraTide_Recovery
+HavoraTrial_EngineerHintText::
+ .string "Battle this crew, then operate\na switch to unlock departure.$"
+HavoraTrial_EngineerIntro::
+ .string "I've spotted a challenger!\nShow me your teamwork!$"
+HavoraTrial_EngineerLoss::
+ .string "This station is cleared!$"
+HavoraTrial_EngineerAfter::
+ .string "BR1 sails to CR2 when B and C\nare both HIGH.$"
+HavoraTrial_FirstMate::
  trainerbattle_double TRAINER_HAVORA_FIRST_MATE, HavoraTrial_FirstMateIntro, HavoraTrial_FirstMateLoss, HavoraTrial_TwoMons, HavoraTrial_FirstMateWon
- msgbox HavoraTrial_FirstMateAfter, MSGBOX_NPC
- end
+ msgbox HavoraTrial_FirstMateAfter
+ goto HavoraTide_Recovery
 HavoraTrial_FirstMateWon::
  setvar VAR_0x8004, 22
  setvar VAR_0x8005, 32
  special HavoraGym_Control
  msgbox HavoraTrial_FirstMateAfter
- releaseall
- end
+ goto HavoraTide_Release
+HavoraTrial_FirstMateHint::
+ msgbox HavoraTrial_FirstMateHintText
+ goto HavoraTide_Recovery
+HavoraTrial_FirstMateHintText::
+ .string "Battle this crew, then operate\na switch to unlock departure.$"
+HavoraTrial_FirstMateIntro::
+ .string "I've spotted a challenger!\nShow me your teamwork!$"
+HavoraTrial_FirstMateLoss::
+ .string "This station is cleared!$"
+HavoraTrial_FirstMateAfter::
+ .string "CL1 sails to BL2 at HIGH.\nAR3 needs A and B both MID.$"
+HavoraTrial_Navigator::
+ trainerbattle_double TRAINER_HAVORA_NAVIGATOR, HavoraTrial_NavigatorIntro, HavoraTrial_NavigatorLoss, HavoraTrial_TwoMons, HavoraTrial_NavigatorWon
+ msgbox HavoraTrial_NavigatorAfter
+ goto HavoraTide_Recovery
+HavoraTrial_NavigatorWon::
+ setvar VAR_0x8004, 22
+ setvar VAR_0x8005, 2
+ special HavoraGym_Control
+ msgbox HavoraTrial_NavigatorAfter
+ goto HavoraTide_Release
+HavoraTrial_NavigatorHint::
+ msgbox HavoraTrial_NavigatorHintText
+ goto HavoraTide_Recovery
+HavoraTrial_NavigatorHintText::
+ .string "Battle this crew, then operate\na switch to unlock departure.$"
+HavoraTrial_NavigatorIntro::
+ .string "I've spotted a challenger!\nShow me your teamwork!$"
+HavoraTrial_NavigatorLoss::
+ .string "This station is cleared!$"
+HavoraTrial_NavigatorAfter::
+ .string "CR1 sails to CL2.\nPrepare B MID for the island.$"
+HavoraTrial_Lockkeeper::
+ trainerbattle_double TRAINER_HAVORA_LOCKKEEPER, HavoraTrial_LockkeeperIntro, HavoraTrial_LockkeeperLoss, HavoraTrial_TwoMons, HavoraTrial_LockkeeperWon
+ msgbox HavoraTrial_LockkeeperAfter
+ goto HavoraTide_Recovery
+HavoraTrial_LockkeeperWon::
+ setvar VAR_0x8004, 22
+ setvar VAR_0x8005, 128
+ special HavoraGym_Control
+ msgbox HavoraTrial_LockkeeperAfter
+ goto HavoraTide_Release
+HavoraTrial_LockkeeperHint::
+ msgbox HavoraTrial_LockkeeperHintText
+ goto HavoraTide_Recovery
+HavoraTrial_LockkeeperHintText::
+ .string "Battle this crew, then operate\na switch to unlock departure.$"
+HavoraTrial_LockkeeperIntro::
+ .string "I've spotted a challenger!\nShow me your teamwork!$"
+HavoraTrial_LockkeeperLoss::
+ .string "This station is cleared!$"
+HavoraTrial_LockkeeperAfter::
+ .string "Depart on the RIGHT at MID.\nGREEN then BLUE restores B MID.$"
 HavoraTrial_Captain::
+ lockall
  setvar VAR_0x8004, 24
  special HavoraGym_Control
  goto_if_eq VAR_RESULT, 2, HavoraTrial_Clearance
  goto_if_eq VAR_RESULT, 3, HavoraTrial_FullCrew
  trainerbattle_double TRAINER_HAVORA_CAPTAIN, HavoraTrial_CaptainIntro, HavoraTrial_CaptainLoss, HavoraTrial_TwoMons, HavoraTrial_CaptainWon
- msgbox HavoraTrial_CaptainAfter, MSGBOX_NPC
- end
+ msgbox HavoraTrial_CaptainAfter
+ goto HavoraTide_Recovery
 HavoraTrial_CaptainWon::
  setvar VAR_0x8004, 22
  setvar VAR_0x8005, 4
@@ -282,60 +493,42 @@ HavoraTrial_CaptainWon::
  special HavoraGym_Control
  msgbox HavoraTrial_CrestText
  msgbox HavoraTrial_CaptainAfter
- releaseall
- end
+ goto HavoraTide_Recovery
 HavoraTrial_Clearance::
- msgbox HavoraTrial_ClearanceText, MSGBOX_NPC
- end
+ msgbox HavoraTrial_ClearanceText
+ goto HavoraTide_Release
 HavoraTrial_FullCrew::
- msgbox HavoraTrial_FullCrewText, MSGBOX_NPC
- end
-HavoraTrial_WelcomeText::
- .string "Welcome to the CAPTAIN'S TRIAL!\nSix crews test your teamwork.\pBoats stay at fixed berths.\nEqual water opens lock gates.\pLower shelves flood in place.\nGreen levers reset machinery.\pNeed your crew healed before\nyou set sail?$"
+ msgbox HavoraTrial_FullCrewText
+ goto HavoraTide_Release
+HavoraTide_WelcomeText::
+ .string "Crews spot you across the quay.\nWin, then work their switches.\pGREEN: A up, B down, C down.\nRED: A down, C up.\pYELLOW: B up.\nBLUE: A up, B up, C down.\pAll levels wrap both ways.\nHIGH up becomes LOW.\pUse outbound pads marked 1.\nPads marked 2 receive arrivals.\pAR3 departs for BL3 at MID.\nThe island receives on the left\pand departs on the right.\nDrain C to reach EIRIK's bunker.$"
+HavoraTide_HealText::
+ .string "Heal your crew for the trial?$"
 HavoraTrial_HealedText::
- .string "Your crew is ready to sail!$"
+ .string "Your crew is ready!$"
+HavoraTide_TravelText::
+ .string "Board the boat to this pad's\nfixed partner? One-way sailing.$"
+HavoraTide_StatusText::
+ .string "{STR_VAR_1}\pCrews cleared: {STR_VAR_2}/7.\nSwitch stations used: {STR_VAR_3}/7.$"
+HavoraTide_ResetText::
+ .string "Drain all sections and return\nto the entrance? Victories and\pswitch clearances will be kept.$"
+HavoraTide_ClearanceText::
+ .string "Battle this station's trainer\nand operate a switch first.$"
+HavoraTide_RouteText::
+ .string "The lift or island is out of\nreach at these water levels.$"
+HavoraTide_LimitText::
+ .string "No change is possible. Check\nthe water limits and your pad.$"
 HavoraTrial_ClearanceText::
- .string "Earn clearance in this order:\nDeckhand, Navigator, Engineer,\pDiver, then First Mate.\nThe captain awaits them all.$"
+ .string "Operate switches at all seven\nstations and defeat their crews.\pMy bunker must be fully drained.$"
 HavoraTrial_FullCrewText::
- .string "My trial is six against six!\nBring six battle-ready POKéMON.\pThe steward at the entrance\nwill heal your crew for free.$"
+ .string "My trial is six against six!\nBring six battle-ready POKéMON.\pThe entrance steward can heal\nyour crew for free.$"
 HavoraTrial_TwoMons::
-	.string "A crew needs two partners.\nBring two battle-ready POKéMON.$"
-HavoraTrial_CrewIntro::
-	.string "A deckhand and a lookout.\nLet's see your partners work!$"
-HavoraTrial_CrewLoss::
-	.string "You're clear to work the lock!$"
-HavoraTrial_CrewAfter::
- .string "You may now use the B/C pump.\nWatch which landings stay dry.$"
-HavoraTrial_NavIntro::
-	.string "Wind, waves, and two partners.\nCan you keep your course?$"
-HavoraTrial_NavLoss::
-	.string "A fine course, well sailed!$"
-HavoraTrial_NavAfter::
- .string "The control terrace is yours.\nLeave yourself a way back.$"
+ .string "Bring two battle-ready POKéMON\nfor this double battle.$"
 HavoraTrial_CaptainIntro::
-	.string "I'm Captain EIRIK. A crew's\nstrength lies in its trust.\pShow me how your partners\nweather a storm together!$"
+ .string "Every tide, every station!\nI am Captain EIRIK.\pShow me the teamwork that\nbrought you to my bunker!$"
 HavoraTrial_CaptainLoss::
-	.string "You've earned your berth!$"
+ .string "You've earned your berth!$"
 HavoraTrial_CrestText::
-	.string "You earned the HAVORA CREST!$"
+ .string "You earned the HAVORA CREST!$"
 HavoraTrial_CaptainAfter::
-	.string "The HAVORA CREST marks you as\na trusted partner of this port.\pBoth partners earned this seal.\nUse a green lever to return.$"
-
-HavoraTrial_EngineerIntro::
- .string "Steel, wind, and good timing.\nLet's put your crew to work!$"
-HavoraTrial_EngineerLoss::
- .string "Fine work on both stations!$"
-HavoraTrial_EngineerAfter::
- .string "The diver waits on the service\nisland. Secure the cargo deck.$"
-HavoraTrial_DiverIntro::
- .string "Down in a wreck, slow and\nsteady wins the salvage!$"
-HavoraTrial_DiverLoss::
- .string "You kept your bearings!$"
-HavoraTrial_DiverAfter::
- .string "Find the First Mate on C's\nouter quay before the captain.$"
-HavoraTrial_FirstMateIntro::
- .string "A storm's coming. Can your\npartners sail through it?$"
-HavoraTrial_FirstMateLoss::
- .string "You're ready for the captain!$"
-HavoraTrial_FirstMateAfter::
- .string "You may tension the final\ncargo bridge. Bring six aboard!$"
+ .string "The HAVORA CREST marks you as\na trusted partner of this port.$"

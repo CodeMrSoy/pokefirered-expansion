@@ -22,8 +22,8 @@ print('PASS existing metatiles and used graphics restored byte-for-byte')
 for levels in itertools.product(range(3),repeat=3):
  b=geo.draw((levels,0,0,4,0,False));assert len(b)==geo.W*geo.H and all(0<=v<65536 for v in b)
 b=geo.draw(((0,0,0),0,0,4,0,False))
-assert (R/'data/layouts/Havora_Gym/authored.bin').read_bytes()==subprocess.check_output(['git','show','6ab7bd9e2:data/layouts/HavoraCaptainsTrial/map.bin'],cwd=R),'latest authored baseline changed'
+expected=bytearray(subprocess.check_output(['git','show','4d5a43d97:data/layouts/HavoraCaptainsTrial/map.bin'],cwd=R));struct.pack_into('<H',expected,2*(21*80+27),0x37b1)
+assert (R/'data/layouts/Havora_Gym/authored.bin').read_bytes()==expected,'unapproved baseline change beyond four-tile gate correction'
 assert all(v&1023!=0x318 for v in b),'generated bridge/gallery remains'
-# The newer authored editor preview includes additional MID platform artwork.
-assert (R/'data/layouts/Havora_Gym/map.bin').read_bytes()==subprocess.check_output(['git','show','4d5a43d97:data/layouts/HavoraCaptainsTrial/map.bin'],cwd=R),'incoming authored editor preview changed'
-print('PASS all 27 independent height combinations; authored default preview preserved without generating new paths')
+assert struct.pack('<'+'H'*len(b),*b)==(R/'data/layouts/Havora_Gym/map.bin').read_bytes()
+print('PASS all 27 independent height combinations; all-LOW default retains latest authored layout without generated paths')

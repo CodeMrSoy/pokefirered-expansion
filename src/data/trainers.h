@@ -32764,3 +32764,170 @@
             },
         },
     },
+#line 16031
+    [DIFFICULTY_NORMAL][TRAINER_HAVORA_HARBORMASTER] =
+    {
+#line 16032
+        .trainerName = _("HARBORHAND"),
+#line 16033
+        .trainerClass = TRAINER_CLASS_SAILOR,
+#line 16034
+        .trainerPic = TRAINER_PIC_SAILOR,
+        .encounterMusic_gender =
+#line 16036
+            TRAINER_ENCOUNTER_MUSIC_SWIMMER,
+#line 16037
+        .battleType = TRAINER_BATTLE_TYPE_DOUBLES,
+#line 16038
+        .aiFlags = AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_TRY_TO_FAINT | AI_FLAG_CHECK_VIABILITY | AI_FLAG_HP_AWARE,
+        .partySize = 2,
+        .party = (const struct TrainerMon[])
+        {
+            {
+#line 16040
+            .species = SPECIES_HARIYAMA,
+            .gender = TRAINER_MON_RANDOM_GENDER,
+#line 16040
+            .heldItem = ITEM_COBA_BERRY,
+#line 16044
+            .ev = TRAINER_PARTY_EVS(128, 128, 0, 0, 0, 0),
+#line 16045
+            .iv = TRAINER_PARTY_IVS(20, 20, 20, 20, 20, 20),
+#line 16042
+            .ability = ABILITY_THICK_FAT,
+#line 16041
+            .lvl = 47,
+#line 16043
+            .nature = NATURE_ADAMANT,
+            .dynamaxLevel = MAX_DYNAMAX_LEVEL,
+            .moves = {
+#line 16046
+                MOVE_FAKE_OUT,
+                MOVE_CLOSE_COMBAT,
+                MOVE_KNOCK_OFF,
+                MOVE_PROTECT,
+            },
+            },
+            {
+#line 16051
+            .species = SPECIES_MACHAMP,
+            .gender = TRAINER_MON_RANDOM_GENDER,
+#line 16051
+            .heldItem = ITEM_LUM_BERRY,
+#line 16055
+            .ev = TRAINER_PARTY_EVS(128, 128, 0, 0, 0, 0),
+#line 16056
+            .iv = TRAINER_PARTY_IVS(20, 20, 20, 20, 20, 20),
+#line 16053
+            .ability = ABILITY_NO_GUARD,
+#line 16052
+            .lvl = 48,
+#line 16054
+            .nature = NATURE_ADAMANT,
+            .dynamaxLevel = MAX_DYNAMAX_LEVEL,
+            .moves = {
+#line 16057
+                MOVE_DYNAMIC_PUNCH,
+                MOVE_KNOCK_OFF,
+                MOVE_ROCK_SLIDE,
+                MOVE_PROTECT,
+            },
+            },
+        },
+    },
+#line 16063
+    [DIFFICULTY_NORMAL][TRAINER_HAVORA_LOCKKEEPER] =
+    {
+#line 16064
+        .trainerName = _("LOCKKEEPER"),
+#line 16065
+        .trainerClass = TRAINER_CLASS_SAILOR,
+#line 16066
+        .trainerPic = TRAINER_PIC_SAILOR,
+        .encounterMusic_gender =
+#line 16068
+            TRAINER_ENCOUNTER_MUSIC_SWIMMER,
+#line 16069
+        .battleType = TRAINER_BATTLE_TYPE_DOUBLES,
+#line 16070
+        .aiFlags = AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_TRY_TO_FAINT | AI_FLAG_CHECK_VIABILITY | AI_FLAG_HP_AWARE | AI_FLAG_SMART_MON_CHOICES,
+        .partySize = 3,
+        .party = (const struct TrainerMon[])
+        {
+            {
+#line 16072
+            .species = SPECIES_SKARMORY,
+            .gender = TRAINER_MON_RANDOM_GENDER,
+#line 16072
+            .heldItem = ITEM_ROCKY_HELMET,
+#line 16076
+            .ev = TRAINER_PARTY_EVS(200, 0, 200, 0, 0, 4),
+#line 16077
+            .iv = TRAINER_PARTY_IVS(28, 28, 28, 28, 0, 28),
+#line 16074
+            .ability = ABILITY_STURDY,
+#line 16073
+            .lvl = 50,
+#line 16075
+            .nature = NATURE_IMPISH,
+            .dynamaxLevel = MAX_DYNAMAX_LEVEL,
+            .moves = {
+#line 16078
+                MOVE_BRAVE_BIRD,
+                MOVE_BODY_PRESS,
+                MOVE_TAILWIND,
+                MOVE_PROTECT,
+            },
+            },
+            {
+#line 16083
+            .species = SPECIES_ROTOM_WASH,
+            .gender = TRAINER_MON_RANDOM_GENDER,
+#line 16083
+            .heldItem = ITEM_SITRUS_BERRY,
+#line 16087
+            .ev = TRAINER_PARTY_EVS(200, 0, 0, 0, 200, 4),
+#line 16088
+            .iv = TRAINER_PARTY_IVS(28, 0, 28, 28, 28, 28),
+#line 16085
+            .ability = ABILITY_LEVITATE,
+#line 16084
+            .lvl = 50,
+#line 16086
+            .nature = NATURE_MODEST,
+            .dynamaxLevel = MAX_DYNAMAX_LEVEL,
+            .moves = {
+#line 16089
+                MOVE_HYDRO_PUMP,
+                MOVE_THUNDERBOLT,
+                MOVE_WILL_O_WISP,
+                MOVE_PROTECT,
+            },
+            },
+            {
+#line 16094
+            .species = SPECIES_SCIZOR,
+            .gender = TRAINER_MON_RANDOM_GENDER,
+#line 16094
+            .heldItem = ITEM_METAL_COAT,
+#line 16098
+            .ev = TRAINER_PARTY_EVS(200, 200, 0, 0, 0, 4),
+#line 16099
+            .iv = TRAINER_PARTY_IVS(28, 28, 28, 28, 0, 28),
+#line 16096
+            .ability = ABILITY_TECHNICIAN,
+#line 16095
+            .lvl = 49,
+#line 16097
+            .nature = NATURE_ADAMANT,
+            .dynamaxLevel = MAX_DYNAMAX_LEVEL,
+            .moves = {
+#line 16100
+                MOVE_BULLET_PUNCH,
+                MOVE_BUG_BITE,
+                MOVE_CLOSE_COMBAT,
+                MOVE_PROTECT,
+            },
+            },
+        },
+    },

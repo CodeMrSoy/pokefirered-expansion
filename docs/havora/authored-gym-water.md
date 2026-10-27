@@ -1,6 +1,8 @@
+> Current rules: [directional color-switch trial](directional-tidal-trial.md). The recipe-based rules below are historical.
+
 # Havora gym: artwork-first revision
 
-Latest water artwork: see [section-water-profiles.md](section-water-profiles.md), based on the user's 80×27 commit 6ab7bd9e2.
+Latest water artwork: see [section-water-profiles.md](section-water-profiles.md), based on the user's 80×27 commit 4d5a43d97.
 
 The user's layout and original metatiles are restored. The starting/default
 water levels are **LOW / LOW / LOW**. Platforms and walkways follow the supplied
@@ -31,18 +33,14 @@ Previews:
 
 ## Puzzle status
 
-The previous conserved-water puzzle is **retired pending redesign around the
-finished artwork**. Its old 25-step solution is not applicable. All-LOW supplies
-no transferable water; the replacement puzzle must define how water enters
-and drains as well as where the player travels.
+The conserved-water/cargo puzzle has been replaced by the playable
+[seven-station tidal trial](tidal-trial.md). All 21 authored switches now have
+bindings. Each platform requires successful switch operation and its crew's
+water-level challenge. All seven crews guard Eirik's LOW bunker.
 
-Old transfer, sailing and mooring actions are inactive and report that the lock
-system is being refitted. Trainer teams and victories are retained. A reset
-restores all three pools to LOW at the latest map entrance (3,25). Old gym saves migrate safely to the entrance.
-
-For emulator/authoring review only, special command 26 selects an independent
-chamber (0–2 in VAR_0x8005) and height (0–2 in VAR_0x8006). It animates the artwork;
-it is not a replacement player puzzle. All 27 height combinations are supported.
+The new rules keep these artwork profiles. A/B's lower platforms are MID-height;
+C's crossing is LOW-height. Gauge panels offer reset/return without losing
+victories. Command 26 remains an emulator-only independent water preview.
 
 ## Preserve subsequent Porymap edits
 
@@ -54,20 +52,11 @@ Porymap edits to the default map therefore survive normal play.
 The explicit overlay builder still reads the preserved `authored.bin` snapshot
 and the three reference silhouettes. Do not run that builder over new Porymap
 edits until those edits have intentionally been incorporated into the snapshot
-and height profiles. Updating the puzzle will require updating the profiles
-and collision/elevation transitions for the final artwork.
+and height profiles. Puzzle rules are generated separately from `tools/havora/tidal_trial.json`.
 
 ## Validation
 
-- Successful ROM build.
-- Existing metatiles and used graphic pixels match the user's pre-rework art.
-- The new kit is unplaced; no generated bridge/gallery tiles remain.
-- All 27 independent height combinations are valid.
-- Emulator checks old-save migration to LOW/LOW/LOW, exact runtime/default map
-  agreement, reference height transitions, resets, re-entry and victory retention.
-- The old puzzle's movement and transfer actions cannot modify the artwork.
-
-Use `tests/havora_artwork_assets.py` and
-`tests/havora_artwork_review_emulator.py` for this revision. The former
-837-state/570-route/25-action puzzle checks describe the retired design and
-are not validation of a new playable puzzle.
+See `tidal-trial.md` for the playable puzzle solver, native emulator checks and
+build validation. `havora_section_water.py` and `havora_artwork_assets.py` retain
+the original graphics, all-LOW map and all 27 height profiles. Historical
+cargo-boat/artwork-review-only tests describe retired revisions.

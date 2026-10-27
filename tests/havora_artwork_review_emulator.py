@@ -8,7 +8,7 @@ j=json.loads((m.root/'data/maps/map_groups.json').read_text());ids={name:(g,n) f
 def warp(x=3,y=25):
  g,n=ids['Havora_Gym'];m.inject(b'\x39'+struct.pack('<BBBHH',g,n,255,x,y)+b'\x6b\x02');m.run(120)
 def value(v):return native('VarGet',v)&65535
-def encode(w):return 0x4400+w[0]+3*w[1]+9*w[2]
+def encode(w):return 0x8000+w[0]+3*w[1]+9*w[2]
 def command(cmd,a=0,b=0):
  for var,v in [(0x8004,cmd),(0x8005,a),(0x8006,b)]:native('VarSet',var,v)
  native('HavoraGym_Control')
@@ -24,12 +24,12 @@ def assert_map(w):
   assert list(got)==expected[y*80:(y+1)*80],('runtime differs from authored artwork',w,y,next((x,hex(a),hex(b)) for x,(a,b) in enumerate(zip(got,expected[y*80:(y+1)*80])) if a!=b))
 native('VarSet',0x40d8,63);native('VarSet',0x40d7,0xA408);warp()
 assert value(0x40d7)==encode((0,0,0)),'old gym save did not migrate to all LOW'
-assert value(0x40d8)==63,'migration lost trainer victories'
+assert value(0x40d8)==255,'migration lost completed trial'
 assert_map((0,0,0));m.snap('artwork-default-all-low')
 print('PASS old-save migration and all-LOW runtime map matches restored artwork',flush=True)
 for cmd,args in [(10,(0,1)),(11,(0,2)),(12,()),(13,()),(14,()),(20,(0,))]:
- before=value(0x40d7);assert command(cmd,*args)==9 and value(0x40d7)==before,('old puzzle still edits artwork',cmd)
-print('PASS old transfer, sailing and mooring geometry disabled during artwork review',flush=True)
+ before=value(0x40d7);assert command(cmd,*args)==3 and value(0x40d7)==before,('old puzzle still edits artwork',cmd)
+print('PASS retired transfer, sailing and mooring commands rejected',flush=True)
 current=[0,0,0]
 for levels in [(2,0,0),(1,2,1),(0,1,2),(0,0,0)]:
  for ch,target in enumerate(levels):
@@ -43,6 +43,6 @@ for levels in [(2,0,0),(1,2,1),(0,1,2),(0,0,0)]:
 print('PASS animated independent height profiles match all three supplied references',flush=True)
 native('VarSet',0x40d7,encode((2,0,0)));warp();assert value(0x40d7)==encode((2,0,0));assert_map((2,0,0))
 assert command(15)==1;assert value(0x40d7)==encode((0,0,0));assert_map((0,0,0))
-assert value(0x40d8)==63
+assert value(0x40d8)==255
 warp();assert_map((0,0,0))
 print('PASS re-entry and reset retain the authored default and trainer victories',flush=True)

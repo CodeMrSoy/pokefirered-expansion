@@ -1,12 +1,24 @@
 # Havora gym water profiles
 
-Based on **6ab7bd9e2 — Havora gym update**, using the user's latest **80×27**
+Based on **4d5a43d97 — Added mid height platform**, using the user's latest **80×27**
 Porymap map and the supplied ALL LOW, ALL MID, ALL HIGH and collision references.
 
-The all-LOW map is byte-for-byte identical to the latest pushed map. This update
-changes only the water-height profiles, submerged collision, and captain
-visibility. Existing puzzle controls, transfers, trainer progression and teams
-are unchanged. The existing artwork-review mode remains in place.
+The all-LOW map is byte-for-byte identical to the latest pushed map.
+
+The two new MID-height landings beside the section 1/2 divider are included:
+
+- Section 1: columns 23–26, rows 13–17; boarding pad at (24,16).
+- Section 2: columns 28–31, rows 13–17; boarding pad at (30,16).
+- LOW keeps the complete authored deck, stairs and exposed masonry.
+- MID keeps the walkable deck/pads at elevation 4 and the existing stairs,
+  while the lower masonry is submerged.
+- HIGH submerges the full landing footprints, including the lower stairs.
+
+Each landing follows its own section. The new [boat-and-dam trial](directional-tidal-trial.md)
+uses the two lower pads for a MID-only boat crossing over the submerged A/B dam;
+it does not add bridge artwork. Section C's authored crossing remains LOW-only and is
+required to walk between its two sides. All authored cells and water silhouettes
+remain intact. Gameplay bindings and trainer clearances are documented separately.
 
 | Feature | LOW | MID | HIGH |
 | --- | --- | --- | --- |
@@ -41,12 +53,25 @@ victories and crest flags are unaffected.
 ## Validation
 
 `tests/havora_section_water.py` checks the exact latest baseline, all 27
-combinations, MID island access, MID roof collision, HIGH submersion, and unchanged
-puzzle-control code.
+combinations, MID island access, MID roof collision, HIGH submersion, and the MID lower landing footprints.
 
-`tests/havora_section_water_emulator.py` checks native map tiles for all 27
+`tests/havora_tidal_trial_emulator.py` checks native map tiles for all 27
 combinations, actual LOW/MID/HIGH/MID/LOW transitions, live captain removal and
 return, and correct hiding after map re-entry. ROM build succeeds.
 
 Previews: `review/water-island-cycle.gif`, `review/water-bunker-cycle.gif`, and
 `review/water-all-low.png`, `water-all-mid.png`, `water-all-high.png`.
+
+## Annotated Section A corrections
+
+At MID and HIGH the entrance threshold (2–4,26) is covered by water. The
+complete authored boat hull shifts left with the shoreline without leaving
+outline fragments. The upper terrace fascia (22–25,13) remains exposed at MID
+and is submerged at HIGH. LOW and the MID stair-to-pad route are preserved.
+`fix_section_a_profiles.py` reproduces these changes; `render_section_a.py`
+renders the current comparison from native metatiles.
+
+The second annotated correction makes the A gate four tiles tall (rows 22–25).
+The wall cell above it is completed at LOW/MID. Its face is hidden whenever A
+is HIGH, even if B is LOW; unequal water still blocks boat passage. The MID
+left quay's side face at (5,7–9) is continuous beside the hull.

@@ -268,7 +268,7 @@
 #define VAR_HAVORA_GYM_STATE       0x40D7
 #define VAR_HAVORA_GYM_PROGRESS    0x40D8
 #define VAR_VIDRA_CRESTS           0x40D9 // Five gym rewards, bits 0-4; Harbor is bit 0.
-#define VAR_0x40DA                 0x40DA
+#define VAR_HAVORA_GYM_SWITCHES    0x40DA // Seven platform switch clearances.
 #define VAR_0x40DB                 0x40DB
 #define VAR_0x40DC                 0x40DC
 #define VAR_0x40DD                 0x40DD

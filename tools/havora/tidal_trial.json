@@ -1,0 +1,453 @@
+{
+  "platforms": [
+    {
+      "name": "A WEST",
+      "section": 0,
+      "switches": [
+        [
+          1,
+          3
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          1,
+          5
+        ]
+      ],
+      "trainer": "Harbormaster",
+      "trainer_id": "HARBORMASTER",
+      "victory": 64,
+      "prerequisite": 0,
+      "water": [
+        1,
+        0,
+        0
+      ],
+      "npc": [
+        1,
+        6
+      ],
+      "remote": 1
+    },
+    {
+      "name": "A INNER",
+      "section": 0,
+      "switches": [
+        [
+          26,
+          3
+        ],
+        [
+          26,
+          4
+        ],
+        [
+          26,
+          5
+        ]
+      ],
+      "trainer": "Crew",
+      "trainer_id": "DOCK_CREW",
+      "victory": 1,
+      "prerequisite": 0,
+      "water": [
+        2,
+        1,
+        0
+      ],
+      "npc": [
+        26,
+        6
+      ],
+      "remote": 1
+    },
+    {
+      "name": "B WEST",
+      "section": 1,
+      "switches": [
+        [
+          28,
+          3
+        ],
+        [
+          28,
+          4
+        ],
+        [
+          28,
+          5
+        ]
+      ],
+      "trainer": "Diver",
+      "trainer_id": "DIVER",
+      "victory": 16,
+      "prerequisite": 0,
+      "water": [
+        1,
+        1,
+        1
+      ],
+      "npc": [
+        28,
+        6
+      ],
+      "remote": 2
+    },
+    {
+      "name": "B EAST",
+      "section": 1,
+      "switches": [
+        [
+          53,
+          3
+        ],
+        [
+          53,
+          4
+        ],
+        [
+          53,
+          5
+        ]
+      ],
+      "trainer": "Engineer",
+      "trainer_id": "ENGINEER",
+      "victory": 8,
+      "prerequisite": 0,
+      "water": [
+        2,
+        2,
+        2
+      ],
+      "npc": [
+        53,
+        6
+      ],
+      "remote": 0
+    },
+    {
+      "name": "C WEST",
+      "section": 2,
+      "switches": [
+        [
+          55,
+          3
+        ],
+        [
+          55,
+          4
+        ],
+        [
+          55,
+          5
+        ]
+      ],
+      "trainer": "FirstMate",
+      "trainer_id": "FIRST_MATE",
+      "victory": 32,
+      "prerequisite": 0,
+      "water": [
+        2,
+        2,
+        1
+      ],
+      "npc": [
+        55,
+        6
+      ],
+      "remote": 0
+    },
+    {
+      "name": "C EAST",
+      "section": 2,
+      "switches": [
+        [
+          78,
+          3
+        ],
+        [
+          78,
+          4
+        ],
+        [
+          78,
+          5
+        ]
+      ],
+      "trainer": "Navigator",
+      "trainer_id": "NAVIGATOR",
+      "victory": 2,
+      "prerequisite": 0,
+      "water": [
+        1,
+        1,
+        0
+      ],
+      "npc": [
+        78,
+        6
+      ],
+      "remote": 1
+    },
+    {
+      "name": "SWITCH ISLAND",
+      "section": 1,
+      "switches": [
+        [
+          39,
+          9
+        ],
+        [
+          40,
+          9
+        ],
+        [
+          41,
+          9
+        ]
+      ],
+      "trainer": "Lockkeeper",
+      "trainer_id": "LOCKKEEPER",
+      "victory": 128,
+      "prerequisite": 0,
+      "water": [
+        1,
+        1,
+        2
+      ],
+      "npc": [
+        40,
+        11
+      ],
+      "remote": 2
+    }
+  ],
+  "links": [
+    {
+      "source_label": "AL1",
+      "destination_label": "AR2",
+      "from": 0,
+      "to": 1,
+      "pad_from": [
+        4,
+        8
+      ],
+      "pad_to": [
+        23,
+        11
+      ],
+      "water": [
+        -1,
+        -1,
+        -1
+      ],
+      "clearance": 64,
+      "kind": "boat"
+    },
+    {
+      "source_label": "AR3",
+      "destination_label": "BL3",
+      "from": 1,
+      "to": 2,
+      "pad_from": [
+        24,
+        16
+      ],
+      "pad_to": [
+        30,
+        16
+      ],
+      "water": [
+        1,
+        1,
+        -1
+      ],
+      "clearance": 1,
+      "kind": "boat"
+    },
+    {
+      "source_label": "BL1",
+      "destination_label": "ISLAND L",
+      "from": 2,
+      "to": 6,
+      "pad_from": [
+        31,
+        8
+      ],
+      "pad_to": [
+        39,
+        11
+      ],
+      "water": [
+        -1,
+        1,
+        -1
+      ],
+      "clearance": 16,
+      "kind": "boat"
+    },
+    {
+      "source_label": "ISLAND R",
+      "destination_label": "BR2",
+      "from": 6,
+      "to": 3,
+      "pad_from": [
+        41,
+        11
+      ],
+      "pad_to": [
+        50,
+        11
+      ],
+      "water": [
+        -1,
+        1,
+        -1
+      ],
+      "clearance": 128,
+      "kind": "boat"
+    },
+    {
+      "source_label": "BR1",
+      "destination_label": "CR2",
+      "from": 3,
+      "to": 5,
+      "pad_from": [
+        50,
+        8
+      ],
+      "pad_to": [
+        75,
+        11
+      ],
+      "water": [
+        -1,
+        2,
+        2
+      ],
+      "clearance": 8,
+      "kind": "boat"
+    },
+    {
+      "source_label": "CR1",
+      "destination_label": "CL2",
+      "from": 5,
+      "to": 4,
+      "pad_from": [
+        75,
+        8
+      ],
+      "pad_to": [
+        58,
+        11
+      ],
+      "water": [
+        -1,
+        -1,
+        -1
+      ],
+      "clearance": 2,
+      "kind": "boat"
+    },
+    {
+      "source_label": "CL1",
+      "destination_label": "BL2",
+      "from": 4,
+      "to": 2,
+      "pad_from": [
+        58,
+        8
+      ],
+      "pad_to": [
+        31,
+        11
+      ],
+      "water": [
+        -1,
+        2,
+        2
+      ],
+      "clearance": 32,
+      "kind": "boat"
+    },
+    {
+      "source_label": "AR1",
+      "destination_label": "AL2",
+      "from": 1,
+      "to": 0,
+      "pad_from": [
+        23,
+        8
+      ],
+      "pad_to": [
+        4,
+        11
+      ],
+      "water": [
+        -1,
+        -1,
+        -1
+      ],
+      "clearance": 251,
+      "kind": "boat"
+    }
+  ],
+  "color_effects": {
+    "green": [
+      1,
+      -1,
+      -1
+    ],
+    "red": [
+      -1,
+      0,
+      1
+    ],
+    "yellow": [
+      0,
+      1,
+      0
+    ],
+    "blue": [
+      1,
+      1,
+      -1
+    ]
+  },
+  "dams": {
+    "AB": {
+      "x": 27,
+      "rows": [
+        22,
+        25
+      ],
+      "levels": [
+        [
+          1,
+          1
+        ],
+        [
+          2,
+          2
+        ]
+      ],
+      "visual_coverage": "A HIGH, or A/B both MID; sailing still requires matching MID/HIGH levels"
+    },
+    "BC": {
+      "x": 54,
+      "rows": [
+        21,
+        25
+      ],
+      "levels": [
+        [
+          2,
+          2
+        ]
+      ]
+    }
+  }
+}

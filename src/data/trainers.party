@@ -16027,3 +16027,77 @@ IVs: 31 HP / 31 Atk / 31 Def / 0 SpA / 31 SpD / 31 Spe
 - Power Whip
 - Shadow Claw
 - Protect
+
+=== TRAINER_HAVORA_HARBORMASTER ===
+Name: HARBORHAND
+Class: Sailor
+Pic: Sailor
+Gender: Male
+Music: Swimmer
+Double Battle: Yes
+AI: Check Bad Move / Try To Faint / Check Viability / HP Aware
+
+Hariyama @ Coba Berry
+Level: 47
+Ability: Thick Fat
+Nature: Adamant
+EVs: 128 HP / 128 Atk
+IVs: 20 HP / 20 Atk / 20 Def / 20 SpA / 20 SpD / 20 Spe
+- Fake Out
+- Close Combat
+- Knock Off
+- Protect
+
+Machamp @ Lum Berry
+Level: 48
+Ability: No Guard
+Nature: Adamant
+EVs: 128 HP / 128 Atk
+IVs: 20 HP / 20 Atk / 20 Def / 20 SpA / 20 SpD / 20 Spe
+- Dynamic Punch
+- Knock Off
+- Rock Slide
+- Protect
+
+
+=== TRAINER_HAVORA_LOCKKEEPER ===
+Name: LOCKKEEPER
+Class: Sailor
+Pic: Sailor
+Gender: Male
+Music: Swimmer
+Double Battle: Yes
+AI: Check Bad Move / Try To Faint / Check Viability / HP Aware / Smart Mon Choices
+
+Skarmory @ Rocky Helmet
+Level: 50
+Ability: Sturdy
+Nature: Impish
+EVs: 200 HP / 200 Def / 4 SpD
+IVs: 28 HP / 28 Atk / 28 Def / 0 SpA / 28 SpD / 28 Spe
+- Brave Bird
+- Body Press
+- Tailwind
+- Protect
+
+Rotom-Wash @ Sitrus Berry
+Level: 50
+Ability: Levitate
+Nature: Modest
+EVs: 200 HP / 200 SpA / 4 SpD
+IVs: 28 HP / 0 Atk / 28 Def / 28 SpA / 28 SpD / 28 Spe
+- Hydro Pump
+- Thunderbolt
+- Will-O-Wisp
+- Protect
+
+Scizor @ Metal Coat
+Level: 49
+Ability: Technician
+Nature: Adamant
+EVs: 200 HP / 200 Atk / 4 SpD
+IVs: 28 HP / 28 Atk / 28 Def / 0 SpA / 28 SpD / 28 Spe
+- Bullet Punch
+- Bug Bite
+- Close Combat
+- Protect
