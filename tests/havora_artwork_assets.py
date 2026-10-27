@@ -22,13 +22,17 @@ print('PASS existing metatiles and used graphics restored byte-for-byte')
 for levels in itertools.product(range(3),repeat=3):
  b=geo.draw((levels,0,0,4,0,False));assert len(b)==geo.W*geo.H and all(0<=v<65536 for v in b)
 b=geo.draw(((0,0,0),0,0,4,0,False))
-expected=bytearray(subprocess.check_output(['git','show','4d5a43d97:data/layouts/HavoraCaptainsTrial/map.bin'],cwd=R));struct.pack_into('<H',expected,2*(21*80+27),0x37b1)
+expected=bytearray(subprocess.check_output(['git','show','67626075:data/layouts/Havora_Gym/map.bin'],cwd=R))
 manifest=json.loads((R/'tools/havora/tidal_trial.json').read_text())
 tile={'RED':0x300,'BLUE':0x301,'YELLOW':0x302,'GREEN':0x303}
 for p in manifest['platforms']:
  for (x,y),color in zip(p['switches'],p['switch_colors']):
   i=2*(y*80+x);old=struct.unpack_from('<H',expected,i)[0]
   struct.pack_into('<H',expected,i,(old&~1023)|tile[color])
+for p in manifest['platforms']:
+ for x,y in p.get('removed_switches',[]):
+  i=2*(y*80+x);old=struct.unpack_from('<H',expected,i)[0]
+  struct.pack_into('<H',expected,i,(old&~1023)|0x281)
 assert (R/'data/layouts/Havora_Gym/authored.bin').read_bytes()==expected,'authored baseline differs beyond approved gate and switch-color updates'
 assert all(v&1023!=0x318 for v in b),'generated bridge/gallery remains'
 assert struct.pack('<'+'H'*len(b),*b)==(R/'data/layouts/Havora_Gym/map.bin').read_bytes()

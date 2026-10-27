@@ -3,14 +3,17 @@ from pathlib import Path
 import sys,struct,subprocess,itertools
 R=Path(__file__).resolve().parents[1];sys.path.insert(0,str(R/'tools/havora'))
 import overhead_lock_geometry as g
-latest=subprocess.check_output(['git','show','4d5a43d97:data/layouts/HavoraCaptainsTrial/map.bin'],cwd=R)
-latest=bytearray(latest);struct.pack_into('<H',latest,2*(21*80+27),0x37b1)
+latest=bytearray(subprocess.check_output(['git','show','67626075:data/layouts/Havora_Gym/map.bin'],cwd=R))
 manifest=__import__('json').loads((R/'tools/havora/tidal_trial.json').read_text())
 tile={'RED':0x300,'BLUE':0x301,'YELLOW':0x302,'GREEN':0x303}
 for p in manifest['platforms']:
  for (x,y),color in zip(p['switches'],p['switch_colors']):
   i=2*(y*80+x);old=struct.unpack_from('<H',latest,i)[0]
   struct.pack_into('<H',latest,i,(old&~1023)|tile[color])
+for p in manifest['platforms']:
+ for x,y in p.get('removed_switches',[]):
+  i=2*(y*80+x);old=struct.unpack_from('<H',latest,i)[0]
+  struct.pack_into('<H',latest,i,(old&~1023)|0x281)
 base=g.draw(((0,0,0),0,0,4,0,False))
 assert struct.pack('<2160H',*base)==latest,'LOW layout differs from latest Porymap commit'
 assert (g.W,g.H)==(80,27)

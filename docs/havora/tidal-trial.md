@@ -2,8 +2,10 @@
 
 # Havora seven-station tidal trial
 
-The old conserved-water/cargo-boat puzzle is retired. The new puzzle starts at
-**LOW / LOW / LOW** and uses all 21 switches on the seven authored platforms.
+The recipe below is retired. The current puzzle starts at **LOW / LOW / LOW**
+and keeps two distinct-color switches on each of the seven authored platforms.
+Use the directional trial document for the current routes, switch colors, and
+solution.
 Operate at least one successful switch on each platform and defeat its crew.
 All seven switch clearances and seven crew victories are required for Eirik.
 Failed or no-op operations do not count. Earlier victories survive a reset.

@@ -42,19 +42,6 @@ HavoraTide_Switch0_1::
  waitstate
  goto HavoraTide_Release
 HavoraTide_Help0_1::
- .string "YELLOW: B up.\nOperate this switch?$"
-HavoraTide_Switch0_2::
- lockall
- msgbox HavoraTide_Help0_2, MSGBOX_YESNO
- goto_if_eq VAR_RESULT, NO, HavoraTide_Release
- setvar VAR_0x8004, 30
- setvar VAR_0x8005, 0
- setvar VAR_0x8006, 2
- special HavoraGym_Control
- goto_if_ne VAR_RESULT, 1, HavoraTide_Error
- waitstate
- goto HavoraTide_Release
-HavoraTide_Help0_2::
  .string "RED: A down, C up.\nOperate this switch?$"
 HavoraTide_Switch1_0::
  lockall
@@ -82,19 +69,6 @@ HavoraTide_Switch1_1::
  goto HavoraTide_Release
 HavoraTide_Help1_1::
  .string "RED: A down, C up.\nOperate this switch?$"
-HavoraTide_Switch1_2::
- lockall
- msgbox HavoraTide_Help1_2, MSGBOX_YESNO
- goto_if_eq VAR_RESULT, NO, HavoraTide_Release
- setvar VAR_0x8004, 30
- setvar VAR_0x8005, 1
- setvar VAR_0x8006, 2
- special HavoraGym_Control
- goto_if_ne VAR_RESULT, 1, HavoraTide_Error
- waitstate
- goto HavoraTide_Release
-HavoraTide_Help1_2::
- .string "BLUE: A up, B up, C down.\nOperate this switch?$"
 HavoraTide_Switch2_0::
  lockall
  msgbox HavoraTide_Help2_0, MSGBOX_YESNO
@@ -120,19 +94,6 @@ HavoraTide_Switch2_1::
  waitstate
  goto HavoraTide_Release
 HavoraTide_Help2_1::
- .string "BLUE: A up, B up, C down.\nOperate this switch?$"
-HavoraTide_Switch2_2::
- lockall
- msgbox HavoraTide_Help2_2, MSGBOX_YESNO
- goto_if_eq VAR_RESULT, NO, HavoraTide_Release
- setvar VAR_0x8004, 30
- setvar VAR_0x8005, 2
- setvar VAR_0x8006, 2
- special HavoraGym_Control
- goto_if_ne VAR_RESULT, 1, HavoraTide_Error
- waitstate
- goto HavoraTide_Release
-HavoraTide_Help2_2::
  .string "BLUE: A up, B up, C down.\nOperate this switch?$"
 HavoraTide_Switch3_0::
  lockall
@@ -160,19 +121,6 @@ HavoraTide_Switch3_1::
  goto HavoraTide_Release
 HavoraTide_Help3_1::
  .string "GREEN: A up, B down, C down.\nOperate this switch?$"
-HavoraTide_Switch3_2::
- lockall
- msgbox HavoraTide_Help3_2, MSGBOX_YESNO
- goto_if_eq VAR_RESULT, NO, HavoraTide_Release
- setvar VAR_0x8004, 30
- setvar VAR_0x8005, 3
- setvar VAR_0x8006, 2
- special HavoraGym_Control
- goto_if_ne VAR_RESULT, 1, HavoraTide_Error
- waitstate
- goto HavoraTide_Release
-HavoraTide_Help3_2::
- .string "YELLOW: B up.\nOperate this switch?$"
 HavoraTide_Switch4_0::
  lockall
  msgbox HavoraTide_Help4_0, MSGBOX_YESNO
@@ -199,19 +147,6 @@ HavoraTide_Switch4_1::
  goto HavoraTide_Release
 HavoraTide_Help4_1::
  .string "RED: A down, C up.\nOperate this switch?$"
-HavoraTide_Switch4_2::
- lockall
- msgbox HavoraTide_Help4_2, MSGBOX_YESNO
- goto_if_eq VAR_RESULT, NO, HavoraTide_Release
- setvar VAR_0x8004, 30
- setvar VAR_0x8005, 4
- setvar VAR_0x8006, 2
- special HavoraGym_Control
- goto_if_ne VAR_RESULT, 1, HavoraTide_Error
- waitstate
- goto HavoraTide_Release
-HavoraTide_Help4_2::
- .string "GREEN: A up, B down, C down.\nOperate this switch?$"
 HavoraTide_Switch5_0::
  lockall
  msgbox HavoraTide_Help5_0, MSGBOX_YESNO
@@ -237,19 +172,6 @@ HavoraTide_Switch5_1::
  waitstate
  goto HavoraTide_Release
 HavoraTide_Help5_1::
- .string "YELLOW: B up.\nOperate this switch?$"
-HavoraTide_Switch5_2::
- lockall
- msgbox HavoraTide_Help5_2, MSGBOX_YESNO
- goto_if_eq VAR_RESULT, NO, HavoraTide_Release
- setvar VAR_0x8004, 30
- setvar VAR_0x8005, 5
- setvar VAR_0x8006, 2
- special HavoraGym_Control
- goto_if_ne VAR_RESULT, 1, HavoraTide_Error
- waitstate
- goto HavoraTide_Release
-HavoraTide_Help5_2::
  .string "RED: A down, C up.\nOperate this switch?$"
 HavoraTide_Switch6_0::
  lockall
@@ -276,19 +198,6 @@ HavoraTide_Switch6_1::
  waitstate
  goto HavoraTide_Release
 HavoraTide_Help6_1::
- .string "GREEN: A up, B down, C down.\nOperate this switch?$"
-HavoraTide_Switch6_2::
- lockall
- msgbox HavoraTide_Help6_2, MSGBOX_YESNO
- goto_if_eq VAR_RESULT, NO, HavoraTide_Release
- setvar VAR_0x8004, 30
- setvar VAR_0x8005, 6
- setvar VAR_0x8006, 2
- special HavoraGym_Control
- goto_if_ne VAR_RESULT, 1, HavoraTide_Error
- waitstate
- goto HavoraTide_Release
-HavoraTide_Help6_2::
  .string "GREEN: A up, B down, C down.\nOperate this switch?$"
 HavoraTide_Travel::
  lockall

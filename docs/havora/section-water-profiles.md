@@ -1,7 +1,7 @@
 # Havora gym water profiles
 
-Based on **4d5a43d97 — Added mid height platform**, using the user's latest **80×27**
-Porymap map and the supplied ALL LOW, ALL MID, ALL HIGH and collision references.
+Based on **67626075 — Finishing touches on Havora Gym**, using the user's latest
+**80×27** Porymap map and the supplied ALL LOW, ALL MID, ALL HIGH and collision references.
 
 The all-LOW map is byte-for-byte identical to the latest pushed map.
 
