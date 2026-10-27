@@ -11,6 +11,8 @@ from PIL import Image,ImageDraw
 import art as A
 R=Path(__file__).resolve().parents[2];sys.path.insert(0,str(R/'tools/havora'))
 from render import atlas
+from native_reference import install
+native=atlas('cinnabar_island');install(native)
 W,H=56,60
 D=R/'data/tilesets/secondary/corvala';B=R/'build/corvala';B.mkdir(parents=True,exist_ok=True)
 T=[bytes(64)];lookup={T[0]:(0,0)};M=[];attrs=[];ml={};pixels={};kit={}
@@ -141,7 +143,7 @@ def build(tide):
  for y in range(13,20):
   for x in [11,12]:put(x,y,kit['stairs'])
  # Small wooden stairs connect to the lighthouse's lower landing.
- for y in range(43,55):
+ for y in range(43,45):
   for x in [47,48,49]:put(x,y,kit['stairs'])
  for name,x,y in buildings:place(name,x,y)
  for x,y in [(3,27),(13,24),(32,24),(42,25),(20,37),(37,37),(41,42),(52,56)]:place('lamp',x,y)
