@@ -1,195 +1,197 @@
 #!/usr/bin/env python3
-"""Build Corvala's first low-tide overworld; native GBA metatiles, not a painted backdrop.
-Existing Emerald harbor cutouts are reused from Havora's checked-in source art.
-Custom reef, sand, cliff and boardwalk pieces are drawn at native resolution.
+"""Build editable Corvala metatiles and tide artwork from the supplied concept.
+
+The game uses the low-tide layout. Mid/high maps are authoring previews only;
+no tide clock or runtime tile replacement is installed by this map builder.
 """
 from pathlib import Path
-import json,struct,sys,random
+from collections import deque
+import struct,json,sys,hashlib
 from PIL import Image,ImageDraw
+import art as A
 R=Path(__file__).resolve().parents[2];sys.path.insert(0,str(R/'tools/havora'))
 from render import atlas
-S=R/'tools/havora/source_art/emerald_harbor'; D=R/'data/tilesets/secondary/corvala'
-D.mkdir(parents=True,exist_ok=True);(D/'palettes').mkdir(exist_ok=True)
 W,H=56,60
-# Six material palettes. RGB values are reduced to the GBA's five-bit channels.
-palettes=[]; tiles=[bytes(64)]; tile_lookup={bytes(64):0}; metas=[];attributes=[];meta_lookup={}; art={};kit={}
-def register(im,bank,behavior=0):
-    im=im.convert('RGB'); colors=palettes[bank-7]
-    indices=bytes(min(range(1,16),key=lambda j:sum((c-v)**2 for c,v in zip(colors[j],rgb))) for rgb in im.getdata())
-    desc=[]
-    for ox,oy in [(0,0),(8,0),(0,8),(8,8)]:
-        raw=bytes(indices[(oy+y)*16+ox+x] for y in range(8) for x in range(8))
-        if raw not in tile_lookup:tile_lookup[raw]=len(tiles);tiles.append(raw)
-        desc.append((640+tile_lookup[raw])|(bank<<12))
-    key=tuple(desc)+(behavior,)
-    if key not in meta_lookup:
-        meta_lookup[key]=640+len(metas);metas.append(desc+[640]*4);attributes.append(behavior)
-        art[meta_lookup[key]]=Image.frombytes('P',(16,16),indices);art[meta_lookup[key]].putpalette(sum((list(c) for c in colors),[])+[0]*720)
-    return meta_lookup[key]
-def add_palette(images):
-    sheet=Image.new('RGB',(128,((sum(im.width*im.height for im in images)+127)//128+7)//8*8),(0,0,0)); pix=[]
-    for im in images:pix.extend(im.convert('RGB').getdata())
-    sheet.putdata(pix);q=sheet.quantize(colors=15,method=Image.Quantize.MEDIANCUT)
-    cs=[tuple((v>>3)<<3 for v in q.getpalette()[i:i+3]) for i in range(0,45,3)]
-    cs=[c for c in cs if len(c)==3];cs=(cs+[(0,0,0)]*15)[:15]
-    palettes.append([(0,0,0)]+cs);return len(palettes)+6
-def tile(bg):return Image.new('RGB',(16,16),bg)
-# The sand and cliff kit uses consistent top-down lighting.
-sand=tile('#e8d098');d=ImageDraw.Draw(sand)
-for x,y in [(2,3),(11,9),(6,13)]:d.point((x,y),fill='#c8b080')
-deep=tile('#3898b0');d=ImageDraw.Draw(deep)
-for x,y in [(1,3),(9,11)]:d.line((x,y,x+4,y),fill='#58b8c0')
-shallow=tile('#68c8c0');d=ImageDraw.Draw(shallow)
-for x,y in [(1,3),(9,11)]:d.line((x,y,x+4,y),fill='#98e0d0')
-deck=Image.open(S/'wood.png').convert('RGB')
-cliff=tile('#786858');d=ImageDraw.Draw(cliff)
-for box in [(1,1,8,6),(10,0,15,5),(0,8,5,14),(7,8,14,15)]:
- d.rounded_rectangle(box,radius=2,fill='#a89878',outline='#504848')
- d.line((box[0]+1,box[1]+1,box[2]-1,box[1]+1),fill='#c0b090')
-grass=tile('#68a878');d=ImageDraw.Draw(grass)
-for x,y in [(2,5),(10,12),(12,3)]:d.line((x,y,x+2,y-2),fill='#90c088')
-reef=[]
-for c,hi in [('#d878a0','#f0b0c8'),('#a890d0','#d0b8e8'),('#e8b868','#f8d898')]:
- im=shallow.copy();d=ImageDraw.Draw(im)
- for x,y in [(4,12),(11,13)]:
-  d.line((x,y,x,y-9),fill=c,width=2);d.line((x,y-4,x-3,y-7),fill=c,width=2);d.line((x,y-5,x+3,y-8),fill=c,width=2);d.point((x,y-9),fill=hi)
- for x,y in [(2,5),(7,4),(12,7),(5,10)]:
-  d.ellipse((x-1,y-2,x+2,y+1),fill=c);d.point((x,y-2),fill=hi)
- reef.append(im)
-rock=Image.open(S/'rock.png').convert('RGBA');rockbg=shallow.convert('RGBA');rockbg.alpha_composite(rock)
-materials=[sand,shallow,deck,grass,deep]
-b=add_palette(materials)
-for n,im in zip(['sand','shallows','deck','grass','sea'],materials):kit[n]=register(im,b)
-b=add_palette([cliff]);kit['cliff']=register(cliff,b)
-b=add_palette(reef+[rockbg])
-for n,im in zip(['coral_pink','coral_lilac','coral_gold','rock'],reef+[rockbg]):kit[n]=register(im,b)
-# Native harbor buildings keep the established game's pixel scale.
-assets={n:Image.open(S/f'{n}.png').convert('RGBA') for n in ['house','warehouse','lighthouse','market_stall','planter','bollard']}
-b=add_palette([im.convert('RGB') for im in assets.values()]+[deck])
-for name,im in assets.items():
+D=R/'data/tilesets/secondary/corvala';B=R/'build/corvala';B.mkdir(parents=True,exist_ok=True)
+T=[bytes(64)];lookup={T[0]:(0,0)};M=[];attrs=[];ml={};pixels={};kit={}
+# Deduplicate all four reflected orientations across banks, preserving each bank.
+def reg(im,bank,behavior=0):
+ desc=[]
+ for x,y in [(0,0),(8,0),(0,8),(8,8)]:
+  patch=im.crop((x,y,x+8,y+8));raw=patch.tobytes()
+  if raw not in lookup:
+   tid=len(T);T.append(raw)
+   for f,flip in [(0,patch),(1024,patch.transpose(Image.Transpose.FLIP_LEFT_RIGHT)),(2048,patch.transpose(Image.Transpose.FLIP_TOP_BOTTOM)),(3072,patch.transpose(Image.Transpose.FLIP_LEFT_RIGHT).transpose(Image.Transpose.FLIP_TOP_BOTTOM))]:lookup.setdefault(flip.tobytes(),(tid,f))
+  tid,f=lookup[raw];desc.append((640+tid)|f|(bank<<12))
+ k=tuple(desc)+(behavior,)
+ if k not in ml:
+  ml[k]=640+len(M);M.append(desc+[640]*4);attrs.append(behavior)
+  p=im.copy();p.putpalette(sum((list(c) for c in A.PALETTES[bank-7]),[])+[0]*720);pixels[ml[k]]=p.convert('RGB')
+ return ml[k]
+def asset(im,bank,bg=None):
  rows=[]
  for y in range(0,im.height,16):
   row=[]
   for x in range(0,im.width,16):
-   patch=deck.convert('RGBA');patch.alpha_composite(im.crop((x,y,x+16,y+16)));row.append(register(patch,b))
+   p=im.crop((x,y,x+16,y+16))
+   if bg is not None:
+    out=bg.copy();out.paste(p,(0,0),Image.frombytes('L',p.size,p.tobytes()).point(lambda v:255 if v else 0));p=out
+   row.append(reg(p,bank))
   rows.append(row)
- kit[name]=rows
-# Railings and support posts are custom wood pieces, with water behind them.
-rail=deck.copy();d=ImageDraw.Draw(rail);d.rectangle((0,1,15,3),fill='#684828');d.line((0,1,15,1),fill='#e8c080')
-for x in [1,12]:d.rectangle((x,0,x+2,12),fill='#785030');d.point((x,0),fill='#e8c080')
-post=shallow.copy();d=ImageDraw.Draw(post);d.rectangle((0,0,15,3),fill='#785030');d.rectangle((6,2,9,11),fill='#785030');d.line((6,3,6,10),fill='#c8a068')
-b=add_palette([rail,deck,post]);kit['rail']=register(rail,b);kit['support']=register(post,b)
-# Reuse the native FireRed Center, keeping its recognizable red roof and sign.
-native=atlas('cinnabar_island','general')
-# Center uses General's complete 5x4 exterior kit.
-# Locate via source maps rather than guessing metatile indices.
-layouts=json.loads((R/'data/layouts/layouts.json').read_text()); center=None
-for l in layouts['layouts']:
- if l['id']=='LAYOUT_VERMILION_CITY':center=l
-raw=struct.unpack('<'+'H'*(center['width']*center['height']),(R/center['blockdata_filepath']).read_bytes())
-# Native Center kit in General; the map locates its doorway by warp destination.
-vm=json.loads((R/'data/maps/VermilionCity/map.json').read_text());cw=next(w for w in vm['warp_events'] if 'POKEMON_CENTER' in w['dest_map'])
-cx,cy=cw['x'],cw['y']; centerkit=[[raw[(cy-3+y)*center['width']+cx-2+x]&1023 for x in range(5)] for y in range(4)]
-# Crop only the Center; adjacent street pieces are excluded.
-centerkit[-1]=[0x60,0x61,0x62,0x63,0x64]
-kit['center']=[row[:4] for row in centerkit]
-# A walkable door using the standard warp behavior. No animation table is needed.
-door=deck.copy();d=ImageDraw.Draw(door);d.rectangle((3,0,12,14),fill='#504038');d.rectangle((5,2,10,14),fill='#282830')
-b=add_palette([door]);kit['door']=register(door,b,0x60)
-# Compose permanent terrain, then the reef and raised town.
-grid=[[kit['sea']|0x3400 for x in range(W)] for y in range(H)]
-def put(x,y,mid,solid=False):grid[y][x]=mid|0x3000|(0x400 if solid else 0)
-def rect(x,y,w,h,mid,solid=False):
- for yy in range(y,y+h):
-  for xx in range(x,x+w):put(xx,yy,mid,solid)
-# Upper headlands frame the protected bay; a north footpath is always open.
-rect(0,0,W,8,kit['grass'],True);rect(9,0,5,14,kit['sand']);rect(0,8,8,17,kit['cliff'],True);rect(44,8,12,17,kit['cliff'],True)
-rect(8,8,36,3,kit['cliff'],True);rect(9,8,5,3,kit['sand'])
-# Northeast sea cave mouth (reserved until cave interiors are authored).
-rect(46,10,6,4,kit['cliff'],True)
-# Central sand shelf and broad southern reef, with curved island silhouettes.
-for y in range(11,52):
- for x in range(8,48):
-  if ((x-27)/23)**2+((y-30)/25)**2<1:put(x,y,kit['shallows'])
-for y in range(12,38):
- for x in range(9,45):
-  if ((x-27)/19)**2+((y-22)/16)**2<1:put(x,y,kit['sand'])
-# Dedicated northern path joins the central island without entering water.
-rect(10,9,3,14,kit['sand']);rect(12,17,7,4,kit['sand'])
-rng=random.Random(174)
-for cx,cy,rx,ry in [(9,41,5,4),(18,50,5,3),(30,44,5,4),(39,53,3,3),(45,39,3,3)]:
+ return rows
+kit['sea']=[reg(A.water(False,i),7,0x22000415) for i in range(2)]
+kit['shallow']=[reg(A.water(True,i),7,0x17) for i in range(2)]
+kit['sand']=reg(A.sand(),7);kit['grass']=reg(A.grass(),8)
+kit['cliff']=[reg(A.cliff(mask,v),8) for mask,v in [(0,0),(0,1),(1,0),(4,1)]]
+kit['cave']=asset(A.cave(),8)
+kit['deck']=reg(A.board(),9);kit['stairs']=reg(A.stairs(),9)
+kit['support']=reg(A.support(),9)
+kit['lamp']=asset(A.lamp(),9,A.board())
+kit['house_blue']=asset(A.house(7,True),9,A.board());kit['house_green']=asset(A.house(7,True),10,A.board());kit['house_gold']=asset(A.house(7,True),11,A.board())
+kit['lodge']=asset(A.house(7,True),9,A.board());kit['lighthouse']=asset(A.lighthouse(),9,A.board())
+kit['reefbeds']=[asset(A.reefpatch(i//2).transpose(Image.Transpose.FLIP_LEFT_RIGHT) if i%2 else A.reefpatch(i//2),12) for i in range(4)]
+kit['tree']=asset(A.coastal_tree(),8,A.grass())
+kit['coral']=[reg(A.coral(i),12) for i in range(6)];kit['rock']=reg(A.rock(),12)
+kit['center']=[[0x48,0x49,0x49,0x4a,0x4a,0x4b],[0x48,0x49,0x49,0x4a,0x4a,0x4b],[0x50,0x51,0x51,0x52,0x52,0x53],[0x58,0x59,0x59,0x5a,0x59,0x5b],[0x60,0x61,0x4d,0x62,0x4e,0x63]]
+native=atlas('cinnabar_island');shore={};rails={};reefedges={}
+# Reusable topology masks, shared by all three tide illustrations.
+def edge(kind,mask):
+ cache,fn,bank={'sand':(shore,A.shore,7),'rail':(rails,A.deckedge,9),'reef':(reefedges,A.reefedge,12)}[kind]
+ if mask not in cache:cache[mask]=reg(fn(mask),bank)
+ return cache[mask]
+# Persistent deck footprint follows the concept's individual house platforms.
+decks=set();bridges=set()
+def footprint(target,x,y,w,h):target.update((xx,yy) for yy in range(y,y+h) for xx in range(x,x+w))
+platforms=[(3,20,9,10),(13,16,10,11),(23,13,11,14),(34,17,9,10),(43,20,9,10),(20,31,18,9),(41,37,11,8),(43,54,11,5)]
+for rect in platforms:footprint(decks,*rect)
+for rect in [(10,25,35,3),(25,26,3,8),(35,27,11,3),(46,29,3,12),(47,43,3,14)]:footprint(bridges,*rect)
+decks|=bridges
+# Right approach remains on high ground; north route descends beside the lodge.
+permanent=set();footprint(permanent,10,0,3,3);footprint(permanent,13,2,5,3);footprint(permanent,16,4,3,10);footprint(permanent,16,12,11,2)
+footprint(permanent,51,10,5,3);footprint(permanent,52,11,3,14);footprint(permanent,48,24,6,3)
+# Reef islands: coordinate-stable silhouettes across tide states.
+reefs=[]
+for cx,cy,rx,ry in [(8,39,6,4),(12,52,5,4),(26,46,5,5),(36,53,3,3),(35,40,2,3),(44,48,2,2)]:
+ cells=set()
  for y in range(cy-ry,cy+ry+1):
   for x in range(cx-rx,cx+rx+1):
-   if ((x-cx)/rx)**2+((y-cy)/ry)**2<=1:
-    put(x,y,kit['sand'] if rng.random()<.38 else kit[['coral_pink','coral_lilac','coral_gold'][rng.randrange(3)]],True)
-for x,y in [(16,40),(22,46),(35,52),(40,43),(6,35),(47,47)]:put(x,y,kit['rock'],True)
-# Elevated town: wide platforms and four-tile connecting boardwalks.
-platforms=[(9,18,12,12),(22,15,13,13),(36,19,10,11),(17,31,17,9),(40,36,10,9),(42,50,8,7)]
-for x,y,w,h in platforms:
- rect(x,y,w,h,kit['deck']);rect(x,y,w,1,kit['rail'],True)
-rect(18,25,24,4,kit['deck']);rect(25,25,4,11,kit['deck']);rect(30,35,14,4,kit['deck']);rect(43,28,4,25,kit['deck'])
-# Match HarborRoad's two-tile path at y=11,12 using a permanent east approach.
-rect(46,11,10,2,kit['sand']);rect(49,11,3,16,kit['sand']);rect(43,25,9,3,kit['deck'])
-# Match CoastalRoad's bottom path at x=11,12.
-# Exteriors stand on the permanent decks.
-def place(name,x,y):
- for yy,row in enumerate(kit[name]):
-  for xx,mid in enumerate(row):put(x+xx,y+yy,mid,True)
-place('house',11,20);place('house',38,21);place('house',19,33);place('house',27,33);place('lighthouse',46,37)
-# Center is rendered with its real General/Vermilion tiles and live warp.
-place('center',24,17);put(26,20,0x62);rect(25,21,3,3,kit['deck'])
-for x,y in [(16,23),(34,24),(42,32),(40,39),(20,38)]:place('planter',x,y)
-place('market_stall',30,22)
-# Cave entrance: dark mouth in a rocky frame and a low-tide approach.
-rect(43,14,6,2,kit['sand']);rect(41,15,4,4,kit['sand']);put(46,12,0xa8,True);put(47,12,0xa8,True);put(46,13,0xa9,True);put(47,13,0xa9,True)
-# A low-tide sandbar links the southern landing and reef rim.
-rect(35,47,9,2,kit['sand']);rect(34,43,2,6,kit['sand'])
-# Visible supports make the elevation of the boardwalk readable.
-for y in range(H-1):
+   if ((x-cx)/rx)**2+((y-cy)/ry)**2<1:cells.add((x,y))
+ reefs.append(cells)
+reef_union=set().union(*reefs)
+# Main low-tide beach has narrow channels rather than one large flat oval.
+sand=set()
+for y in range(10,45):
+ for x in range(3,53):
+  if ((x-27)/25)**2+((y-24)/21)**2<1 and not (y>32 and x>27):sand.add((x,y))
+for rect in [(6,33,5,7),(11,39,6,3),(16,40,8,3),(23,39,5,7),(27,44,4,3)]:footprint(sand,*rect)
+# Headland boundary varies by column, with a natural notch for the northeast cave.
+cliff_bottom=[10+((x//4)%3) for x in range(W)]
+for x in range(4,20):cliff_bottom[x]=14
+for x in range(20,40):cliff_bottom[x]=8+(x//3)%3
+for x in range(40,56):cliff_bottom[x]=15+(x//3)%3
+buildings=[('lodge',6,4),('house_green',4,21),('house_blue',14,17),('center',25,14),('house_green',35,18),('house_gold',44,21),('house_green',21,32),('house_gold',30,33),('lighthouse',49,31)]
+landmarks={'center_door':[28,18],'north_exit':[11,0],'east_exit':[55,11],'lighthouse_approach':[49,39],'arrival_pier':[48,56]}
+# Build a tide artwork state; only the low state is installed into the game.
+def build(tide):
+ g=[[kit['sea'][(x//3+y//4)%2]|0x3400 for x in range(W)] for y in range(H)]
+ def put(x,y,mid,solid=False):
+  if 0<=x<W and 0<=y<H:g[y][x]=mid|0x3000|(0x400 if solid else 0)
+ def place(name,x,y,solid=True):
+  for yy,row in enumerate(kit[name]):
+   for xx,mid in enumerate(row):put(x+xx,y+yy,mid,solid)
+ # Shallow lagoon forms a blue-green rim around the islands.
+ for y in range(9,H):
+  for x in range(1,W-1):
+   if tide<2 and ((x-26)/28)**2+((y-34)/28)**2<1:put(x,y,kit['shallow'][(x//4+y//3)%2],tide>0)
  for x in range(W):
-  if grid[y][x]&1023==kit['deck'] and grid[y+1][x]&1023 in [kit['sea'],kit['shallows']] and x%3==0:put(x,y+1,kit['support'],True)
-# Native coastal trees break up the northern headlands.
-for x,y in [(1,1),(4,3),(17,1),(21,4),(27,2),(32,4),(38,1),(43,3),(49,1),(52,4)]:
- for yy,row in enumerate([[0x12,0x13],[0x1a,0x1b],[0x1c,0x1d]]):
-  for xx,v in enumerate(row):put(x+xx,y+yy,v,True)
-# Shorelines use foam and darker wet sand to explain tile boundaries.
-shore_bank=7
-edge_cache={}
-for y in range(1,H-1):
- for x in range(1,W-1):
-  mid=grid[y][x]&1023
-  if mid!=kit['sand']:continue
-  edges=tuple((grid[y+dy][x+dx]&1023) in [kit['sea'],kit['shallows']] for dx,dy in [(0,-1),(1,0),(0,1),(-1,0)])
-  if not any(edges):continue
-  if edges not in edge_cache:
-   im=sand.copy();d=ImageDraw.Draw(im)
-   for yes,box in zip(edges,[(0,0,15,1),(14,0,15,15),(0,14,15,15),(0,0,1,15)]):
-    if yes:d.rectangle(box,fill='#b0d8c0')
-   edge_cache[edges]=register(im,shore_bank)
-  put(x,y,edge_cache[edges],bool(grid[y][x]&0x400))
-
-assert len(tiles)<=384,(len(tiles),'secondary graphic capacity exceeded')
-assert len(metas)<=384
+  for y in range(cliff_bottom[x]):
+   if y<cliff_bottom[x]-3:put(x,y,kit['grass'],True)
+   else:put(x,y,kit['cliff'][2 if y==cliff_bottom[x]-3 else 3 if y==cliff_bottom[x]-1 else (x+y)%2],True)
+ # Western edge tapers into the lower bay, leaving breathing room around the reefs.
+ for y in range(12,33):
+  for x in range(max(1,5-(y-12)//7)):
+   put(x,y,kit['cliff'][(x+y)%2],True)
+ # Lighthouse rock remains exposed at every tide.
+ lighthouse_land={(x,y) for y in range(33,42) for x in range(48,56) if ((x-52)/5)**2+((y-37)/5)**2<1}
+ active_sand=(sand if tide==0 else {(x,y) for x,y in sand if y<19 and x<22} if tide==1 else set())|permanent|lighthouse_land
+ for x,y in active_sand:
+  mask=sum(1<<i for i,(dx,dy) in enumerate([(0,-1),(1,0),(0,1),(-1,0)]) if (x+dx,y+dy) not in active_sand)
+  put(x,y,edge('sand',mask) if mask else kit['sand'])
+ for idx,cells in enumerate(reefs):
+  for x,y in cells:
+   outside=sum(1<<i for i,(dx,dy) in enumerate([(0,-1),(1,0),(0,1),(-1,0)]) if (x+dx,y+dy) not in cells)
+   # At high tide only the tall coral crowns break the surface.
+   if tide==2 and outside:continue
+   put(x,y,edge('reef',outside) if outside else kit['reefbeds'][(idx+(x//2)*3+y//2)%4][(y+idx)%2][(x+idx)%2],True)
+ # Coral gardens extend off the reef shelves into the shallow western lagoon.
+ for x,y in [(2,35),(3,38),(4,43),(6,45),(7,48),(2,50),(3,54),(18,40),(21,44),(22,49),(30,50),(32,46),(38,49),(37,43)]:
+  if (x,y) not in decks and (x,y) not in reef_union:put(x,y,kit['coral'][(x+y)%6],True)
+ # Rock accents have deliberate spacing and never occupy a bridge.
+ for x,y in [(17,43),(20,51),(33,55),(39,45),(45,50),(7,47),(34,35)]:put(x,y,kit['rock'],True)
+ for x,y in decks:
+  mask=sum(1<<i for i,(dx,dy) in enumerate([(0,-1),(1,0),(0,1),(-1,0)]) if (x+dx,y+dy) not in decks and (x+dx,y+dy) not in permanent)
+  # Walkways meet platforms through the same tile footprint, so rails never sever them.
+  put(x,y,edge('rail',mask) if mask else kit['deck'],bool(mask))
+ # Lodge has a separate stone terrace, with a stairway down to the town.
+ for x in range(4,16):
+  for y in range(3,14):
+   if not (6<=x<13 and 4<=y<10):put(x,y,kit['sand'])
+ for x in range(4,16):
+  for y in [12,13,14]:put(x,y,kit['cliff'][3 if y==14 else (x+y)%2],True)
+ for y in range(13,20):
+  for x in [11,12]:put(x,y,kit['stairs'])
+ # Small wooden stairs connect to the lighthouse's lower landing.
+ for y in range(43,55):
+  for x in [47,48,49]:put(x,y,kit['stairs'])
+ for name,x,y in buildings:place(name,x,y)
+ for x,y in [(3,27),(13,24),(32,24),(42,25),(20,37),(37,37),(41,42),(52,56)]:place('lamp',x,y)
+ # Front-door approaches on every platform stay open for later interior warps.
+ for name,x,y in buildings:
+  if name in ['center','lighthouse','lodge']:continue
+  for yy in [y+5,y+6]:g[yy][x+3]&=~0xc00
+ # The native Center door retains its standard animation and warp behavior.
+ put(28,18,0x62);put(28,19,kit['deck'])
+ # A recessed cave spans three tiles; entry behavior/warp will come with the interior.
+ place('cave',47,7);put(48,10,kit['sand'])
+ # Coastal trees/mangroves appear on high ground, never across paths or roof silhouettes.
+ for x,y in [(0,0),(3,0),(6,0),(20,0),(23,0),(26,0),(29,0),(32,1),(35,0),(38,0),(41,1),(44,0),(47,0),(50,0),(53,1)]:place('tree',x,y)
+ # Native signposts and barrels retain FireRed proportions.
+ for x,y in [(29,19),(19,26),(43,28),(44,41),(13,12)]:put(x,y,0x3,True)
+ # Visible pilings only appear below the deck, never over a walkable shore tile.
+ for x,y in sorted(decks):
+  if y<H-1 and (x,y+1) not in decks and (x,y+1) not in active_sand and x%3==0 and (g[y+1][x]&1023) in kit['sea']+kit['shallow']:put(x,y+1,kit['support'],True)
+ # Preserve exact route seam coordinates from the existing Vidra route maps.
+ for x,y in permanent:put(x,y,kit['sand'])
+ return g
+maps=[build(i) for i in range(3)]
+assert len(T)<=384,(len(T),'tile budget exceeded');assert len(M)<=384
+# Render the exact indexed graphics used in the native metatile definitions.
+for i,n in enumerate(['Low','Mid','High']):
+ out=Image.new('RGB',(W*16,H*16))
+ for y,row in enumerate(maps[i]):
+  for x,v in enumerate(row):out.paste(pixels[v&1023] if v&1023>=640 else native[v&1023],(x*16,y*16))
+ out.save(B/f'Corvala_{n}_Tide_Map.png')
+# Core services and permanent piers must remain accessible in every artwork state.
+counts=[]
+for tide,g in enumerate(maps):
+ seen={(11,0)};q=deque(seen)
+ while q:
+  x,y=q.popleft()
+  for xx,yy in [(x-1,y),(x+1,y),(x,y-1),(x,y+1)]:
+   if 0<=xx<W and 0<=yy<H and (xx,yy) not in seen and not g[yy][xx]&0xc00:seen.add((xx,yy));q.append((xx,yy))
+ for name,p in landmarks.items():assert tuple(p) in seen,('unreachable',tide,name,p)
+ counts.append(len(seen))
+g=maps[0]
+# Pack only after geometry and budget checks pass.
+D.mkdir(parents=True,exist_ok=True);(D/'palettes').mkdir(exist_ok=True)
 for bank in range(16):
- colors=palettes[bank-7] if 7<=bank<7+len(palettes) else [(0,0,0)]*16
- (D/'palettes'/f'{bank:02}.pal').write_text('JASC-PAL\n0100\n16\n'+'\n'.join(' '.join(map(str,c)) for c in colors)+'\n')
-sheet=Image.new('P',(128,((len(tiles)+15)//16)*8));sheet.putpalette(sum((list(c) for c in palettes[0]),[])+[0]*720)
-for i,t in enumerate(tiles):sheet.paste(Image.frombytes('P',(8,8),t),(i%16*8,i//16*8))
-sheet.save(D/'tiles.png');(D/'metatiles.bin').write_bytes(struct.pack('<'+'H'*len(metas)*8,*sum(metas,[])));(D/'metatile_attributes.bin').write_bytes(struct.pack('<'+'I'*len(attributes),*attributes))
-
-# Build preview from the exact packed metatiles.
-for y,row in enumerate(grid):
- for x,v in enumerate(row):
-  if v&1023<640:art[v&1023]=native[v&1023]
-preview=Image.new('RGB',(W*16,H*16))
-for y,row in enumerate(grid):
- for x,v in enumerate(row):preview.paste(art[v&1023],(x*16,y*16))
-B=R/'build/corvala';B.mkdir(parents=True,exist_ok=True);preview.save(B/'Corvala_Low_Tide_Map.png')
-l=next(l for l in layouts['layouts'] if l['id']=='LAYOUT_CORVALA_TOWN');l.update(width=W,height=H,secondary_tileset='gTileset_Corvala')
-(R/'data/layouts/layouts.json').write_text(json.dumps(layouts,indent=2)+'\n')
-(R/l['blockdata_filepath']).write_bytes(struct.pack('<'+'H'*W*H,*sum(grid,[])))
-(R/l['border_filepath']).write_bytes(struct.pack('<4H',*[kit['sea']|0x3400]*4))
-mp=R/'data/maps/Corvala_Town/map.json';m=json.loads(mp.read_text());m['warp_events'][0].update(x=26,y=20,elevation=3);mp.write_text(json.dumps(m,indent=2)+'\n')
-manifest={'phase':'first low-tide map; tide controller and interiors pending','dimensions':[W,H],'tiles':len(tiles),'metatiles':len(metas),'palette_banks':len(palettes),'kit':kit,'center_warp':[26,20],'always_open_exits':{'north':[[11,0],[12,0]],'east':[[55,11],[55,12]]},'source_art':'tools/havora/source_art/emerald_harbor/provenance.json'}
-(R/'tools/corvala/map.json').write_text(json.dumps(manifest,indent=2)+'\n')
-print(f'Corvala: {W}x{H}, {len(tiles)}/384 graphics, {len(metas)}/384 metatiles')
+ cs=A.PALETTES[bank-7] if 7<=bank<=12 else [(0,0,0)]*16
+ (D/'palettes'/f'{bank:02}.pal').write_text('JASC-PAL\n0100\n16\n'+'\n'.join(' '.join(map(str,c)) for c in cs)+'\n')
+sheet=Image.new('P',(128,((len(T)+15)//16)*8));sheet.putpalette(sum((list(c) for c in A.PALETTES[0]),[])+[0]*720)
+for i,t in enumerate(T):sheet.paste(Image.frombytes('P',(8,8),t),(i%16*8,i//16*8))
+sheet.save(D/'tiles.png');(D/'metatiles.bin').write_bytes(struct.pack('<'+'H'*(len(M)*8),*sum(M,[])));(D/'metatile_attributes.bin').write_bytes(struct.pack('<'+'I'*len(attrs),*attrs))
+layouts=json.loads((R/'data/layouts/layouts.json').read_text());l=next(l for l in layouts['layouts'] if l['id']=='LAYOUT_CORVALA_TOWN');l.update(width=W,height=H,secondary_tileset='gTileset_Corvala')
+(R/'data/layouts/layouts.json').write_text(json.dumps(layouts,indent=2)+'\n');(R/l['blockdata_filepath']).write_bytes(struct.pack('<'+'H'*W*H,*sum(g,[])));(R/l['border_filepath']).write_bytes(struct.pack('<4H',*[kit['sea'][0]|0x3400]*4))
+p=R/'data/maps/Corvala_Town/map.json';m=json.loads(p.read_text());m['warp_events'][0].update(x=28,y=18,elevation=3);p.write_text(json.dumps(m,indent=2)+'\n')
+manifest={'phase':'reference-driven overworld refinement; game uses LOW; MID/HIGH are previews','dimensions':[W,H],'tiles':len(T),'metatiles':len(M),'palette_banks':6,'kit':kit,'landmarks':landmarks,'buildings':buildings,'permanent_decks':sorted(decks),'walkable_cells_by_tide':counts}
+(R/'tools/corvala/map.json').write_text(json.dumps(manifest,indent=2)+'\n');print(f'{len(T)}/384 tiles; {len(M)}/384 metatiles; all {len(landmarks)} landmarks connected.')

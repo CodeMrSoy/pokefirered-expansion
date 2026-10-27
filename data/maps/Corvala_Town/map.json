@@ -28,8 +28,8 @@
   "object_events": [],
   "warp_events": [
     {
-      "x": 26,
-      "y": 20,
+      "x": 28,
+      "y": 18,
       "elevation": 3,
       "dest_map": "MAP_CORVALA_TOWN_POKEMON_CENTER_1_F",
       "dest_warp_id": "1"
