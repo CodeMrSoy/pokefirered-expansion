@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "global.h"
 #include "quantum_cleanup.h"
 #include "avatar.h"
@@ -38,11 +39,15 @@
 #include "constants/region_map_sections.h"
 #include "constants/moves.h"
 
+static EWRAM_DATA bool8 sLauncherSession = FALSE;
+static EWRAM_DATA s16 sBackdropX = 0, sBackdropY = 0;
+static EWRAM_DATA u8 sBackdropGroup = 0, sBackdropMap = 0;
 static EWRAM_DATA u8 *sFieldBackdrop = NULL;
 static EWRAM_DATA u16 sFieldBackdropPalette[16] = {0};
 
 void ReleasePokeGlassBackdrop(void)
 {
+    if (sLauncherSession) return;
     if (sFieldBackdrop != NULL)
         Free(sFieldBackdrop);
     sFieldBackdrop = NULL;
@@ -164,10 +169,36 @@ void CapturePokeGlassBackdrop(void)
                     const u8 *gfx = tiles + (tile & 1023) * 32 + py * 4;
                     u8 palette = (tile >> 12) * 16;
                     if (count > 240 - x) count = 240 - x;
-                    for (j = 0; j < count; j++, px++, x++)
+                    u32 packed = *(const u32 *)gfx;
+                    if (packed == 0)
                     {
-                        u32 tx = tile & 0x400 ? 7 - px : px;
-                        u8 color = (gfx[tx >> 1] >> ((tx & 1) * 4)) & 15;
+                        x += count;
+                        continue;
+                    }
+                    if (tile & 0x400)
+                    {
+                        packed = ((packed & 0x0F0F0F0F) << 4) | ((packed >> 4) & 0x0F0F0F0F);
+                        packed = (packed << 24) | ((packed & 0xFF00) << 8)
+                            | ((packed >> 8) & 0xFF00) | (packed >> 24);
+                    }
+                    // Most floor tiles are opaque. Expand eight 4-bit pixels
+                    // with two word writes instead of eight slow VRAM reads.
+                    if (count == 8 && !(x & 3)
+                     && !((packed - 0x11111111) & ~packed & 0x88888888))
+                    {
+                        u32 low = packed & 0xFFFF, high = packed >> 16;
+                        u32 paletteWord = palette * 0x01010101;
+                        low = (low & 15) | ((low & 0xF0) << 4) | ((low & 0xF00) << 8) | ((low & 0xF000) << 12);
+                        high = (high & 15) | ((high & 0xF0) << 4) | ((high & 0xF00) << 8) | ((high & 0xF000) << 12);
+                        *(u32 *)(dest + x) = low | paletteWord;
+                        *(u32 *)(dest + x + 4) = high | paletteWord;
+                        x += 8;
+                        continue;
+                    }
+                    packed >>= px * 4;
+                    for (j = 0; j < count; j++, x++, packed >>= 4)
+                    {
+                        u8 color = packed & 15;
                         if (color) dest[x] = palette + color;
                     }
                 }
@@ -193,6 +224,10 @@ void CapturePokeGlassBackdrop(void)
             sFieldBackdrop[offset] = remap[pixels[y * 240 + x]] | (remap[pixels[y * 240 + x + 1]] << 4);
         }
     CaptureBackdropSprites(NULL);
+    sBackdropX = gSaveBlock1Ptr->pos.x;
+    sBackdropY = gSaveBlock1Ptr->pos.y;
+    sBackdropGroup = gSaveBlock1Ptr->location.mapGroup;
+    sBackdropMap = gSaveBlock1Ptr->location.mapNum;
     Free(pixels);
 }
 
@@ -438,83 +473,22 @@ static void DrawHubApp(u8 slot)
         y + 26, textColors, TEXT_SKIP_DRAW, sHubLabels[app]);
 }
 
+// Pre-rendered from the original rectangle drawing, with identical palette indices.
+static const u32 sTabletShellGfx[] = INCBIN_U32("graphics/poke_glass_shell.4bpp");
+
 static void DrawTabletShell(u8 *pixels)
 {
-    u8 i;
-    CpuFill16(0, pixels, 28 * 18 * 32);
-    // Ivory shell, red corner grips, graphite bezel, and transparent blue glass.
-    TabletRect(pixels, 1, 4, 0, 216, 144);
-    TabletRect(pixels, 1, 0, 4, 224, 136);
-    TabletRect(pixels, 12, 4, 2, 216, 140);
-    TabletRect(pixels, 13, 3, 4, 218, 136);
-    TabletRect(pixels, 15, 24, 3, 176, 1);
-    for (i = 0; i < 4; i++)
-    {
-        u16 x = (i & 1) ? 200 : 1;
-        u16 y = (i & 2) ? 121 : 1;
-        TabletRect(pixels, 9, x, y, 23, 22);
-        TabletRect(pixels, 10, x + 2, y + 2, 19, 18);
-        TabletRect(pixels, 11, x + 4, y + 3, 15, 2);
-    }
-    TabletRect(pixels, 2, 8, 11, 208, 120);
-    TabletRect(pixels, 3, 10, 12, 204, 1);
-    TabletRect(pixels, 4, 12, 15, 200, 113);
-    TabletRect(pixels, 6, 13, 16, 20, 1);
-    TabletRect(pixels, 7, 13, 17, 12, 1);
-    // Camera and home button match the bag and startup tablet.
-    TabletRect(pixels, 1, 104, 4, 16, 4);
-    TabletRect(pixels, 7, 111, 5, 2, 2);
-    TabletRect(pixels, 1, 103, 132, 18, 10);
-    TabletRect(pixels, 10, 106, 133, 12, 4);
-    TabletRect(pixels, 15, 106, 138, 12, 3);
-    TabletRect(pixels, 1, 103, 137, 18, 1);
-    TabletRect(pixels, 15, 110, 136, 4, 3);
+    CpuCopy16(sTabletShellGfx, pixels, 28 * 18 * 32);
 }
+
+#include "data/poke_glass_frame.h"
 
 void DrawPokeGlassFrame(u8 bg)
 {
-    u8 x, y;
-    u16 count = 1, tile;
-    u8 *pixels = AllocZeroed(28 * 18 * 32);
-    u8 *tiles = AllocZeroed(128 * 32);
-    if (pixels == NULL || tiles == NULL)
-    {
-        Free(pixels);
-        Free(tiles);
-        return;
-    }
-    DrawTabletShell(pixels);
-    // Cards blend directly with the captured field instead of an opaque
-    // second copy of the glass on BG1. Their pixels supply its blue tint.
-    TabletRect(pixels, 0, 16, 16, 192, 96);
     FillBgTilemapBufferRect(bg, 0x180, 0, 0, 32, 32, 11);
-    for (y = 0; y < 18; y++)
-        for (x = 0; x < 28; x++)
-        {
-            const u8 *source = pixels + (y * 28 + x) * 32;
-            for (tile = 0; tile < count; tile++)
-                if (memcmp(source, tiles + tile * 32, 32) == 0)
-                    break;
-            if (tile == count)
-            {
-                if (count == 128)
-                {
-                    Free(pixels);
-                    Free(tiles);
-                    return;
-                }
-                CpuCopy16(source, tiles + count * 32, 32);
-                count++;
-            }
-            FillBgTilemapBufferRect(bg, 0x180 + tile, x + 1, y + 1, 1, 1, 11);
-        }
-    // Deduplicate the shared shell into the reserved final 4 KiB of char
-    // block 1. Party windows use the space below; the backdrop starts at 0x8000.
-    // The native party screen replaces the field and reserves 13 for borders.
     LoadPalette(sPalette, BG_PLTT_ID(11), sizeof(sPalette));
-    CpuCopy16(tiles, (void *)(VRAM + 0x7000), count * 32);
-    Free(pixels);
-    Free(tiles);
+    CpuCopy16(sTabletFrameTiles, (void *)(VRAM + 0x7000), sizeof(sTabletFrameTiles));
+    CopyToBgTilemapBufferRect_ChangePalette(bg, sTabletFrameMap, 1, 1, 28, 18, 11);
     ScheduleBgCopyTilemapToVram(bg);
 }
 
@@ -522,77 +496,144 @@ void DrawPokeGlassFrame(u8 bg)
 // tiles live above map graphics and below the field tilemaps. Only the glass
 // changes during the handoff; the captured scenery around the bezel stays put.
 // c000-c5ff belongs to field dialogue / the hub window. c600-d7ff holds
-// 144 cover tiles: 46 unique shell tiles plus at most 96 surrounding tiles.
+// 144 return-cover tiles: the shell plus the scenery outside it.
 // d800-dfff holds its map; the field's three maps start at e000.
+// Entry uses shell tiles at cb00-d7ff, then moves its map from d800 to
+// e800 once the cached backdrop is installed. Party BG2 uses one map block.
 #define RETURN_COVER_FIRST_TILE 48
-#define RETURN_COVER_TILES (192 - RETURN_COVER_FIRST_TILE)
+#define RETURN_COVER_TILES 144
 static EWRAM_DATA bool8 sReturnCoverActive = FALSE;
+static EWRAM_DATA bool8 sReturnCoverPending = FALSE;
 static EWRAM_DATA bool8 sReturnCoverReady = FALSE;
+static EWRAM_DATA bool8 sCoverEntering = FALSE;
+static EWRAM_DATA u8 sCoverPhase = 0;
+static EWRAM_DATA u8 sCoverReadyVBlanks = 0;
 static EWRAM_DATA u16 sReturnCoverPalette[32] = {0};
+static EWRAM_DATA u8 *sPendingCoverTiles = NULL;
+static EWRAM_DATA u16 *sPendingCoverMap = NULL;
+static EWRAM_DATA u16 *sPendingBackdropMap = NULL;
+static EWRAM_DATA u16 sPendingCoverCount = 0;
 
 bool8 IsPokeGlassReturnActive(void)
 {
-    return sReturnCoverActive;
+    return sReturnCoverActive || sReturnCoverPending;
 }
 
-void BeginPokeGlassReturn(void)
+static void BeginTabletCover(bool8 entering)
 {
     u8 *pixels, *tiles;
-    u16 map[32 * 32] = {0};
-    u32 x, y, tile, count = 0;
+    u16 *map, *backdropMap = NULL;
+    u32 x, y, tile, count = 1;
+    u16 firstTile = entering ? 88 : RETURN_COVER_FIRST_TILE;
     if (!sTabletActive || !sTabletNative || sFieldBackdrop == NULL)
         return;
     pixels = AllocZeroed(28 * 18 * 32);
     tiles = AllocZeroed(RETURN_COVER_TILES * 32);
-    if (pixels == NULL || tiles == NULL)
-    {
-        Free(pixels);
-        Free(tiles);
-        return;
-    }
+    map = AllocZeroed(32 * 32 * sizeof(u16));
+    if (entering) backdropMap = AllocZeroed(32 * 32 * sizeof(u16));
+    if (pixels == NULL || tiles == NULL || map == NULL || (entering && backdropMap == NULL))
+        goto cleanup;
     DrawTabletShell(pixels);
     for (y = 0; y < 20; y++)
         for (x = 0; x < 30; x++)
         {
             bool8 shell = x > 0 && x < 29 && y > 0 && y < 19;
-            const u8 *source = shell ? pixels + ((y - 1) * 28 + x - 1) * 32
+            const u8 *source;
+            if (entering)
+            {
+                backdropMap[y * 32 + x] = (10 << 12) | (y * 30 + x);
+                if (!shell)
+                {
+                    map[y * 32 + x] = firstTile | (14 << 12);
+                    continue;
+                }
+            }
+            source = shell ? pixels + ((y - 1) * 28 + x - 1) * 32
                 : sFieldBackdrop + (y * 30 + x) * 32;
             for (tile = 0; tile < count; tile++)
-                if (memcmp(source, tiles + tile * 32, 32) == 0)
-                    break;
+                if (memcmp(source, tiles + tile * 32, 32) == 0) break;
             if (tile == count)
             {
-                if (count == RETURN_COVER_TILES)
-                {
-                    Free(pixels);
-                    Free(tiles);
-                    return;
-                }
+                if (count == (entering ? 104 : RETURN_COVER_TILES)) goto cleanup;
                 CpuCopy16(source, tiles + count++ * 32, 32);
             }
-            map[y * 32 + x] = (RETURN_COVER_FIRST_TILE + tile) | ((shell ? 14 : 13) << 12);
+            map[y * 32 + x] = (firstTile + tile) | ((shell ? 14 : 13) << 12);
         }
     CpuCopy16(sFieldBackdropPalette, sReturnCoverPalette, 32);
     CpuCopy16(sPalette, sReturnCoverPalette + 16, 32);
-    VBlankIntrWait();
-    CpuCopy16(tiles, (void *)(VRAM + 0xC000 + RETURN_COVER_FIRST_TILE * 32), count * 32);
-    CpuCopy16(map, (void *)(VRAM + 0xD800), sizeof(map));
+    sCoverEntering = entering;
+    sCoverPhase = 0;
+    sCoverReadyVBlanks = 0;
     sReturnCoverReady = FALSE;
-    sReturnCoverActive = TRUE;
-    VBlankCB_PokeGlassReturn();
+    sPendingCoverTiles = tiles;
+    sPendingCoverMap = map;
+    sPendingBackdropMap = backdropMap;
+    sPendingCoverCount = count;
+    // The interrupt commits these small uploads and the display registers as
+    // one VBlank transaction. No visible scanline sees a half-written cover.
+    sReturnCoverPending = TRUE;
+    while (sReturnCoverPending) VBlankIntrWait();
+    if (entering)
+    {
+        // The first cover uses a spare map at D800 while the overworld remains
+        // behind it. Its opaque shell protects the old hub's character memory.
+        DmaCopy16(3, sFieldBackdrop, (void *)(VRAM + 0x8000), 240 * 160 / 2);
+        sCoverPhase = 1;
+        while (sCoverPhase != 2) VBlankIntrWait();
+    }
+    sPendingCoverTiles = NULL;
+    sPendingCoverMap = NULL;
+    sPendingBackdropMap = NULL;
+cleanup:
     Free(pixels);
     Free(tiles);
+    Free(map);
+    Free(backdropMap);
 }
 
-// Run after buffered registers and DMA, so field loading can update its normal
-// state without exposing half-loaded graphics. Release only after the tablet
-// window's tile graphics and tilemap have both arrived in VRAM.
+void BeginPokeGlassReturn(void) { BeginTabletCover(FALSE); }
+void BeginPokeGlassAppLoad(void) { BeginTabletCover(TRUE); }
+void FinishPokeGlassAppLoad(void)
+{
+    if (sReturnCoverActive) sReturnCoverReady = TRUE;
+}
+
+void PreservePokeGlassCoverPalette(void)
+{
+    if (!sReturnCoverActive) return;
+    *(vu16 *)PLTT = RGB_BLACK;
+    CpuCopy16(sReturnCoverPalette, (void *)(PLTT + 13 * 32), 64);
+    if (sCoverEntering && sCoverPhase == 2)
+        CpuCopy16(sFieldBackdropPalette, (void *)(PLTT + 10 * 32), 32);
+}
+
 void VBlankCB_PokeGlassReturn(void)
 {
-    if (!sReturnCoverActive)
-        return;
-    if (sReturnCoverReady && WaitDma3Request(-1) == 0)
+    // A long DMA transfer can finish on a visible scanline. Continue showing
+    // the old cover until a genuine VBlank can commit the complete handoff.
+    if (REG_VCOUNT < 160 || REG_VCOUNT > 225) return;
+    if (sReturnCoverPending)
     {
+        u16 first = sCoverEntering ? 88 : RETURN_COVER_FIRST_TILE;
+        DmaCopy16(3, sPendingCoverTiles, (void *)(VRAM + 0xC000 + first * 32), sPendingCoverCount * 32);
+        DmaCopy16(3, sPendingCoverMap, (void *)(VRAM + 27 * 0x800), 32 * 32 * sizeof(u16));
+        sReturnCoverPending = FALSE;
+        sReturnCoverActive = TRUE;
+    }
+    if (!sReturnCoverActive) return;
+    if (sCoverEntering && sCoverPhase == 1)
+    {
+        // The compact Party BG2 uses only block 28. Block 29 can hold the
+        // cover after its backdrop takes over block 27, without overlap.
+        DmaCopy16(3, sPendingBackdropMap, (void *)(VRAM + 27 * 0x800), 32 * 32 * sizeof(u16));
+        DmaCopy16(3, sPendingCoverMap, (void *)(VRAM + 29 * 0x800), 32 * 32 * sizeof(u16));
+        sCoverPhase = 2;
+    }
+    if (sReturnCoverReady && WaitDma3Request(-1) == 0 && sCoverReadyVBlanks++ != 0)
+    {
+        REG_BG3CNT = GetGpuReg(REG_OFFSET_BG3CNT);
+        REG_BG3HOFS = GetGpuReg(REG_OFFSET_BG3HOFS);
+        REG_BG3VOFS = GetGpuReg(REG_OFFSET_BG3VOFS);
         REG_BG0CNT = GetGpuReg(REG_OFFSET_BG0CNT);
         REG_BG0HOFS = GetGpuReg(REG_OFFSET_BG0HOFS);
         REG_BG0VOFS = GetGpuReg(REG_OFFSET_BG0VOFS);
@@ -605,11 +646,21 @@ void VBlankCB_PokeGlassReturn(void)
     }
     *(vu16 *)PLTT = RGB_BLACK;
     CpuCopy16(sReturnCoverPalette, (void *)(PLTT + 13 * 32), 64);
-    REG_BG0CNT = BGCNT_CHARBASE(3) | BGCNT_SCREENBASE(27);
+    REG_BG0CNT = BGCNT_CHARBASE(3) | BGCNT_SCREENBASE(sCoverEntering && sCoverPhase == 2 ? 29 : 27);
     REG_BG0HOFS = 0;
     REG_BG0VOFS = 0;
     REG_BLDCNT = 0;
-    REG_DISPCNT = DISPCNT_BG0_ON;
+    if (sCoverEntering && sCoverPhase == 2)
+    {
+        CpuCopy16(sFieldBackdropPalette, (void *)(PLTT + 10 * 32), 32);
+        REG_BG3CNT = BGCNT_CHARBASE(2) | BGCNT_SCREENBASE(27) | BGCNT_PRIORITY(3);
+        REG_BG3HOFS = 0;
+        REG_BG3VOFS = 0;
+        REG_DISPCNT = DISPCNT_BG0_ON | DISPCNT_BG3_ON;
+    }
+    else
+        REG_DISPCNT = DISPCNT_BG0_ON | (sCoverEntering ? GetGpuReg(REG_OFFSET_DISPCNT)
+            & (DISPCNT_BG1_ON | DISPCNT_BG2_ON | DISPCNT_BG3_ON | DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP) : 0);
 }
 
 static void DrawHub(void)
@@ -674,7 +725,11 @@ static void Task_CloseTablet(u8 taskId)
             CopyWindowToVram(sHubWindow, COPYWIN_GFX);
             return;
         }
-        if (sTabletNative) sHubWindow = WINDOW_NONE;
+        if (sTabletNative)
+        {
+            BeginPokeGlassAppLoad();
+            sHubWindow = WINDOW_NONE;
+        }
         DestroyTask(taskId);
         ScriptContext_Enable();
         return;
@@ -746,7 +801,11 @@ static void Task_PokeGlassHub(u8 taskId)
     }
     PlaySE(SE_SELECT);
     sTabletNative = gSpecialVar_Result == 1;
-    if (gSpecialVar_Result == SCR_MENU_CANCEL) sTabletActive = FALSE;
+    if (gSpecialVar_Result == SCR_MENU_CANCEL)
+    {
+        sTabletActive = FALSE;
+        sLauncherSession = FALSE;
+    }
     CloseHub();
     gTasks[taskId].data[2] = 0;
     gTasks[taskId].data[3] = FALSE;
@@ -788,10 +847,14 @@ static bool8 OpenTabletWindow(void)
 void ShowPokeGlassHub(bool8 ignoreBPress)
 {
     u8 taskId;
-    if (!sTabletActive) CapturePokeGlassBackdrop();
+    if (!sTabletActive && (sFieldBackdrop == NULL
+     || sBackdropX != gSaveBlock1Ptr->pos.x || sBackdropY != gSaveBlock1Ptr->pos.y
+     || sBackdropGroup != gSaveBlock1Ptr->location.mapGroup || sBackdropMap != gSaveBlock1Ptr->location.mapNum))
+        CapturePokeGlassBackdrop();
     if (!OpenTabletWindow())
         return;
     sTabletActive = TRUE;
+    sLauncherSession = TRUE;
     if (!HubAppAvailable(sHubCursor))
         for (sHubCursor = 0; sHubCursor < ARRAY_COUNT(sHubLabels); sHubCursor++)
             if (HubAppAvailable(sHubCursor)) break;
@@ -1017,6 +1080,7 @@ struct GlassDex
     u8 view; // List, entry, or habitat.
     u8 filter; // Seen or caught.
     u8 alphabetical;
+    u16 speciesByDex[NATIONAL_DEX_COUNT + 1];
 };
 
 static EWRAM_DATA struct GlassDex *sGlassDex = NULL;
@@ -1029,9 +1093,27 @@ static void DestroyGlassDexPortrait(void)
     sGlassDex->sprite = 0xFFFF;
 }
 
+static int CompareGlassDexSpecies(const void *left, const void *right)
+{
+    u16 a = *(const u16 *)left, b = *(const u16 *)right;
+    s32 result = StringCompare(gSpeciesInfo[a].speciesName, gSpeciesInfo[b].speciesName);
+    return result != 0 ? result : (s32)a - b;
+}
+
+static void BuildGlassDexSpeciesIndex(void)
+{
+    u16 species;
+    for (species = 1; species < NUM_SPECIES; species++)
+    {
+        u16 dex = gSpeciesInfo[species].natDexNum;
+        if (dex != 0 && dex <= NATIONAL_DEX_COUNT && sGlassDex->speciesByDex[dex] == SPECIES_NONE)
+            sGlassDex->speciesByDex[dex] = GET_BASE_SPECIES_ID(species);
+    }
+}
+
 static void BuildGlassDexList(void)
 {
-    u16 dex, species, i, j;
+    u16 dex, species;
     sGlassDex->count = sGlassDex->seen = sGlassDex->caught = 0;
     sGlassDex->cursor = 0;
     for (dex = 1; dex <= NATIONAL_DEX_COUNT; dex++)
@@ -1042,19 +1124,12 @@ static void BuildGlassDexList(void)
         sGlassDex->caught += caught;
         if (!(sGlassDex->filter ? caught : seen))
             continue;
-        species = NationalPokedexNumToSpecies(dex);
+        species = sGlassDex->speciesByDex[dex];
         if (species != SPECIES_NONE)
             sGlassDex->species[sGlassDex->count++] = species;
     }
     if (sGlassDex->alphabetical)
-        for (i = 1; i < sGlassDex->count; i++)
-        {
-            species = sGlassDex->species[i];
-            for (j = i; j > 0 && StringCompare(gSpeciesInfo[species].speciesName,
-                gSpeciesInfo[sGlassDex->species[j - 1]].speciesName) < 0; j--)
-                sGlassDex->species[j] = sGlassDex->species[j - 1];
-            sGlassDex->species[j] = species;
-        }
+        qsort(sGlassDex->species, sGlassDex->count, sizeof(sGlassDex->species[0]), CompareGlassDexSpecies);
 }
 
 static bool8 GlassDexEncounterHasSpecies(const struct WildPokemonInfo *info, u8 count, u16 species)
@@ -1343,6 +1418,7 @@ void ShowPokeGlassPokedex(void)
         return;
     }
     sGlassDex->sprite = 0xFFFF;
+    BuildGlassDexSpeciesIndex();
     if (!OpenTabletWindow())
     {
         Free(sGlassDex);
@@ -1378,7 +1454,11 @@ static void CloseTabletForNativeApp(void)
         RestoreTabletAppearance();
     FillBgTilemapBufferRect(0, 0, 0, 0, 32, 32, 0);
     ScheduleBgCopyTilemapToVram(0);
-    EndPokeGlassSession();
+    // Native screens still belong to this launcher visit. Retain the frozen
+    // backdrop so returning does not spend half a second recapturing it.
+    sTabletActive = FALSE;
+    sTabletNative = FALSE;
+    sHubWindow = WINDOW_NONE;
 }
 
 void OpenPokeGlassSystemApp(void)
@@ -1439,7 +1519,6 @@ void ShowPokeGlassMap(void)
 void PreparePokeGlassReturn(void)
 {
     if (!sTabletActive || !sTabletNative) return;
-    CapturePokeGlassBackdrop();
     if (!OpenTabletWindow()) return;
     DrawTabletShell((u8 *)GetWindowAttribute(sHubWindow, WINDOW_TILE_DATA));
     PutWindowTilemap(sHubWindow);
@@ -1448,6 +1527,7 @@ void PreparePokeGlassReturn(void)
 
 void EndPokeGlassSession(void)
 {
+    sLauncherSession = FALSE;
     sTabletActive = FALSE;
     sTabletNative = FALSE;
     sHubWindow = WINDOW_NONE;

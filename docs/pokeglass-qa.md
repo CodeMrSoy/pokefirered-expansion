@@ -1,180 +1,44 @@
-# PokéGlass QA — QOL, 2026-10-15
+# PokéGlass performance and UI QA
 
-## Party text and HP cleanup
+Measured in mGBA/libretro at 59.7275 emulated frames per second. Timings run from button input until the destination accepts input, including its animation/fade and a three-frame readiness guard. They are game-frame measurements, not a benchmark of the host computer or physical hardware. The baseline is V2 `de8c441c` before this change. QOL and V2 standard builds produced matching final transition timings in the test bedroom.
 
-The compact card now reserves separate pixel regions for level and HP text,
-right-aligns current/max HP, and draws a bordered 64-pixel HP track. Long names
-use a narrower font when necessary to stay clear of the gender marker.
-Level-up refreshes repaint the full card, rather than tile-rounded legacy
-rectangles that damaged neighboring digits. The tablet stat popup has 96 pixels
-of height so all six stat rows fit.
+## Transition times
 
-The new `pokeglass_party_text_emulator.py` fixture covers level 10/100 and
-three-digit HP layouts, full/yellow/red/empty bars, healing, long nicknames,
-and the actual Rare Candy animation, level-up redraw, and both stat pages.
-Incremental HP regions and the real level-up card match a fresh redraw.
-Build, whitespace, and the shell/actions/Summary-return regression pass.
-These changes and the preceding visual fix remain uncommitted on QOL.
+| Screen | Open | Return to launcher |
+| --- | ---: | ---: |
+| Pokédex | 0.335s | 0.301s |
+| Party | 0.820s | 0.720s |
+| Storage / PC menu | 0.201s | 0.201s |
+| Stats | 0.301s | 0.301s |
+| Town Map | 0.921s | 1.205s |
+| Bag | 0.670s | 1.189s |
+| Trainer Card | 1.239s | 1.105s |
+| Options | 0.954s | 1.189s |
+| Save confirmation | 0.804s | 0.184s |
 
-## Party visual handoff follow-up
+Tablet opening improved from 2.093s to 0.954s; closing takes 0.100s. Party return improved from 1.875s to 0.720s. Town Map return improved from 3.097s to 1.205s. Bag return improved from 2.193s to 1.189s. A full 1,025-record Pokédex opens in about 0.32s; alphabetical sort and caught-filter rebuild each take 0.335s, down from 3.365s.
 
-Party loading now clears hardware OAM before reusing object tiles and palettes,
-keeps the captured field palette out of the legacy party palette upload, and
-registers its background with the BG manager so window updates cannot hide it.
-A blue glass tile covers the native background handoff until the app is ready.
-The shell remains visible throughout.
+Trainer Card remains the slowest app opening (1.239s). Town Map, Bag, Trainer Card and Options keep their native full-screen fades. Those deliberate fades are included above. The embedded Party, Pokédex and Stats handoffs contain no entirely black frames and no changed bezel pixels in the frame-by-frame regression.
 
-The new `pokeglass_party_visual_emulator.py` regression checks hardware sprites,
-background visibility, palette ownership, and blank screen frames with one and
-six party members. Both fixtures pass. Existing shell/actions/Summary-return
-and all six app-launch transition regressions also pass. Build and whitespace
-checks pass; this follow-up remains uncommitted on QOL.
+## Fixes
 
-## Box view, carry-to-party, and screen transitions
+- Reuse the frozen field backdrop for the entire launcher visit; release it on exit and recapture after a map or player-position change.
+- Expand packed backdrop rows in bulk, reuse the original shell as a pre-rendered asset, and compile a compact native-menu frame. The shell's palette-index pixels match the original rectangle drawing.
+- Shorten tablet startup and omit the Town Map paper unfolding/folding animation when launched through PokéGlass.
+- Build the national-dex species lookup once per visit and replace insertion sorting with `qsort`.
+- Keep Party loading/return covered until its graphics are ready. Reserve separate VRAM map blocks, commit cover uploads in VBlank, and defer conflicting register/palette writes. This fixes the black flash and one-frame color tear.
+- Fit Party nicknames into the space before the gender icon. Exceptionally wide names receive a display-only ellipsis; saved names are preserved.
 
-Storage opens with a 30-slot box. A picks up and places or swaps a Pokémon.
-Moving a held Pokémon to Party automatically opens the six-slot panel on the
-left. The Party button can also be opened with A when not carrying a Pokémon.
-L/R changes boxes, and B cancels a carry, hides the panel, then returns.
-Selection does not remove a Pokémon from its source until placement succeeds.
-Mail and the last usable party member remain protected.
+## Verification
 
-App changes wipe only the glass, keeping the shell visible. Party prepares its
-shell before switching graphics memory. Map opens inside the tablet; A Guide
-retains access to the native guide/Fly flow and its existing eligibility checks.
+Standard QOL and V2 ROM builds passed. A V2 development build also passed the complete transition benchmark, including Debug (0.285s open / 0.184s close). Emulator checks covered every available standard app opening/closing, horizontal launcher paging, actual PC deposit/withdrawal and item management, Save cancel and flash write, field unlock/reopening, and the fixed outfit.
 
-Validation: build and whitespace checks passed; frame-by-frame emulator
-comparisons found identical shell pixels and no black frames in all six app
-launches. Storage checks covered deposits, swaps, cross-box cancellation,
-automatic Party opening, all 36 icons, last usable member protection, and a real
-flash save/reset/Continue comparison of all boxes and party data. The existing
-shell/actions/navigation/return regression also passed. These are targeted
-checks, not a complete playthrough.
+Party checks covered one/six members, four field locations, twelve actual Party returns, action menus, Summary, Stats, level 100, one/two/three-digit HP, healing/fainting, genuine Rare Candy level-up/stat popups, and twelve-wide-letter nicknames without overwriting the gender column. Pokédex checks covered empty/legacy records, generations 1–9, seen/caught filters, sorting, entry/habitat/cry, and save/reload. Full-Dex and Stats raster checks found zero text foreground pixels outside the glass. All 311 compiled ability names/descriptions fit their Stats columns. Existing nature colors, egg values, member cycling and portrait palette cleanup passed.
 
----
+Eight repeated real launcher sessions retained no backdrop and returned to exactly the same allocated heap (11,520 bytes in five field allocations). Native Town Map/PC resource cleanup passed. V2 region-map regression also passed all five actual Vidra Center unlocks and Fly destinations, return to Kanto, and Town Map switching. Existing map/gym issues remain documented separately in `docs/vidra/known-issues.md` on V2.
 
-# PokéGlass QA — QOL, 2026-10-10
+## Reproduce
 
-## Latest follow-up: glass launcher and app returns
+Build with `make -j8`, then run the relevant `tests/pokeglass_*_emulator.py` scripts with `MGBA_CORE` pointing at an mGBA libretro shared library and `ARM_NM` pointing at the matching ARM toolchain's `nm`. Run `tests/pokeglass_stats_text_layout.py` against the built ROM/ELF. The benchmark writes timings, screenshots, contact sheets and actual transition GIFs under `build/quantum-qol-tests/pokeglass-benchmark/`. These generated captures are excluded from source control.
 
-The hub now uses a translucent inset tablet with five icon tiles, selection
-highlights, a header, and button hints. BG0 alpha blending shows the player and
-overworld through the glass. Closing the hub restores the field palette and
-window/blending registers. Cursor changes redraw only the affected tiles to
-avoid dropping short button presses during a full-screen redraw.
-
-![Glass hub in the emulator](images/pokeglass-glass-hub.png)
-
-Pokédex, Party, Stats, and Map now resume the tablet script on exit, matching
-Storage. The selected app remains highlighted on return. Nested screens still
-step back through their own parent screen. The normal Pokédex entry point keeps
-its original exit callback. The ownership gate from Oak's gift remains intact.
-
-Validation on the rebuilt ROM:
-
-- `make -j2` and `git diff --check` passed.
-- mGBA fixture: six Pokémon, Pokédex enabled, tablet in Key Items.
-- Each of the five apps opened; exiting each returned to the live hub task.
-- Stats Summary returned through the picker to the hub.
-- Screenshots confirmed transparency, the player behind the hub, and a clean
-  field screen after closing it.
-- Direction changes followed by short A presses worked after redraw optimization.
-- Ten consecutive hub open/close cycles passed.
-
-ROM SHA-256: `5f75fc56a78a8d8b21b9d20137ac53dbcf8da31059f0c4bdb8dd52695995d152`.
-These were controlled UI tests, not a full playthrough. Fly travel, weather and
-Flash-map combinations, and multiplayer remain untested. No commit or push was
-performed for these changes.
-
-## Follow-up: unlock only after Oak's tablet gift
-
-The normal, debug, and Safari Start menus now require ownership of
-`ITEM_POKEGLASS`. Starter and Pokédex flags alone do not unlock the hub.
-This supersedes the earlier starter-flag unlock described below.
-
-The updated ROM built successfully with `make -j2` after sourcing the local
-`build-env.sh`; `git diff --check` passed.
-ROM SHA-256: `c00fac191f84f91d577b41d387f5fe35095a0506d32e299cdd5264edd3269aee`.
-
-Focused mGBA checks used a disposable field fixture and assertions against the
-live Start-menu entries:
-
-- Fresh game without the tablet: hidden.
-- Starter flag set without the tablet: hidden.
-- Pokédex flag also set without the tablet: hidden.
-- Exact compiled `giveitem_msg` sequence from Oak's scene executed: item present
-  in the bag, gift message displayed, and PokéGlass visible in Start.
-- Selecting PokéGlass after the gift: five-app hub displayed.
-- Removing the tablet in the fixture: hidden again despite the story flags.
-
-The gift bytecode was matched uniquely in the ROM and executed in a controlled
-field fixture. This verifies the gift routine and menu gate, not the full Oak
-cutscene or a complete progression playthrough. No commit or push was performed
-for this follow-up.
-
-## Build and test method
-
-Full ROM build passed with the existing ARM GCC 13.2.1 toolchain (`make -j2`).
-ROM SHA-256: `05512513a1f27f3432b7eb6c0209730798d5a578e4114a2cb0a89d7f4ceeba29`.
-`git diff --check` passed.
-
-The previous unresolved-symbol errors were caused by zero-byte cached object
-files for item_use, debug, and battle_tower. Rebuilding the empty objects resolved
-them; they were not missing source implementations.
-
-Runtime checks used mGBA 0.10.2 through its libretro core, real input events, and
-framebuffer screenshots. A fresh game was started on the compiled QOL ROM.
-A temporary emulator-RAM script enabled the Pokédex and created six level-25
-Pokémon (Bulbasaur, Charmander, Squirtle, Pikachu, Eevee, Snorlax). This was a
-controlled UI fixture, not a normal progression playthrough or a source change.
-The one-member-party check removed five members in emulator RAM only.
-
-## Reproduced issues and fixes
-
-- Start-menu entry freed overworld buffers while continuing a field script:
-  retain them during the tablet animation/hub and release them when entering an app.
-- Full-screen window art overwrote menu/frame graphics; a later tile allocation
-  also collided with field map screen blocks: use a small shared nine-tile bezel
-  with separate safe tile ranges for field and party screens.
-- Standard menu border transparency exposed pieces of the overworld through the
-  opaque tablet: use a solid rectangular app list within the tablet bezel.
-- Intro sprite declared 8bpp while its generated art was 4bpp: corrected OAM format.
-- Legacy wide party card art was clipped, with HP labels overlapping names:
-  draw complete compact cards, keep names, levels, gender and HP bars, and use
-  the shared opaque tablet background. Full numeric HP remains in Summary.
-- Stats opened with the Info background and broken subsequent page flips:
-  initialize layer priorities, horizontal offset and page-flip parity for Skills.
-- Returning from Stats opened the ordinary action submenu: return to its picker.
-- Map incorrectly used the party Fly entry and cancellation path: browse the
-  normal route map when Fly is unavailable; use the existing Fly unlock, map
-  eligibility and a non-Egg party Fly user when available, with its own exit callback.
-- Removing the separate Pokémon item would hide party access before receiving
-  the Pokédex: expose PokéGlass after obtaining Pokémon as well.
-
-## Checks completed on the final ROM
-
-- Start menu: PokéGlass present; separate Pokémon entry absent in normal field context.
-- Tablet intro and opaque five-app hub: screenshot review.
-- Six-member party: both columns, selection highlight, Summary entry and exit.
-- Party reordering: Pikachu and Bulbasaur exchanged columns/party positions successfully.
-- One-member party: empty cards, directional navigation and cancellation.
-- Stats: direct Skills entry; A cycles IV judgments and EV values; moves-page
-  navigation and return render correctly; B returns to the picker.
-- Pokédex: six species listed as seen/owned; exit returns to Start.
-- Storage: menu and Move Pokémon box interface open; exit returns to the tablet hub.
-- Map: normal region-map browsing and cancellation to Start.
-- Ten consecutive hub open/close cycles: no visible corruption or hang.
-
-## Limits and remaining design work
-
-These checks do not establish a bug-free ROM. Fly travel, storage deposit/withdraw
-transactions, long-session stability, save compatibility, multiplayer contexts,
-and a full game playthrough were not validated. Eggs have a defensive Info-page
-fallback but were not exercised in this fixture.
-
-The tablet hub and party picker share the bezel. Pokédex, storage, region map and
-Summary retain their existing screen designs. Most app exits return to Start;
-storage returns to the tablet hub. A unified return-to-tablet flow and tablet
-styling for every app would require further work if desired.
-
-No commit or push was performed during this QA pass.
+`graphics/poke_glass_shell.png` is the indexed source art. Regenerate `src/data/poke_glass_frame.h` with `python3 tools/compile_pokeglass_frame.py` if the shell changes. The normal build generates the shell's `.4bpp` file.

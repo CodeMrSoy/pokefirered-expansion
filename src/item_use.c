@@ -573,11 +573,11 @@ static void Task_PokeGlassIntro(u8 taskId)
     switch (task->data[1])
     {
     case 0: // Raise and enlarge the tablet into view.
-        if (step < 12)
+        if (step < 4)
         {
-            sprite->y -= 6;
+            sprite->y -= 18;
             // OAM scaling uses an inverse fixed-point value: 0x300 starts at one-third size.
-            SetOamMatrixRotationScaling(sprite->oam.matrixNum, 0x300 - step * 0x2A, 0x300 - step * 0x2A, 0);
+            SetOamMatrixRotationScaling(sprite->oam.matrixNum, 0x300 - step * 0xAA, 0x300 - step * 0xAA, 0);
             task->data[2]++;
         }
         else
@@ -589,14 +589,14 @@ static void Task_PokeGlassIntro(u8 taskId)
         }
         break;
     case 1: // Wake the glass first; app symbols remain dark during the glow.
-        if (step < 16)
+        if (step < 4)
         {
             u16 palette[16];
             u8 i;
             u8 paletteNum = IndexOfSpritePaletteTag(TAG_POKEGLASS_INTRO_PAL);
 
             for (i = 0; i < ARRAY_COUNT(palette); i++)
-                palette[i] = BlendPokeGlassIntroColor(sPokeGlassIntroPaletteOff[i], sPokeGlassIntroPaletteOn[i], step + 1, 16);
+                palette[i] = BlendPokeGlassIntroColor(sPokeGlassIntroPaletteOff[i], sPokeGlassIntroPaletteOn[i], step + 1, 4);
             palette[8] = sPokeGlassIntroPaletteOff[8];
             LoadPalette(palette, OBJ_PLTT_ID(paletteNum), sizeof(palette));
             task->data[2]++;
@@ -608,9 +608,9 @@ static void Task_PokeGlassIntro(u8 taskId)
         }
         break;
     case 2: // Reveal the app symbols once the display is lit.
-        if (step < 8)
+        if (step < 2)
         {
-            u16 color = BlendPokeGlassIntroColor(sPokeGlassIntroPaletteOff[8], sPokeGlassIntroPaletteOn[8], step + 1, 8);
+            u16 color = BlendPokeGlassIntroColor(sPokeGlassIntroPaletteOff[8], sPokeGlassIntroPaletteOn[8], step + 1, 2);
             LoadPalette(&color, OBJ_PLTT_ID(IndexOfSpritePaletteTag(TAG_POKEGLASS_INTRO_PAL)) + 8, sizeof(color));
             task->data[2]++;
         }
@@ -620,18 +620,13 @@ static void Task_PokeGlassIntro(u8 taskId)
             task->data[2] = 0;
         }
         break;
-    case 3: // Briefly hold the powered tablet before opening its home screen.
-        if (step < 10)
-            task->data[2]++;
-        else
-        {
-            FreeOamMatrix(sprite->oam.matrixNum);
-            DestroySprite(sprite);
-            FreeSpriteTilesByTag(TAG_POKEGLASS_INTRO_GFX);
-            FreeSpritePaletteByTag(TAG_POKEGLASS_INTRO_PAL);
-            DestroyTask(taskId);
-            ScriptContext_Enable();
-        }
+    case 3: // Open the launcher as soon as the display is lit.
+        FreeOamMatrix(sprite->oam.matrixNum);
+        DestroySprite(sprite);
+        FreeSpriteTilesByTag(TAG_POKEGLASS_INTRO_GFX);
+        FreeSpritePaletteByTag(TAG_POKEGLASS_INTRO_PAL);
+        DestroyTask(taskId);
+        ScriptContext_Enable();
         break;
     }
 }
