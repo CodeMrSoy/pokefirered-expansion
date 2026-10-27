@@ -971,6 +971,13 @@ void InitRegionMapWithExitCB(u8 type, MainCallback cb)
     }
 }
 
+void InitPokeGlassTownMap(MainCallback cb)
+{
+    InitRegionMapWithExitCB(REGIONMAP_TYPE_NORMAL, cb);
+    if (sRegionMap != NULL)
+        sRegionMap->permissions[MAPPERM_HAS_OPEN_ANIM] = FALSE;
+}
+
 static void InitRegionMapType(void)
 {
     u8 i;

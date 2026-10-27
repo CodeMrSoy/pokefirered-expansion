@@ -1,4 +1,5 @@
 #include "global.h"
+#include "poke_glass.h"
 #include "gflib.h"
 #include "util.h"
 #include "decompress.h"
@@ -126,7 +127,10 @@ bool32 BeginNormalPaletteFade(u32 selectedPalettes, s8 delay, u8 startY, u8 targ
         UpdatePaletteFade();
         temp = gPaletteFade.bufferTransferDisabled;
         gPaletteFade.bufferTransferDisabled = FALSE;
-        CpuCopy32(gPlttBufferFaded, (void *)PLTT, PLTT_SIZE);
+        // Native menu initialization can request a fade on a visible scanline.
+        // Keep the tablet cover's hardware colors until its VBlank handoff.
+        if (!IsPokeGlassReturnActive())
+            CpuCopy32(gPlttBufferFaded, (void *)PLTT, PLTT_SIZE);
         sPlttBufferTransferPending = FALSE;
         if (gPaletteFade.mode == HARDWARE_FADE && gPaletteFade.active)
             UpdateBlendRegisters();
@@ -176,7 +180,10 @@ bool32 BeginTimeOfDayPaletteFade(u32 selectedPalettes, s8 delay, u8 startY, u8 t
 
         temp = gPaletteFade.bufferTransferDisabled;
         gPaletteFade.bufferTransferDisabled = 0;
-        CpuCopy32(gPlttBufferFaded, (void *)PLTT, PLTT_SIZE);
+        // Native menu initialization can request a fade on a visible scanline.
+        // Keep the tablet cover's hardware colors until its VBlank handoff.
+        if (!IsPokeGlassReturnActive())
+            CpuCopy32(gPlttBufferFaded, (void *)PLTT, PLTT_SIZE);
         sPlttBufferTransferPending = 0;
         if (gPaletteFade.mode == HARDWARE_FADE && gPaletteFade.active)
             UpdateBlendRegisters();

@@ -69,9 +69,12 @@ for slot,level,maxhp in ((0,10,100),(1,100,714)):
   assert np.array_equal(aa[18:30,56:94],bb[18:30,56:94]),('HP numbers',slot,hp)
  m.snap('party-text-HP-'+str(maxhp))
 # Long nicknames must fit before the gender symbol.
-encoded=bytes([0xd1])*10+b'\xff' # W in the FireRed character map.
+before_name=decode(canonical(2))
+encoded=bytes([0xd1])*12+b'\xff' # W in the FireRed character map.
 m.write(value_addr,encoded);native('SetMonData',m.symbols['gPlayerParty']+200,fields['MON_DATA_NICKNAME'],value_addr)
 native('RenderPartyMenuBox',2);m.snap('party-text-long-nickname')
+after_name=decode(pixels(2))
+assert np.array_equal(before_name[1:12,85:94], after_name[1:12,85:94]), 'Nickname overwrote gender column'
 # Genuine item-use animation and two-page stat popup at the 9 -> 10 boundary.
 setfield(0,'MON_DATA_LEVEL',9)
 # Reset EXP consistently through a fresh copy of a level-nine party member.

@@ -387,6 +387,7 @@ static void VBlankIntr(void)
 
     gMain.vblankCounter2++;
 
+    PreservePokeGlassCoverPalette();
     CopyBufferedValuesToGpuRegs();
     ProcessDma3Requests();
     VBlankCB_PokeGlassReturn();

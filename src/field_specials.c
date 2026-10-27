@@ -74,7 +74,7 @@ void OpenPokeGlassMap(void)
 void OpenPokeGlassMapNative(void)
 {
     CleanupOverworldWindowsAndTilemaps();
-    InitRegionMapWithExitCB(REGIONMAP_TYPE_NORMAL, CB2_ReturnToFieldContinueScript);
+    InitPokeGlassTownMap(CB2_ReturnToFieldContinueScript);
 }
 
 void OpenPokeGlassParty(void)

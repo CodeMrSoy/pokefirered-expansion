@@ -662,7 +662,7 @@ static bool8 ShowPartyMenu(void)
         ++gMain.state;
         break;
     default:
-        if (IsPokeGlassActive()) { ShowBg(0); ShowBg(2); }
+        if (IsPokeGlassActive()) { ShowBg(0); ShowBg(2); FinishPokeGlassAppLoad(); }
         SetVBlankCallback(VBlankCB_PartyMenu);
         SetMainCallback2(CB2_UpdatePartyMenu);
         return TRUE;
@@ -765,7 +765,7 @@ static bool8 ReloadPartyMenu(void)
         ++gMain.state;
         break;
     default:
-        if (IsPokeGlassActive()) { ShowBg(0); ShowBg(2); }
+        if (IsPokeGlassActive()) { ShowBg(0); ShowBg(2); FinishPokeGlassAppLoad(); }
         SetVBlankCallback(VBlankCB_PartyMenu);
         SetMainCallback2(CB2_UpdatePartyMenu);
         return TRUE;
@@ -819,7 +819,12 @@ static bool8 AllocPartyMenuBg(void)
     ResetBgsAndClearDma3BusyFlags(0);
     InitBgsFromTemplates(0, sPartyMenuBgTemplates, ARRAY_COUNT(sPartyMenuBgTemplates));
     if (gPartyMenu.layout == PARTY_LAYOUT_POKEGLASS)
+    {
         SetBgAttribute(1, BG_ATTR_CHARBASEINDEX, 1);
+        // Compact tablet windows fit in 32 columns. Leave screen block 29
+        // free for the loading cover until the party windows are complete.
+        SetBgAttribute(2, BG_ATTR_SCREENSIZE, 0);
+    }
     SetBgTilemapBuffer(1, sPartyBgTilemapBuffer);
     ResetAllBgsCoordinates();
     ScheduleBgCopyTilemapToVram(1);
@@ -2715,7 +2720,15 @@ static void DisplayPartyPokemonNickname(struct Pokemon *mon, struct PartyMenuBox
         GetMonNickname(mon, nickname);
         if (gPartyMenu.layout == PARTY_LAYOUT_POKEGLASS)
         {
-            u8 font = GetStringWidth(FONT_SMALL, nickname, 0) > 54 ? FONT_SMALL_NARROW : FONT_SMALL;
+            u8 font = GetFontIdToFit(nickname, FONT_SMALL, 0, 54);
+            u8 length = StringLength(nickname);
+            // Twelve wide letters can exceed even the narrowest font. Keep
+            // the gender column clear while retaining the full saved name.
+            while (GetStringWidth(font, nickname, 0) > 54 && length > 1)
+            {
+                nickname[--length - 1] = CHAR_ELLIPSIS;
+                nickname[length] = EOS;
+            }
             FillWindowPixelRect(menuBox->windowId, PIXEL_FILL(5), 30, 2, 55, 12);
             AddTextPrinterParameterized3(menuBox->windowId, font, 30, font == FONT_SMALL ? 1 : 4,
                 sFontColorTable[0], 0, nickname);
