@@ -44,3 +44,11 @@ House rendering now comes from `tools/corvala/houses.py`, replacing the earlier 
 Blue homes use the wide Cerulean silhouette; green homes use the Sevii roof/front; gold homes and the northwest residence use the Pallet silhouette. Five-column source houses gain native center columns to fit a seven-column frontage. Background grass/cliff fragments outside the native building silhouettes are removed. The timber wall palette is separated from colored roof banks, preserving blue window glass independently of roof color. Shared wall/roof materials fit within the secondary tileset's graphics budget.
 
 Door approaches follow actual source warp columns instead of assuming centered doors. All seven house approaches are checked in each tide illustration. The southern gold house moves one tile north on its existing platform to leave a usable front porch. House interiors and their warp events remain pending. Original house art attribution: Game Freak; source bytes are already in this repository.
+
+## Concept-specific stilt houses
+
+The active house kit is now `tools/corvala/stilt_houses.py`. The supplied concept requires taller timber-front homes with pitched or hipped roofs, upper/lower windows, deep eaves, framed gables, porch rails and short exposed supports. These custom silhouettes replace the generic Kanto/Sevii outlines while retaining FireRed-scale window and door pixels. The north/south roof ridge has visible depth, and upper-left lighting is consistent across framing and roof planes.
+
+Native material details come from the preserved `houses.py` kit: Pallet window crop (16,62,32,74) and Sevii door crop (16,80,32,96). These are transferred without scaling. Colored roofs use banks 9–11; timber faces and blue glass use bank 7. House dimensions remain seven by six metatiles, with centered doors at column 3 and unchanged front approach positions. Provenance marks the native source rectangles as references rather than the final custom geometry.
+
+Validation: packed preview equality, palette and metatile bounds, source material anchors, all seven entrances in each tide illustration, and all eight native shoreline animation frames. The scene remains a work in progress relative to the concept; no in-game capture is claimed.

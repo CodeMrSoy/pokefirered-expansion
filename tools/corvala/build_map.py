@@ -13,7 +13,7 @@ R=Path(__file__).resolve().parents[2];sys.path.insert(0,str(R/'tools/havora'))
 from render import atlas
 from native_reference import install
 from shoreline import NativeShore, SAND
-from houses import kit as house_kit
+from stilt_houses import kit as house_kit
 native=atlas('cinnabar_island');install(native)
 W,H=56,60
 D=R/'data/tilesets/secondary/corvala';B=R/'build/corvala';B.mkdir(parents=True,exist_ok=True)

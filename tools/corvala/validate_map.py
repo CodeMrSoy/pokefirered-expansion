@@ -49,6 +49,6 @@ print('PASS: native sand, live primary surf references, and General animation ca
 # Every native crop must retain the source door's true column; sources have off-center doors.
 for name,source in manifest['house_sources'].items():
  x,y,sw,sh=source['source_rectangle'];source_map=json.loads((R/('data/maps/'+source['source_map']+'/map.json')).read_text())
- assert any(v['x']==x+source['door_column'] and v['y']==y+sh-1 for v in source_map['warp_events']),('native door anchor mismatch',name)
+ assert any(v['x']==x+source.get('native_reference_column',source['door_column']) and v['y']==y+sh-1 for v in source_map['warp_events']),('native door anchor mismatch',name)
  assert source['wall_start_row'] in [3,4]
-print('PASS: native house source rectangles and original door columns validated.')
+print('PASS: native material references and current house entrances validated.')
