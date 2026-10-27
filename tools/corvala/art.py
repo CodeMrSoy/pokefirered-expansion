@@ -17,34 +17,9 @@ def water(shallow=False,variant=0):
   x=(x+variant*3)%12;d.line((x,y,x+3,y),fill=6 if shallow else 4);d.point((x-1,y+1),fill=4 if shallow else 2)
  return a
 
-def sand():
- a=im(c=8);d=ImageDraw.Draw(a)
- for x,y in [(2,4),(12,10),(6,14)]:d.point((x,y),fill=9)
- return a
-
 def grass():
  a=im(c=10);d=ImageDraw.Draw(a)
  for x,y in [(1,3),(7,11),(13,5)]:d.line((x,y+2,x+1,y),fill=11);d.point((x+2,y+2),fill=12)
- return a
-
-def shore(mask,shallow=True):
- a=sand();d=ImageDraw.Draw(a)
- # N,E,S,W: small scallops soften the tile-grid outline.
- for bit in range(4):
-  if not mask&(1<<bit):continue
-  for u in range(16):
-   depth=2+(u%8 in [0,1,6,7])
-   for v in range(depth):
-    x,y=[(u,v),(15-v,u),(u,15-v),(v,u)][bit];a.putpixel((x,y),5 if shallow else 3)
-   x,y=[(u,depth),(15-depth,u),(u,15-depth),(depth,u)][bit];a.putpixel((x,y),7)
- for bits,cx,cy in [(9,8,8),(3,7,8),(6,7,7),(12,8,7)]:
-  if mask&bits==bits:
-   for yy in range(8):
-    for xx in range(8):
-     x=xx if bits in [9,12] else 15-xx;y=yy if bits in [9,3] else 15-yy
-     dist=(x-cx)**2+(y-cy)**2
-     if dist>64:a.putpixel((x,y),5 if shallow else 3)
-     elif dist>48:a.putpixel((x,y),7)
  return a
 
 def cliff(mask=0,variant=0):

@@ -28,3 +28,11 @@ Community style research (references, not imported assets):
 - Alistair's Gen III Johto Tile Set: https://mail.eeveeexpo.com/resources/1858/
 
 These establish the native-scale roof surfaces, terrain tops/faces, short walls, clustered vegetation, and consistent depth cues used as the art direction. Any later asset import must retain its author's stated per-set credits.
+
+## Native animated sand shoreline
+
+The beach now uses native General sand 0x115. Cardinal edges, convex corners and diagonal concave caps are assembled from the existing General surf tiles (0x250–0x264) by retaining each quadrant's original descriptors. These point to the original primary animation graphics 464–481, preserving flips and palettes. General's existing callback updates all eight surf frames every eight engine ticks; there is no new runtime callback and no duplicated animation data.
+
+Autotiling runs after platforms, cliffs and props are placed, and only actual visible water qualifies as a water neighbor. This removes spurious surf along piers and walls. The neighboring ocean is native General 0x12B so its water matches the shore; low-tide shallow-water cells retain their wading behavior via native descriptors with separate attributes. Pilings overlay the animated water rather than carrying a static painted water background. Reef props match the native ocean's background color.
+
+`python tools/corvala/render_animation.py` renders the actual checked-in animation PNGs through the packed map descriptors. It verifies eight distinct surf frames over the map's shore cells and exports a sixteen-frame GIF spanning the ocean/surf animation cycle. This is an asset-derived preview, not an emulator capture. `validate_map.py` verifies the General primary callback and the live primary animation references. In-game verification remains pending the build toolchain.

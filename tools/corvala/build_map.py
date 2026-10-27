@@ -12,6 +12,7 @@ import art as A
 R=Path(__file__).resolve().parents[2];sys.path.insert(0,str(R/'tools/havora'))
 from render import atlas
 from native_reference import install
+from shoreline import NativeShore, SAND
 native=atlas('cinnabar_island');install(native)
 W,H=56,60
 D=R/'data/tilesets/secondary/corvala';B=R/'build/corvala';B.mkdir(parents=True,exist_ok=True)
@@ -41,13 +42,26 @@ def asset(im,bank,bg=None):
    row.append(reg(p,bank))
   rows.append(row)
  return rows
-kit['sea']=[reg(A.water(False,i),7,0x22000415) for i in range(2)]
-kit['shallow']=[reg(A.water(True,i),7,0x17) for i in range(2)]
-kit['sand']=reg(A.sand(),7);kit['grass']=reg(A.grass(),8)
+def native_meta(desc,behavior,preview):
+ key=tuple(desc)+(behavior,)
+ if key not in ml:
+  ml[key]=640+len(M);M.append(desc);attrs.append(behavior);pixels[ml[key]]=preview.convert('RGB')
+ return ml[key]
+shoreline=NativeShore(R,native,native_meta)
+kit['sea']=[0x12b,0x12b]
+kit['shallow']=[native_meta(shoreline.descriptors(0x12b),0x17,native[0x12b])]*2
+kit['sand']=SAND;kit['grass']=reg(A.grass(),8)
+# Match the native ocean beneath small reef/rock props without recoloring any primary palette.
+A.PALETTES[5][3]=(72,120,216)
 kit['cliff']=[reg(A.cliff(mask,v),8) for mask,v in [(0,0),(0,1),(1,0),(4,1)]]
 kit['cave']=asset(A.cave(),8)
 kit['deck']=reg(A.board(),9);kit['stairs']=reg(A.stairs(),9)
-kit['support']=reg(A.support(),9)
+# Piling pixels are an overlay over the original animated ocean, not painted water.
+post=A.support();post.putdata([0 if v in [10,14] else v for v in post.getdata()])
+post_mid=reg(post,9);desc=shoreline.descriptors(0x12b)[:4]+M[post_mid-640][:4]
+preview=native[0x12b].copy();colored=post.copy();colored.putpalette(sum((list(c) for c in A.PALETTES[2]),[])+[0]*720)
+preview.paste(colored.convert('RGB'),(0,0),Image.frombytes('L',post.size,post.tobytes()).point(lambda v:255 if v else 0))
+kit['support']=native_meta(desc,0x22000415,preview)
 kit['lamp']=asset(A.lamp(),9,A.board())
 kit['house_blue']=asset(A.house(7,True),9,A.board());kit['house_green']=asset(A.house(7,True),10,A.board());kit['house_gold']=asset(A.house(7,True),11,A.board())
 kit['lodge']=asset(A.house(7,True),9,A.board());kit['lighthouse']=asset(A.lighthouse(),9,A.board())
@@ -55,10 +69,10 @@ kit['reefbeds']=[asset(A.reefpatch(i//2).transpose(Image.Transpose.FLIP_LEFT_RIG
 kit['tree']=asset(A.coastal_tree(),8,A.grass())
 kit['coral']=[reg(A.coral(i),12) for i in range(6)];kit['rock']=reg(A.rock(),12)
 kit['center']=[[0x48,0x49,0x49,0x4a,0x4a,0x4b],[0x48,0x49,0x49,0x4a,0x4a,0x4b],[0x50,0x51,0x51,0x52,0x52,0x53],[0x58,0x59,0x59,0x5a,0x59,0x5b],[0x60,0x61,0x4d,0x62,0x4e,0x63]]
-native=atlas('cinnabar_island');shore={};rails={};reefedges={}
+rails={};reefedges={}
 # Reusable topology masks, shared by all three tide illustrations.
 def edge(kind,mask):
- cache,fn,bank={'sand':(shore,A.shore,7),'rail':(rails,A.deckedge,9),'reef':(reefedges,A.reefedge,12)}[kind]
+ cache,fn,bank={'rail':(rails,A.deckedge,9),'reef':(reefedges,A.reefedge,12)}[kind]
  if mask not in cache:cache[mask]=reg(fn(mask),bank)
  return cache[mask]
 # Persistent deck footprint follows the concept's individual house platforms.
@@ -117,8 +131,7 @@ def build(tide):
  lighthouse_land={(x,y) for y in range(33,42) for x in range(48,56) if ((x-52)/5)**2+((y-37)/5)**2<1}
  active_sand=(sand if tide==0 else {(x,y) for x,y in sand if y<19 and x<22} if tide==1 else set())|permanent|lighthouse_land
  for x,y in active_sand:
-  mask=sum(1<<i for i,(dx,dy) in enumerate([(0,-1),(1,0),(0,1),(-1,0)]) if (x+dx,y+dy) not in active_sand)
-  put(x,y,edge('sand',mask) if mask else kit['sand'])
+  put(x,y,kit['sand'])
  for idx,cells in enumerate(reefs):
   for x,y in cells:
    outside=sum(1<<i for i,(dx,dy) in enumerate([(0,-1),(1,0),(0,1),(-1,0)]) if (x+dx,y+dy) not in cells)
@@ -164,6 +177,15 @@ def build(tide):
   if y<H-1 and (x,y+1) not in decks and (x,y+1) not in active_sand and x%3==0 and (g[y+1][x]&1023) in kit['sea']+kit['shallow']:put(x,y+1,kit['support'],True)
  # Preserve exact route seam coordinates from the existing Vidra route maps.
  for x,y in permanent:put(x,y,kit['sand'])
+ # Autotile the final visible beach. Piers/cliffs/objects are not water neighbors.
+ before=[row[:] for row in g];water=set(kit['sea']+kit['shallow'])
+ def wet(x,y):return 0<=x<W and 0<=y<H and (before[y][x]&1023) in water
+ for y in range(H):
+  for x in range(W):
+   if before[y][x]&1023!=SAND:continue
+   mask=sum(1<<i for i,(dx,dy) in enumerate([(0,-1),(1,0),(0,1),(-1,0)]) if wet(x+dx,y+dy))
+   diagonals=sum(1<<i for i,(dx,dy) in enumerate([(-1,-1),(1,-1),(-1,1),(1,1)]) if wet(x+dx,y+dy))
+   if mask or diagonals:put(x,y,shoreline.shoreline(mask,diagonals))
  return g
 maps=[build(i) for i in range(3)]
 assert len(T)<=384,(len(T),'tile budget exceeded');assert len(M)<=384
@@ -195,5 +217,5 @@ sheet.save(D/'tiles.png');(D/'metatiles.bin').write_bytes(struct.pack('<'+'H'*(l
 layouts=json.loads((R/'data/layouts/layouts.json').read_text());l=next(l for l in layouts['layouts'] if l['id']=='LAYOUT_CORVALA_TOWN');l.update(width=W,height=H,secondary_tileset='gTileset_Corvala')
 (R/'data/layouts/layouts.json').write_text(json.dumps(layouts,indent=2)+'\n');(R/l['blockdata_filepath']).write_bytes(struct.pack('<'+'H'*W*H,*sum(g,[])));(R/l['border_filepath']).write_bytes(struct.pack('<4H',*[kit['sea'][0]|0x3400]*4))
 p=R/'data/maps/Corvala_Town/map.json';m=json.loads(p.read_text());m['warp_events'][0].update(x=28,y=18,elevation=3);p.write_text(json.dumps(m,indent=2)+'\n')
-manifest={'phase':'reference-driven overworld refinement; game uses LOW; MID/HIGH are previews','dimensions':[W,H],'tiles':len(T),'metatiles':len(M),'palette_banks':6,'kit':kit,'landmarks':landmarks,'buildings':buildings,'permanent_decks':sorted(decks),'walkable_cells_by_tide':counts}
+manifest={'phase':'reference-driven overworld refinement; game uses LOW; MID/HIGH are previews','dimensions':[W,H],'tiles':len(T),'metatiles':len(M),'palette_banks':6,'kit':kit,'landmarks':landmarks,'buildings':buildings,'permanent_decks':sorted(decks),'walkable_cells_by_tide':counts,'shoreline':{'native_sand':SAND,'primary_animation':'InitTilesetAnim_General','animation_graphics':[464,481],'frames':8,'ticks_per_frame':8,'generated_metatiles':sorted(set(shoreline.cache.values()))}}
 (R/'tools/corvala/map.json').write_text(json.dumps(manifest,indent=2)+'\n');print(f'{len(T)}/384 tiles; {len(M)}/384 metatiles; all {len(landmarks)} landmarks connected.')
