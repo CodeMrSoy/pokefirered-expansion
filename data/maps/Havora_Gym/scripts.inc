@@ -391,7 +391,7 @@ HavoraTrial_DiverIntro::
 HavoraTrial_DiverLoss::
  .string "This station is cleared!$"
 HavoraTrial_DiverAfter::
- .string "BL1 reaches the switch island.\nDrain C for EIRIK's bunker.$"
+ .string "BL3 reaches the island LEFT.\nBL1 sails to BR2 at B MID.$"
 HavoraTrial_Engineer::
  trainerbattle_double TRAINER_HAVORA_ENGINEER, HavoraTrial_EngineerIntro, HavoraTrial_EngineerLoss, HavoraTrial_TwoMons, HavoraTrial_EngineerWon
  msgbox HavoraTrial_EngineerAfter
@@ -475,7 +475,7 @@ HavoraTrial_LockkeeperIntro::
 HavoraTrial_LockkeeperLoss::
  .string "This station is cleared!$"
 HavoraTrial_LockkeeperAfter::
- .string "Depart on the RIGHT at MID.\nGREEN then BLUE restores B MID.$"
+ .string "Depart RIGHT for AR3 at\nA/B MID; then return to B.$"
 HavoraTrial_Captain::
  lockall
  setvar VAR_0x8004, 24

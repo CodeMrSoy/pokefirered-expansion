@@ -369,14 +369,6 @@
     },
     {
       "type": "sign",
-      "x": 31,
-      "y": 8,
-      "elevation": 0,
-      "player_facing_dir": "BG_EVENT_PLAYER_FACING_ANY",
-      "script": "HavoraTide_Travel"
-    },
-    {
-      "type": "sign",
       "x": 39,
       "y": 11,
       "elevation": 0,
@@ -385,8 +377,8 @@
     },
     {
       "type": "sign",
-      "x": 41,
-      "y": 11,
+      "x": 31,
+      "y": 8,
       "elevation": 0,
       "player_facing_dir": "BG_EVENT_PLAYER_FACING_ANY",
       "script": "HavoraTide_Travel"
@@ -394,6 +386,14 @@
     {
       "type": "sign",
       "x": 50,
+      "y": 11,
+      "elevation": 0,
+      "player_facing_dir": "BG_EVENT_PLAYER_FACING_ANY",
+      "script": "HavoraTide_Travel"
+    },
+    {
+      "type": "sign",
+      "x": 41,
       "y": 11,
       "elevation": 0,
       "player_facing_dir": "BG_EVENT_PLAYER_FACING_ANY",
