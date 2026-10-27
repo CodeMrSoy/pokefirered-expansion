@@ -78,45 +78,6 @@ def stairs():
  d.line((1,0,1,15),fill=3);d.line((14,0,14,15),fill=3)
  return a
 
-def house(width=7,tall=True):
- # FRLG-like proportions: a deep, visible roof and one short south-facing wall.
- w=width*16;h=96 if tall else 80;a=im(w,h);d=ImageDraw.Draw(a)
- base=h-12;walltop=56 if tall else 44;ridge=17 if tall else 13
- # Contact shadow belongs beneath the porch and beneath the roof overhang.
- d.rectangle((7,base+2,w-5,base+8),fill=2)
- d.rectangle((8,walltop,w-9,base),fill=6,outline=2)
- for x in range(12,w-10,8):d.line((x,walltop+4,x,base-1),fill=5)
- # Back roof plane, broad front roof plane, and narrow side fascia.
- roofbottom=walltop+3
- d.polygon([(12,3),(w-13,3),(w-4,ridge),(w-4,roofbottom),(3,roofbottom),(3,ridge)],fill=8,outline=1)
- d.polygon([(13,4),(w-14,4),(w-7,ridge-1),(6,ridge-1)],fill=9)
- d.rectangle((5,ridge+1,w-6,roofbottom-3),fill=10)
- d.polygon([(w-7,ridge+1),(w-5,ridge),(w-5,roofbottom-1),(w-8,roofbottom-3)],fill=8)
- # Staggered shingle rows define roof slope; all stay on the roof surface.
- for y in range(ridge+4,roofbottom-3,7):
-  d.line((6,y,w-8,y),fill=9)
-  d.line((6,y+1,w-9,y+1),fill=11)
-  for x in range(11+((y//7)%2)*5,w-12,12):d.line((x,y+2,x,y+6),fill=9)
- d.line((6,ridge,w-7,ridge),fill=11,width=2)
- d.line((5,roofbottom-2,w-6,roofbottom-2),fill=8,width=2)
- d.rectangle((8,roofbottom+1,w-9,roofbottom+4),fill=3)
- # Short front face: recessed windows and a native-scale 16px-wide doorway.
- for x in [9,w-12]:d.line((x,roofbottom+4,x,base),fill=3,width=2);d.line((x+1,roofbottom+4,x+1,base),fill=7)
- wy=roofbottom+8
- for x in [18,w-33]:
-  d.rectangle((x,wy,x+13,wy+13),fill=2)
-  d.rectangle((x+2,wy+2,x+11,wy+10),fill=14)
-  d.line((x+3,wy+3,x+10,wy+3),fill=10)
-  d.line((x+7,wy+2,x+7,wy+11),fill=7);d.line((x+2,wy+7,x+11,wy+7),fill=7)
-  d.line((x-1,wy+14,x+14,wy+14),fill=3,width=2);d.line((x,wy+13,x+13,wy+13),fill=7)
- dx=w//2-7
- d.rectangle((dx-1,base-20,dx+15,base),fill=2)
- d.rectangle((dx+2,base-18,dx+12,base-1),fill=4)
- d.line((dx+3,base-17,dx+3,base-2),fill=5);d.point((dx+11,base-10),fill=15)
- d.rectangle((6,base+1,w-7,base+4),fill=3);d.line((6,base+1,w-7,base+1),fill=7)
- for x in [10,w-13]:d.rectangle((x,base+5,x+2,h-1),fill=2);d.line((x,base+5,x,h-2),fill=6)
- return a
-
 def lighthouse():
  a=im(48,112);d=ImageDraw.Draw(a)
  d.ellipse((5,93,43,108),fill=2);d.ellipse((8,89,40,103),fill=12,outline=1)
