@@ -85,41 +85,12 @@ def edge(kind,mask):
  cache,fn,bank={'rail':(rails,A.deckedge,9),'reef':(reefedges,A.reefedge,12)}[kind]
  if mask not in cache:cache[mask]=reg(fn(mask),bank)
  return cache[mask]
-# Persistent deck footprint follows the concept's individual house platforms.
-decks=set();bridges=set()
-def footprint(target,x,y,w,h):target.update((xx,yy) for yy in range(y,y+h) for xx in range(x,x+w))
-platforms=[(3,20,9,10),(13,16,10,11),(23,13,11,14),(34,17,9,10),(43,20,9,10),(20,31,18,9),(41,37,11,8),(43,54,11,5)]
-for rect in platforms:footprint(decks,*rect)
-for rect in [(10,25,35,3),(25,26,3,8),(35,27,11,3),(46,29,3,12),(47,43,3,14)]:footprint(bridges,*rect)
-decks|=bridges
-# Right approach remains on high ground; north route descends beside the lodge.
-permanent=set();footprint(permanent,10,0,3,3);footprint(permanent,13,2,5,3);footprint(permanent,16,4,3,10);footprint(permanent,16,12,11,2)
-footprint(permanent,51,10,5,3);footprint(permanent,52,11,3,14);footprint(permanent,48,24,6,3)
-# Reef islands: coordinate-stable silhouettes across tide states.
-reefs=[]
-for cx,cy,rx,ry in [(8,39,6,4),(12,52,5,4),(26,46,5,5),(36,53,3,3),(35,40,2,3),(44,48,2,2)]:
- cells=set()
- for y in range(cy-ry,cy+ry+1):
-  for x in range(cx-rx,cx+rx+1):
-   if ((x-cx)/rx)**2+((y-cy)/ry)**2<1:cells.add((x,y))
- reefs.append(cells)
-reef_union=set().union(*reefs)
-# Main low-tide beach has narrow channels rather than one large flat oval.
-sand=set()
-for y in range(10,45):
- for x in range(3,53):
-  if ((x-27)/25)**2+((y-24)/21)**2<1 and not (y>32 and x>27):sand.add((x,y))
-for rect in [(6,33,5,7),(11,39,6,3),(16,40,8,3),(23,39,5,7),(27,44,4,3)]:footprint(sand,*rect)
-# Headland boundary varies by column, with a natural notch for the northeast cave.
-cliff_bottom=[10+((x//4)%3) for x in range(W)]
-for x in range(4,20):cliff_bottom[x]=14
-for x in range(20,40):cliff_bottom[x]=8+(x//3)%3
-for x in range(40,56):cliff_bottom[x]=15+(x//3)%3
-buildings=[('lodge',6,4),('house_green',4,21),('house_blue',14,17),('center',25,14),('house_green',35,18),('house_gold',44,21),('house_green',21,32),('house_gold',30,32),('lighthouse',49,31)]
-landmarks={'center_door':[28,18],'north_exit':[11,0],'east_exit':[55,11],'lighthouse_approach':[49,39],'arrival_pier':[48,56]}
-# Build a tide artwork state; only the low state is installed into the game.
+# Geography is authored as explicit elevation bands, reefs and individual piers.
+import geography as G
+decks=G.decks;permanent=G.permanent;buildings=G.buildings;landmarks=G.landmarks
+
 def build(tide):
- g=[[kit['sea'][(x//3+y//4)%2]|0x3400 for x in range(W)] for y in range(H)]
+ g=[[kit['sea'][0]|0x3400 for x in range(W)] for y in range(H)]
  def put(x,y,mid,solid=False):
   if 0<=x<W and 0<=y<H:g[y][x]=mid|0x3000|(0x400 if solid else 0)
  def place(name,x,y,solid=True):
@@ -128,69 +99,51 @@ def build(tide):
     blocks=solid
     if name in house_shapes:blocks=solid and house_art[house_shapes[name]].crop((xx*16,yy*16,xx*16+16,yy*16+16)).getbbox() is not None
     put(x+xx,y+yy,mid,blocks)
- # Shallow lagoon forms a blue-green rim around the islands.
- for y in range(9,H):
-  for x in range(1,W-1):
-   if tide<2 and ((x-26)/28)**2+((y-34)/28)**2<1:put(x,y,kit['shallow'][(x//4+y//3)%2],tide>0)
- for x in range(W):
-  for y in range(cliff_bottom[x]):
-   if y<cliff_bottom[x]-3:put(x,y,kit['grass'],True)
-   else:put(x,y,kit['cliff'][2 if y==cliff_bottom[x]-3 else 3 if y==cliff_bottom[x]-1 else (x+y)%2],True)
- # Western edge tapers into the lower bay, leaving breathing room around the reefs.
- for y in range(12,33):
-  for x in range(max(1,5-(y-12)//7)):
-   put(x,y,kit['cliff'][(x+y)%2],True)
- # Lighthouse rock remains exposed at every tide.
- lighthouse_land={(x,y) for y in range(33,42) for x in range(48,56) if ((x-52)/5)**2+((y-37)/5)**2<1}
- active_sand=(sand if tide==0 else {(x,y) for x,y in sand if y<19 and x<22} if tide==1 else set())|permanent|lighthouse_land
+ # Eastern mountain mass and northern bluffs have forest tops and short south faces.
+ for x,y in G.cliffs:
+  depth=sum((x,y+dy) in G.cliffs for dy in [1,2,3])
+  put(x,y,kit['grass'] if depth==3 else kit['cliff'][2 if depth==2 else 3 if depth==0 else (x+y)%2],True)
+ active_sand={p for p,height in G.heights.items() if height>=tide}
  for x,y in active_sand:
-  put(x,y,kit['sand'])
- for idx,cells in enumerate(reefs):
-  for x,y in cells:
-   outside=sum(1<<i for i,(dx,dy) in enumerate([(0,-1),(1,0),(0,1),(-1,0)]) if (x+dx,y+dy) not in cells)
-   # At high tide only the tall coral crowns break the surface.
-   if tide==2 and outside:continue
-   put(x,y,edge('reef',outside) if outside else kit['reefbeds'][(idx+(x//2)*3+y//2)%4][(y+idx)%2][(x+idx)%2],True)
- # Coral gardens extend off the reef shelves into the shallow western lagoon.
- for x,y in [(2,35),(3,38),(4,43),(6,45),(7,48),(2,50),(3,54),(18,40),(21,44),(22,49),(30,50),(32,46),(38,49),(37,43)]:
-  if (x,y) not in decks and (x,y) not in reef_union:put(x,y,kit['coral'][(x+y)%6],True)
- # Rock accents have deliberate spacing and never occupy a bridge.
- for x,y in [(17,43),(20,51),(33,55),(39,45),(45,50),(7,47),(34,35)]:put(x,y,kit['rock'],True)
+  if (x,y) not in G.cliffs:put(x,y,kit['sand'])
+ for x,y in G.pools:put(x,y,kit['shallow'][0] if tide==0 else kit['sea'][0],tide>0)
+ # Clusters have ragged outlines; low-tide footpaths remain clear through the reef.
+ for x,y in sorted(G.reefs):
+  if (x,y) in G.reef_route or (x,y) in decks:continue
+  interior=all((x+dx,y+dy) in G.reefs for dx,dy in [(0,-1),(1,0),(0,1),(-1,0)])
+  if tide==2:
+   if (x*3+y)%7==0:put(x,y,kit['coral'][(x+y)%6],True)
+  elif (x+y*3)%5<3:
+   mid=kit['reefbeds'][(x//3+y//3)%4][y%2][x%2] if interior and (x,y) in active_sand else kit['coral'][(x+y)%6]
+   put(x,y,mid,True)
+ for x,y in [(15,35),(18,43),(29,51),(33,44),(43,44),(9,49),(30,29),(43,25)]:
+  if (x,y) not in G.reef_route|G.cave_route|G.mid_route|decks:put(x,y,kit['rock'],True)
  for x,y in decks:
-  mask=sum(1<<i for i,(dx,dy) in enumerate([(0,-1),(1,0),(0,1),(-1,0)]) if (x+dx,y+dy) not in decks and (x+dx,y+dy) not in permanent)
-  # Walkways meet platforms through the same tile footprint, so rails never sever them.
-  put(x,y,edge('rail',mask) if mask else kit['deck'],bool(mask))
- # Lodge has a separate stone terrace, with a stairway down to the town.
+  mask=sum(1<<i for i,(dx,dy) in enumerate([(0,-1),(1,0),(0,1),(-1,0)]) if (x+dx,y+dy) not in decks and (x+dx,y+dy) not in permanent and (x+dx,y+dy) not in active_sand)
+  # Rails occupy the outer few pixels; the tile center is a walkable board.
+  # Adjacent ocean/cliff collision supplies the physical boundary.
+  put(x,y,edge('rail',mask) if mask else kit['deck'])
+ # Raised northwest residence and its short stair flight.
  for x in range(4,16):
-  for y in range(3,14):
-   if not (6<=x<13 and 4<=y<10):put(x,y,kit['sand'])
+  for y in range(3,14):put(x,y,kit['sand'])
  for x in range(4,16):
   for y in [12,13,14]:put(x,y,kit['cliff'][3 if y==14 else (x+y)%2],True)
- for y in range(13,20):
+ for y in range(12,21):
   for x in [11,12]:put(x,y,kit['stairs'])
- # Small wooden stairs connect to the lighthouse's lower landing.
- for y in range(43,45):
-  for x in [47,48,49]:put(x,y,kit['stairs'])
  for name,x,y in buildings:place(name,x,y)
- for x,y in [(3,27),(13,24),(32,24),(42,25),(20,37),(37,37),(41,42),(52,56)]:place('lamp',x,y)
- # Front-door approaches on every platform stay open for later interior warps.
+ for x,y in [(3,26),(13,23),(31,21),(44,35),(16,39),(34,39),(42,43),(52,56)]:place('lamp',x,y)
  for name,x,y in buildings:
-  if name in ['center','lighthouse']:continue
-  for yy in [y+5,y+6]:g[yy][x+house_doors[name]]&=~0xc00
- # The native Center door retains its standard animation and warp behavior.
+  if name in house_doors:
+   for yy in [y+5,y+6]:g[yy][x+house_doors[name]]&=~0xc00
  put(28,18,0x62);put(28,19,kit['deck'])
- # A recessed cave spans three tiles; entry behavior/warp will come with the interior.
- place('cave',47,7);put(48,10,kit['sand'])
- # Coastal trees/mangroves appear on high ground, never across paths or roof silhouettes.
- for x,y in [(0,0),(3,0),(6,0),(20,0),(23,0),(26,0),(29,0),(32,1),(35,0),(38,0),(41,1),(44,0),(47,0),(50,0),(53,1)]:place('tree',x,y)
- # Native signposts and barrels retain FireRed proportions.
- for x,y in [(29,19),(19,26),(43,28),(44,41),(13,12)]:put(x,y,0x3,True)
- # Visible pilings only appear below the deck, never over a walkable shore tile.
+ # Visible sea-cave mouth is the intended Gym entrance. Its interior is still pending.
+ place('cave',*G.cave_origin)
+ for x,y in [(0,0),(4,0),(8,0),(21,0),(25,1),(29,0),(34,1),(39,2),(43,4),(47,2),(50,6),(45,10)]:place('tree',x,y)
+ for x,y in [(30,20),(18,27),(41,35),(44,43),(13,12)]:put(x,y,0x3,True)
  for x,y in sorted(decks):
   if y<H-1 and (x,y+1) not in decks and (x,y+1) not in active_sand and x%3==0 and (g[y+1][x]&1023) in kit['sea']+kit['shallow']:put(x,y+1,kit['support'],True)
- # Preserve exact route seam coordinates from the existing Vidra route maps.
  for x,y in permanent:put(x,y,kit['sand'])
- # Autotile the final visible beach. Piers/cliffs/objects are not water neighbors.
+ # Native animated shoreline is applied only after all solid terrain and piers.
  before=[row[:] for row in g];water=set(kit['sea']+kit['shallow'])
  def wet(x,y):return 0<=x<W and 0<=y<H and (before[y][x]&1023) in water
  for y in range(H):
@@ -209,7 +162,7 @@ for i,n in enumerate(['Low','Mid','High']):
   for x,v in enumerate(row):out.paste(pixels[v&1023] if v&1023>=640 else native[v&1023],(x*16,y*16))
  out.save(B/f'Corvala_{n}_Tide_Map.png')
 # Core services and permanent piers must remain accessible in every artwork state.
-counts=[]
+counts=[];tidal_access=[]
 for tide,g in enumerate(maps):
  seen={(11,0)};q=deque(seen)
  while q:
@@ -219,8 +172,14 @@ for tide,g in enumerate(maps):
  for name,p in landmarks.items():assert tuple(p) in seen,('unreachable',tide,name,p)
  for name,x,y in buildings:
   if name in house_doors:assert (x+house_doors[name],y+6) in seen,('house entrance unreachable',tide,name,x,y)
- counts.append(len(seen))
+ counts.append(len(seen));tidal_access.append({name:tuple(p) in seen for name,p in G.tidal_goals.items()})
+assert [a['cave_approach'] for a in tidal_access]==[True,False,False],tidal_access
+assert [a['reef_walk'] for a in tidal_access]==[True,False,False],tidal_access
+assert [a['pool_lookout'] for a in tidal_access]==[True,True,False],tidal_access
 g=maps[0]
+# Persist all three authoring states; only map.bin is loaded by the game today.
+state_dir=R/'tools/corvala/tide_states';state_dir.mkdir(exist_ok=True)
+for name,state in zip(['low','mid','high'],maps):(state_dir/f'{name}.bin').write_bytes(struct.pack('<'+'H'*W*H,*sum(state,[])))
 # Pack only after geometry and budget checks pass.
 D.mkdir(parents=True,exist_ok=True);(D/'palettes').mkdir(exist_ok=True)
 for bank in range(16):
@@ -232,5 +191,5 @@ sheet.save(D/'tiles.png');(D/'metatiles.bin').write_bytes(struct.pack('<'+'H'*(l
 layouts=json.loads((R/'data/layouts/layouts.json').read_text());l=next(l for l in layouts['layouts'] if l['id']=='LAYOUT_CORVALA_TOWN');l.update(width=W,height=H,secondary_tileset='gTileset_Corvala')
 (R/'data/layouts/layouts.json').write_text(json.dumps(layouts,indent=2)+'\n');(R/l['blockdata_filepath']).write_bytes(struct.pack('<'+'H'*W*H,*sum(g,[])));(R/l['border_filepath']).write_bytes(struct.pack('<4H',*[kit['sea'][0]|0x3400]*4))
 p=R/'data/maps/Corvala_Town/map.json';m=json.loads(p.read_text());m['warp_events'][0].update(x=28,y=18,elevation=3);p.write_text(json.dumps(m,indent=2)+'\n')
-manifest={'phase':'reference-driven overworld refinement; game uses LOW; MID/HIGH are previews','dimensions':[W,H],'tiles':len(T),'metatiles':len(M),'palette_banks':6,'kit':kit,'landmarks':landmarks,'buildings':buildings,'permanent_decks':sorted(decks),'walkable_cells_by_tide':counts,'house_sources':house_sources,'house_doors':house_doors,'shoreline':{'native_sand':SAND,'primary_animation':'InitTilesetAnim_General','animation_graphics':[464,481],'frames':8,'ticks_per_frame':8,'generated_metatiles':sorted(set(shoreline.cache.values()))}}
+manifest={'phase':'reference-driven overworld refinement; game uses LOW; MID/HIGH are previews','dimensions':[W,H],'tiles':len(T),'metatiles':len(M),'palette_banks':6,'kit':kit,'landmarks':landmarks,'buildings':buildings,'permanent_decks':sorted(decks),'walkable_cells_by_tide':counts,'tidal_access':tidal_access,'tidal_goals':G.tidal_goals,'geography':{'deck_cells':len(decks),'previous_deck_cells':945,'authoring_states_only':True,'cliff_cells':len(G.cliffs),'height_bands':{str(i):sum(v==i for v in G.heights.values()) for i in [0,1,2]}},'house_sources':house_sources,'house_doors':house_doors,'shoreline':{'native_sand':SAND,'primary_animation':'InitTilesetAnim_General','animation_graphics':[464,481],'frames':8,'ticks_per_frame':8,'generated_metatiles':sorted(set(shoreline.cache.values()))}}
 (R/'tools/corvala/map.json').write_text(json.dumps(manifest,indent=2)+'\n');print(f'{len(T)}/384 tiles; {len(M)}/384 metatiles; all {len(landmarks)} landmarks connected.')

@@ -52,3 +52,13 @@ The active house kit is now `tools/corvala/stilt_houses.py`. The supplied concep
 Native material details come from the preserved `houses.py` kit: Pallet window crop (16,62,32,74) and Sevii door crop (16,80,32,96). These are transferred without scaling. Colored roofs use banks 9–11; timber faces and blue glass use bank 7. House dimensions remain seven by six metatiles, with centered doors at column 3 and unchanged front approach positions. Provenance marks the native source rectangles as references rather than the final custom geometry.
 
 Validation: packed preview equality, palette and metatile bounds, source material anchors, all seven entrances in each tide illustration, and all eight native shoreline animation frames. The scene remains a work in progress relative to the concept; no in-game capture is claimed.
+
+## Terrain and geography pass
+
+The active plan uses the concept's stilt village: essential buildings sit above the tide, while the shore and lower paths change beneath them. Geography is authored in `tools/corvala/geography.py`: individual house platforms and two-tile links to the west, a forested eastern headland around the cave, and an irregular connected reef/pool system across the south. Wooden footprint is reduced from 945 to 712 cells, about 25 percent. Bridge railings stay at the outer pixels of walkable tiles; water and cliff collision provide their boundary. Lamps and signs have moved clear of narrow paths.
+
+Three terrain-height bands produce genuinely different authoring maps. The low-tide cave approach and reef walk disappear at MID. A higher pool lookout stays exposed at MID and floods at HIGH. All primary services, map seams and seven house approaches remain reachable in all three generated layouts. The source house art is preserved; only placements and surroundings change.
+
+The sea-cave mouth is visually integrated into the eastern cliff and identifies the intended Gym approach. A Gym interior, cave warp, encounters, Dive/Snorkel access, safe tide transitions and runtime clock/controller are NOT implemented by this pass. `tools/corvala/tide_states/{low,mid,high}.bin` are checked authoring outputs, not live runtime states. `data/layouts/Corvala_Town/map.bin` remains LOW. The GIF cycle comparing states is an art/navigation review, not an emulator capture.
+
+Validation includes packed tile equality, native animated shoreline references, map dimensions, three distinct binary layouts, required foot-route availability, and continuous essential access in each authored tide state. Actual engine movement, transitions and tide updates remain unverified until the runtime feature is implemented and emulator-tested.

@@ -52,3 +52,13 @@ for name,source in manifest['house_sources'].items():
  assert any(v['x']==x+source.get('native_reference_column',source['door_column']) and v['y']==y+sh-1 for v in source_map['warp_events']),('native door anchor mismatch',name)
  assert source['wall_start_row'] in [3,4]
 print('PASS: native material references and current house entrances validated.')
+
+# Authoring-state files preserve route changes for a future runtime controller.
+assert (R/'tools/corvala/tide_states/low.bin').read_bytes()==raw
+assert [a['cave_approach'] for a in manifest['tidal_access']]==[True,False,False]
+assert [a['reef_walk'] for a in manifest['tidal_access']]==[True,False,False]
+assert [a['pool_lookout'] for a in manifest['tidal_access']]==[True,True,False]
+state_bytes=[(R/f'tools/corvala/tide_states/{n}.bin').read_bytes() for n in ['low','mid','high']]
+assert len(set(state_bytes))==3 and all(len(b)==w*h*2 for b in state_bytes)
+assert manifest['geography']['deck_cells']<manifest['geography']['previous_deck_cells']*.8
+print('PASS: three distinct authoring states, planned tidal access, reduced deck footprint.')
