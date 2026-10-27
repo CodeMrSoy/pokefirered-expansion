@@ -21,8 +21,13 @@ The incoming authored `Havora_Gym/map.bin` differs from the runtime all-LOW
 profile at 52 tile positions. The merge preserves both the latest editor
 preview from `4d5a43d97` and the existing water profiles. Confirm which of the
 newer platform tiles should also be present in the runtime LOW profile before
-changing either asset. All 27 existing runtime water combinations still pass
-the section checks.
+changing either asset. All 27 Python-generated water combinations pass the section checks. The strict
+emulator reference comparison currently fails at row 3, x=1 for `(0,0,1)`
+(runtime `0x4703`, reference `0x4700`). This also reproduces on the pre-arrival
+V2 build; the runtime intentionally retains editor tiles where the water
+profile has no change. The QoL merge leaves gym code, geometry, maps and art
+byte-for-byte identical to Havora-Development. Confirm the intended editor /
+reference relationship before changing either the runtime or this test.
 
 ## Unbuilt locations and compatibility
 

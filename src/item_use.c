@@ -517,13 +517,8 @@ void ItemUseOutOfBattle_PokeGlass(u8 taskId)
 
 static const u8 sPokeGlassIntroGfx[] = INCBIN_U8("graphics/poke_glass_tablet.4bpp");
 
-static const u16 sPokeGlassIntroPaletteOff[16] = {
-    RGB(0,0,0), RGB(2,2,3), RGB(5,5,7), RGB(11,12,14), RGB(1,3,5), RGB(1,3,5), RGB(1,3,5), RGB(1,3,5), RGB(1,3,5), RGB(22,2,5), RGB(31,5,7), RGB(31,14,15), RGB(20,21,24), RGB(28,29,30), RGB(14,16,19), RGB(31,31,31)
-};
-
-static const u16 sPokeGlassIntroPaletteOn[16] = {
-    RGB(0,0,0), RGB(2,2,3), RGB(5,5,7), RGB(11,12,14), RGB(0,6,11), RGB(0,16,24), RGB(8,25,29), RGB(15,29,31), RGB(26,31,31), RGB(22,2,5), RGB(31,5,7), RGB(31,14,15), RGB(20,21,24), RGB(28,29,30), RGB(14,16,19), RGB(31,31,31)
-};
+static const u16 sPokeGlassIntroPaletteOff[16] = INCBIN_U16("graphics/poke_glass_tablet_off.gbapal");
+static const u16 sPokeGlassIntroPaletteOn[16] = INCBIN_U16("graphics/poke_glass_tablet.gbapal");
 
 static const struct SpriteSheet sPokeGlassIntroSpriteSheet = {
     .data = sPokeGlassIntroGfx,
@@ -588,7 +583,7 @@ static void Task_PokeGlassIntro(u8 taskId)
             task->data[2] = 0;
         }
         break;
-    case 1: // Wake the glass first; app symbols remain dark during the glow.
+    case 1: // Light the supplied tablet artwork without changing its shell colors.
         if (step < 4)
         {
             u16 palette[16];
@@ -597,7 +592,6 @@ static void Task_PokeGlassIntro(u8 taskId)
 
             for (i = 0; i < ARRAY_COUNT(palette); i++)
                 palette[i] = BlendPokeGlassIntroColor(sPokeGlassIntroPaletteOff[i], sPokeGlassIntroPaletteOn[i], step + 1, 4);
-            palette[8] = sPokeGlassIntroPaletteOff[8];
             LoadPalette(palette, OBJ_PLTT_ID(paletteNum), sizeof(palette));
             task->data[2]++;
         }
@@ -607,20 +601,7 @@ static void Task_PokeGlassIntro(u8 taskId)
             task->data[2] = 0;
         }
         break;
-    case 2: // Reveal the app symbols once the display is lit.
-        if (step < 2)
-        {
-            u16 color = BlendPokeGlassIntroColor(sPokeGlassIntroPaletteOff[8], sPokeGlassIntroPaletteOn[8], step + 1, 2);
-            LoadPalette(&color, OBJ_PLTT_ID(IndexOfSpritePaletteTag(TAG_POKEGLASS_INTRO_PAL)) + 8, sizeof(color));
-            task->data[2]++;
-        }
-        else
-        {
-            task->data[1]++;
-            task->data[2] = 0;
-        }
-        break;
-    case 3: // Open the launcher as soon as the display is lit.
+    case 2: // Open the launcher as soon as the display is lit.
         FreeOamMatrix(sprite->oam.matrixNum);
         DestroySprite(sprite);
         FreeSpriteTilesByTag(TAG_POKEGLASS_INTRO_GFX);
