@@ -661,7 +661,7 @@ PalletTown_ProfessorOaksLab_EventScript_ReceiveDexScene::
 	giveitem_msg PalletTown_ProfessorOaksLab_Text_ReceivedPokeGlassFromOak, ITEM_POKEGLASS, 1
 	setvar VAR_MAP_SCENE_POKEMON_CENTER_TEALA, 1
 	msgbox PalletTown_ProfessorOaksLab_Text_OakCatchMonsForDataTakeThese
-	giveitem_msg PalletTown_ProfessorOaksLab_Text_ReceivedFivePokeBalls, ITEM_POKE_BALL, 5
+	giveitem_msg PalletTown_ProfessorOaksLab_Text_ReceivedFiveUltraBalls, ITEM_ULTRA_BALL, 5
 	msgbox PalletTown_ProfessorOaksLab_Text_OakExplainCatching
 	famechecker FAMECHECKER_OAK, 1
 	msgbox PalletTown_ProfessorOaksLab_Text_OakCompleteMonGuideWasMyDream
@@ -923,7 +923,7 @@ PalletTown_ProfessorOaksLab_EventScript_CheckIfPlayerNeedsBalls::
 	special QuestLog_CutRecording
 	goto_if_set FLAG_OAK_SKIP_22_RIVAL_CHECK, PalletTown_ProfessorOaksLab_EventScript_MonsAroundWorldWait
 	goto_if_set FLAG_GOT_POKEBALLS_FROM_OAK_AFTER_22_RIVAL, PalletTown_ProfessorOaksLab_EventScript_PlayerAlreadyGotBalls
-	checkitem ITEM_POKE_BALL
+	checkitem ITEM_ULTRA_BALL
 	goto_if_eq VAR_RESULT, FALSE, PalletTown_ProfessorOaksLab_EventScript_PlayerOutOfBalls
 	goto PalletTown_ProfessorOaksLab_EventScript_MonsAroundWorldWait
 	end
@@ -935,7 +935,7 @@ PalletTown_ProfessorOaksLab_EventScript_PlayerOutOfBalls::
 
 PalletTown_ProfessorOaksLab_EventScript_GivePlayerMoreBalls::
 	msgbox PalletTown_ProfessorOaksLab_Text_OakAddedNothingToPokedex
-	giveitem_msg PalletTown_ProfessorOaksLab_Text_ReceivedFivePokeBalls, ITEM_POKE_BALL, 5
+	giveitem_msg PalletTown_ProfessorOaksLab_Text_ReceivedFiveUltraBalls, ITEM_ULTRA_BALL, 5
 	setflag FLAG_GOT_POKEBALLS_FROM_OAK_AFTER_22_RIVAL
 	release
 	end
