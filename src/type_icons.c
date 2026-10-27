@@ -454,6 +454,9 @@ static void SpriteCB_TypeIcon(struct Sprite* sprite)
     u32 battlerId = sprite->tBattlerId;
     bool32 useDoubleBattleCoords = UseDoubleBattleCoords(GetBattlerAtPosition(position));
 
+    // Keep healthbox type badges out of the move description overlay.
+    sprite->invisible = gBattleStruct->descriptionSubmenu;
+
     if (sprite->tHideIconTimer == NUM_FRAMES_HIDE_TYPE_ICON)
     {
         DestroyTypeIcon(sprite);

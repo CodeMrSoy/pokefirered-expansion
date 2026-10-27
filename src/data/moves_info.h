@@ -31,8 +31,9 @@ static const u8 sMegaDrainDescription[] = _(
 
 #if B_SKIP_RECHARGE != GEN_1
 static const u8 sHyperBeamDescription[] = _(
-    "\nPowerful, but\nleaves the "
-    "user\nimmobile the next\nturn.");
+    "Powerful, but\n"
+    "leaves the user\n"
+    "immobile next turn.");
 #else
 static const u8 sHyperBeamDescription[] = _(
     "Leaves the user\nimmobile "
@@ -1386,13 +1387,14 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
         .name = COMPOUND_STRING("Disable"),
         .description = COMPOUND_STRING(
         #if B_DISABLE_TURNS >= GEN_5
-            "For 4 turns,\nprevents foe "
+            "For 4 turns,\n"
         #elif B_DISABLE_TURNS == GEN_4
-            "For\n4-7 turns,\nprevents foe "
+            "For 4-7 turns,\n"
         #else
-            "For 2-5 turns,\nprevents foe "
+            "For 2-5 turns,\n"
         #endif
-            "from using last\nused move."),
+            "blocks the foe's\n"
+            "last used move."),
         #if B_UPDATED_MOVE_DATA >= GEN_5
             .accuracy = 100,
         #elif B_UPDATED_MOVE_DATA == GEN_4
@@ -3704,11 +3706,12 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
         .name = COMPOUND_STRING("Poison Gas"),
         .description = COMPOUND_STRING(
         #if B_UPDATED_MOVE_DATA >= GEN_5
-            "Envelops the foes\nin a toxic "
+            "Envelops the foes\n"
         #else
-            "Envelops the foe\nin a toxic "
+            "Envelops the foe\n"
         #endif
-            "gas that may\npoison."),
+            "in toxic gas that\n"
+            "may poison."),
         #if B_UPDATED_MOVE_DATA >= GEN_6
             .accuracy = 90,
         #elif B_UPDATED_MOVE_DATA >= GEN_5
@@ -4278,11 +4281,13 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
     {
         .name = COMPOUND_STRING("Tri Attack"),
         .description = COMPOUND_STRING(
-            "Fires three types\nof beams. "
+            "Fires three beams.\n"
         #if B_USE_FROSTBITE == TRUE
-            "May\nburn/para/frostbite."),
+            "May burn, paralyze,\n"
+            "or frostbite."),
         #else
-            "May\nburn/paralyze/freeze."),
+            "May burn, freeze,\n"
+            "or paralyze."),
         #endif
         .effect = EFFECT_HIT,
         .power = 80,
@@ -4741,11 +4746,13 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
         .name = COMPOUND_STRING("Cotton Spore"),
         .description = COMPOUND_STRING(
         #if B_UPDATED_MOVE_DATA >= GEN_6
-            "Spores cling to\nthe foes, "
+            "Spores cling to\n"
+            "the foes, sharply\n"
         #else
-            "Spores cling to\nthe foe, "
+            "Spores cling to\n"
+            "the foe, sharply\n"
         #endif
-            "sharply reducing\nSpeed."),
+            "reducing Speed."),
         .effect = EFFECT_SPEED_DOWN_2,
         .power = 0,
         .type = TYPE_GRASS,
@@ -6705,11 +6712,11 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
         .name = COMPOUND_STRING("Uproar"),
         .description = COMPOUND_STRING(
                                     #if B_UPROAR_TURNS >= GEN_5
-                                       "Causes an uproar\nfor 2 to 5 "
+                                       "Causes an uproar\nfor 2 to 5 turns.\n"
                                     #else
-                                       "Causes an uproar\nfor 3 "
+                                       "Causes an uproar\nfor 3 turns.\n"
                                     #endif
-                                       "turns and prevents\nsleep."),
+                                       "Prevents sleep."),
         .effect = EFFECT_UPROAR,
         .power = B_UPDATED_MOVE_DATA >= GEN_5 ? 90 : 50,
         .type = TYPE_NORMAL,
@@ -7775,9 +7782,11 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
         .name = COMPOUND_STRING("Tail Glow"),
         .description = COMPOUND_STRING(
         #if B_UPDATED_MOVE_DATA >= GEN_5
-            "Flash light that\ndrastically "
+            "Flashes a light\n"
+            "that drastically\n"
         #else
-            "Flashes a light\nthat sharply "
+            "Flashes a light\n"
+            "that sharply\n"
         #endif
             "raises Sp. Atk."),
         .effect = B_UPDATED_MOVE_DATA >= GEN_5 ? EFFECT_SPECIAL_ATTACK_UP_3 : EFFECT_SPECIAL_ATTACK_UP_2,
@@ -9072,8 +9081,9 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
         .name = COMPOUND_STRING("Volt Tackle"),
         #if B_UPDATED_MOVE_DATA >= GEN_4
         .description = COMPOUND_STRING(
-            "A\nlife-risking\ntackle that "
-            "hurts\nthe user. May\nparalyze."),
+            "A reckless tackle\n"
+            "that hurts user.\n"
+            "May paralyze."),
         #else
         .description = COMPOUND_STRING(
             "A life-risking\ntackle that "
@@ -19049,8 +19059,9 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
     {
         .name = COMPOUND_STRING("Thunderous Kick"),
         .description = COMPOUND_STRING(
-            "Uses a\nlightning-like\nkick "
-            "to hit.\nLowers foe's\nDefense."),
+            "A lightning-like\n"
+            "kick that lowers\n"
+            "the foe's Defense."),
         .effect = EFFECT_HIT,
         .power = 90,
         .type = TYPE_FIGHTING,
