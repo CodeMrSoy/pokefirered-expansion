@@ -28,3 +28,18 @@ Validation:
   descriptions and a four-line control rendered in mGBA. The four-line battle
   popup was inspected visually; closing it restores the entire move panel
   byte-for-byte at the pixel level.
+
+## Level-up move selection
+
+Verified real Rare Candy level-ups for Psyduck learning Disable and Mareep
+learning Cotton Spore. All four existing moves and the new fifth-row move
+render their complete descriptions using the same Summary renderer. Cancelling
+keeps the original moves unchanged.
+
+Long move names now select a compact font when needed. Special move names
+longer than the 16-character Summary buffer are safely abbreviated with an
+ellipsis, without changing the underlying move name or description. This also
+prevents extra-long Z-move names from overwriting adjacent display buffers.
+The layout audit covers all 935 move names, and
+`tests/level_up_move_text_emulator.py` exercises a long Z-move name alongside
+the real level-up prompts and cancellation.

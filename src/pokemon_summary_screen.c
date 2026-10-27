@@ -21,6 +21,7 @@
 #include "battle_main.h"
 #include "scanline_effect.h"
 #include "constants/moves.h"
+#include "constants/characters.h"
 #include "dynamic_placeholder_text_util.h"
 #include "constants/region_map_sections.h"
 #include "region_map.h"
@@ -2668,7 +2669,12 @@ static void BufferMonMoveI(u8 i)
 
     sMonSummaryScreen->numMoves++;
     sMonSummaryScreen->moveTypes[i] = gMovesInfo[sMonSummaryScreen->moveIds[i]].type;
-    StringCopy(sMonSummaryScreen->summary.moveNameStrBufs[i], gMovesInfo[sMonSummaryScreen->moveIds[i]].name);
+    // Special moves can have names longer than the Summary's display buffer.
+    // Abbreviate the display only; the move data keeps its full name.
+    StringCopyN(sMonSummaryScreen->summary.moveNameStrBufs[i], gMovesInfo[sMonSummaryScreen->moveIds[i]].name, MOVE_NAME_LENGTH);
+    sMonSummaryScreen->summary.moveNameStrBufs[i][MOVE_NAME_LENGTH] = EOS;
+    if (StringLength(gMovesInfo[sMonSummaryScreen->moveIds[i]].name) > MOVE_NAME_LENGTH)
+        sMonSummaryScreen->summary.moveNameStrBufs[i][MOVE_NAME_LENGTH - 1] = CHAR_ELLIPSIS;
 
     if (i >= 4 && sMonSummaryScreen->mode == PSS_MODE_SELECT_MOVE)
     {
@@ -2984,7 +2990,13 @@ static void PokeSum_PrintMoveName(u8 i)
     if (i == 4)
         curPP = maxPP;
 
-    AddTextPrinterParameterized3(sMonSummaryScreen->windowIds[POKESUM_WIN_RIGHT_PANE], FONT_NORMAL, 0, GetMoveNamePrinterYpos(i), sPrintMoveTextColors[0], TEXT_SKIP_DRAW, sMonSummaryScreen->summary.moveNameStrBufs[i]);
+    // The same list shows five moves while learning. Keep long names inside
+    // the right pane instead of clipping them at the edge of the screen.
+    u32 nameWidth = WindowWidthPx(sMonSummaryScreen->windowIds[POKESUM_WIN_RIGHT_PANE]);
+    u8 nameFont = FONT_NORMAL;
+    if (GetStringWidth(FONT_NORMAL, sMonSummaryScreen->summary.moveNameStrBufs[i], 0) > nameWidth)
+        nameFont = GetFontIdToFit(sMonSummaryScreen->summary.moveNameStrBufs[i], FONT_SMALL, 0, nameWidth);
+    AddTextPrinterParameterized3(sMonSummaryScreen->windowIds[POKESUM_WIN_RIGHT_PANE], nameFont, 0, GetMoveNamePrinterYpos(i), sPrintMoveTextColors[0], TEXT_SKIP_DRAW, sMonSummaryScreen->summary.moveNameStrBufs[i]);
 
     if (sMonSummaryScreen->moveIds[i] == 0 || (curPP == maxPP))
       colorIdx = 0;

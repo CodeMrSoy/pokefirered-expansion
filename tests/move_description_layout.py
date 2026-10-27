@@ -63,9 +63,21 @@ for i, (box, category) in enumerate(zip(battles, categories)):
     checks.append((f'Battle {i}', small, box['width'] * 8, box['height'] * 8 - 1 - font_height('FONT_SMALL'), font_height('FONT_SMALL')))
     assert box['baseBlock'] + box['width'] * box['height'] <= category['baseBlock'], 'Battle window overlaps category icon tiles'
     assert category['baseBlock'] + category['width'] * category['height'] <= 1024, 'Category window exceeds character tiles'
+small_narrow = widths('gFontSmallNarrowLatinGlyphWidths')
+small_narrower = widths('gFontSmallNarrowerLatinGlyphWidths')
 errors = []
 for move in range(count):
     name, pointer = struct.unpack_from('<II', rom, base + move * stride)
+    # Summary/level-up name buffers hold 16 glyphs plus EOS. Long special
+    # names use an ellipsis; shorter names keep their full spelling.
+    full_name = read_string(name)
+    display_name = full_name[:16]
+    if len(full_name) > 16:
+        display_name = display_name[:15] + b'\xb0'
+    name_widths = [sum(glyphs[c] for c in display_name)
+                   for glyphs in (normal, small, small_narrow, small_narrower)]
+    if min(name_widths) > 80:
+        errors.append(f'Move {move}: display name exceeds the 80px move pane')
     description = read_string(pointer)
     assert not any(c in description for c in (0xfc, 0xfd, 0xf7)), 'Extend auditor for new inline controls'
     lines = description.split(b'\xfe')
@@ -74,4 +86,4 @@ for move in range(count):
         if widest > width or len(lines) * line_height > height:
             errors.append(f'Move {move}, {screen}: {widest}/{width}px, {len(lines) * line_height}/{height}px')
 assert not errors, '\n'.join(errors)
-print(f'PASS all {count} compiled move descriptions fit Summary, Move Relearner and both battle layouts')
+print(f'PASS all {count} compiled move descriptions fit Summary, Move Relearner and both battle layouts; all move names fit the five-row learning list')
