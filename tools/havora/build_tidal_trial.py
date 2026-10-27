@@ -142,7 +142,7 @@ HavoraTrial_{name}Intro::
 HavoraTrial_{name}Loss::
  .string "This station is cleared!$"
 '''
- hints=["AL1 sails to AR2.\\nGREEN raises A and drains B/C.","AR3 sails to BL3 at MID.\\nAR1 opens after every crew.","BL3 reaches the island LEFT.\\nBL1 sails to BR2 at B MID.","BR1 sails to CR2 when B and C\\nare both HIGH.","CL1 sails to BL2 at HIGH.\\nAR3 needs A and B both MID.","CR1 sails to CL2.\\nPrepare B MID for the island.","Depart RIGHT for AR3 at\\nA/B MID; then return to B."]
+ hints=["AL1 sails to AR2.\\nGREEN raises A and drains B/C.","AR3 sails to BL3 at MID.\\nAR1 opens after every crew.","BL3 reaches the island LEFT.\\nBL1 sails to BR2 at B HIGH.","BR1 sails to CR2 when B and C\\nare both HIGH.","CL1 sails to BL2 at HIGH.\\nAR3 needs A and B both MID.","CR1 sails to CL2.\\nPrepare B MID for the island.","Depart RIGHT for AR3 at\\nA/B MID; then return to B."]
  s+=f'HavoraTrial_{name}After::\n .string "{hints[n]}$"\n'
 s+='''HavoraTrial_Captain::
  lockall
