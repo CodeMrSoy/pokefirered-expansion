@@ -391,7 +391,7 @@ HavoraTrial_DiverIntro::
 HavoraTrial_DiverLoss::
  .string "This station is cleared!$"
 HavoraTrial_DiverAfter::
- .string "BL3 reaches the island LEFT.\nBL1 sails to BR2 at B MID.$"
+ .string "BL3 reaches the island LEFT.\nBL1 sails to BR2 at B HIGH.$"
 HavoraTrial_Engineer::
  trainerbattle_double TRAINER_HAVORA_ENGINEER, HavoraTrial_EngineerIntro, HavoraTrial_EngineerLoss, HavoraTrial_TwoMons, HavoraTrial_EngineerWon
  msgbox HavoraTrial_EngineerAfter

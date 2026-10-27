@@ -37,14 +37,14 @@ plan.reverse();out=R/'build/havora-tests/directional-solution.json';out.parent.m
 for a,s in plan:print(a,s[0])
 assert all(any(a[0]=='battle' and a[1]==n for a,s in plan) for n in range(7))
 assert all(any(a[0]=='switch' and a[1]==n for a,s in plan) for n in range(7))
-assert len(plan)==27,('switch-color challenge solution length changed',len(plan))
+assert len(plan)==30,('switch-color challenge solution length changed',len(plan))
 for l in L:
  assert l['clearance']&P[l['from']]['victory']
 assert any(l['source_label']=='AL1' and l['destination_label']=='AR2' for l in L)
 assert any(l['source_label']=='AR3' and l['destination_label']=='BL3' for l in L)
 assert any(l['source_label']=='BL3' and l['destination_label']=='ISLAND L' and l['water']==[-1,1,-1] for l in L)
 assert any(l['source_label']=='ISLAND R' and l['destination_label']=='AR3' and l['water']==[1,1,-1] for l in L)
-assert any(l['source_label']=='BL1' and l['destination_label']=='BR2' and l['water']==[-1,1,-1] for l in L)
+assert any(l['source_label']=='BL1' and l['destination_label']=='BR2' and l['water']==[-1,2,-1] for l in L)
 m=json.loads((R/'data/maps/Havora_Gym/map.json').read_text())
 for p in P:
  o=next(o for o in m['object_events'] if o['script']=='HavoraTrial_'+p['trainer'])
