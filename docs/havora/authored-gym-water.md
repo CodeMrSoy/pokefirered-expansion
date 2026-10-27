@@ -2,7 +2,7 @@
 
 # Havora gym: artwork-first revision
 
-Latest water artwork: see [section-water-profiles.md](section-water-profiles.md), based on the user's 80×27 commit 4d5a43d97.
+Latest water artwork: see [section-water-profiles.md](section-water-profiles.md), based on the user's 80×27 commit 67626075.
 
 The user's layout and original metatiles are restored. The starting/default
 water levels are **LOW / LOW / LOW**. Platforms and walkways follow the supplied

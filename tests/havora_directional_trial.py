@@ -10,6 +10,7 @@ j=json.loads((R/'tools/havora/tidal_trial.json').read_text());P=j['platforms'];L
 for p in P:
  actual=[colors[g.authored[y*80+x]&1023] for x,y in p['switches']]
  assert actual==[c.lower() for c in p['switch_colors']],(p['name'],actual,p['switch_colors'])
+ assert len(p['switches'])==len(set(p['switch_colors']))==2,(p['name'],p['switches'],p['switch_colors'])
 start=((0,0,0),0,0,0);q=deque([start]);prev={start:None};actions={}
 def add(s,t,a):
  if t not in prev:prev[t]=s;actions[t]=a;q.append(t)
@@ -37,7 +38,7 @@ plan.reverse();out=R/'build/havora-tests/directional-solution.json';out.parent.m
 for a,s in plan:print(a,s[0])
 assert all(any(a[0]=='battle' and a[1]==n for a,s in plan) for n in range(7))
 assert all(any(a[0]=='switch' and a[1]==n for a,s in plan) for n in range(7))
-assert len(plan)==30,('switch-color challenge solution length changed',len(plan))
+assert len(plan)==30,('switch-color challenge length changed',len(plan))
 for l in L:
  assert l['clearance']&P[l['from']]['victory']
 assert any(l['source_label']=='AL1' and l['destination_label']=='AR2' for l in L)

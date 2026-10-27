@@ -59,13 +59,13 @@ bottom; island switches are listed left to right.
 
 | Station | Switch colors |
 | --- | --- |
-| A Left | Yellow / Yellow / Red |
-| A Right | Blue / Red / Blue |
-| B Left | Green / Blue / Blue |
-| B Right | Yellow / Green / Yellow |
-| C Left | Green / Red / Green |
-| C Right | Yellow / Yellow / Red |
-| Switch island | Blue / Green / Green |
+| A Left | Yellow / Red |
+| A Right | Blue / Red |
+| B Left | Green / Blue |
+| B Right | Yellow / Green |
+| C Left | Green / Red |
+| C Right | Yellow / Red |
+| Switch island | Blue / Green |
 
 Operations that would submerge the player on the island at B HIGH are refused.
 The safe island sequence is GREEN to lower B, then BLUE to raise it to MID.

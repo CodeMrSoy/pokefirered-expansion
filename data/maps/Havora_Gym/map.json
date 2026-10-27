@@ -178,18 +178,10 @@
     {
       "type": "sign",
       "x": 1,
-      "y": 4,
-      "elevation": 0,
-      "player_facing_dir": "BG_EVENT_PLAYER_FACING_ANY",
-      "script": "HavoraTide_Switch0_1"
-    },
-    {
-      "type": "sign",
-      "x": 1,
       "y": 5,
       "elevation": 0,
       "player_facing_dir": "BG_EVENT_PLAYER_FACING_ANY",
-      "script": "HavoraTide_Switch0_2"
+      "script": "HavoraTide_Switch0_1"
     },
     {
       "type": "sign",
@@ -209,14 +201,6 @@
     },
     {
       "type": "sign",
-      "x": 26,
-      "y": 5,
-      "elevation": 0,
-      "player_facing_dir": "BG_EVENT_PLAYER_FACING_ANY",
-      "script": "HavoraTide_Switch1_2"
-    },
-    {
-      "type": "sign",
       "x": 28,
       "y": 3,
       "elevation": 0,
@@ -230,14 +214,6 @@
       "elevation": 0,
       "player_facing_dir": "BG_EVENT_PLAYER_FACING_ANY",
       "script": "HavoraTide_Switch2_1"
-    },
-    {
-      "type": "sign",
-      "x": 28,
-      "y": 5,
-      "elevation": 0,
-      "player_facing_dir": "BG_EVENT_PLAYER_FACING_ANY",
-      "script": "HavoraTide_Switch2_2"
     },
     {
       "type": "sign",
@@ -257,14 +233,6 @@
     },
     {
       "type": "sign",
-      "x": 53,
-      "y": 5,
-      "elevation": 0,
-      "player_facing_dir": "BG_EVENT_PLAYER_FACING_ANY",
-      "script": "HavoraTide_Switch3_2"
-    },
-    {
-      "type": "sign",
       "x": 55,
       "y": 3,
       "elevation": 0,
@@ -281,14 +249,6 @@
     },
     {
       "type": "sign",
-      "x": 55,
-      "y": 5,
-      "elevation": 0,
-      "player_facing_dir": "BG_EVENT_PLAYER_FACING_ANY",
-      "script": "HavoraTide_Switch4_2"
-    },
-    {
-      "type": "sign",
       "x": 78,
       "y": 3,
       "elevation": 0,
@@ -298,18 +258,10 @@
     {
       "type": "sign",
       "x": 78,
-      "y": 4,
-      "elevation": 0,
-      "player_facing_dir": "BG_EVENT_PLAYER_FACING_ANY",
-      "script": "HavoraTide_Switch5_1"
-    },
-    {
-      "type": "sign",
-      "x": 78,
       "y": 5,
       "elevation": 0,
       "player_facing_dir": "BG_EVENT_PLAYER_FACING_ANY",
-      "script": "HavoraTide_Switch5_2"
+      "script": "HavoraTide_Switch5_1"
     },
     {
       "type": "sign",
@@ -326,14 +278,6 @@
       "elevation": 0,
       "player_facing_dir": "BG_EVENT_PLAYER_FACING_ANY",
       "script": "HavoraTide_Switch6_1"
-    },
-    {
-      "type": "sign",
-      "x": 41,
-      "y": 9,
-      "elevation": 0,
-      "player_facing_dir": "BG_EVENT_PLAYER_FACING_ANY",
-      "script": "HavoraTide_Switch6_2"
     },
     {
       "type": "sign",
