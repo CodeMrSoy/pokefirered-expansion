@@ -41,8 +41,9 @@ therefore replaced with adjacent-section partners and intermediate stops.
 | --- | --- | --- |
 | AL1 | AR2 | Same A pool; exposed berths |
 | AR3 | BL3 | A MID and B MID; green dam submerged |
-| BL1 | Island LEFT | B MID |
-| Island RIGHT | BR2 | B MID |
+| BL3 | Island LEFT | B MID |
+| BL1 | BR2 | B MID; B-only crossing |
+| Island RIGHT | AR3 | A MID and B MID; green dam submerged |
 | BR1 | CR2 | B HIGH and C HIGH; blue dam submerged |
 | CR1 | CL2 | Same C pool; exposed berths |
 | CL1 | BL2 | B HIGH and C HIGH; blue dam submerged |
@@ -79,15 +80,15 @@ also requires at least one successful local switch use. Eirik checks all seven
 crew victories and seven switch stations, C LOW, and six conscious party members.
 C's original foot crossing remains LOW-only and leads into the exposed bunker.
 
-One shortest 24-action solution (walking steps and leader combat excluded):
+One shortest 27-action solution (walking steps and leader combat excluded):
 
 1. A Left crew; top YELLOW, bottom RED; boat AL1 → AR2.
 2. A Right crew; bottom RED; boat AR3 → BL3 at MID/MID.
-3. B Left crew; top GREEN, middle BLUE; boat BL1 → island LEFT at B MID.
-4. Island crew; middle GREEN, then left BLUE; boat island RIGHT → BR2 at B MID.
-5. B Right crew; middle GREEN twice; boat BR1 → CR2 at B/C HIGH.
-6. C Right crew; top YELLOW; boat CR1 → CL2 within C.
-7. C Left crew; middle RED. C is LOW; walk to Eirik's bunker.
+3. B Left crew; top GREEN twice, middle BLUE twice; boat BL3 → island LEFT at B MID.
+4. Island crew; middle GREEN, then left BLUE; boat island RIGHT → AR3 at A/B MID.
+5. Sail AR3 → BL3, then BL1 → BR2 within B; defeat B Right crew and use top YELLOW.
+6. Boat BR1 → CR2 at B/C HIGH; defeat C Right crew and use top YELLOW.
+7. Boat CR1 → CL2; defeat C Left crew and use middle RED. C is LOW; walk to Eirik's bunker.
 
 Gauge panels retain the optional emergency drain/return reset and preserve earned
 progress. Normal boat travel never calls a warp or changes the map destination.

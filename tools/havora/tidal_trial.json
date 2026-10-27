@@ -304,13 +304,13 @@
       "kind": "boat"
     },
     {
-      "source_label": "BL1",
+      "source_label": "BL3",
       "destination_label": "ISLAND L",
       "from": 2,
       "to": 6,
       "pad_from": [
-        31,
-        8
+        30,
+        16
       ],
       "pad_to": [
         39,
@@ -325,13 +325,13 @@
       "kind": "boat"
     },
     {
-      "source_label": "ISLAND R",
+      "source_label": "BL1",
       "destination_label": "BR2",
-      "from": 6,
+      "from": 2,
       "to": 3,
       "pad_from": [
-        41,
-        11
+        31,
+        8
       ],
       "pad_to": [
         50,
@@ -339,6 +339,27 @@
       ],
       "water": [
         -1,
+        1,
+        -1
+      ],
+      "clearance": 16,
+      "kind": "boat"
+    },
+    {
+      "source_label": "ISLAND R",
+      "destination_label": "AR3",
+      "from": 6,
+      "to": 1,
+      "pad_from": [
+        41,
+        11
+      ],
+      "pad_to": [
+        24,
+        16
+      ],
+      "water": [
+        1,
         1,
         -1
       ],
