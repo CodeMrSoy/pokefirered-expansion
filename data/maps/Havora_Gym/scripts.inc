@@ -29,7 +29,7 @@ HavoraTide_Switch0_0::
  waitstate
  goto HavoraTide_Release
 HavoraTide_Help0_0::
- .string "GREEN: A up, B down, C down.\nOperate this switch?$"
+ .string "YELLOW: B up.\nOperate this switch?$"
 HavoraTide_Switch0_1::
  lockall
  msgbox HavoraTide_Help0_1, MSGBOX_YESNO
@@ -42,7 +42,7 @@ HavoraTide_Switch0_1::
  waitstate
  goto HavoraTide_Release
 HavoraTide_Help0_1::
- .string "RED: A down, C up.\nOperate this switch?$"
+ .string "YELLOW: B up.\nOperate this switch?$"
 HavoraTide_Switch0_2::
  lockall
  msgbox HavoraTide_Help0_2, MSGBOX_YESNO
@@ -55,7 +55,7 @@ HavoraTide_Switch0_2::
  waitstate
  goto HavoraTide_Release
 HavoraTide_Help0_2::
- .string "YELLOW: B up.\nOperate this switch?$"
+ .string "RED: A down, C up.\nOperate this switch?$"
 HavoraTide_Switch1_0::
  lockall
  msgbox HavoraTide_Help1_0, MSGBOX_YESNO
@@ -68,7 +68,7 @@ HavoraTide_Switch1_0::
  waitstate
  goto HavoraTide_Release
 HavoraTide_Help1_0::
- .string "GREEN: A up, B down, C down.\nOperate this switch?$"
+ .string "BLUE: A up, B up, C down.\nOperate this switch?$"
 HavoraTide_Switch1_1::
  lockall
  msgbox HavoraTide_Help1_1, MSGBOX_YESNO
@@ -94,7 +94,7 @@ HavoraTide_Switch1_2::
  waitstate
  goto HavoraTide_Release
 HavoraTide_Help1_2::
- .string "YELLOW: B up.\nOperate this switch?$"
+ .string "BLUE: A up, B up, C down.\nOperate this switch?$"
 HavoraTide_Switch2_0::
  lockall
  msgbox HavoraTide_Help2_0, MSGBOX_YESNO
@@ -120,7 +120,7 @@ HavoraTide_Switch2_1::
  waitstate
  goto HavoraTide_Release
 HavoraTide_Help2_1::
- .string "RED: A down, C up.\nOperate this switch?$"
+ .string "BLUE: A up, B up, C down.\nOperate this switch?$"
 HavoraTide_Switch2_2::
  lockall
  msgbox HavoraTide_Help2_2, MSGBOX_YESNO
@@ -133,7 +133,7 @@ HavoraTide_Switch2_2::
  waitstate
  goto HavoraTide_Release
 HavoraTide_Help2_2::
- .string "YELLOW: B up.\nOperate this switch?$"
+ .string "BLUE: A up, B up, C down.\nOperate this switch?$"
 HavoraTide_Switch3_0::
  lockall
  msgbox HavoraTide_Help3_0, MSGBOX_YESNO
@@ -146,7 +146,7 @@ HavoraTide_Switch3_0::
  waitstate
  goto HavoraTide_Release
 HavoraTide_Help3_0::
- .string "GREEN: A up, B down, C down.\nOperate this switch?$"
+ .string "YELLOW: B up.\nOperate this switch?$"
 HavoraTide_Switch3_1::
  lockall
  msgbox HavoraTide_Help3_1, MSGBOX_YESNO
@@ -159,7 +159,7 @@ HavoraTide_Switch3_1::
  waitstate
  goto HavoraTide_Release
 HavoraTide_Help3_1::
- .string "RED: A down, C up.\nOperate this switch?$"
+ .string "GREEN: A up, B down, C down.\nOperate this switch?$"
 HavoraTide_Switch3_2::
  lockall
  msgbox HavoraTide_Help3_2, MSGBOX_YESNO
@@ -211,7 +211,7 @@ HavoraTide_Switch4_2::
  waitstate
  goto HavoraTide_Release
 HavoraTide_Help4_2::
- .string "YELLOW: B up.\nOperate this switch?$"
+ .string "GREEN: A up, B down, C down.\nOperate this switch?$"
 HavoraTide_Switch5_0::
  lockall
  msgbox HavoraTide_Help5_0, MSGBOX_YESNO
@@ -224,7 +224,7 @@ HavoraTide_Switch5_0::
  waitstate
  goto HavoraTide_Release
 HavoraTide_Help5_0::
- .string "GREEN: A up, B down, C down.\nOperate this switch?$"
+ .string "YELLOW: B up.\nOperate this switch?$"
 HavoraTide_Switch5_1::
  lockall
  msgbox HavoraTide_Help5_1, MSGBOX_YESNO
@@ -237,7 +237,7 @@ HavoraTide_Switch5_1::
  waitstate
  goto HavoraTide_Release
 HavoraTide_Help5_1::
- .string "RED: A down, C up.\nOperate this switch?$"
+ .string "YELLOW: B up.\nOperate this switch?$"
 HavoraTide_Switch5_2::
  lockall
  msgbox HavoraTide_Help5_2, MSGBOX_YESNO
@@ -250,7 +250,7 @@ HavoraTide_Switch5_2::
  waitstate
  goto HavoraTide_Release
 HavoraTide_Help5_2::
- .string "YELLOW: B up.\nOperate this switch?$"
+ .string "RED: A down, C up.\nOperate this switch?$"
 HavoraTide_Switch6_0::
  lockall
  msgbox HavoraTide_Help6_0, MSGBOX_YESNO
@@ -276,7 +276,7 @@ HavoraTide_Switch6_1::
  waitstate
  goto HavoraTide_Release
 HavoraTide_Help6_1::
- .string "BLUE: A up, B up, C down.\nOperate this switch?$"
+ .string "GREEN: A up, B down, C down.\nOperate this switch?$"
 HavoraTide_Switch6_2::
  lockall
  msgbox HavoraTide_Help6_2, MSGBOX_YESNO

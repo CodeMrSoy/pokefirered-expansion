@@ -75,6 +75,9 @@ for n,a in enumerate(p):
   import struct
   art=struct.unpack('<2160H',(R/'data/layouts/Havora_Gym/map.bin').read_bytes())
   x,y=a['switches'][k];color={0x303:'GREEN',0x300:'RED',0x302:'YELLOW',0x301:'BLUE'}[art[y*80+x]&1023]
+  expected=a.get('switch_colors')
+  if expected and color.lower()!=expected[k].lower():
+   raise ValueError(f"{a['name']} switch {k+1} is {color}, expected {expected[k]}")
   desc={'GREEN':'GREEN: A up, B down, C down.','RED':'RED: A down, C up.','YELLOW':'YELLOW: B up.','BLUE':'BLUE: A up, B up, C down.'}[color]+'\\nOperate this switch?'
   s+=f'HavoraTide_Help{n}_{k}::\n .string "{desc}$"\n'
 s+='''HavoraTide_Travel::

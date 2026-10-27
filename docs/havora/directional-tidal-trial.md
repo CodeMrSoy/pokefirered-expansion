@@ -52,12 +52,24 @@ Inbound berths never reverse a route. Source/destination coordinates and route
 rules are in `tools/havora/tidal_trial.json`. The actual water path is searched
 at departure; a blocked route returns an error before boarding begins.
 
-The authored platforms and switches remain intact. On each of A Left, A Right,
-B Left, B Right, C Left and C Right, switches are GREEN / RED / YELLOW top to
-bottom. The island has BLUE / BLUE / GREEN left to right. Its two blue controls
-share the blue effect. Operations that would submerge the player on the island
-at B HIGH are refused; GREEN to LOW followed by BLUE to MID is safe. Cached
-object elevations update with the tide so the player can walk between levers.
+The switch colors vary by station, so the player must read each panel instead
+of repeating the same choice at every quay. Quay switches are listed top to
+bottom; island switches are listed left to right.
+
+| Station | Switch colors |
+| --- | --- |
+| A Left | Yellow / Yellow / Red |
+| A Right | Blue / Red / Blue |
+| B Left | Green / Blue / Blue |
+| B Right | Yellow / Green / Yellow |
+| C Left | Green / Red / Green |
+| C Right | Yellow / Yellow / Red |
+| Switch island | Blue / Green / Green |
+
+Operations that would submerge the player on the island at B HIGH are refused.
+The safe island sequence is GREEN to lower B, then BLUE to raise it to MID.
+Cached object elevations update with the tide so the player can walk between
+levers.
 
 ## Mandatory crews and solution
 
@@ -67,15 +79,15 @@ also requires at least one successful local switch use. Eirik checks all seven
 crew victories and seven switch stations, C LOW, and six conscious party members.
 C's original foot crossing remains LOW-only and leads into the exposed bunker.
 
-One 23-action solution (individual walking steps and leader combat excluded):
+One shortest 24-action solution (walking steps and leader combat excluded):
 
-1. AL crew; GREEN twice; boat AL1 → AR2.
-2. AR crew; RED; boat AR3 → BL3 at MID/MID.
-3. BL crew; GREEN, YELLOW; boat BL1 → island LEFT at B MID.
-4. Island crew; GREEN, BLUE; boat island RIGHT → BR2 at B MID.
-5. BR crew; YELLOW; boat BR1 → CR2 at B/C HIGH.
-6. CR crew; GREEN; boat CR1 → CL2 within C.
-7. CL crew; GREEN. C is LOW; walk to Eirik's bunker.
+1. A Left crew; top YELLOW, bottom RED; boat AL1 → AR2.
+2. A Right crew; bottom RED; boat AR3 → BL3 at MID/MID.
+3. B Left crew; top GREEN, middle BLUE; boat BL1 → island LEFT at B MID.
+4. Island crew; middle GREEN, then left BLUE; boat island RIGHT → BR2 at B MID.
+5. B Right crew; middle GREEN twice; boat BR1 → CR2 at B/C HIGH.
+6. C Right crew; top YELLOW; boat CR1 → CL2 within C.
+7. C Left crew; middle RED. C is LOW; walk to Eirik's bunker.
 
 Gauge panels retain the optional emergency drain/return reset and preserve earned
 progress. Normal boat travel never calls a warp or changes the map destination.
