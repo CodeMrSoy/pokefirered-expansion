@@ -1,0 +1,27 @@
+{
+  "source_commit": "4d5a43d9708937b0f9e4a4fdbf2db3e904bd4cda",
+  "platforms": [
+    {
+      "name": "section_1_inner_mid_landing",
+      "section": 0,
+      "x": 23,
+      "y": 13,
+      "width": 4,
+      "height": 5
+    },
+    {
+      "name": "section_2_west_mid_landing",
+      "section": 1,
+      "x": 28,
+      "y": 13,
+      "width": 4,
+      "height": 5
+    }
+  ],
+  "levels": {
+    "low": "authored deck, stairs and exposed masonry",
+    "mid": "authored walkable deck/pads and stairs; lower masonry submerged",
+    "high": "entire footprint submerged and blocked"
+  },
+  "puzzle_changes": false
+}

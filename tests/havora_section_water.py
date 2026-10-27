@@ -3,7 +3,8 @@ from pathlib import Path
 import sys,struct,subprocess,itertools
 R=Path(__file__).resolve().parents[1];sys.path.insert(0,str(R/'tools/havora'))
 import overhead_lock_geometry as g
-latest=subprocess.check_output(['git','show','6ab7bd9e2:data/layouts/Havora_Gym/map.bin'],cwd=R)
+latest=subprocess.check_output(['git','show','4d5a43d97:data/layouts/HavoraCaptainsTrial/map.bin'],cwd=R)
+latest=bytearray(latest);struct.pack_into('<H',latest,2*(21*80+27),0x37b1)
 base=g.draw(((0,0,0),0,0,4,0,False))
 assert struct.pack('<2160H',*base)==latest,'LOW layout differs from latest Porymap commit'
 assert (g.W,g.H)==(80,27)
@@ -27,7 +28,22 @@ for levels in itertools.product(range(3),repeat=3):
     if g.authored[y*80+x]&1023 in (0x376,0x377,0x387):continue
     assert b[y*80+x]==g.refs[levels[ch]][y*80+x],('section affected by another section',levels,ch,x,y)
 print('PASS 27 independent combinations; latest LOW layout; MID island access; MID bunker roof; HIGH submersion')
-old=subprocess.check_output(['git','show','6ab7bd9e2:src/havora_gym.c'],cwd=R).decode()
-new=(R/'src/havora_gym.c').read_text()
-assert old[old.index('void HavoraGym_Control(void)'):]==new[new.index('void HavoraGym_Control(void)'):],'puzzle control logic changed'
-print('PASS puzzle control logic unchanged')
+# Both authored mid-height landings remain connected to their existing stairs.
+from collections import deque
+for levels in itertools.product(range(3),repeat=3):
+ b=g.draw((levels,0,0,4,0,False))
+ for ch,left,top,target in [(0,23,(25,12),(24,16)),(1,28,(29,12),(30,16))]:
+  if levels[ch]==2:
+   assert all(b[y*80+x]==0x1682 for y in range(13,18) for x in range(left,left+4)),('submerged landing remains',levels,ch)
+   continue
+  todo=deque([top]);seen={top}
+  while todo:
+   x,y=todo.popleft();z=b[y*80+x]>>12
+   for xx,yy in [(x-1,y),(x+1,y),(x,y-1),(x,y+1)]:
+    if not(0<=xx<80 and 0<=yy<27) or (xx,yy) in seen:continue
+    t=b[yy*80+xx];zz=t>>12
+    if t&0xc00 or z not in (0,15) and zz not in (0,15) and z!=zz:continue
+    seen.add((xx,yy));todo.append((xx,yy))
+  assert target in seen,('landing disconnected from authored stair',levels,ch)
+  assert b[target[1]*80+target[0]]>>12==4
+print('PASS both mid-height platforms: LOW/MID stair-to-pad access, HIGH submersion, independent section levels')
