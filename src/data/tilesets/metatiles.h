@@ -369,3 +369,6 @@ const u32 gMetatileAttributes_HavoraGymPrimary[] = INCBIN_U32("data/tilesets/pri
 
 const u16 gMetatiles_HavoraGym[] = INCBIN_U16("data/tilesets/secondary/havora_gym/metatiles.bin");
 const u32 gMetatileAttributes_HavoraGym[] = INCBIN_U32("data/tilesets/secondary/havora_gym/metatile_attributes.bin");
+
+const u16 gMetatiles_Corvala[] = INCBIN_U16("data/tilesets/secondary/corvala/metatiles.bin");
+const u32 gMetatileAttributes_Corvala[] = INCBIN_U32("data/tilesets/secondary/corvala/metatile_attributes.bin");

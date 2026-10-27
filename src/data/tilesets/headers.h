@@ -1173,3 +1173,10 @@ const struct Tileset gTileset_HavoraGym = {
  .metatiles = gMetatiles_HavoraGym, .metatileAttributes = gMetatileAttributes_HavoraGym,
  .callback = InitTilesetAnim_HavoraCity,
 };
+
+const struct Tileset gTileset_Corvala = {
+ .isCompressed = TRUE, .isSecondary = TRUE,
+ .tiles = gTilesetTiles_Corvala, .palettes = gTilesetPalettes_Corvala,
+ .metatiles = gMetatiles_Corvala, .metatileAttributes = gMetatileAttributes_Corvala,
+ .callback = NULL,
+};

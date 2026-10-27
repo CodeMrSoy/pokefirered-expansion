@@ -4396,12 +4396,12 @@
     {
       "id": "LAYOUT_CORVALA_TOWN",
       "name": "Corvala_Town_Layout",
-      "width": 24,
-      "height": 24,
+      "width": 56,
+      "height": 60,
       "border_width": 2,
       "border_height": 2,
       "primary_tileset": "gTileset_General",
-      "secondary_tileset": "gTileset_CinnabarIsland",
+      "secondary_tileset": "gTileset_Corvala",
       "border_filepath": "data/layouts/Corvala_Town/border.bin",
       "blockdata_filepath": "data/layouts/Corvala_Town/map.bin"
     },

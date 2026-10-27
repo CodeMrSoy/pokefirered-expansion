@@ -2122,3 +2122,23 @@ const u16 gTilesetPalettes_HavoraGym[][16] = {
  INCBIN_U16("data/tilesets/secondary/havora_gym/palettes/14.gbapal"),
  INCBIN_U16("data/tilesets/secondary/havora_gym/palettes/15.gbapal"),
 };
+
+const u32 gTilesetTiles_Corvala[] = INCBIN_U32("data/tilesets/secondary/corvala/tiles.4bpp.lz");
+const u16 gTilesetPalettes_Corvala[][16] = {
+ INCBIN_U16("data/tilesets/secondary/corvala/palettes/00.gbapal"),
+ INCBIN_U16("data/tilesets/secondary/corvala/palettes/01.gbapal"),
+ INCBIN_U16("data/tilesets/secondary/corvala/palettes/02.gbapal"),
+ INCBIN_U16("data/tilesets/secondary/corvala/palettes/03.gbapal"),
+ INCBIN_U16("data/tilesets/secondary/corvala/palettes/04.gbapal"),
+ INCBIN_U16("data/tilesets/secondary/corvala/palettes/05.gbapal"),
+ INCBIN_U16("data/tilesets/secondary/corvala/palettes/06.gbapal"),
+ INCBIN_U16("data/tilesets/secondary/corvala/palettes/07.gbapal"),
+ INCBIN_U16("data/tilesets/secondary/corvala/palettes/08.gbapal"),
+ INCBIN_U16("data/tilesets/secondary/corvala/palettes/09.gbapal"),
+ INCBIN_U16("data/tilesets/secondary/corvala/palettes/10.gbapal"),
+ INCBIN_U16("data/tilesets/secondary/corvala/palettes/11.gbapal"),
+ INCBIN_U16("data/tilesets/secondary/corvala/palettes/12.gbapal"),
+ INCBIN_U16("data/tilesets/secondary/corvala/palettes/13.gbapal"),
+ INCBIN_U16("data/tilesets/secondary/corvala/palettes/14.gbapal"),
+ INCBIN_U16("data/tilesets/secondary/corvala/palettes/15.gbapal"),
+};
