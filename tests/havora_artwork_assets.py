@@ -1,5 +1,5 @@
 """Protect original tile assets and the latest Porymap-authored default."""
-import subprocess,struct,itertools,sys
+import subprocess,struct,itertools,sys,json
 from pathlib import Path
 from io import BytesIO
 from PIL import Image
@@ -23,7 +23,13 @@ for levels in itertools.product(range(3),repeat=3):
  b=geo.draw((levels,0,0,4,0,False));assert len(b)==geo.W*geo.H and all(0<=v<65536 for v in b)
 b=geo.draw(((0,0,0),0,0,4,0,False))
 expected=bytearray(subprocess.check_output(['git','show','4d5a43d97:data/layouts/HavoraCaptainsTrial/map.bin'],cwd=R));struct.pack_into('<H',expected,2*(21*80+27),0x37b1)
-assert (R/'data/layouts/Havora_Gym/authored.bin').read_bytes()==expected,'unapproved baseline change beyond four-tile gate correction'
+manifest=json.loads((R/'tools/havora/tidal_trial.json').read_text())
+tile={'RED':0x300,'BLUE':0x301,'YELLOW':0x302,'GREEN':0x303}
+for p in manifest['platforms']:
+ for (x,y),color in zip(p['switches'],p['switch_colors']):
+  i=2*(y*80+x);old=struct.unpack_from('<H',expected,i)[0]
+  struct.pack_into('<H',expected,i,(old&~1023)|tile[color])
+assert (R/'data/layouts/Havora_Gym/authored.bin').read_bytes()==expected,'authored baseline differs beyond approved gate and switch-color updates'
 assert all(v&1023!=0x318 for v in b),'generated bridge/gallery remains'
 assert struct.pack('<'+'H'*len(b),*b)==(R/'data/layouts/Havora_Gym/map.bin').read_bytes()
 print('PASS all 27 independent height combinations; all-LOW default retains latest authored layout without generated paths')

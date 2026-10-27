@@ -7,6 +7,9 @@ from tidal_color_rules import apply_switch
 import overhead_lock_geometry as g
 from boat_routes import route,water_map,dam_open
 j=json.loads((R/'tools/havora/tidal_trial.json').read_text());P=j['platforms'];L=j['links'];colors={0x300:'red',0x301:'blue',0x302:'yellow',0x303:'green'}
+for p in P:
+ actual=[colors[g.authored[y*80+x]&1023] for x,y in p['switches']]
+ assert actual==[c.lower() for c in p['switch_colors']],(p['name'],actual,p['switch_colors'])
 start=((0,0,0),0,0,0);q=deque([start]);prev={start:None};actions={}
 def add(s,t,a):
  if t not in prev:prev[t]=s;actions[t]=a;q.append(t)
@@ -34,6 +37,7 @@ plan.reverse();out=R/'build/havora-tests/directional-solution.json';out.parent.m
 for a,s in plan:print(a,s[0])
 assert all(any(a[0]=='battle' and a[1]==n for a,s in plan) for n in range(7))
 assert all(any(a[0]=='switch' and a[1]==n for a,s in plan) for n in range(7))
+assert len(plan)==24,('switch-color challenge solution length changed',len(plan))
 for l in L:
  assert l['clearance']&P[l['from']]['victory']
 assert any(l['source_label']=='AL1' and l['destination_label']=='AR2' for l in L)
@@ -44,4 +48,4 @@ for p in P:
  assert o['trainer_type']=='TRAINER_TYPE_NORMAL' and o['movement_type'] in ['MOVEMENT_TYPE_FACE_LEFT','MOVEMENT_TYPE_FACE_RIGHT']
 scripts=(R/'data/maps/Havora_Gym/scripts.inc').read_text()
 for p in P:assert scripts.split('HavoraTrial_'+p['trainer']+'::\n',1)[1].lstrip().startswith('trainerbattle_double')
-print('PASS complete directional solution:',len(plan),'actions;',len(prev),'reachable states; all seven battles/switch stations required; sight scripts parse correctly')
+print('PASS complete 24-action color puzzle:',len(prev),'reachable states; varied switch colors match authored tiles; all seven battles/switch stations required; sight scripts parse correctly')

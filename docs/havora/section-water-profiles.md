@@ -41,7 +41,8 @@ victories and crest flags are unaffected.
 
 ## Source data
 
-- `authored.bin`: preserved latest Porymap LOW baseline.
+- `authored.bin`: latest Porymap LOW baseline plus the approved per-station
+  switch color artwork.
 - `reference_states/all-low.bin`, `all-mid.bin`, `all-high.bin`: complete height
   snapshots, including water, masonry, furnishings and submerged collisions.
 - `overhead_lock_geometry.py`: combines those independent section profiles and

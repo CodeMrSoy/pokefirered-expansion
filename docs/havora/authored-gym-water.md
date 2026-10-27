@@ -40,14 +40,18 @@ water-level challenge. All seven crews guard Eirik's LOW bunker.
 
 The new rules keep these artwork profiles. A/B's lower platforms are MID-height;
 C's crossing is LOW-height. Gauge panels offer reset/return without losing
-victories. Command 26 remains an emulator-only independent water preview.
+victories. Switch colors now vary by station; the approved color assignments are
+listed in `directional-tidal-trial.md` and recorded in the authored layout and
+each height snapshot. Command 26 remains an emulator-only independent water preview.
 
 ## Preserve subsequent Porymap edits
 
 `map.bin` is the compiled all-LOW default and is authoritative on map entry,
 resume and reset. The renderer overlays only changes from this default; it does
 not rebuild galleries, gates, boat approaches or cliff placements. Subsequent
-Porymap edits to the default map therefore survive normal play.
+Porymap edits to the default map therefore survive normal play. The switch tile
+colors are the one intentional artwork update; their corresponding tile IDs are
+kept aligned across all authored height snapshots.
 
 The explicit overlay builder still reads the preserved `authored.bin` snapshot
 and the three reference silhouettes. Do not run that builder over new Porymap
