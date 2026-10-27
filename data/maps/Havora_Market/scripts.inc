@@ -263,3 +263,23 @@ Havora_Market_MeteoriteNoMoneyText::
 	.string "You don't have enough money.$"
 Havora_Market_MeteoriteNoRoomText::
 	.string "Make room in your BAG first.$"
+
+EventScript_HavoraDoorLocked::
+	lockall
+	msgbox Havora_DoorLocked_Text
+	releaseall
+	end
+Havora_DoorLocked_Text::
+	.string "It's locked.$"
+
+Havora_Market_WalkingResident1::
+	msgbox Havora_Market_WalkingResident1_Text, MSGBOX_NPC
+	end
+Havora_Market_WalkingResident1_Text::
+	.string "I came for a bottle of milk.\nSomehow I bought berries\nfor the whole week too.$"
+
+Havora_Market_WalkingResident2::
+	msgbox Havora_Market_WalkingResident2_Text, MSGBOX_NPC
+	end
+Havora_Market_WalkingResident2_Text::
+	.string "My partner knows every stall.\nI just follow the smell\nof something good to eat.$"

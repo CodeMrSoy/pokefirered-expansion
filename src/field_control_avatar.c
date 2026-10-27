@@ -69,6 +69,7 @@ static bool8 IsWarpMetatileBehavior(u16 metatileBehavior);
 static void SetupWarp(struct MapHeader * mapHeader, s8 warpId, struct MapPosition * position);
 static bool8 IsArrowWarpMetatileBehavior(u16 metatileBehavior, u8 playerDirection);
 static s8 GetWarpEventAtMapPosition(struct MapHeader * mapHeader, struct MapPosition * mapPosition);
+static bool8 TryLockedBuildingDoor(struct MapPosition *position, u8 direction);
 static bool8 TryDoorWarp(struct MapPosition * position, u16 metatileBehavior, u8 playerDirection);
 static s8 GetWarpEventAtPosition(struct MapHeader * mapHeader, u16 x, u16 y, u8 z);
 static const u8 *GetCoordEventScriptAtPosition(struct MapHeader * mapHeader, u16 x, u16 y, u8 z);
@@ -293,7 +294,8 @@ int ProcessPlayerFieldInput(struct FieldInput *input)
 
     if (input->heldDirection2 && input->dpadDirection == playerDirection)
     {
-        if (TryDoorWarp(&position, metatileBehavior, playerDirection) == TRUE)
+        if (TryLockedBuildingDoor(&position, playerDirection)
+         || TryDoorWarp(&position, metatileBehavior, playerDirection) == TRUE)
         {
             gFieldInputRecord.heldDirection2 = TRUE;
             return TRUE;
@@ -1081,6 +1083,17 @@ static void SetupWarp(struct MapHeader *unused, s8 warpEventId, struct MapPositi
         if (mapHeader->events->warps[warpEvent->warpId].mapNum == MAP_NUM(MAP_DYNAMIC))
             SetDynamicWarp(mapHeader->events->warps[warpEventId].warpId, gSaveBlock1Ptr->location.mapGroup, gSaveBlock1Ptr->location.mapNum, warpEventId);
     }
+}
+
+// A locked-door background event intercepts the same UP input as a normal
+// entrance. The player stays outside; no door animation or map warp is started.
+static bool8 TryLockedBuildingDoor(struct MapPosition *position, u8 direction)
+{
+    if (direction != DIR_NORTH
+     || GetSignpostScriptAtMapPosition(position) != EventScript_HavoraDoorLocked)
+        return FALSE;
+    ScriptContext_SetupScript(EventScript_HavoraDoorLocked);
+    return TRUE;
 }
 
 static bool8 TryDoorWarp(struct MapPosition *position, u16 metatileBehavior, u8 direction)

@@ -58,3 +58,15 @@ Havora_Harbor_BeaconKeeper::
 
 Havora_Harbor_BeaconKeeper_Text::
 	.string "This light guides ships home.\nWe keep it burning every night.$"
+
+Havora_Harbor_WalkingResident1::
+	msgbox Havora_Harbor_WalkingResident1_Text, MSGBOX_NPC
+	end
+Havora_Harbor_WalkingResident1_Text::
+	.string "My shift is over. Time for\na warm drink and a seat\nthat isn't moving.$"
+
+Havora_Harbor_WalkingResident2::
+	msgbox Havora_Harbor_WalkingResident2_Text, MSGBOX_NPC
+	end
+Havora_Harbor_WalkingResident2_Text::
+	.string "I'm waiting for my sister.\nShe says she packed lightly.\pI'll believe it when I see\nher suitcase.$"

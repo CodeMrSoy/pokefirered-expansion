@@ -236,48 +236,76 @@
       "trainer_sight_or_berry_tree_id": "0",
       "script": "Havora_Market_BattleBerries",
       "flag": "0"
+    },
+    {
+      "type": "object",
+      "graphics_id": "OBJ_EVENT_GFX_WOMAN_2",
+      "x": 18,
+      "y": 31,
+      "elevation": 5,
+      "movement_type": "MOVEMENT_TYPE_WANDER_UP_AND_DOWN",
+      "movement_range_x": 0,
+      "movement_range_y": 1,
+      "trainer_type": "TRAINER_TYPE_NONE",
+      "trainer_sight_or_berry_tree_id": "0",
+      "script": "Havora_Market_WalkingResident1",
+      "flag": "0"
+    },
+    {
+      "type": "object",
+      "graphics_id": "OBJ_EVENT_GFX_MAN",
+      "x": 31,
+      "y": 37,
+      "elevation": 5,
+      "movement_type": "MOVEMENT_TYPE_WANDER_UP_AND_DOWN",
+      "movement_range_x": 0,
+      "movement_range_y": 1,
+      "trainer_type": "TRAINER_TYPE_NONE",
+      "trainer_sight_or_berry_tree_id": "0",
+      "script": "Havora_Market_WalkingResident2",
+      "flag": "0"
     }
   ],
   "warp_events": [
     {
       "x": 8,
       "y": 12,
-      "elevation": 4,
+      "elevation": 5,
       "dest_map": "MAP_HAVORA_SHIPWRIGHT_HOUSE",
       "dest_warp_id": "0"
     },
     {
       "x": 7,
       "y": 35,
-      "elevation": 4,
+      "elevation": 5,
       "dest_map": "MAP_HAVORA_WEAVER_HOUSE",
       "dest_warp_id": "0"
     },
     {
       "x": 12,
       "y": 20,
-      "elevation": 4,
+      "elevation": 5,
       "dest_map": "MAP_HAVORA_FISHER_HOUSE",
       "dest_warp_id": "0"
     },
     {
       "x": 32,
       "y": 15,
-      "elevation": 4,
+      "elevation": 5,
       "dest_map": "MAP_HAVORA_TRADER_HOUSE",
       "dest_warp_id": "0"
     },
     {
       "x": 23,
       "y": 3,
-      "elevation": 4,
+      "elevation": 5,
       "dest_map": "MAP_HAVORA_TRADE_HALL",
       "dest_warp_id": "0"
     },
     {
       "x": 26,
       "y": 26,
-      "elevation": 4,
+      "elevation": 5,
       "dest_map": "MAP_HAVORA_OUTFITTERS",
       "dest_warp_id": "0"
     },
@@ -291,11 +319,90 @@
     {
       "x": 24,
       "y": 52,
-      "elevation": 3,
+      "elevation": 4,
+      "dest_map": "MAP_CELADON_CITY_DEPARTMENT_STORE_1F",
+      "dest_warp_id": "4"
+    },
+    {
+      "x": 19,
+      "y": 52,
+      "elevation": 4,
+      "dest_map": "MAP_CELADON_CITY_DEPARTMENT_STORE_1F",
+      "dest_warp_id": "1"
+    },
+    {
+      "x": 20,
+      "y": 52,
+      "elevation": 4,
       "dest_map": "MAP_CELADON_CITY_DEPARTMENT_STORE_1F",
       "dest_warp_id": "4"
     }
   ],
   "coord_events": [],
-  "bg_events": []
+  "bg_events": [
+    {
+      "type": "sign",
+      "x": 32,
+      "y": 3,
+      "elevation": 0,
+      "player_facing_dir": "BG_EVENT_PLAYER_FACING_NORTH",
+      "script": "EventScript_HavoraDoorLocked"
+    },
+    {
+      "type": "sign",
+      "x": 23,
+      "y": 9,
+      "elevation": 0,
+      "player_facing_dir": "BG_EVENT_PLAYER_FACING_NORTH",
+      "script": "EventScript_HavoraDoorLocked"
+    },
+    {
+      "type": "sign",
+      "x": 32,
+      "y": 9,
+      "elevation": 0,
+      "player_facing_dir": "BG_EVENT_PLAYER_FACING_NORTH",
+      "script": "EventScript_HavoraDoorLocked"
+    },
+    {
+      "type": "sign",
+      "x": 23,
+      "y": 15,
+      "elevation": 0,
+      "player_facing_dir": "BG_EVENT_PLAYER_FACING_NORTH",
+      "script": "EventScript_HavoraDoorLocked"
+    },
+    {
+      "type": "sign",
+      "x": 26,
+      "y": 20,
+      "elevation": 0,
+      "player_facing_dir": "BG_EVENT_PLAYER_FACING_NORTH",
+      "script": "EventScript_HavoraDoorLocked"
+    },
+    {
+      "type": "sign",
+      "x": 12,
+      "y": 26,
+      "elevation": 0,
+      "player_facing_dir": "BG_EVENT_PLAYER_FACING_NORTH",
+      "script": "EventScript_HavoraDoorLocked"
+    },
+    {
+      "type": "sign",
+      "x": 33,
+      "y": 29,
+      "elevation": 0,
+      "player_facing_dir": "BG_EVENT_PLAYER_FACING_NORTH",
+      "script": "EventScript_HavoraDoorLocked"
+    },
+    {
+      "type": "sign",
+      "x": 12,
+      "y": 35,
+      "elevation": 0,
+      "player_facing_dir": "BG_EVENT_PLAYER_FACING_NORTH",
+      "script": "EventScript_HavoraDoorLocked"
+    }
+  ]
 }

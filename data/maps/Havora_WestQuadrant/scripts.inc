@@ -105,3 +105,15 @@ Havora_WestQuadrant_GymSign::
 
 Havora_WestQuadrant_GymSign_Text::
 	.string "HAVORA GYM\nPartner practice court to the east.$"
+
+Havora_WestQuadrant_WalkingResident1::
+	msgbox Havora_WestQuadrant_WalkingResident1_Text, MSGBOX_NPC
+	end
+Havora_WestQuadrant_WalkingResident1_Text::
+	.string "The dock crews are noisy,\nbut they look after us.\pSomeone always carries my\nshopping up these stairs.$"
+
+Havora_WestQuadrant_WalkingResident2::
+	msgbox Havora_WestQuadrant_WalkingResident2_Text, MSGBOX_NPC
+	end
+Havora_WestQuadrant_WalkingResident2_Text::
+	.string "I can tell which ferry is\ncoming by its horn.\pThat one? Breakfast is late!$"

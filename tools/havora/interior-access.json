@@ -1,0 +1,227 @@
+{
+  "private_interiors": {
+    "Havora_ShipwrightHouse": "Shipwright household and workshop",
+    "Havora_FisherHouse": "Fishing family and local advice",
+    "Havora_CliffHouse_2": "Dockworker family home",
+    "Havora_NorthHouse_5": "Stargazer household",
+    "Havora_WeaverHouse": "Weaving couple",
+    "Havora_TraderHouse": "Solo traveling merchant",
+    "Havora_CliffHouse_1": "Family with a child",
+    "Havora_CliffHouse_3": "Baker and daughter",
+    "Havora_CliffHouse_4": "Retired couple",
+    "Havora_CliffHouse_5": "Solo Gym enthusiast"
+  },
+  "locked_doors": [
+    {
+      "map": "Havora_Market",
+      "x": 32,
+      "y": 3
+    },
+    {
+      "map": "Havora_Market",
+      "x": 23,
+      "y": 9
+    },
+    {
+      "map": "Havora_Market",
+      "x": 32,
+      "y": 9
+    },
+    {
+      "map": "Havora_Market",
+      "x": 23,
+      "y": 15
+    },
+    {
+      "map": "Havora_Market",
+      "x": 26,
+      "y": 20
+    },
+    {
+      "map": "Havora_Market",
+      "x": 12,
+      "y": 26
+    },
+    {
+      "map": "Havora_Market",
+      "x": 33,
+      "y": 29
+    },
+    {
+      "map": "Havora_Market",
+      "x": 12,
+      "y": 35
+    }
+  ],
+  "return_only_warps": [],
+  "removed_ghost_warps": [
+    {
+      "map": "Havora_NorthQuadrant",
+      "x": 77,
+      "y": 19,
+      "elevation": 4,
+      "dest_map": "MAP_HAVORA_NORTH_HOUSE_3",
+      "dest_warp_id": "0"
+    },
+    {
+      "map": "Havora_NorthQuadrant",
+      "x": 70,
+      "y": 20,
+      "elevation": 4,
+      "dest_map": "MAP_HAVORA_NORTH_LODGE",
+      "dest_warp_id": "0"
+    }
+  ],
+  "household_pokemon": [
+    {
+      "map": "Havora_CliffHouse_4",
+      "species": "PIDGEY",
+      "script": "Havora_CliffHouse_4_Pokemon"
+    },
+    {
+      "map": "Havora_FisherHouse",
+      "species": "PSYDUCK",
+      "script": "Havora_FisherHouse_Pokemon"
+    },
+    {
+      "map": "Havora_CliffHouse_2",
+      "species": "MEOWTH",
+      "script": "Havora_CliffHouse_2_Pokemon"
+    },
+    {
+      "map": "Havora_CliffHouse_1",
+      "species": "MACHOP",
+      "script": "Havora_CliffHouse_1_Pokemon"
+    },
+    {
+      "map": "Havora_CliffHouse_3",
+      "species": "JIGGLYPUFF",
+      "script": "Havora_CliffHouse_3_Pokemon"
+    },
+    {
+      "map": "Havora_TraderHouse",
+      "species": "MEOWTH",
+      "script": "Havora_TraderHouse_Pokemon"
+    },
+    {
+      "map": "Havora_CliffHouse_5",
+      "species": "PIKACHU",
+      "script": "Havora_CliffHouse_5_Pokemon"
+    },
+    {
+      "map": "Havora_NorthHouse_5",
+      "species": "CLEFAIRY",
+      "script": "Havora_NorthHouse_5_Pokemon"
+    }
+  ],
+  "walking_residents": [
+    {
+      "map": "Havora_Harbor",
+      "script": "Havora_Harbor_WalkingResident1",
+      "spawn": [
+        25,
+        23
+      ],
+      "range": [
+        1,
+        0
+      ]
+    },
+    {
+      "map": "Havora_Harbor",
+      "script": "Havora_Harbor_WalkingResident2",
+      "spawn": [
+        12,
+        18
+      ],
+      "range": [
+        1,
+        0
+      ]
+    },
+    {
+      "map": "Havora_WestQuadrant",
+      "script": "Havora_WestQuadrant_WalkingResident1",
+      "spawn": [
+        10,
+        47
+      ],
+      "range": [
+        0,
+        1
+      ]
+    },
+    {
+      "map": "Havora_WestQuadrant",
+      "script": "Havora_WestQuadrant_WalkingResident2",
+      "spawn": [
+        14,
+        54
+      ],
+      "range": [
+        0,
+        1
+      ]
+    },
+    {
+      "map": "Havora_Market",
+      "script": "Havora_Market_WalkingResident1",
+      "spawn": [
+        18,
+        31
+      ],
+      "range": [
+        0,
+        1
+      ]
+    },
+    {
+      "map": "Havora_Market",
+      "script": "Havora_Market_WalkingResident2",
+      "spawn": [
+        31,
+        37
+      ],
+      "range": [
+        0,
+        1
+      ]
+    },
+    {
+      "map": "Havora_CoastalCliffs",
+      "script": "Havora_CoastalCliffs_WalkingResident1",
+      "spawn": [
+        1,
+        6
+      ],
+      "range": [
+        0,
+        1
+      ]
+    },
+    {
+      "map": "Havora_CoastalCliffs",
+      "script": "Havora_CoastalCliffs_WalkingResident2",
+      "spawn": [
+        5,
+        2
+      ],
+      "range": [
+        1,
+        0
+      ]
+    }
+  ],
+  "household_types": {
+    "Havora_ShipwrightHouse": "solo",
+    "Havora_FisherHouse": "family",
+    "Havora_CliffHouse_2": "couple",
+    "Havora_NorthHouse_5": "couple",
+    "Havora_WeaverHouse": "couple",
+    "Havora_TraderHouse": "solo",
+    "Havora_CliffHouse_1": "family",
+    "Havora_CliffHouse_3": "family",
+    "Havora_CliffHouse_4": "couple",
+    "Havora_CliffHouse_5": "solo"
+  }
+}
