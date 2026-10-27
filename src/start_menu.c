@@ -479,9 +479,8 @@ static void OpenStartMenuWithFollowupFunc(TaskFunc func)
 
 static bool8 FieldCB2_DrawStartMenu(void)
 {
-    if (!DoDrawStartMenu())
-        return FALSE;
-    FadeTransition_FadeInOnReturnToStartMenu();
+    ShowStartMenu();
+    FadeInFromBlack();
     return TRUE;
 }
 
@@ -518,7 +517,7 @@ void ShowStartMenu(void)
         PlayerFreeze();
         StopPlayerAvatar();
     }
-    OpenStartMenuWithFollowupFunc(Task_StartMenuHandleInput);
+    ScriptContext_SetupScript(EventScript_AccessPokeGlass);
     LockPlayerFieldControls();
 }
 
@@ -857,8 +856,11 @@ static bool8 SaveDialog_Wait60FramesThenCheckAButtonHeld(void)
 
 static u8 SaveDialogCB_PrintAskSaveText(void)
 {
-    ClearStdWindowAndFrame(GetStartMenuWindowId(), FALSE);
-    RemoveStartMenuWindow();
+    if (GetStartMenuWindowId() != WINDOW_NONE)
+    {
+        ClearStdWindowAndFrame(GetStartMenuWindowId(), FALSE);
+        RemoveStartMenuWindow();
+    }
     DestroyTimeWindow();
     if (DEBUG_OVERWORLD_MENU != TRUE)
         DestroyHelpMessageWindow(0);

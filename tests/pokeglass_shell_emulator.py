@@ -24,7 +24,6 @@ def assert_glass_window():
     assert not reg(0x4a) & 0x2020  # Opaque outside the glass.
 
 m.press(3)
-m.press(8)
 assert_glass_window()
 hub = shell_image()
 assert tuple(hub[18,13]) == (255, 40, 57), 'Red grip is blended with the map'

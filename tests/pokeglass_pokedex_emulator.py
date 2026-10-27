@@ -43,7 +43,6 @@ def data():
 def open_app():
     global hub_shell
     m.press(3)
-    m.press(8)
     assert m.read(m.symbols['sHubCursor'], 1) == b'\x00'
     hub_shell = np.asarray(m.screen)[shell_mask].copy()
     m.press(8)

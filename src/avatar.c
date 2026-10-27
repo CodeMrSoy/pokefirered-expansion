@@ -116,13 +116,3 @@ u16 GetCurrentAvatarBackPic(void)
 {
     return sBackPics[GetCurrentAvatarLook()];
 }
-
-void ApplyAvatarLookToField(u8 look)
-{
-    struct ObjectEvent *objectEvent = &gObjectEvents[gPlayerAvatar.objectEventId];
-    SetCurrentAvatarLook(look);
-    ObjectEventSetGraphicsId(objectEvent, GetPlayerAvatarGraphicsIdByCurrentState());
-    // An idle sprite may have ended its animation. Reload its first frame now,
-    // rather than showing the previous look's tiles until the player moves.
-    ObjectEventTurn(objectEvent, objectEvent->facingDirection);
-}

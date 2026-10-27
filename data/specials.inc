@@ -473,4 +473,5 @@ gSpecials::
 	def_special StartPokeGlassIntro
 	def_special OpenPokeGlassWardrobe
 	def_special OpenPokeGlassStorage
+	def_special OpenPokeGlassSystemApp
 gSpecialsEnd::

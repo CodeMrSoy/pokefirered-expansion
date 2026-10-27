@@ -1,6 +1,15 @@
 #include "global.h"
 #include "quantum_cleanup.h"
 #include "avatar.h"
+#include "item_menu.h"
+#include "trainer_card.h"
+#include "option_menu.h"
+#include "debug.h"
+#include "dexnav.h"
+#include "safari_zone.h"
+#include "start_menu.h"
+#include "link.h"
+#include "link_rfu.h"
 #include "data.h"
 #include "gflib.h"
 #include "menu.h"
@@ -237,7 +246,8 @@ static EWRAM_DATA u16 sHubBlend[8] = {0};
 static EWRAM_DATA u16 sHubPalette[32] = {0};
 static const u8 sHubTitle[] = _("POKéGLASS");
 static const u8 sHubLabels[][16] = {
-    _("Pokédex"), _("Party"), _("Storage"), _("Stats"), _("Map"), _("Wardrobe")
+    _("Pokédex"), _("Party"), _("Storage"), _("Stats"), _("Map"), _("Bag"),
+    _("Trainer Card"), _("Options"), _("Save"), _("Debug"), _("DexNav"), _("Retire")
 };
 static const struct WindowTemplate sHubTemplate = {
     .bg = 0, .tilemapLeft = 1, .tilemapTop = 1,
@@ -338,32 +348,94 @@ static void DrawHubIcon(u8 app, u16 x, u16 y)
         HubRect(8, x + 9, y + 13, 6, 3);
         HubRect(8, x + 11, y + 16, 2, 3);
         break;
-    case 5: // Wardrobe: a shirt with sleeves and an inset collar.
-        HubRect(8, x + 6, y + 2, 12, 4);
-        HubRect(8, x + 2, y + 5, 20, 7);
-        HubRect(8, x, y + 7, 24, 4);
-        HubRect(8, x + 6, y + 11, 12, 12);
-        HubRect(5, x + 9, y + 2, 6, 4);
+    case 5: // Bag.
+        HubRect(8, x + 7, y + 1, 10, 4);
+        HubRect(5, x + 9, y + 2, 6, 3);
+        HubRect(8, x + 3, y + 5, 18, 18);
+        HubRect(5, x + 6, y + 13, 12, 7);
+        HubRect(8, x + 10, y + 15, 4, 2);
+        break;
+    case 6: // Trainer ID card.
+        HubRect(8, x, y + 3, 24, 18);
+        HubRect(5, x + 2, y + 5, 20, 14);
+        HubRect(8, x + 4, y + 7, 5, 5);
+        HubRect(8, x + 3, y + 13, 7, 4);
+        HubRect(8, x + 13, y + 8, 7, 2);
+        HubRect(8, x + 13, y + 13, 7, 2);
+        break;
+    case 7: // Options: sliders.
+        HubRect(8, x + 2, y + 4, 20, 2);
+        HubRect(8, x + 2, y + 11, 20, 2);
+        HubRect(8, x + 2, y + 18, 20, 2);
+        HubRect(8, x + 6, y + 1, 4, 8);
+        HubRect(8, x + 15, y + 8, 4, 8);
+        HubRect(8, x + 9, y + 15, 4, 8);
+        break;
+    case 8: // Save: disk.
+        HubRect(8, x + 2, y + 1, 20, 22);
+        HubRect(5, x + 6, y + 1, 12, 8);
+        HubRect(8, x + 13, y + 2, 3, 5);
+        HubRect(5, x + 6, y + 14, 12, 8);
+        break;
+    case 9: // Debug: bug.
+        HubRect(8, x + 7, y + 5, 10, 16);
+        HubRect(8, x + 9, y + 1, 6, 3);
+        HubRect(5, x + 11, y + 7, 2, 12);
+        HubRect(8, x + 2, y + 7, 20, 2);
+        HubRect(8, x + 2, y + 13, 20, 2);
+        HubRect(8, x + 2, y + 19, 20, 2);
+        break;
+    case 10: // DexNav: radar.
+        HubRect(8, x + 2, y + 2, 20, 20);
+        HubRect(5, x + 4, y + 4, 16, 16);
+        HubRect(8, x + 11, y + 5, 2, 8);
+        HubRect(8, x + 11, y + 11, 8, 2);
+        HubRect(8, x + 7, y + 15, 3, 3);
+        break;
+    case 11: // Retire: exit door.
+        HubRect(8, x + 2, y + 1, 13, 22);
+        HubRect(5, x + 5, y + 4, 8, 17);
+        HubRect(8, x + 10, y + 11, 14, 3);
+        HubRect(8, x + 19, y + 8, 3, 9);
         break;
     }
 }
 
-static void DrawHubApp(u8 i, bool8 upload)
+// Stable script IDs, arranged in two rows on each phone-style page.
+static const u8 sHubPages[2][6] = {{0, 1, 2, 4, 3, 5}, {6, 7, 8, 9, 10, 11}};
+
+static bool8 HubAppAvailable(u8 app)
+{
+    if (IsUpdateLinkStateCBActive() || InUnionRoom())
+        return app == 1 || app == 5 || app == 6 || app == 7;
+    if (app == 9) return DEBUG_OVERWORLD_MENU == TRUE;
+    if (app == 10) return DEXNAV_ENABLED && DN_FLAG_DEXNAV_GET != 0 && FlagGet(DN_FLAG_DEXNAV_GET);
+    if (app == 11) return GetSafariZoneFlag();
+    if (app == 8) return !GetSafariZoneFlag() && !IsUpdateLinkStateCBActive() && !InUnionRoom();
+    return TRUE;
+}
+
+static u8 HubSlot(void)
+{
+    u8 i;
+    for (i = 0; i < 6; i++)
+        if (sHubPages[sHubCursor >= 6][i] == sHubCursor) return i;
+    return 0;
+}
+
+static void DrawHubApp(u8 slot)
 {
     static const u8 textColors[] = {0, 8, 4};
-    // Preserve script app IDs: Pokédex, Party, Storage / Map, Stats, Wardrobe.
-    static const u8 positions[6][2] = {{18,34}, {82,34}, {146,34}, {82,80}, {18,80}, {146,80}};
-    u16 x = positions[i][0], y = positions[i][1];
-    bool8 selected = i == sHubCursor;
-    HubRect(selected ? 8 : 6, x, y, 60, 44);
-    HubRect(selected ? 5 : 4, x + 2, y + 2, 56, 40);
-    DrawHubIcon(i, x + 18, y + 3);
+    u8 app = sHubPages[sHubCursor >= 6][slot];
+    u16 x = 18 + (slot % 3) * 64, y = 32 + (slot / 3) * 44;
+    bool8 selected = app == sHubCursor;
+    if (!HubAppAvailable(app)) return;
+    HubRect(selected ? 8 : 6, x, y, 60, 42);
+    HubRect(selected ? 5 : 4, x + 2, y + 2, 56, 38);
+    DrawHubIcon(app, x + 18, y + 2);
     AddTextPrinterParameterized3(sHubWindow, FONT_SMALL,
-        x + (60 - GetStringWidth(FONT_SMALL, sHubLabels[i], 0)) / 2,
-        y + 28, textColors, TEXT_SKIP_DRAW, sHubLabels[i]);
-    if (upload)
-        CopyWindowRectToVram(sHubWindow, COPYWIN_GFX, x / 8, y / 8,
-            (x + 60 + 7) / 8 - x / 8, (y + 44 + 7) / 8 - y / 8);
+        x + (60 - GetStringWidth(FONT_SMALL, sHubLabels[app], 0)) / 2,
+        y + 26, textColors, TEXT_SKIP_DRAW, sHubLabels[app]);
 }
 
 static void DrawTabletShell(u8 *pixels)
@@ -551,7 +623,12 @@ static void DrawHub(void)
     HubRect(8, 191, 20, 16, 7);
     HubRect(4, 192, 21, 14, 5);
     HubRect(6, 193, 22, 10, 3);
-    for (i = 0; i < 6; i++) DrawHubApp(i, FALSE);
+    for (i = 0; i < 6; i++) DrawHubApp(i);
+    // Two page dots and edge arrows keep horizontal paging discoverable.
+    HubRect(sHubCursor < 6 ? 8 : 6, 106, 121, 4, 3);
+    HubRect(sHubCursor >= 6 ? 8 : 6, 115, 121, 4, 3);
+    AddTextPrinterParameterized3(sHubWindow, FONT_SMALL, 15, 17, textColors, TEXT_SKIP_DRAW, COMPOUND_STRING("{LEFT_ARROW}"));
+    AddTextPrinterParameterized3(sHubWindow, FONT_SMALL, 35, 17, textColors, TEXT_SKIP_DRAW, COMPOUND_STRING("{RIGHT_ARROW}"));
     PutWindowTilemap(sHubWindow);
     CopyWindowToVram(sHubWindow, COPYWIN_FULL);
     if (sReturnCoverActive)
@@ -626,23 +703,44 @@ static void Task_PokeGlassHub(u8 taskId)
     }
     if (JOY_NEW(B_BUTTON) && !gTasks[taskId].data[0])
         gSpecialVar_Result = SCR_MENU_CANCEL;
-    else if (JOY_NEW(A_BUTTON))
+    else if (JOY_NEW(A_BUTTON) && HubAppAvailable(sHubCursor))
         gSpecialVar_Result = sHubCursor;
     else
     {
-        if (JOY_NEW(DPAD_UP))
-            sHubCursor = sHubCursor == 4 ? 0 : sHubCursor == 3 ? 1 : sHubCursor == 5 ? 2 : sHubCursor;
-        else if (JOY_NEW(DPAD_DOWN))
-            sHubCursor = sHubCursor == 0 ? 4 : sHubCursor == 1 ? 3 : sHubCursor == 2 ? 5 : sHubCursor;
-        else if (JOY_NEW(DPAD_LEFT))
-            sHubCursor = sHubCursor == 1 ? 0 : sHubCursor == 2 ? 1 : sHubCursor == 3 ? 4 : sHubCursor == 5 ? 3 : sHubCursor;
-        else if (JOY_NEW(DPAD_RIGHT))
-            sHubCursor = sHubCursor == 0 ? 1 : sHubCursor == 1 ? 2 : sHubCursor == 4 ? 3 : sHubCursor == 3 ? 5 : sHubCursor;
+        u8 slot = HubSlot(), page = sHubCursor >= 6, attempts;
+        s8 direction = JOY_NEW(DPAD_LEFT) ? -1 : JOY_NEW(DPAD_RIGHT) ? 1 : 0;
+        if (direction)
+        {
+            // Moving past either row's edge switches pages, preserving the row.
+            if (direction < 0)
+            {
+                if (slot % 3 == 0) { page ^= 1; slot += 2; }
+                else slot--;
+            }
+            else
+            {
+                if (slot % 3 == 2) { page ^= 1; slot -= 2; }
+                else slot++;
+            }
+            // Sparse pages still open when a whole row is unavailable.
+            for (attempts = 0; attempts < 6; attempts++)
+            {
+                if (HubAppAvailable(sHubPages[page][slot])) break;
+                slot = (slot + direction + 6) % 6;
+            }
+            sHubCursor = sHubPages[page][slot];
+        }
+        else if (JOY_NEW(DPAD_UP | DPAD_DOWN))
+        {
+            if (JOY_NEW(DPAD_UP) && slot >= 3) slot -= 3;
+            else if (JOY_NEW(DPAD_DOWN) && slot < 3) slot += 3;
+            if (HubAppAvailable(sHubPages[page][slot]))
+                sHubCursor = sHubPages[page][slot];
+        }
         if (oldCursor != sHubCursor)
         {
             PlaySE(SE_SELECT);
-            DrawHubApp(oldCursor, TRUE);
-            DrawHubApp(sHubCursor, TRUE);
+            DrawHub();
         }
         return;
     }
@@ -694,6 +792,9 @@ void ShowPokeGlassHub(bool8 ignoreBPress)
     if (!OpenTabletWindow())
         return;
     sTabletActive = TRUE;
+    if (!HubAppAvailable(sHubCursor))
+        for (sHubCursor = 0; sHubCursor < ARRAY_COUNT(sHubLabels); sHubCursor++)
+            if (HubAppAvailable(sHubCursor)) break;
     DrawHub();
     taskId = CreateTask(Task_PokeGlassHub, 80);
     if (taskId == TASK_NONE)
@@ -893,99 +994,10 @@ void ShowPokeGlassStats(void)
     }
 }
 
-#define TAG_POKEGLASS_WARDROBE 0xD110
-static EWRAM_DATA u8 sWardrobeLook = 0;
-static EWRAM_DATA u16 sWardrobePortrait = 0;
-
-static void DestroyWardrobePortrait(void)
-{
-    if (sWardrobePortrait != 0xFFFF)
-        FreeAndDestroyTrainerPicSprite(sWardrobePortrait);
-    FreeSpritePaletteByTag(TAG_POKEGLASS_WARDROBE);
-    sWardrobePortrait = 0xFFFF;
-}
-
-static void DrawWardrobePage(void)
-{
-    u8 i, palette;
-    u16 pic = GetAvatarFrontPic(sWardrobeLook);
-    DrawTabletShell((u8 *)GetWindowAttribute(sHubWindow, WINDOW_TILE_DATA));
-    StatsText(17, 16, COMPOUND_STRING("WARDROBE"));
-    StatsText(107, 35, GetAvatarLookName(sWardrobeLook));
-    StatsText(107, 49, GetAvatarLookStyle(sWardrobeLook));
-    StatsText(107, 72, sWardrobeLook == GetCurrentAvatarLook() ? COMPOUND_STRING("Currently worn") : COMPOUND_STRING("Preview"));
-    StatsText(107, 88, COMPOUND_STRING("Look"));
-    StatsNumber(148, 88, sWardrobeLook + 1);
-    StatsText(153, 88, COMPOUND_STRING("/"));
-    StatsNumber(164, 88, AVATAR_LOOK_COUNT);
-    for (i = 0; i < AVATAR_LOOK_COUNT; i++)
-        HubRect(i == sWardrobeLook ? 8 : 6, 107 + i * 14, 103, 6, 3);
-    StatsText(30, 114, COMPOUND_STRING("Left/Right: Look   A Wear   B Back"));
-    PutWindowTilemap(sHubWindow);
-    CopyWindowToVram(sHubWindow, COPYWIN_FULL);
-    DestroyWardrobePortrait();
-    palette = LoadSpritePaletteWithTag(gTrainerSprites[pic].palette.data, TAG_POKEGLASS_WARDROBE);
-    if (palette == 0xFF)
-        return;
-    sWardrobePortrait = CreateTrainerPicSprite(pic, TRUE, 65, 78, palette, TAG_NONE);
-    if (sWardrobePortrait < MAX_SPRITES)
-        gSprites[sWardrobePortrait].oam.priority = 0;
-    else
-    {
-        sWardrobePortrait = 0xFFFF;
-        FreeSpritePaletteByTag(TAG_POKEGLASS_WARDROBE);
-    }
-}
-
-static void Task_PokeGlassWardrobe(u8 taskId)
-{
-    u8 previous = sWardrobeLook;
-    if (gPaletteFade.active)
-        return;
-    if (gTasks[taskId].data[0] < 2)
-    {
-        gTasks[taskId].data[0]++;
-        return;
-    }
-    if (JOY_NEW(A_BUTTON | B_BUTTON))
-    {
-        PlaySE(SE_SELECT);
-        if (JOY_NEW(A_BUTTON))
-            ApplyAvatarLookToField(sWardrobeLook);
-        DestroyWardrobePortrait();
-        CloseHub();
-        gTasks[taskId].data[2] = 0;
-        gTasks[taskId].data[3] = FALSE;
-        gTasks[taskId].func = Task_CloseTablet;
-        return;
-    }
-    if (JOY_NEW(DPAD_LEFT))
-        sWardrobeLook = sWardrobeLook == 0 ? AVATAR_LOOK_COUNT - 1 : sWardrobeLook - 1;
-    else if (JOY_NEW(DPAD_RIGHT))
-        sWardrobeLook = (sWardrobeLook + 1) % AVATAR_LOOK_COUNT;
-    if (previous != sWardrobeLook)
-    {
-        PlaySE(SE_SELECT);
-        DrawWardrobePage();
-    }
-}
-
+// Keep the old special safe for existing scripts; outfits are chosen at new game.
 void ShowPokeGlassWardrobe(void)
 {
-    u8 taskId;
-    if (!OpenTabletWindow())
-        return;
-    sWardrobeLook = GetCurrentAvatarLook();
-    sWardrobePortrait = 0xFFFF;
-    DrawWardrobePage();
-    taskId = CreateTask(Task_PokeGlassWardrobe, 80);
-    if (taskId == TASK_NONE)
-    {
-        DestroyWardrobePortrait();
-        CloseHub();
-        RestoreTabletAppearance();
-        ScriptContext_Enable();
-    }
+    ScriptContext_Enable();
 }
 
 #define TAG_POKEGLASS_DEX_MON 0xD111
@@ -1367,6 +1379,48 @@ static void CloseTabletForNativeApp(void)
     FillBgTilemapBufferRect(0, 0, 0, 0, 32, 32, 0);
     ScheduleBgCopyTilemapToVram(0);
     EndPokeGlassSession();
+}
+
+void OpenPokeGlassSystemApp(void)
+{
+    u16 app = gSpecialVar_Result;
+    CloseTabletForNativeApp();
+    switch (app)
+    {
+    case 5:
+        CleanupOverworldWindowsAndTilemaps();
+        GoToBagMenu(ITEMMENULOCATION_FIELD, POCKETS_COUNT_NO_CASES, CB2_ReturnToFieldContinueScript);
+        break;
+    case 6:
+        CleanupOverworldWindowsAndTilemaps();
+        if (IsUpdateLinkStateCBActive())
+            ShowTrainerCardInLink(gLocalLinkPlayerId, CB2_ReturnToFieldContinueScript);
+        else
+            ShowPlayerTrainerCard(CB2_ReturnToFieldContinueScript);
+        break;
+    case 7:
+        CleanupOverworldWindowsAndTilemaps();
+        gMain.savedCallback = CB2_ReturnToFieldContinueScript;
+        SetMainCallback2(CB2_InitOptionMenu);
+        break;
+    case 8:
+        Field_AskSaveTheGame();
+        break;
+    case 9:
+        if (DEBUG_OVERWORLD_MENU) Debug_ShowMainMenu();
+        else ScriptContext_Enable();
+        break;
+    case 10:
+        CleanupOverworldWindowsAndTilemaps();
+        OpenDexNavFromPokeGlass();
+        break;
+    case 11:
+        SafariZoneRetirePrompt();
+        break;
+    default:
+        ScriptContext_Enable();
+        break;
+    }
 }
 
 void ShowPokeGlassStorage(void)

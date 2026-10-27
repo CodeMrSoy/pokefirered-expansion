@@ -22,6 +22,5 @@ u8 GetAvatarBikeVsSeekerGraphicsId(u8 look);
 u16 GetAvatarFrontPic(u8 look);
 u16 GetCurrentAvatarFrontPic(void);
 u16 GetCurrentAvatarBackPic(void);
-void ApplyAvatarLookToField(u8 look);
 
 #endif

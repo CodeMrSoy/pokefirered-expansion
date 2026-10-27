@@ -97,6 +97,7 @@ EventScript_AccessPokeGlass::
 	special StartPokeGlassIntro
 	waitstate
 EventScript_PokeGlassMenu::
+	lockall
 	multichoice 7, 3, MULTICHOICE_POKEGLASS, FALSE
 	switch VAR_RESULT
 	case 0, EventScript_PokeGlassPokedex
@@ -104,7 +105,13 @@ EventScript_PokeGlassMenu::
 	case 2, EventScript_PokeGlassStorage
 	case 3, EventScript_PokeGlassStats
 	case 4, EventScript_PokeGlassMap
-	case 5, EventScript_PokeGlassWardrobe
+	case 5, EventScript_PokeGlassSystemApp
+	case 6, EventScript_PokeGlassSystemApp
+	case 7, EventScript_PokeGlassSystemApp
+	case 8, EventScript_PokeGlassSystemApp
+	case 9, EventScript_PokeGlassSystemApp
+	case 10, EventScript_PokeGlassSystemApp
+	case 11, EventScript_PokeGlassSystemApp
 	case SCR_MENU_CANCEL, EventScript_PokeGlassClose
 	end
 
@@ -147,8 +154,8 @@ EventScript_PokeGlassStats::
 	goto EventScript_PokeGlassMenu
 	end
 
-EventScript_PokeGlassWardrobe::
-	special OpenPokeGlassWardrobe
+EventScript_PokeGlassSystemApp::
+	special OpenPokeGlassSystemApp
 	waitstate
 	goto EventScript_PokeGlassMenu
 	end

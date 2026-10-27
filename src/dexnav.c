@@ -2394,6 +2394,11 @@ static void DexNavGuiInit(MainCallback callback)
     SetMainCallback2(DexNav_RunSetup);
 }
 
+void OpenDexNavFromPokeGlass(void)
+{
+    DexNavGuiInit(CB2_ReturnToFieldContinueScript);
+}
+
 void Task_OpenDexNavFromStartMenu(u8 taskId)
 {
     if (DEXNAV_ENABLED == FALSE)

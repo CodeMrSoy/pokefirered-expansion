@@ -1,6 +1,8 @@
 #ifndef GUARD_DEXNAV_H
 #define GUARD_DEXNAV_H
 
+void OpenDexNavFromPokeGlass(void);
+
 #include "config/dexnav.h"
 
 // GUI Info

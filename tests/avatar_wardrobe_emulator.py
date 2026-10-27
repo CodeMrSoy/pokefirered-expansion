@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Real new-game choice, Wardrobe, avatar states, portraits, and flash-save checks."""
+"""Real new-game choice, locked outfit, avatar states and flash-save checks."""
 import ctypes as c
 import os
 import pathlib
@@ -86,6 +86,13 @@ def native(name, *args):
             m.run(60)
     return struct.unpack('<I', m.read(result_addr, 4))[0]
 
+# Tests can select each fixture without restoring the removed wardrobe API.
+def apply_look(look):
+    native('SetCurrentAvatarLook', look)
+    obj = m.symbols['gObjectEvents'] + m.read(m.symbols['gPlayerAvatar'] + 5, 1)[0] * 36
+    native('ObjectEventSetGraphicsId', obj, native('GetPlayerAvatarGraphicsIdByCurrentState'))
+    native('ObjectEventTurn', obj, 1)
+
 avatar_var = native('GetVarPointer', 0x40fd)
 assert struct.unpack('<H', m.read(avatar_var, 2))[0] == 3, 'New game cleared the selected look'
 save2 = struct.unpack('<I', m.read(m.symbols['gSaveBlock2Ptr'], 4))[0]
@@ -110,27 +117,12 @@ fixture = b'\x23' + struct.pack('<I', (m.symbols['ScrCmd_createmon'] | 1) + 0x20
 fixture += struct.pack('<BBHHI', 0, 6, 1, 25, 0)
 fixture += b'\x44' + struct.pack('<HH', 717, 1) + b'\x02'
 m.inject(fixture)
-m.press(3)
-m.press(8)
-for key in (7, 5, 5, 7):
-    m.press(key, 20)
-assert m.read(m.symbols['sHubCursor'], 1) == b'\x05'
-m.snap('wardrobe-hub')
-m.press(8)
-for look in (2, 3, 4, 5, 6, 0, 1):
-    assert m.read(m.symbols['sWardrobeLook'], 1) == bytes([look])
-    m.snap('wardrobe-look-' + str(look))
-    assert struct.unpack('<H', m.read(avatar_var, 2))[0] == 3, 'Preview altered the saved avatar'
-    m.press(7, 20)
-# Cancel must leave the original look; reopening preserves it.
-m.press(0)
-m.press(8)
-assert m.read(m.symbols['sWardrobeLook'], 1) == b'\x02'
-m.press(7, 20)
-m.press(8)
-assert struct.unpack('<H', m.read(avatar_var, 2))[0] == 4
-m.press(0)
-assert m.read(save2, 9) == identity, 'Wardrobe changed name or gender'
+# The retired wardrobe entry point must not change the chosen outfit.
+chosen = m.read(avatar_var, 2)
+native('ShowPokeGlassWardrobe')
+assert m.read(avatar_var, 2) == chosen
+assert 'Task_PokeGlassWardrobe' not in m.symbols
+assert m.read(save2, 9) == identity
 
 names = ['Red', 'Green', 'Brendan', 'May', 'Cody', 'Ben', 'Brandon']
 states = [(0, 'Normal'), (1, 'Bike'), (3, 'Surf'), (10, 'Fish'), (8, 'FieldMove')]
@@ -146,7 +138,7 @@ for look, name in enumerate(names):
         assert gfx == expected, (look, state, gfx, expected)
     for state, suffix in states:
         native('SetPlayerAvatarStateMask', 1 << state)
-        native('ApplyAvatarLookToField', look)
+        apply_look(look)
         if suffix in ('Fish', 'FieldMove'):
             # These are action graphics, not persistent avatar-state bits.
             obj = m.symbols['gObjectEvents'] + m.read(m.symbols['gPlayerAvatar'] + 5, 1)[0] * 36
@@ -173,7 +165,7 @@ for look, name in enumerate(names):
 # Save the last look on foot and reload through the real Continue menu.
 for saved_look, saved_value in ((4, 7), (5, 8), (6, 9)):
     native('SetPlayerAvatarStateMask', 1)
-    native('ApplyAvatarLookToField', saved_look)
+    apply_look(saved_look)
     save_result = native('TrySavingData', 0)
     assert save_result == 1, (save_result, m.read(m.symbols['gFlashMemoryPresent'], 1),
                               m.read(m.symbols['gSaveAttemptStatus'], 2))
@@ -191,7 +183,6 @@ for saved_look, saved_value in ((4, 7), (5, 8), (6, 9)):
     assert m.read(save2, 9) == identity
     m.snap('avatar-save-reload-' + str(saved_look))
 m.press(3)
-m.press(8)
 m.press(5, 20)  # Map is the lower-left app in the six-app grid.
 m.press(8)
 wait_task('Task_RegionMap')
@@ -206,7 +197,7 @@ assert m.lib.retro_serialize(field, size)
 backs = ['Red', 'Leaf', 'QuantumBrendan', 'QuantumMay', 'QuantumCody', 'QuantumBen', 'QuantumBrandon']
 for look, back in enumerate(backs):
     assert m.lib.retro_unserialize(field, size)
-    native('ApplyAvatarLookToField', look)
+    apply_look(look)
     battle = b'\xb6' + struct.pack('<HBHHBH', 92, 5, 0, 0, 0, 0) + b'\xb7\x6b\x02'
     address = m.symbols['gDecompressionBuffer']
     m.write(address, battle)
@@ -226,7 +217,7 @@ for look, back in enumerate(backs):
         raise AssertionError('Battle did not use ' + back + ' back portrait')
 for look in range(2, 7):
     assert m.lib.retro_unserialize(field, size)
-    native('ApplyAvatarLookToField', look)
+    apply_look(look)
     native('StopPlayerAvatar')
     player_object = m.symbols['gObjectEvents'] + m.read(m.symbols['gPlayerAvatar'] + 5, 1)[0] * 36
     native('ObjectEventClearHeldMovementIfActive', player_object)
@@ -245,4 +236,4 @@ for look in range(2, 7):
     assert m.read(m.symbols['gPlayerAvatar'] + 6, 1) == b'\x00'
     assert native('GetCurrentAvatarLook') == look
     native('UnlockPlayerFieldControls')
-print('Seven creation/Wardrobe previews, cancel/confirm, identity, movement, actual battle backs, tablet map, Fly landing, and real save/reload passed')
+print('Seven creation choices, locked outfit, identity, movement, actual battle backs, tablet map, Fly landing, and real save/reload passed')
