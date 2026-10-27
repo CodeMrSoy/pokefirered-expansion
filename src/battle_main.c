@@ -4075,7 +4075,11 @@ static void HandleTurnActionSelectionState(void)
                     }
                     break;
                 case B_ACTION_USE_ITEM:
-                    if (FlagGet(B_FLAG_NO_BAG_USE))
+                    // Eirik's trial forbids Bag use; held items still work normally.
+                    if (FlagGet(B_FLAG_NO_BAG_USE)
+                     || ((gBattleTypeFlags & BATTLE_TYPE_TRAINER)
+                      && !(gBattleTypeFlags & (BATTLE_TYPE_LINK | BATTLE_TYPE_RECORDED_LINK))
+                      && TRAINER_BATTLE_PARAM.opponentA == TRAINER_HAVORA_CAPTAIN))
                     {
                         RecordedBattle_ClearBattlerAction(battler, 1);
                         gSelectionBattleScripts[battler] = BattleScript_ActionSelectionItemsCantBeUsed;

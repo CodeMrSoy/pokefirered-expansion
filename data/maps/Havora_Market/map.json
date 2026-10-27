@@ -108,7 +108,7 @@
       "movement_range_y": 0,
       "trainer_type": "TRAINER_TYPE_NONE",
       "trainer_sight_or_berry_tree_id": "0",
-      "script": "Havora_Market_Supplies",
+      "script": "Havora_Market_HealingBerries",
       "flag": "0"
     },
     {
@@ -122,7 +122,7 @@
       "movement_range_y": 0,
       "trainer_type": "TRAINER_TYPE_NONE",
       "trainer_sight_or_berry_tree_id": "0",
-      "script": "Havora_Market_Supplies",
+      "script": "Havora_Market_Medicine",
       "flag": "0"
     },
     {
@@ -136,7 +136,7 @@
       "movement_range_y": 0,
       "trainer_type": "TRAINER_TYPE_NONE",
       "trainer_sight_or_berry_tree_id": "0",
-      "script": "Havora_Market_Supplies",
+      "script": "Havora_Market_Meteorite",
       "flag": "0"
     },
     {
@@ -150,7 +150,7 @@
       "movement_range_y": 0,
       "trainer_type": "TRAINER_TYPE_NONE",
       "trainer_sight_or_berry_tree_id": "0",
-      "script": "Havora_Market_Supplies",
+      "script": "Havora_Market_SoldOut",
       "flag": "0"
     },
     {
@@ -164,7 +164,7 @@
       "movement_range_y": 0,
       "trainer_type": "TRAINER_TYPE_NONE",
       "trainer_sight_or_berry_tree_id": "0",
-      "script": "Havora_Market_Supplies",
+      "script": "Havora_Market_Refreshments",
       "flag": "0"
     },
     {
@@ -178,7 +178,7 @@
       "movement_range_y": 0,
       "trainer_type": "TRAINER_TYPE_NONE",
       "trainer_sight_or_berry_tree_id": "0",
-      "script": "Havora_Market_Supplies",
+      "script": "Havora_Market_FriendshipBerries",
       "flag": "0"
     },
     {
@@ -220,7 +220,7 @@
       "movement_range_y": 0,
       "trainer_type": "TRAINER_TYPE_NONE",
       "trainer_sight_or_berry_tree_id": "0",
-      "script": "Havora_Market_Supplies",
+      "script": "Havora_Market_ResistanceBerries",
       "flag": "0"
     },
     {
@@ -234,7 +234,7 @@
       "movement_range_y": 0,
       "trainer_type": "TRAINER_TYPE_NONE",
       "trainer_sight_or_berry_tree_id": "0",
-      "script": "Havora_Market_Supplies",
+      "script": "Havora_Market_BattleBerries",
       "flag": "0"
     }
   ],
@@ -285,15 +285,15 @@
       "x": 15,
       "y": 52,
       "elevation": 4,
-      "dest_map": "MAP_HAVORA_PROVISIONS",
-      "dest_warp_id": "0"
+      "dest_map": "MAP_CELADON_CITY_DEPARTMENT_STORE_1F",
+      "dest_warp_id": "1"
     },
     {
       "x": 24,
       "y": 52,
       "elevation": 3,
-      "dest_map": "MAP_HAVORA_PROVISIONS",
-      "dest_warp_id": "0"
+      "dest_map": "MAP_CELADON_CITY_DEPARTMENT_STORE_1F",
+      "dest_warp_id": "4"
     }
   ],
   "coord_events": [],

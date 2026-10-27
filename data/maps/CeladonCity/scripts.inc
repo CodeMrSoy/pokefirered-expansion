@@ -87,7 +87,7 @@ CeladonCity_EventScript_MansionSign::
 	end
 
 CeladonCity_EventScript_DeptStoreSign::
-	msgbox CeladonCity_Text_DeptStoreSign, MSGBOX_SIGN
+	msgbox CeladonCity_DepartmentStoreRelocated_Text, MSGBOX_SIGN
 	end
 
 CeladonCity_EventScript_TrainerTips2::
@@ -101,3 +101,9 @@ CeladonCity_EventScript_PrizeExchangeSign::
 CeladonCity_EventScript_GameCornerSign::
 	msgbox CeladonCity_Text_GameCornerSign, MSGBOX_SIGN
 	end
+CeladonCity_DepartmentStoreRelocated::
+	msgbox CeladonCity_DepartmentStoreRelocated_Text, MSGBOX_NPC
+	end
+
+CeladonCity_DepartmentStoreRelocated_Text::
+	.string "This store has closed.\pWe have relocated to\nHAVORA CITY, VIDRA!\pVisit our department store\nin the market district.$"

@@ -232,6 +232,34 @@
       "trainer_sight_or_berry_tree_id": "0",
       "script": "CeladonCity_EventScript_SilphCoScientist",
       "flag": "FLAG_HIDE_CELADON_ROCKETS"
+    },
+    {
+      "type": "object",
+      "graphics_id": "OBJ_EVENT_GFX_SIGN",
+      "x": 11,
+      "y": 14,
+      "elevation": 3,
+      "movement_type": "MOVEMENT_TYPE_NONE",
+      "movement_range_x": 0,
+      "movement_range_y": 0,
+      "trainer_type": "TRAINER_TYPE_NONE",
+      "trainer_sight_or_berry_tree_id": "0",
+      "script": "CeladonCity_DepartmentStoreRelocated",
+      "flag": "0"
+    },
+    {
+      "type": "object",
+      "graphics_id": "OBJ_EVENT_GFX_SIGN",
+      "x": 15,
+      "y": 14,
+      "elevation": 3,
+      "movement_type": "MOVEMENT_TYPE_NONE",
+      "movement_range_x": 0,
+      "movement_range_y": 0,
+      "trainer_type": "TRAINER_TYPE_NONE",
+      "trainer_sight_or_berry_tree_id": "0",
+      "script": "CeladonCity_DepartmentStoreRelocated",
+      "flag": "0"
     }
   ],
   "warp_events": [
@@ -241,20 +269,6 @@
       "elevation": 0,
       "dest_map": "MAP_CELADON_CITY_GAME_CORNER",
       "dest_warp_id": "0"
-    },
-    {
-      "x": 11,
-      "y": 14,
-      "elevation": 0,
-      "dest_map": "MAP_CELADON_CITY_DEPARTMENT_STORE_1F",
-      "dest_warp_id": "1"
-    },
-    {
-      "x": 15,
-      "y": 14,
-      "elevation": 0,
-      "dest_map": "MAP_CELADON_CITY_DEPARTMENT_STORE_1F",
-      "dest_warp_id": "4"
     },
     {
       "x": 30,

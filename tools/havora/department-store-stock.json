@@ -1,0 +1,251 @@
+{
+  "floors": {
+    "2F": [
+      [
+        "Balls",
+        [
+          "POKE_BALL",
+          "GREAT_BALL",
+          "ULTRA_BALL",
+          "PREMIER_BALL",
+          "HEAL_BALL",
+          "NET_BALL",
+          "NEST_BALL"
+        ]
+      ],
+      [
+        "SpecialBalls",
+        [
+          "DIVE_BALL",
+          "DUSK_BALL",
+          "TIMER_BALL",
+          "QUICK_BALL",
+          "REPEAT_BALL",
+          "LUXURY_BALL"
+        ]
+      ]
+    ],
+    "3F": [
+      [
+        "Stones",
+        [
+          "FIRE_STONE",
+          "WATER_STONE",
+          "THUNDER_STONE",
+          "LEAF_STONE",
+          "ICE_STONE",
+          "SUN_STONE",
+          "MOON_STONE",
+          "SHINY_STONE",
+          "DUSK_STONE",
+          "DAWN_STONE"
+        ]
+      ],
+      [
+        "Evolution",
+        [
+          "LINKING_CORD",
+          "METAL_COAT",
+          "DRAGON_SCALE",
+          "UPGRADE",
+          "DUBIOUS_DISC",
+          "PROTECTOR",
+          "ELECTIRIZER",
+          "MAGMARIZER",
+          "REAPER_CLOTH",
+          "DEEP_SEA_TOOTH",
+          "DEEP_SEA_SCALE",
+          "PRISM_SCALE",
+          "SACHET",
+          "WHIPPED_DREAM",
+          "OVAL_STONE",
+          "RAZOR_CLAW",
+          "RAZOR_FANG",
+          "SWEET_APPLE",
+          "TART_APPLE",
+          "CRACKED_POT",
+          "CHIPPED_POT",
+          "BLACK_AUGURITE",
+          "PEAT_BLOCK",
+          "AUSPICIOUS_ARMOR",
+          "MALICIOUS_ARMOR"
+        ]
+      ]
+    ],
+    "4F": [
+      [
+        "BattleGear",
+        [
+          "LEFTOVERS",
+          "LIFE_ORB",
+          "CHOICE_BAND",
+          "CHOICE_SPECS",
+          "CHOICE_SCARF",
+          "FOCUS_SASH",
+          "ASSAULT_VEST",
+          "ROCKY_HELMET",
+          "AIR_BALLOON",
+          "CLEAR_AMULET",
+          "MENTAL_HERB",
+          "WHITE_HERB",
+          "FLAME_ORB",
+          "TOXIC_ORB",
+          "LIGHT_CLAY",
+          "DAMP_ROCK",
+          "HEAT_ROCK",
+          "SMOOTH_ROCK",
+          "ICY_ROCK",
+          "EJECT_BUTTON",
+          "RED_CARD",
+          "SAFETY_GOGGLES"
+        ]
+      ],
+      [
+        "BattleSupplies",
+        [
+          "X_ATTACK",
+          "X_DEFENSE",
+          "X_SP_ATK",
+          "X_SP_DEF",
+          "X_SPEED",
+          "X_ACCURACY",
+          "DIRE_HIT",
+          "GUARD_SPEC"
+        ]
+      ]
+    ],
+    "5F": [
+      [
+        "Wings",
+        [
+          "HEALTH_FEATHER",
+          "MUSCLE_FEATHER",
+          "RESIST_FEATHER",
+          "GENIUS_FEATHER",
+          "CLEVER_FEATHER",
+          "SWIFT_FEATHER"
+        ]
+      ],
+      [
+        "Vitamins",
+        [
+          "HP_UP",
+          "PROTEIN",
+          "IRON",
+          "CALCIUM",
+          "ZINC",
+          "CARBOS",
+          "PP_UP",
+          "PP_MAX"
+        ]
+      ]
+    ]
+  },
+  "stalls": [
+    {
+      "name": "HealingBerries",
+      "items": [
+        "ORAN_BERRY",
+        "SITRUS_BERRY",
+        "CHERI_BERRY",
+        "CHESTO_BERRY",
+        "PECHA_BERRY",
+        "RAWST_BERRY",
+        "ASPEAR_BERRY",
+        "PERSIM_BERRY",
+        "LUM_BERRY",
+        "LEPPA_BERRY"
+      ]
+    },
+    {
+      "name": "Medicine",
+      "items": [
+        "POTION",
+        "SUPER_POTION",
+        "HYPER_POTION",
+        "MAX_POTION",
+        "FULL_RESTORE",
+        "REVIVE",
+        "ANTIDOTE",
+        "PARALYZE_HEAL",
+        "AWAKENING",
+        "BURN_HEAL",
+        "ICE_HEAL",
+        "FULL_HEAL"
+      ]
+    },
+    {
+      "name": "Meteorite",
+      "items": null
+    },
+    {
+      "name": "SoldOut",
+      "items": null
+    },
+    {
+      "name": "Refreshments",
+      "items": [
+        "FRESH_WATER",
+        "SODA_POP",
+        "LEMONADE",
+        "MOOMOO_MILK",
+        "BERRY_JUICE",
+        "LAVA_COOKIE",
+        "OLD_GATEAU",
+        "CASTELIACONE",
+        "BIG_MALASADA"
+      ]
+    },
+    {
+      "name": "FriendshipBerries",
+      "items": [
+        "POMEG_BERRY",
+        "KELPSY_BERRY",
+        "QUALOT_BERRY",
+        "HONDEW_BERRY",
+        "GREPA_BERRY",
+        "TAMATO_BERRY"
+      ]
+    },
+    {
+      "name": "ResistanceBerries",
+      "items": [
+        "OCCA_BERRY",
+        "PASSHO_BERRY",
+        "WACAN_BERRY",
+        "RINDO_BERRY",
+        "YACHE_BERRY",
+        "CHOPLE_BERRY",
+        "KEBIA_BERRY",
+        "SHUCA_BERRY",
+        "COBA_BERRY",
+        "PAYAPA_BERRY",
+        "TANGA_BERRY",
+        "CHARTI_BERRY",
+        "KASIB_BERRY",
+        "HABAN_BERRY",
+        "COLBUR_BERRY",
+        "BABIRI_BERRY",
+        "CHILAN_BERRY",
+        "ROSELI_BERRY"
+      ]
+    },
+    {
+      "name": "BattleBerries",
+      "items": [
+        "FIGY_BERRY",
+        "WIKI_BERRY",
+        "MAGO_BERRY",
+        "AGUAV_BERRY",
+        "IAPAPA_BERRY",
+        "LIECHI_BERRY",
+        "GANLON_BERRY",
+        "SALAC_BERRY",
+        "PETAYA_BERRY",
+        "APICOT_BERRY"
+      ]
+    }
+  ],
+  "meteorite_price": 10000,
+  "relocated_maps_keep_original_ids": true
+}

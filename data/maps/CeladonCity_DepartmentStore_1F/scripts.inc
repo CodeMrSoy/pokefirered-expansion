@@ -12,3 +12,7 @@ CeladonCity_DepartmentStore_1F_EventScript_LayoutSign::
 CeladonCity_DepartmentStore_1F_EventScript_FloorSign::
 	msgbox CeladonCity_DepartmentStore_1F_Text_ServiceCounter, MSGBOX_SIGN
 	end
+
+HavoraDepartment_CounterTutor::
+	goto EventScript_CounterTutor
+	end

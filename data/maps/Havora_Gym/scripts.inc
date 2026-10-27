@@ -387,11 +387,17 @@ HavoraTrial_LockkeeperAfter::
  .string "Depart RIGHT for AR3 at\nA/B MID; then return to B.$"
 HavoraTrial_Captain::
  lockall
+ goto_if_defeated TRAINER_HAVORA_CAPTAIN, HavoraTrial_CaptainFinished
  setvar VAR_0x8004, 24
  special HavoraGym_Control
  goto_if_eq VAR_RESULT, 2, HavoraTrial_Clearance
  goto_if_eq VAR_RESULT, 3, HavoraTrial_FullCrew
+ msgbox HavoraTrial_CaptainReadyText, MSGBOX_YESNO
+ goto_if_eq VAR_RESULT, NO, HavoraTide_Release
  trainerbattle_double TRAINER_HAVORA_CAPTAIN, HavoraTrial_CaptainIntro, HavoraTrial_CaptainLoss, HavoraTrial_TwoMons, HavoraTrial_CaptainWon
+ msgbox HavoraTrial_CaptainAfter
+ goto HavoraTide_Recovery
+HavoraTrial_CaptainFinished::
  msgbox HavoraTrial_CaptainAfter
  goto HavoraTide_Recovery
 HavoraTrial_CaptainWon::
@@ -433,6 +439,8 @@ HavoraTrial_FullCrewText::
  .string "My trial is six against six!\nBring six battle-ready POKéMON.\pThe entrance steward can heal\nyour crew for free.$"
 HavoraTrial_TwoMons::
  .string "Bring two battle-ready POKéMON\nfor this double battle.$"
+HavoraTrial_CaptainReadyText::
+ .string "My trial is six against six!\nYour BAG is off limits.\pHeld items are allowed.\nAre you ready to battle?$"
 HavoraTrial_CaptainIntro::
  .string "Every tide, every station!\nI am Captain EIRIK.\pShow me the teamwork that\nbrought you to my bunker!$"
 HavoraTrial_CaptainLoss::

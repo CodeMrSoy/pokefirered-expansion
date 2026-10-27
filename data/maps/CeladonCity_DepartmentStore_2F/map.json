@@ -2,15 +2,15 @@
   "id": "MAP_CELADON_CITY_DEPARTMENT_STORE_2F",
   "name": "CeladonCity_DepartmentStore_2F",
   "layout": "LAYOUT_CELADON_CITY_DEPARTMENT_STORE_2F",
-  "music": "MUS_POKE_CENTER",
-  "region_map_section": "MAPSEC_CELADON_CITY",
+  "music": "MUS_SEVII_123",
+  "region_map_section": "MAPSEC_HAVORA_CITY",
   "requires_flash": false,
   "weather": "WEATHER_NONE",
   "map_type": "MAP_TYPE_INDOOR",
   "allow_cycling": false,
   "allow_escaping": false,
-  "allow_running": false,
-  "show_map_name": true,
+  "allow_running": true,
+  "show_map_name": false,
   "floor_number": 2,
   "battle_scene": "MAP_BATTLE_SCENE_NORMAL",
   "connections": null,
@@ -26,7 +26,7 @@
       "movement_range_y": 1,
       "trainer_type": "TRAINER_TYPE_NONE",
       "trainer_sight_or_berry_tree_id": "0",
-      "script": "CeladonCity_DepartmentStore_2F_EventScript_Lass",
+      "script": "HavoraDepartment_2F_Customer",
       "flag": "0"
     },
     {
@@ -36,11 +36,11 @@
       "y": 8,
       "elevation": 0,
       "movement_type": "MOVEMENT_TYPE_FACE_DOWN",
-      "movement_range_x": 3,
-      "movement_range_y": 1,
+      "movement_range_x": 0,
+      "movement_range_y": 0,
       "trainer_type": "TRAINER_TYPE_NONE",
       "trainer_sight_or_berry_tree_id": "0",
-      "script": "CeladonCity_DepartmentStore_2F_EventScript_ClerkItems",
+      "script": "HavoraDepartment_Balls",
       "flag": "0"
     },
     {
@@ -50,11 +50,11 @@
       "y": 6,
       "elevation": 3,
       "movement_type": "MOVEMENT_TYPE_FACE_RIGHT",
-      "movement_range_x": 3,
-      "movement_range_y": 1,
+      "movement_range_x": 0,
+      "movement_range_y": 0,
       "trainer_type": "TRAINER_TYPE_NONE",
       "trainer_sight_or_berry_tree_id": "0",
-      "script": "CeladonCity_DepartmentStore_2F_EventScript_ClerkTMs",
+      "script": "HavoraDepartment_SpecialBalls",
       "flag": "0"
     },
     {
@@ -68,7 +68,7 @@
       "movement_range_y": 1,
       "trainer_type": "TRAINER_TYPE_NONE",
       "trainer_sight_or_berry_tree_id": "0",
-      "script": "CeladonCity_DepartmentStore_2F_EventScript_Woman",
+      "script": "HavoraDepartment_2F_Customer",
       "flag": "FLAG_HIDE_POSTGAME_GOSSIPERS"
     }
   ],
@@ -103,7 +103,7 @@
       "y": 1,
       "elevation": 0,
       "player_facing_dir": "BG_EVENT_PLAYER_FACING_ANY",
-      "script": "CeladonCity_DepartmentStore_2F_EventScript_FloorSign"
+      "script": "HavoraDepartment_2F_Sign"
     }
   ]
 }

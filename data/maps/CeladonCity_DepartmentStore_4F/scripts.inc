@@ -1,52 +1,76 @@
 CeladonCity_DepartmentStore_4F_MapScripts::
 	.byte 0
 
-CeladonCity_DepartmentStore_4F_EventScript_Man::
-	msgbox CeladonCity_DepartmentStore_4F_Text_GettingPokeDollAsPresent, MSGBOX_NPC
-	end
-
-CeladonCity_DepartmentStore_4F_EventScript_Youngster::
-	msgbox CeladonCity_DepartmentStore_4F_Text_CanRunAwayWithPokeDoll, MSGBOX_NPC
-	end
-
-CeladonCity_DepartmentStore_4F_EventScript_FloorSign::
-	msgbox CeladonCity_DepartmentStore_4F_Text_FloorSign, MSGBOX_SIGN
-	end
-
-CeladonCity_DepartmentStore_4F_EventScript_Clerk::
+HavoraDepartment_BattleGear::
 	goto_if_questlog EventScript_ReleaseEnd
 	lock
 	faceplayer
 	message Text_MayIHelpYou
 	waitmessage
-	pokemart CeladonCity_DepartmentStore_4F_Items
+	pokemart HavoraDepartment_BattleGear_Stock
 	msgbox Text_PleaseComeAgain
 	release
 	end
 
 	.align 2
-CeladonCity_DepartmentStore_4F_Items::
-	.2byte ITEM_POKE_DOLL
-	.2byte ITEM_FIRE_STONE
-	.2byte ITEM_THUNDER_STONE
-	.2byte ITEM_WATER_STONE
-	.2byte ITEM_LEAF_STONE
-	.2byte ITEM_HM06
-	.2byte ITEM_HM07
-	.2byte ITEM_PRISM_SCALE
-	.2byte ITEM_SACHET
-	.2byte ITEM_WHIPPED_DREAM
-	.2byte ITEM_LINKING_CORD
-	.2byte ITEM_METAL_COAT
-	.2byte ITEM_DRAGON_SCALE
-	.2byte ITEM_UPGRADE
-	.2byte ITEM_DUBIOUS_DISC
-	.2byte ITEM_PROTECTOR
-	.2byte ITEM_ELECTIRIZER
-	.2byte ITEM_MAGMARIZER
-	.2byte ITEM_REAPER_CLOTH
-	.2byte ITEM_DEEP_SEA_TOOTH
-	.2byte ITEM_DEEP_SEA_SCALE
+HavoraDepartment_BattleGear_Stock::
+	.2byte ITEM_LEFTOVERS
+	.2byte ITEM_LIFE_ORB
+	.2byte ITEM_CHOICE_BAND
+	.2byte ITEM_CHOICE_SPECS
+	.2byte ITEM_CHOICE_SCARF
+	.2byte ITEM_FOCUS_SASH
+	.2byte ITEM_ASSAULT_VEST
+	.2byte ITEM_ROCKY_HELMET
+	.2byte ITEM_AIR_BALLOON
+	.2byte ITEM_CLEAR_AMULET
+	.2byte ITEM_MENTAL_HERB
+	.2byte ITEM_WHITE_HERB
+	.2byte ITEM_FLAME_ORB
+	.2byte ITEM_TOXIC_ORB
+	.2byte ITEM_LIGHT_CLAY
+	.2byte ITEM_DAMP_ROCK
+	.2byte ITEM_HEAT_ROCK
+	.2byte ITEM_SMOOTH_ROCK
+	.2byte ITEM_ICY_ROCK
+	.2byte ITEM_EJECT_BUTTON
+	.2byte ITEM_RED_CARD
+	.2byte ITEM_SAFETY_GOGGLES
 	.2byte ITEM_NONE
+
+HavoraDepartment_BattleSupplies::
+	goto_if_questlog EventScript_ReleaseEnd
+	lock
+	faceplayer
+	message Text_MayIHelpYou
+	waitmessage
+	pokemart HavoraDepartment_BattleSupplies_Stock
+	msgbox Text_PleaseComeAgain
 	release
 	end
+
+	.align 2
+HavoraDepartment_BattleSupplies_Stock::
+	.2byte ITEM_X_ATTACK
+	.2byte ITEM_X_DEFENSE
+	.2byte ITEM_X_SP_ATK
+	.2byte ITEM_X_SP_DEF
+	.2byte ITEM_X_SPEED
+	.2byte ITEM_X_ACCURACY
+	.2byte ITEM_DIRE_HIT
+	.2byte ITEM_GUARD_SPEC
+	.2byte ITEM_NONE
+
+HavoraDepartment_4F_Sign::
+	msgbox HavoraDepartment_4F_Sign_Text, MSGBOX_SIGN
+	end
+
+HavoraDepartment_4F_Sign_Text::
+	.string "4F: BATTLE ITEMS$"
+
+HavoraDepartment_4F_Customer::
+	msgbox HavoraDepartment_4F_Customer_Text, MSGBOX_NPC
+	end
+
+HavoraDepartment_4F_Customer_Text::
+	.string "Held items work automatically.\nChoose gear to fit your team.\pEIRIK does not allow BAG use\nduring his Gym battle.$"
