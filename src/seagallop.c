@@ -1,4 +1,7 @@
 #include "global.h"
+#include "vidra_arrival.h"
+#include "item.h"
+#include "constants/items.h"
 #include "gflib.h"
 #include "scanline_effect.h"
 #include "trainer_pokemon_sprites.h"
@@ -291,14 +294,36 @@ static void Task_Seagallop_1(u8 taskId)
     }
 }
 
+static bool8 IsVidraArrival(void)
+{
+#ifdef MAP_HAVORA_HARBOR
+    return gSpecialVar_0x8004 == SEAGALLOP_VERMILION_CITY
+        && gSpecialVar_0x8006 == SEAGALLOP_QUANTUM_PORT
+        && CheckBagHasItem(ITEM_STELLAR_TICKET, 1);
+#else
+    // QOL gains this route when merged with the Vidra map branch.
+    return FALSE;
+#endif
+}
+
 static void Task_Seagallop_2(u8 taskId)
 {
     ScrollBG();
     if (BGMusicStopped() && !gPaletteFade.active)
     {
-        Task_Seagallop_3();
+        // Release the sailing scene before either the artwork or the map
+        // takes ownership of its background, sprites and tasks.
+        SetVBlankCallback(NULL);
+        FreeFerrySpriteResources();
+        Free(sBg3TilemapBuffer);
+        sBg3TilemapBuffer = NULL;
+        FreeAllWindowBuffers();
         HelpSystem_Enable();
         DestroyTask(taskId);
+        if (IsVidraArrival())
+            ShowVidraArrival(Task_Seagallop_3);
+        else
+            Task_Seagallop_3();
     }
 }
 
@@ -310,16 +335,13 @@ static void Task_Seagallop_3(void)
         gSpecialVar_0x8006 = 0;
 
     warpInfo = sSeag[gSpecialVar_0x8006];
-    SetWarpDestination(warpInfo[0], warpInfo[1], -1, warpInfo[2], warpInfo[3]);
+    SetWarpDestination(warpInfo[0], warpInfo[1], -1, warpInfo[2], IsVidraArrival() ? 17 : warpInfo[3]);
     PlayRainStoppingSoundEffect();
     PlaySE(SE_EXIT);
-    gFieldCallback = FieldCB_DefaultWarpExit;
+    gFieldCallback = IsVidraArrival() ? FieldCB_VidraDisembark : FieldCB_DefaultWarpExit;
     WarpIntoMap();
     SetMainCallback2(CB2_LoadMap);
     ResetInitialPlayerAvatarState();
-    FreeFerrySpriteResources();
-    Free(sBg3TilemapBuffer);
-    FreeAllWindowBuffers();
 }
 
 static void ResetGPU(void)

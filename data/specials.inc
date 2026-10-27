@@ -474,4 +474,5 @@ gSpecials::
 	def_special OpenPokeGlassWardrobe
 	def_special OpenPokeGlassStorage
 	def_special OpenPokeGlassSystemApp
+	def_special ShowVidraArrivalArt
 gSpecialsEnd::
