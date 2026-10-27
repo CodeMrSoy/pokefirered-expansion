@@ -1,3 +1,24 @@
+const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_AvatarCodyNormal;
+const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_AvatarBenNormal;
+const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_AvatarBrandonNormal;
+const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_AvatarCodyBike;
+const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_AvatarBenBike;
+const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_AvatarBrandonBike;
+const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_AvatarCodySurf;
+const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_AvatarBenSurf;
+const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_AvatarBrandonSurf;
+const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_AvatarCodyFieldMove;
+const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_AvatarBenFieldMove;
+const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_AvatarBrandonFieldMove;
+const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_AvatarCodyFish;
+const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_AvatarBenFish;
+const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_AvatarBrandonFish;
+const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_AvatarCodyVSSeeker;
+const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_AvatarBenVSSeeker;
+const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_AvatarBrandonVSSeeker;
+const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_AvatarCodyVSSeekerBike;
+const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_AvatarBenVSSeekerBike;
+const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_AvatarBrandonVSSeekerBike;
 const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_AvatarBrendanNormal;
 const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_AvatarBrendanBike;
 const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_AvatarBrendanSurf;
@@ -373,4 +394,25 @@ const struct ObjectEventGraphicsInfo *const gObjectEventGraphicsInfoPointers[NUM
     [OBJ_EVENT_GFX_AVATAR_RSMAY_FISH] = &gObjectEventGraphicsInfo_AvatarMayFish,
     [OBJ_EVENT_GFX_AVATAR_RSMAY_VSSEEKER] = &gObjectEventGraphicsInfo_AvatarMayVSSeeker,
     [OBJ_EVENT_GFX_AVATAR_RSMAY_VSSEEKERBIKE] = &gObjectEventGraphicsInfo_AvatarMayVSSeekerBike,
+    [OBJ_EVENT_GFX_AVATAR_CODY_NORMAL] = &gObjectEventGraphicsInfo_AvatarCodyNormal,
+    [OBJ_EVENT_GFX_AVATAR_BEN_NORMAL] = &gObjectEventGraphicsInfo_AvatarBenNormal,
+    [OBJ_EVENT_GFX_AVATAR_BRANDON_NORMAL] = &gObjectEventGraphicsInfo_AvatarBrandonNormal,
+    [OBJ_EVENT_GFX_AVATAR_CODY_BIKE] = &gObjectEventGraphicsInfo_AvatarCodyBike,
+    [OBJ_EVENT_GFX_AVATAR_BEN_BIKE] = &gObjectEventGraphicsInfo_AvatarBenBike,
+    [OBJ_EVENT_GFX_AVATAR_BRANDON_BIKE] = &gObjectEventGraphicsInfo_AvatarBrandonBike,
+    [OBJ_EVENT_GFX_AVATAR_CODY_SURF] = &gObjectEventGraphicsInfo_AvatarCodySurf,
+    [OBJ_EVENT_GFX_AVATAR_BEN_SURF] = &gObjectEventGraphicsInfo_AvatarBenSurf,
+    [OBJ_EVENT_GFX_AVATAR_BRANDON_SURF] = &gObjectEventGraphicsInfo_AvatarBrandonSurf,
+    [OBJ_EVENT_GFX_AVATAR_CODY_FIELDMOVE] = &gObjectEventGraphicsInfo_AvatarCodyFieldMove,
+    [OBJ_EVENT_GFX_AVATAR_BEN_FIELDMOVE] = &gObjectEventGraphicsInfo_AvatarBenFieldMove,
+    [OBJ_EVENT_GFX_AVATAR_BRANDON_FIELDMOVE] = &gObjectEventGraphicsInfo_AvatarBrandonFieldMove,
+    [OBJ_EVENT_GFX_AVATAR_CODY_FISH] = &gObjectEventGraphicsInfo_AvatarCodyFish,
+    [OBJ_EVENT_GFX_AVATAR_BEN_FISH] = &gObjectEventGraphicsInfo_AvatarBenFish,
+    [OBJ_EVENT_GFX_AVATAR_BRANDON_FISH] = &gObjectEventGraphicsInfo_AvatarBrandonFish,
+    [OBJ_EVENT_GFX_AVATAR_CODY_VSSEEKER] = &gObjectEventGraphicsInfo_AvatarCodyVSSeeker,
+    [OBJ_EVENT_GFX_AVATAR_BEN_VSSEEKER] = &gObjectEventGraphicsInfo_AvatarBenVSSeeker,
+    [OBJ_EVENT_GFX_AVATAR_BRANDON_VSSEEKER] = &gObjectEventGraphicsInfo_AvatarBrandonVSSeeker,
+    [OBJ_EVENT_GFX_AVATAR_CODY_VSSEEKERBIKE] = &gObjectEventGraphicsInfo_AvatarCodyVSSeekerBike,
+    [OBJ_EVENT_GFX_AVATAR_BEN_VSSEEKERBIKE] = &gObjectEventGraphicsInfo_AvatarBenVSSeekerBike,
+    [OBJ_EVENT_GFX_AVATAR_BRANDON_VSSEEKERBIKE] = &gObjectEventGraphicsInfo_AvatarBrandonVSSeekerBike,
 };

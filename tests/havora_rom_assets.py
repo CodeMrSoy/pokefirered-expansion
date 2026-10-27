@@ -10,9 +10,9 @@ for line in subprocess.check_output([os.environ.get('ARM_NM','arm-none-eabi-nm')
 rom=(R/'pokefirered.gba').read_bytes()
 def check(symbol,path):
  data=(R/path).read_bytes();off=sy[symbol]-0x8000000;assert rom[off:off+len(data)]==data,('Stale ROM data',symbol,path)
-for symbol,name in [('Quantum_Havora_Harbor_Layout','Quantum_Havora_Harbor_Layout'),('QuantumHavoraWestQuay_Layout','QuantumHavoraWestQuay'),('QuantumHavoraNorthQuay_Layout','QuantumHavoraNorthQuay'),('QuantumPortCity_Layout','QuantumPortCity')]+[(n+'_Layout',n) for n in ['QuantumHavoraNorthDistrict','QuantumHavoraCoastalDaycare','QuantumHavoraNorthWalk','QuantumHarborRoad']]:
+for symbol,name in [('Quantum_Havora_Harbor_Layout','Quantum_Havora_Harbor_Layout'),('Havora_River_Layout','Havora_River'),('Havora_Market_Layout','Havora_Market'),('Havora_WestQuadrant_Layout','Havora_WestQuadrant')]+[(n+'_Layout',n) for n in ['Havora_NorthQuadrant','Havora_DaycareExterior','Havora_Lookout','Vidra_HarborRoad']]:
  for suffix,file in [('Blockdata','map.bin'),('Border','border.bin')]:check(symbol+'_'+suffix,'data/layouts/'+name+'/'+file)
-for suffix,directory,folder in [('HavoraPrimary','primary','havora_harbor'),('HavoraHarbor','secondary','havora_harbor'),('HavoraCityPrimary','primary','havora_city'),('HavoraCity','secondary','havora_city')]:
+for suffix,directory,folder in [('HavoraPrimary','primary','havora_harbor'),('Havora_Harbor','secondary','havora_harbor'),('HavoraCityPrimary','primary','havora_city'),('HavoraCity','secondary','havora_city')]:
  root='data/tilesets/'+directory+'/'+folder+'/'
  check('gMetatiles_'+suffix,root+'metatiles.bin');check('gMetatileAttributes_'+suffix,root+'metatile_attributes.bin');check('gTilesetTiles_'+suffix,root+'tiles.4bpp.lz')
  # Decode the actual ROM compression, then compare indices with the source PNG.

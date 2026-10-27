@@ -34,7 +34,7 @@ for i,name in enumerate(('kanto','sevii_123','sevii_45','sevii_67')):
  (d/f'{name}.bin').write_bytes(data)
  images[i].save(d/f'{name}_reference.png')
 
-# V2 reuses native region page 2 for Quantum Island. Match the existing tablet
+# V2 reuses native region page 2 for Vidra. Match the existing tablet
 # palette so adding its preview does not change Kanto's already-tested colors.
 if (p/'graphics/region_map/quantum_atlas.bin').exists():
  tiles=(p/'graphics/region_map/quantum_atlas.bin').read_bytes()

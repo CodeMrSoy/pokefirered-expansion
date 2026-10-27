@@ -11,7 +11,7 @@ def constant(name,header='flags.h'):
 def flag(name,on=True):native('FlagSet' if on else 'FlagClear',constant(name))
 groups=json.loads((m.root/'data/maps/map_groups.json').read_text())
 ids={n:(g,i) for g,k in enumerate(groups['group_order']) for i,n in enumerate(groups[k])}
-has_vidra='HavoraNorthQuadrant' in ids
+has_vidra='Havora_NorthQuadrant' in ids
 def current():return tuple(m.read(ptr('gSaveBlock1Ptr')+4,2))
 def warp(name,x=10,y=9):
  g,i=ids[name];m.inject(b'\x39'+struct.pack('<BBBhh',g,i,255,x,y)+b'\x27\x6b\x02');m.run(240)
@@ -81,9 +81,9 @@ else:
  assert ptr('sRegionMap')==0
  # The real Center script unlocks only its own town, after ticketed arrival.
  flag('FLAG_QUANTUM_ARRIVED')
- centers=['QuantumPortCityPokemonCenter1F','QuantumCoastalCityPokemonCenter1F',
-          'QuantumForestTownPokemonCenter1F','QuantumLakeTownPokemonCenter1F','QuantumSnowTownPokemonCenter1F']
- towns=['HavoraNorthQuadrant','QuantumCoastalCity','QuantumForestTown','QuantumLakeTown','QuantumSnowTown']
+ centers=['Havora_PokemonCenter_1F','Corvala_Town_PokemonCenter_1F',
+          'Eldervale_Village_PokemonCenter_1F','Myrdal_City_PokemonCenter_1F','Iskora_Village_PokemonCenter_1F']
+ towns=['Havora_NorthQuadrant','Corvala_Town','Eldervale_Village','Myrdal_City','Iskora_Village']
  points=[(15,12),(4,10),(6,7),(14,7),(10,2)]
  flags=['PORT','COASTAL','FOREST','LAKE','SNOW']
  warp(centers[0],7,7)

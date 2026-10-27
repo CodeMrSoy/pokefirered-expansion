@@ -1,0 +1,313 @@
+{
+  "legacy_group": 43,
+  "maps": [
+    {
+      "old": "HavoraWestQuadrant",
+      "new": "Havora_WestQuadrant",
+      "old_number": 0,
+      "id": "MAP_HAVORA_WEST_QUADRANT"
+    },
+    {
+      "old": "QuantumPortCityPokemonCenter1F",
+      "new": "Havora_PokemonCenter_1F",
+      "old_number": 1,
+      "id": "MAP_HAVORA_POKEMON_CENTER_1_F"
+    },
+    {
+      "old": "QuantumPortCityPokemonCenter2F",
+      "new": "Havora_PokemonCenter_2F",
+      "old_number": 2,
+      "id": "MAP_HAVORA_POKEMON_CENTER_2_F"
+    },
+    {
+      "old": "QuantumCoastalCity",
+      "new": "Corvala_Town",
+      "old_number": 3,
+      "id": "MAP_CORVALA_TOWN"
+    },
+    {
+      "old": "QuantumCoastalCityPokemonCenter1F",
+      "new": "Corvala_Town_PokemonCenter_1F",
+      "old_number": 4,
+      "id": "MAP_CORVALA_TOWN_POKEMON_CENTER_1_F"
+    },
+    {
+      "old": "QuantumCoastalCityPokemonCenter2F",
+      "new": "Corvala_Town_PokemonCenter_2F",
+      "old_number": 5,
+      "id": "MAP_CORVALA_TOWN_POKEMON_CENTER_2_F"
+    },
+    {
+      "old": "QuantumForestTown",
+      "new": "Eldervale_Village",
+      "old_number": 6,
+      "id": "MAP_ELDERVALE_VILLAGE"
+    },
+    {
+      "old": "QuantumForestTownPokemonCenter1F",
+      "new": "Eldervale_Village_PokemonCenter_1F",
+      "old_number": 7,
+      "id": "MAP_ELDERVALE_VILLAGE_POKEMON_CENTER_1_F"
+    },
+    {
+      "old": "QuantumForestTownPokemonCenter2F",
+      "new": "Eldervale_Village_PokemonCenter_2F",
+      "old_number": 8,
+      "id": "MAP_ELDERVALE_VILLAGE_POKEMON_CENTER_2_F"
+    },
+    {
+      "old": "QuantumLakeTown",
+      "new": "Myrdal_City",
+      "old_number": 9,
+      "id": "MAP_MYRDAL_CITY"
+    },
+    {
+      "old": "QuantumLakeTownPokemonCenter1F",
+      "new": "Myrdal_City_PokemonCenter_1F",
+      "old_number": 10,
+      "id": "MAP_MYRDAL_CITY_POKEMON_CENTER_1_F"
+    },
+    {
+      "old": "QuantumLakeTownPokemonCenter2F",
+      "new": "Myrdal_City_PokemonCenter_2F",
+      "old_number": 11,
+      "id": "MAP_MYRDAL_CITY_POKEMON_CENTER_2_F"
+    },
+    {
+      "old": "QuantumSnowTown",
+      "new": "Iskora_Village",
+      "old_number": 12,
+      "id": "MAP_ISKORA_VILLAGE"
+    },
+    {
+      "old": "QuantumSnowTownPokemonCenter1F",
+      "new": "Iskora_Village_PokemonCenter_1F",
+      "old_number": 13,
+      "id": "MAP_ISKORA_VILLAGE_POKEMON_CENTER_1_F"
+    },
+    {
+      "old": "QuantumSnowTownPokemonCenter2F",
+      "new": "Iskora_Village_PokemonCenter_2F",
+      "old_number": 14,
+      "id": "MAP_ISKORA_VILLAGE_POKEMON_CENTER_2_F"
+    },
+    {
+      "old": "QuantumHarborRoad",
+      "new": "Vidra_HarborRoad",
+      "old_number": 15,
+      "id": "MAP_VIDRA_HARBOR_ROAD"
+    },
+    {
+      "old": "QuantumCoastalRoad",
+      "new": "Vidra_CoastalRoad",
+      "old_number": 16,
+      "id": "MAP_VIDRA_COASTAL_ROAD"
+    },
+    {
+      "old": "QuantumWoodlandLink",
+      "new": "Eldervik_Woods",
+      "old_number": 17,
+      "id": "MAP_ELDERVIK_WOODS"
+    },
+    {
+      "old": "QuantumMountainPass",
+      "new": "Frostfell_Mountains",
+      "old_number": 18,
+      "id": "MAP_FROSTFELL_MOUNTAINS"
+    },
+    {
+      "old": "HavoraHarbor",
+      "new": "Havora_Harbor",
+      "old_number": 19,
+      "id": "MAP_HAVORA_HARBOR"
+    },
+    {
+      "old": "HavoraRiver",
+      "new": "Havora_River",
+      "old_number": 20,
+      "id": "MAP_HAVORA_RIVER"
+    },
+    {
+      "old": "HavoraMarket",
+      "new": "Havora_Market",
+      "old_number": 21,
+      "id": "MAP_HAVORA_MARKET"
+    },
+    {
+      "old": "QuantumHavoraShipwrightHouse",
+      "new": "Havora_ShipwrightHouse",
+      "old_number": 22,
+      "id": "MAP_HAVORA_SHIPWRIGHT_HOUSE"
+    },
+    {
+      "old": "QuantumHavoraWeaverHouse",
+      "new": "Havora_WeaverHouse",
+      "old_number": 23,
+      "id": "MAP_HAVORA_WEAVER_HOUSE"
+    },
+    {
+      "old": "QuantumHavoraFisherHouse",
+      "new": "Havora_FisherHouse",
+      "old_number": 24,
+      "id": "MAP_HAVORA_FISHER_HOUSE"
+    },
+    {
+      "old": "QuantumHavoraTraderHouse",
+      "new": "Havora_TraderHouse",
+      "old_number": 25,
+      "id": "MAP_HAVORA_TRADER_HOUSE"
+    },
+    {
+      "old": "QuantumHavoraTradeHall",
+      "new": "Havora_TradeHall",
+      "old_number": 26,
+      "id": "MAP_HAVORA_TRADE_HALL"
+    },
+    {
+      "old": "QuantumHavoraOutfitters",
+      "new": "Havora_Outfitters",
+      "old_number": 27,
+      "id": "MAP_HAVORA_OUTFITTERS"
+    },
+    {
+      "old": "QuantumHavoraProvisions",
+      "new": "Havora_Provisions",
+      "old_number": 28,
+      "id": "MAP_HAVORA_PROVISIONS"
+    },
+    {
+      "old": "HavoraNorthQuadrant",
+      "new": "Havora_NorthQuadrant",
+      "old_number": 29,
+      "id": "MAP_HAVORA_NORTH_QUADRANT"
+    },
+    {
+      "old": "HavoraDaycare",
+      "new": "Havora_DaycareExterior",
+      "old_number": 30,
+      "id": "MAP_HAVORA_DAYCARE_EXTERIOR"
+    },
+    {
+      "old": "HavoraLookout",
+      "new": "Havora_Lookout",
+      "old_number": 31,
+      "id": "MAP_HAVORA_LOOKOUT"
+    },
+    {
+      "old": "QuantumHavoraGym",
+      "new": "Havora_Gym",
+      "old_number": 32,
+      "id": "MAP_HAVORA_GYM"
+    },
+    {
+      "old": "QuantumHavoraMart",
+      "new": "Havora_Mart",
+      "old_number": 33,
+      "id": "MAP_HAVORA_MART"
+    },
+    {
+      "old": "QuantumHavoraDaycare",
+      "new": "Havora_DaycareInterior",
+      "old_number": 34,
+      "id": "MAP_HAVORA_DAYCARE_INTERIOR"
+    },
+    {
+      "old": "QuantumHavoraWestHouse1",
+      "new": "Havora_WestHouse_1",
+      "old_number": 35,
+      "id": "MAP_HAVORA_WEST_HOUSE_1"
+    },
+    {
+      "old": "QuantumHavoraWestHouse2",
+      "new": "Havora_WestHouse_2",
+      "old_number": 36,
+      "id": "MAP_HAVORA_WEST_HOUSE_2"
+    },
+    {
+      "old": "QuantumHavoraNorthHouse1",
+      "new": "Havora_NorthHouse_1",
+      "old_number": 37,
+      "id": "MAP_HAVORA_NORTH_HOUSE_1"
+    },
+    {
+      "old": "QuantumHavoraNorthHouse2",
+      "new": "Havora_NorthHouse_2",
+      "old_number": 38,
+      "id": "MAP_HAVORA_NORTH_HOUSE_2"
+    },
+    {
+      "old": "QuantumHavoraNorthHouse3",
+      "new": "Havora_NorthHouse_3",
+      "old_number": 39,
+      "id": "MAP_HAVORA_NORTH_HOUSE_3"
+    },
+    {
+      "old": "QuantumHavoraCliffHouse1",
+      "new": "Havora_CliffHouse_1",
+      "old_number": 40,
+      "id": "MAP_HAVORA_CLIFF_HOUSE_1"
+    },
+    {
+      "old": "QuantumHavoraCliffHouse2",
+      "new": "Havora_CliffHouse_2",
+      "old_number": 41,
+      "id": "MAP_HAVORA_CLIFF_HOUSE_2"
+    },
+    {
+      "old": "QuantumHavoraCliffHouse3",
+      "new": "Havora_CliffHouse_3",
+      "old_number": 42,
+      "id": "MAP_HAVORA_CLIFF_HOUSE_3"
+    },
+    {
+      "old": "QuantumHavoraCliffHouse4",
+      "new": "Havora_CliffHouse_4",
+      "old_number": 43,
+      "id": "MAP_HAVORA_CLIFF_HOUSE_4"
+    },
+    {
+      "old": "QuantumHavoraCliffHouse5",
+      "new": "Havora_CliffHouse_5",
+      "old_number": 44,
+      "id": "MAP_HAVORA_CLIFF_HOUSE_5"
+    },
+    {
+      "old": "QuantumHavoraHarborInn",
+      "new": "Havora_HarborInn",
+      "old_number": 45,
+      "id": "MAP_HAVORA_HARBOR_INN"
+    },
+    {
+      "old": "QuantumHavoraNorthHouse4",
+      "new": "Havora_NorthHouse_4",
+      "old_number": 46,
+      "id": "MAP_HAVORA_NORTH_HOUSE_4"
+    },
+    {
+      "old": "QuantumHavoraNorthHouse5",
+      "new": "Havora_NorthHouse_5",
+      "old_number": 47,
+      "id": "MAP_HAVORA_NORTH_HOUSE_5"
+    },
+    {
+      "old": "QuantumHavoraNorthLodge",
+      "new": "Havora_NorthLodge",
+      "old_number": 48,
+      "id": "MAP_HAVORA_NORTH_LODGE"
+    },
+    {
+      "old": "HavoraCoastalCliffs",
+      "new": "Havora_CoastalCliffs",
+      "old_number": 49,
+      "id": "MAP_HAVORA_COASTAL_CLIFFS"
+    }
+  ],
+  "landmarks": {
+    "Havora Harbor": "Havora_Harbor",
+    "Corvala Corals": null,
+    "Eldervik Woods": "Eldervik_Woods",
+    "Lake Myrvatn": null,
+    "Frostfell Mountains": "Frostfell_Mountains"
+  },
+  "base_commit": "4d5a43d9708937b0f9e4a4fdbf2db3e904bd4cda"
+}

@@ -16,6 +16,7 @@
 #include "data/havora_lock_geometry.h"
 #include "constants/maps.h"
 #include "constants/vars.h"
+#include "constants/flags.h"
 #include "pokemon.h"
 #include "malloc.h"
 #include "script_pokemon_util.h"
@@ -48,11 +49,11 @@ static const struct SpriteTemplate sLaunchTemplate={
  .anims=gDummySpriteAnimTable,.images=NULL,.affineAnims=gDummySpriteAffineAnimTable,.callback=LaunchPassenger
 };
 // State is versioned; existing victories and crest flags are independent.
-#define VERSION 0xC000
-static const u16 sLockBase[]=INCBIN_U16("data/layouts/HavoraCaptainsTrial/base.bin");
+#define VERSION 0x4000
+static const u16 sLockBase[]=INCBIN_U16("data/layouts/Havora_Gym/map.bin");
 static bool8 Here(void)
 {
- return gSaveBlock1Ptr->location.mapGroup==MAP_GROUP(MAP_QUANTUM_HAVORA_GYM)&&gSaveBlock1Ptr->location.mapNum==MAP_NUM(MAP_QUANTUM_HAVORA_GYM);
+ return gSaveBlock1Ptr->location.mapGroup==MAP_GROUP(MAP_HAVORA_GYM)&&gSaveBlock1Ptr->location.mapNum==MAP_NUM(MAP_HAVORA_GYM);
 }
 static u8 Water(u8 ch){u16 n=VarGet(VAR_HAVORA_GYM_STATE)&31;while(ch--)n/=3;return n%3;}
 static u8 Boat(u8 b){return (VarGet(VAR_HAVORA_GYM_STATE)>>(b?8:5))&7;}
@@ -68,63 +69,76 @@ static void SetWater(u8 src,u8 dst)
  VarSet(VAR_HAVORA_GYM_STATE,(s&~31)|(w[0]+3*w[1]+9*w[2]));
 }
 static void SetMoor(u8 m){VarSet(VAR_HAVORA_GYM_STATE,(VarGet(VAR_HAVORA_GYM_STATE)&~0x1800)|(m<<11));}
-static void ResetLock(void){VarSet(VAR_HAVORA_GYM_STATE,VERSION|8|(4<<8));}
+static void ResetLock(void){VarSet(VAR_HAVORA_GYM_STATE,VERSION|(4<<8));}
 static bool8 Valid(void)
 {
  u16 s=VarGet(VAR_HAVORA_GYM_STATE);
- return (s&VERSION)==VERSION&&(s&31)<27&&Water(0)+Water(1)+Water(2)==4&&Boat(0)<6&&Boat(1)<6&&Moor()<3;
+ return (s&0xC000)==VERSION&&(s&31)<27&&Boat(0)<6&&Boat(1)<6&&Moor()<3;
 }
 static u8 Node(s16 x,s16 y)
 {
  u8 n;
- if(x>=40&&x<=43&&y>=21&&y<=25)return 6;
- if(x>=64&&x<=68&&y>=22&&y<=25)return 7;
- for(n=0;n<6;n++)if(x>=sBank[n]&&x<sBank[n]+5&&y>=11&&y<=29)return n;
- if(x>=1&&x<=5&&y>=24&&y<=37)return 0;
+ if(x>=39&&x<=42&&y>=11&&y<=14)return 6;
+ if(x>=63&&x<=68&&y>=21&&y<=24)return 7;
+ for(n=0;n<6;n++)if(x>=sBank[n]&&x<sBank[n]+5&&y>=4&&y<=17)return n;
+ if(x>=1&&x<=5&&y>=18&&y<=28)return 0;
  return 255;
 }
 static void Tile(s16 x,s16 y,u16 tile,bool8 blocked,u8 z){MapGridSetMetatileEntryAt(x+MAP_OFFSET,y+MAP_OFFSET,tile|(blocked?0x400:0)|(z<<12));}
-static void Line(u8 x,u8 y,u8 xx,u8 yy,u16 t,u8 z)
+// The captain is inside the flooded bunker. Hide him as soon as its water
+// starts rising, and restore him only after the LOW profile is fully exposed.
+static void UpdateWaterOcclusion(u8 taskId,bool8 objectsReady)
 {
- s8 dx=x<xx?1:x>xx?-1:0,dy=y<yy?1:y>yy?-1:0;
- while(TRUE){Tile(x,y,t,FALSE,z);if(x==xx&&y==yy)break;x+=dx;y+=dy;}
+ bool8 submerged=Water(2)!=0;
+ if(taskId!=TASK_NONE&&gTasks[taskId].data[0]==4&&gTasks[taskId].data[1]==2
+    &&gTasks[taskId].data[2]>0&&gTasks[taskId].data[3]>0)submerged=TRUE;
+ if(submerged)
+ {
+  FlagSet(FLAG_TEMP_1F);
+  RemoveObjectEventByLocalIdAndMap(LOCK_CAPTAIN_LOCAL_ID,MAP_NUM(MAP_HAVORA_GYM),MAP_GROUP(MAP_HAVORA_GYM));
+ }
+ else
+ {
+  FlagClear(FLAG_TEMP_1F);
+  if(objectsReady&&GetObjectEventIdByLocalIdAndMap(LOCK_CAPTAIN_LOCAL_ID,MAP_NUM(MAP_HAVORA_GYM),MAP_GROUP(MAP_HAVORA_GYM))==OBJECT_EVENTS_COUNT)
+   TrySpawnObjectEvent(LOCK_CAPTAIN_LOCAL_ID,MAP_NUM(MAP_HAVORA_GYM),MAP_GROUP(MAP_HAVORA_GYM));
+ }
 }
-// Decode both endpoints during transfers. Only changed cells transition; high
-// platforms, berths and galleries keep their exact plan coordinates throughout.
+// Water-profile differences overlay the compiled Porymap map. All-LOW is the
+// authored default, so future Porymap edits survive entry, resume and reset.
 static void Draw(bool8 redraw)
 {
  u16 i,oldIndex=sLockMapOffsets[VarGet(VAR_HAVORA_GYM_STATE)&31],newIndex=oldIndex;
  u16 left=0,nextLeft=0,tile=0,nextTile=0;
- u8 x,y,b,tid=FindTaskIdByFunc(MoveBoat),m=Moor();
- bool8 transfer=tid!=TASK_NONE&&gTasks[tid].data[0]==2;
- bool8 occupied=tid!=TASK_NONE&&gTasks[tid].data[0]==1&&gTasks[tid].data[7];
+ u16 baseIndex=sLockMapOffsets[0],baseLeft=0,baseTile=0;
+ u8 x,y,tid=FindTaskIdByFunc(MoveBoat);
+ bool8 transfer=tid!=TASK_NONE&&(gTasks[tid].data[0]==2||gTasks[tid].data[0]==4);
  if(transfer)
  {
   static const u8 weight[]={1,3,9};
   u8 next=(VarGet(VAR_HAVORA_GYM_STATE)&31)-weight[gTasks[tid].data[1]]+weight[gTasks[tid].data[2]];
+  if(gTasks[tid].data[0]==4)next=(VarGet(VAR_HAVORA_GYM_STATE)&31)+weight[gTasks[tid].data[1]]*(gTasks[tid].data[2]-Water(gTasks[tid].data[1]));
   newIndex=sLockMapOffsets[next];
  }
  for(i=0;i<LOCK_WIDTH*LOCK_HEIGHT;i++)
  {
   if(!left){left=sLockMapRuns[oldIndex].count;tile=sLockMapRuns[oldIndex++].tile;}left--;
   if(!nextLeft){nextLeft=sLockMapRuns[newIndex].count;nextTile=sLockMapRuns[newIndex++].tile;}nextLeft--;
+  if(!baseLeft){baseLeft=sLockMapRuns[baseIndex].count;baseTile=sLockMapRuns[baseIndex++].tile;}baseLeft--;
   x=i%LOCK_WIDTH;y=i/LOCK_WIDTH;
-  MapGridSetMetatileEntryAt(x+7,y+7,transfer&&gTasks[tid].data[3]>=1+x%7?nextTile:tile);
+  {
+   u16 oldArt=tile==baseTile?sLockBase[i]:tile;
+   u16 newArt=nextTile==baseTile?sLockBase[i]:nextTile;
+   MapGridSetMetatileEntryAt(x+7,y+7,transfer&&gTasks[tid].data[3]>=1+x%7?newArt:oldArt);
+  }
  }
- for(b=0;b<2;b++)
- {
-  u8 berth=Boat(b);s16 bx=sShore[berth]+2*sBankDirection[berth],by=LOCK_BERTH_ROW+3*b;
-  if(occupied&&gTasks[tid].data[1]==b)continue;
-  for(y=0;y<3;y++)for(x=0;x<3;x++)Tile(bx+x-1,by+y-1,(b?0x390:0x2bc)+y*3+x,TRUE,1);
- }
- if(m==1&&Boat(1)==3&&Water(1)==2&&!transfer)Line(49,22,44,22,0x318,9);
- if(m==2&&Boat(1)==5&&Water(1)==2&&Water(2)==2&&!transfer)Line(53,22,64,22,0x318,9);
- if(tid!=TASK_NONE&&gTasks[tid].data[10])
+ if(tid!=TASK_NONE&&gTasks[tid].data[10]>=0x300&&gTasks[tid].data[10]<=0x303)
  {
   struct Task *t=&gTasks[tid];static const u8 frames[]={1,0,0,1,2,2,1,1};
   u8 elevation=MapGridGetElevationAt(t->data[8]+MAP_OFFSET,t->data[9]+MAP_OFFSET);
   Tile(t->data[8],t->data[9],0x3a0+(t->data[10]-0x300)*3+frames[t->data[3]&7],TRUE,elevation);
  }
+ UpdateWaterOcclusion(tid,redraw);
  if(redraw)DrawWholeMapView();
 }
 void HavoraGym_OnLoad(void)
@@ -132,6 +146,7 @@ void HavoraGym_OnLoad(void)
  if(!Here())return;
  if(VarGet(VAR_HAVORA_GYM_PROGRESS)&4)VarSet(VAR_HAVORA_GYM_PROGRESS,63);
  if(!Valid()){ResetLock();gSaveBlock1Ptr->pos.x=LOCK_ENTRY_X;gSaveBlock1Ptr->pos.y=LOCK_ENTRY_Y;}
+ if(gSaveBlock1Ptr->pos.x>=LOCK_WIDTH||gSaveBlock1Ptr->pos.y>=LOCK_HEIGHT){gSaveBlock1Ptr->pos.x=LOCK_ENTRY_X;gSaveBlock1Ptr->pos.y=LOCK_ENTRY_Y;}
  Draw(FALSE);
 }
 void HavoraGym_OnResume(void){if(Here()){if(!Valid())ResetLock();Draw(TRUE);}}
@@ -164,8 +179,8 @@ static bool8 PlanBoatRoute(u8 id,u8 boat,u8 src,u8 dst)
  u8 *previous=AllocZeroed(cells);
  u16 *queue=Alloc(cells*sizeof(u16)),*path;
  u16 head=0,tail=0,start,goal,at,count=0,i;
- s16 sx=sShore[src]+2*sBankDirection[src],sy=LOCK_BERTH_ROW+3*boat;
- s16 dx=sShore[dst]+2*sBankDirection[dst];
+ s16 sx=sShore[src]+LOCK_HULL_OFFSET*sBankDirection[src],sy=LOCK_BERTH_ROW+3*boat;
+ s16 dx=sShore[dst]+LOCK_HULL_OFFSET*sBankDirection[dst];
  static const s8 ox[]={0,-1,1,0,0},oy[]={0,0,0,-1,1};
  if(!previous||!queue){Free(previous);Free(queue);return FALSE;}
  start=sy*LOCK_WIDTH+sx;goal=sy*LOCK_WIDTH+dx;queue[tail++]=start;previous[start]=255;
@@ -194,13 +209,13 @@ static void Waypoint(struct Task *t,s16 *x,s16 *y)
 {
  u8 boat=t->data[1],src=t->data[2],dst=t->data[3],phase=t->data[4];
  *y=LOCK_BERTH_ROW+boat*3;
- if(phase==0){*x=sShore[src]+2*sBankDirection[src];return;}
+ if(phase==0){*x=sShore[src]+LOCK_HULL_OFFSET*sBankDirection[src];return;}
  if(phase==1&&t->data[14]<t->data[13])
  {
   u16 *path=(u16 *)GetWordTaskArg(t-gTasks,11),at=path[t->data[14]];
   *x=at%LOCK_WIDTH;*y=at/LOCK_WIDTH;return;
  }
- *x=phase==8?sShore[dst]:sShore[dst]+2*sBankDirection[dst];
+ *x=phase==8?sShore[dst]:sShore[dst]+LOCK_HULL_OFFSET*sBankDirection[dst];
 }
 static void MoveBoat(u8 id)
 {
@@ -211,6 +226,19 @@ static void MoveBoat(u8 id)
   if(++t->data[5]<8)return;
   t->data[5]=0;
   if(++t->data[3]==8)Finish(id);else Draw(TRUE);
+  return;
+ }
+ if(t->data[0]==4)
+ {
+  static const u8 weight[]={1,3,9};
+  if(++t->data[5]<12)return;t->data[5]=0;t->data[3]++;
+  if(t->data[3]==8)
+  {
+   u16 s=VarGet(VAR_HAVORA_GYM_STATE);
+   u8 next=(s&31)+weight[t->data[1]]*(t->data[2]-Water(t->data[1]));
+   VarSet(VAR_HAVORA_GYM_STATE,(s&~31)|next);Finish(id);
+  }
+  else Draw(TRUE);
   return;
  }
  if(t->data[0]==2)
@@ -311,6 +339,14 @@ void HavoraGym_Control(void)
  u16 progress=VarGet(VAR_HAVORA_GYM_PROGRESS),s=VarGet(VAR_HAVORA_GYM_STATE);
  gSpecialVar_Result=0;if(!Here())return;if(!Valid())ResetLock();
  if(FindTaskIdByFunc(MoveBoat)!=TASK_NONE){gSpecialVar_Result=4;return;}
+ // Artwork review uses independent levels. The old conserved-water puzzle
+ // cannot start at LOW/LOW/LOW; sailing/mooring await the new design.
+ if(cmd==26)
+ {
+  if(a>=3||b>=3){gSpecialVar_Result=3;return;}
+  gSpecialVar_Result=Start(4,a,b,0)?1:4;return;
+ }
+ if(cmd==10||cmd==11||cmd==12||cmd==13||cmd==14||cmd==20){gSpecialVar_Result=9;return;}
  // Progress bits preserve the original crew/navigator/captain assignments.
  if(cmd==22){VarSet(VAR_HAVORA_GYM_PROGRESS,progress|a);gSpecialVar_Result=1;return;}
  if(cmd==23){gSpecialVar_Result=(progress&a)==a;return;}

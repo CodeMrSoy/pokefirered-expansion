@@ -479,4 +479,5 @@ gSpecials::
 	def_special HavoraGym_OnResume
 	def_special HavoraGym_OnLoad
 	def_special HavoraGym_Control
+	def_special OpenPokeGlassSystemApp
 gSpecialsEnd::

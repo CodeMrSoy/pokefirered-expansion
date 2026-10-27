@@ -1,6 +1,6 @@
 # Havora Captain’s Trial: first playable interior
 
-A dedicated 40×36 boathouse replaces only the QuantumHavoraGym Pewter placeholder. The three exit warp indices and their exterior destination remain intact; exterior maps, painstaking cliffs, events, tileset files, and connection offsets are unchanged.
+A dedicated 40×36 boathouse replaces only the Havora_Gym Pewter placeholder. The three exit warp indices and their exterior destination remain intact; exterior maps, painstaking cliffs, events, tileset files, and connection offsets are unchanged.
 
 ## Native artwork
 

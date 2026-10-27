@@ -35,8 +35,8 @@ def scene(name,layout):
         im.alpha_composite(image.convert('RGBA'),(obj['x']*16+8-w//2,obj['y']*16+16-h))
     return im.convert('RGB')
 def main(out):
-    city=scene('HavoraMarket','LAYOUT_HAVORA_MARKET')
-    harbor=scene('HavoraHarbor','LAYOUT_HAVORA_HARBOR')
+    city=scene('Havora_Market','LAYOUT_HAVORA_MARKET')
+    harbor=scene('Havora_Harbor','LAYOUT_HAVORA_HARBOR')
     cityheight=city.height*2;footer=88+cityheight+1024
     sheet=Image.new('RGB',(1280,footer+136),'#132532');d=ImageDraw.Draw(sheet)
     font=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',24)
@@ -47,7 +47,7 @@ def main(out):
     sheet.paste(harbor.resize((1280,1024),Image.Resampling.NEAREST),(0,88+cityheight))
     d.text((20,footer+20),'Two stairways join the raised market to a lower garden promenade and the existing harbor.',font=small,fill='white')
     d.text((20,footer+52),'Actual tile-and-sprite render. Dedicated city pair keeps compatible harbor edge graphics and animated water.',font=small,fill='#badce7')
-    d.text((20,footer+84),'Porymap map: HavoraMarket | Primary: HavoraCityPrimary | Secondary: HavoraCity',font=small,fill='#badce7')
+    d.text((20,footer+84),'Porymap map: Havora_Market | Primary: HavoraCityPrimary | Secondary: HavoraCity',font=small,fill='#badce7')
     sheet.save(out)
 if __name__=='__main__':
     import sys

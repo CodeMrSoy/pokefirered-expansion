@@ -1,0 +1,40 @@
+{
+  "id": "MAP_MYRDAL_CITY",
+  "name": "Myrdal_City",
+  "layout": "LAYOUT_MYRDAL_CITY",
+  "music": "MUS_SEVII_123",
+  "region_map_section": "MAPSEC_MYRDAL_CITY",
+  "requires_flash": false,
+  "weather": "WEATHER_SUNNY",
+  "map_type": "MAP_TYPE_TOWN",
+  "allow_cycling": true,
+  "allow_escaping": false,
+  "allow_running": true,
+  "show_map_name": true,
+  "floor_number": 0,
+  "battle_scene": "MAP_BATTLE_SCENE_NORMAL",
+  "connections": [
+    {
+      "direction": "left",
+      "offset": 0,
+      "map": "MAP_ELDERVIK_WOODS"
+    },
+    {
+      "direction": "up",
+      "offset": 0,
+      "map": "MAP_FROSTFELL_MOUNTAINS"
+    }
+  ],
+  "object_events": [],
+  "warp_events": [
+    {
+      "x": 11,
+      "y": 10,
+      "elevation": 0,
+      "dest_map": "MAP_MYRDAL_CITY_POKEMON_CENTER_1_F",
+      "dest_warp_id": "1"
+    }
+  ],
+  "coord_events": [],
+  "bg_events": []
+}

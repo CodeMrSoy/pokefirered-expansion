@@ -1,3 +1,15 @@
+const u32 gTrainerFrontPic_QuantumCody[] = INCBIN_U32("graphics/avatars/cody/front.4bpp.lz");
+const u32 gTrainerFrontPic_QuantumBen[] = INCBIN_U32("graphics/avatars/ben/front.4bpp.lz");
+const u32 gTrainerFrontPic_QuantumBrandon[] = INCBIN_U32("graphics/avatars/brandon/front.4bpp.lz");
+const u16 gTrainerPalette_QuantumCody[] = INCBIN_U16("graphics/avatars/cody/trainer.gbapal");
+const u16 gTrainerPalette_QuantumBen[] = INCBIN_U16("graphics/avatars/ben/trainer.gbapal");
+const u16 gTrainerPalette_QuantumBrandon[] = INCBIN_U16("graphics/avatars/brandon/trainer.gbapal");
+const u16 gTrainerBackPalette_QuantumCody[] = INCBIN_U16("graphics/avatars/cody/back.gbapal");
+const u16 gTrainerBackPalette_QuantumBen[] = INCBIN_U16("graphics/avatars/ben/back.gbapal");
+const u16 gTrainerBackPalette_QuantumBrandon[] = INCBIN_U16("graphics/avatars/brandon/back.gbapal");
+const u8 gTrainerBackPic_QuantumCody[] = INCBIN_U8("graphics/avatars/cody/back.4bpp");
+const u8 gTrainerBackPic_QuantumBen[] = INCBIN_U8("graphics/avatars/ben/back.4bpp");
+const u8 gTrainerBackPic_QuantumBrandon[] = INCBIN_U8("graphics/avatars/brandon/back.4bpp");
 const u32 gTrainerFrontPic_QuantumBrendan[] = INCBIN_U32("graphics/avatars/brendan/front.4bpp.lz");
 const u16 gTrainerPalette_QuantumBrendan[] = INCBIN_U16("graphics/avatars/brendan/trainer.gbapal");
 const u8 gTrainerBackPic_QuantumBrendan[] = INCBIN_U8("graphics/avatars/brendan/back.4bpp");
@@ -479,6 +491,9 @@ const u16 gTrainerPalette_Steven[] = INCBIN_U16("graphics/trainers/palettes/stev
 
 const struct TrainerSprite gTrainerSprites[] =
 {
+    TRAINER_SPRITE(TRAINER_PIC_QUANTUM_CODY, gTrainerFrontPic_QuantumCody, TRAINER_PIC_SIZE, gTrainerPalette_QuantumCody, 8, 1),
+    TRAINER_SPRITE(TRAINER_PIC_QUANTUM_BEN, gTrainerFrontPic_QuantumBen, TRAINER_PIC_SIZE, gTrainerPalette_QuantumBen, 8, 1),
+    TRAINER_SPRITE(TRAINER_PIC_QUANTUM_BRANDON, gTrainerFrontPic_QuantumBrandon, TRAINER_PIC_SIZE, gTrainerPalette_QuantumBrandon, 8, 1),
     TRAINER_SPRITE(TRAINER_PIC_QUANTUM_BRENDAN, gTrainerFrontPic_QuantumBrendan, TRAINER_PIC_SIZE, gTrainerPalette_QuantumBrendan, 8, 1),
     TRAINER_SPRITE(TRAINER_PIC_QUANTUM_MAY, gTrainerFrontPic_QuantumMay, TRAINER_PIC_SIZE, gTrainerPalette_QuantumMay, 8, 1),
     TRAINER_SPRITE(TRAINER_PIC_AQUA_LEADER_ARCHIE, gTrainerFrontPic_AquaLeaderArchie, TRAINER_PIC_SIZE, gTrainerPalette_AquaLeaderArchie, 8, 1),
@@ -772,6 +787,28 @@ const struct SpriteFrameImage gTrainerBackPicTable_QuantumMay[] = {
     BACK_PIC_TABLE_ENTRY(gTrainerBackPic_QuantumMay, 3),
 };
 
+const struct SpriteFrameImage gTrainerBackPicTable_QuantumBen[] = {
+    BACK_PIC_TABLE_ENTRY(gTrainerBackPic_QuantumBen, 0),
+    BACK_PIC_TABLE_ENTRY(gTrainerBackPic_QuantumBen, 1),
+    BACK_PIC_TABLE_ENTRY(gTrainerBackPic_QuantumBen, 2),
+    BACK_PIC_TABLE_ENTRY(gTrainerBackPic_QuantumBen, 3),
+    BACK_PIC_TABLE_ENTRY(gTrainerBackPic_QuantumBen, 4),
+};
+const struct SpriteFrameImage gTrainerBackPicTable_QuantumBrandon[] = {
+    BACK_PIC_TABLE_ENTRY(gTrainerBackPic_QuantumBrandon, 0),
+    BACK_PIC_TABLE_ENTRY(gTrainerBackPic_QuantumBrandon, 1),
+    BACK_PIC_TABLE_ENTRY(gTrainerBackPic_QuantumBrandon, 2),
+    BACK_PIC_TABLE_ENTRY(gTrainerBackPic_QuantumBrandon, 3),
+    BACK_PIC_TABLE_ENTRY(gTrainerBackPic_QuantumBrandon, 4),
+};
+const struct SpriteFrameImage gTrainerBackPicTable_QuantumCody[] = {
+    BACK_PIC_TABLE_ENTRY(gTrainerBackPic_QuantumCody, 0),
+    BACK_PIC_TABLE_ENTRY(gTrainerBackPic_QuantumCody, 1),
+    BACK_PIC_TABLE_ENTRY(gTrainerBackPic_QuantumCody, 2),
+    BACK_PIC_TABLE_ENTRY(gTrainerBackPic_QuantumCody, 3),
+    BACK_PIC_TABLE_ENTRY(gTrainerBackPic_QuantumCody, 4),
+};
+
 #define TRAINER_BACK_SPRITE(trainerId, yOffset, backPicData, backPicTable, paletteData, anim)                                    \
     [trainerId] =                                                                                                               \
     {                                                                                                                           \
@@ -783,6 +820,9 @@ const struct SpriteFrameImage gTrainerBackPicTable_QuantumMay[] = {
 
 const struct TrainerBacksprite gTrainerBacksprites[] =
 {
+    TRAINER_BACK_SPRITE(TRAINER_BACK_PIC_QUANTUM_CODY, 5, gTrainerBackPic_QuantumCody, gTrainerBackPicTable_QuantumCody, gTrainerBackPalette_QuantumCody, sBackAnims_Kanto),
+    TRAINER_BACK_SPRITE(TRAINER_BACK_PIC_QUANTUM_BEN, 5, gTrainerBackPic_QuantumBen, gTrainerBackPicTable_QuantumBen, gTrainerBackPalette_QuantumBen, sBackAnims_Kanto),
+    TRAINER_BACK_SPRITE(TRAINER_BACK_PIC_QUANTUM_BRANDON, 5, gTrainerBackPic_QuantumBrandon, gTrainerBackPicTable_QuantumBrandon, gTrainerBackPalette_QuantumBrandon, sBackAnims_Kanto),
     TRAINER_BACK_SPRITE(TRAINER_BACK_PIC_QUANTUM_BRENDAN, 4, gTrainerBackPic_QuantumBrendan, gTrainerBackPicTable_QuantumBrendan, gTrainerPalette_QuantumBrendan, sBackAnims_Hoenn),
     TRAINER_BACK_SPRITE(TRAINER_BACK_PIC_QUANTUM_MAY, 4, gTrainerBackPic_QuantumMay, gTrainerBackPicTable_QuantumMay, gTrainerPalette_QuantumMay, sBackAnims_Hoenn),
     TRAINER_BACK_SPRITE(TRAINER_BACK_PIC_RED, 5, gTrainerBackPic_Red, gTrainerBackPicTable_Red, gTrainerPalette_RedBackPic, sBackAnims_Kanto),

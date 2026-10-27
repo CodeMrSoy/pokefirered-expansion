@@ -413,8 +413,14 @@ static const u32 sAvatarMap_brendan[] = INCBIN_U32("graphics/avatars/brendan/map
 static const u16 sAvatarMapPal_brendan[] = INCBIN_U16("graphics/avatars/brendan/map.gbapal");
 static const u32 sAvatarMap_may[] = INCBIN_U32("graphics/avatars/may/map.4bpp.lz");
 static const u16 sAvatarMapPal_may[] = INCBIN_U16("graphics/avatars/may/map.gbapal");
-static const u32 *const sAvatarMapPics[] = {sAvatarMap_brendan, sAvatarMap_may};
-static const u16 *const sAvatarMapPalettes[] = {sAvatarMapPal_brendan, sAvatarMapPal_may};
+static const u32 sAvatarMap_cody[] = INCBIN_U32("graphics/avatars/cody/map.4bpp.lz");
+static const u32 sAvatarMap_ben[] = INCBIN_U32("graphics/avatars/ben/map.4bpp.lz");
+static const u32 sAvatarMap_brandon[] = INCBIN_U32("graphics/avatars/brandon/map.4bpp.lz");
+static const u16 sAvatarMapPal_cody[] = INCBIN_U16("graphics/avatars/cody/map.gbapal");
+static const u16 sAvatarMapPal_ben[] = INCBIN_U16("graphics/avatars/ben/map.gbapal");
+static const u16 sAvatarMapPal_brandon[] = INCBIN_U16("graphics/avatars/brandon/map.gbapal");
+static const u32 *const sAvatarMapPics[] = {sAvatarMap_brendan, sAvatarMap_may, sAvatarMap_cody, sAvatarMap_ben, sAvatarMap_brandon};
+static const u16 *const sAvatarMapPalettes[] = {sAvatarMapPal_brendan, sAvatarMapPal_may, sAvatarMapPal_cody, sAvatarMapPal_ben, sAvatarMapPal_brandon};
 static const u32 sRegionMap_Gfx[] = INCBIN_U32("graphics/region_map/region_map.4bpp.lz");
 #ifdef QUANTUM_MAPSEC_START
 static const u32 sQuantumAtlas_Gfx[] = INCBIN_U32("graphics/region_map/quantum_atlas.bin.lz");
@@ -780,11 +786,11 @@ static const u8 sTextColors[] = {TEXT_DYNAMIC_COLOR_6, TEXT_COLOR_WHITE, TEXT_CO
 
 static const u8 sMapFlyDestinations[][3] = {
 #ifdef QUANTUM_MAPSEC_START
-    [MAPSEC_QUANTUM_PORT_CITY - KANTO_MAPSEC_START] = {MAP(MAP_HAVORA_NORTH_QUADRANT), HEAL_LOCATION_QUANTUM_PORT_CITY},
-    [MAPSEC_QUANTUM_COASTAL_CITY - KANTO_MAPSEC_START] = {MAP(MAP_QUANTUM_COASTAL_CITY), HEAL_LOCATION_QUANTUM_COASTAL_CITY},
-    [MAPSEC_QUANTUM_FOREST_TOWN - KANTO_MAPSEC_START] = {MAP(MAP_QUANTUM_FOREST_TOWN), HEAL_LOCATION_QUANTUM_FOREST_TOWN},
-    [MAPSEC_QUANTUM_LAKE_TOWN - KANTO_MAPSEC_START] = {MAP(MAP_QUANTUM_LAKE_TOWN), HEAL_LOCATION_QUANTUM_LAKE_TOWN},
-    [MAPSEC_QUANTUM_SNOW_TOWN - KANTO_MAPSEC_START] = {MAP(MAP_QUANTUM_SNOW_TOWN), HEAL_LOCATION_QUANTUM_SNOW_TOWN},
+    [MAPSEC_HAVORA_CITY - KANTO_MAPSEC_START] = {MAP(MAP_HAVORA_NORTH_QUADRANT), HEAL_LOCATION_QUANTUM_PORT_CITY},
+    [MAPSEC_CORVALA_TOWN - KANTO_MAPSEC_START] = {MAP(MAP_CORVALA_TOWN), HEAL_LOCATION_QUANTUM_COASTAL_CITY},
+    [MAPSEC_ELDERVALE_VILLAGE - KANTO_MAPSEC_START] = {MAP(MAP_ELDERVALE_VILLAGE), HEAL_LOCATION_QUANTUM_FOREST_TOWN},
+    [MAPSEC_MYRDAL_CITY - KANTO_MAPSEC_START] = {MAP(MAP_MYRDAL_CITY), HEAL_LOCATION_QUANTUM_LAKE_TOWN},
+    [MAPSEC_ISKORA_VILLAGE - KANTO_MAPSEC_START] = {MAP(MAP_ISKORA_VILLAGE), HEAL_LOCATION_QUANTUM_SNOW_TOWN},
 
 #endif
     [MAPSEC_PALLET_TOWN         - KANTO_MAPSEC_START] = {MAP(MAP_PALLET_TOWN),                           HEAL_LOCATION_PALLET_TOWN},
@@ -2880,9 +2886,9 @@ static u16 GetDungeonMapsecUnderCursor(void)
 static u8 GetMapsecType(u8 mapsec)
 {
 #ifdef QUANTUM_MAPSEC_START
-    if (mapsec >= MAPSEC_QUANTUM_PORT_CITY && mapsec <= MAPSEC_QUANTUM_SNOW_TOWN)
+    if (mapsec >= MAPSEC_HAVORA_CITY && mapsec <= MAPSEC_ISKORA_VILLAGE)
         return FlagGet(FLAG_QUANTUM_ARRIVED)
-            && FlagGet(FLAG_QUANTUM_PORT_CENTER + mapsec - MAPSEC_QUANTUM_PORT_CITY)
+            && FlagGet(FLAG_QUANTUM_PORT_CENTER + mapsec - MAPSEC_HAVORA_CITY)
             ? MAPSECTYPE_VISITED : MAPSECTYPE_NOT_VISITED;
     if (mapsec >= QUANTUM_MAPSEC_START && mapsec <= QUANTUM_MAPSEC_END)
         return MAPSECTYPE_ROUTE;

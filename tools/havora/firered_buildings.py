@@ -56,7 +56,7 @@ def exteriors():
         d.polygon(right,fill=roof_shadow,outline=ink)
         for offset in [7,14,21]:
             d.line((6,34+offset,41,5+offset),fill=roof_light)
-            d.line((43,5+offset,73,34+offset),fill=roof)
+            d.line((44, 2+offset,73,34+offset),fill=roof)
             for x in range(12+(offset//7%2)*4,39,8):
                 y=34-(x-5)*30//37+offset-4
                 d.line((x,y,x,y+2),fill=roof_shadow)
@@ -73,7 +73,7 @@ def exteriors():
             else:d.line((10,y,69,y),fill=timber_shadow)
         d.line((8,61,42,33,71,61),fill=ink,width=3)
         d.line((8,59,41,31),fill=roof_light)
-        d.line((43,33,72,61),fill=roof)
+        d.line((43, 15,72,61),fill=roof)
         d.rectangle((9,62,70,65),fill=beam)
         d.line((10,62,69,62),fill=beam_light)
         d.line((18,59,39,39),fill=beam,width=2)

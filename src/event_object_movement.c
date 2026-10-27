@@ -553,6 +553,12 @@ static const struct SpritePalette sObjectEventSpritePalettes[] = {
     {sAvatarBrendanPalette, OBJ_EVENT_PAL_TAG_AVATAR_RSBRENDAN_REFLECTION},
     {sAvatarMayPalette, OBJ_EVENT_PAL_TAG_AVATAR_RSMAY},
     {sAvatarMayPalette, OBJ_EVENT_PAL_TAG_AVATAR_RSMAY_REFLECTION},
+    {sAvatarCodyPalette, OBJ_EVENT_PAL_TAG_AVATAR_CODY},
+    {sAvatarBenPalette, OBJ_EVENT_PAL_TAG_AVATAR_BEN},
+    {sAvatarBrandonPalette, OBJ_EVENT_PAL_TAG_AVATAR_BRANDON},
+    {sAvatarCodyPalette, OBJ_EVENT_PAL_TAG_AVATAR_CODY_REFLECTION},
+    {sAvatarBenPalette, OBJ_EVENT_PAL_TAG_AVATAR_BEN_REFLECTION},
+    {sAvatarBrandonPalette, OBJ_EVENT_PAL_TAG_AVATAR_BRANDON_REFLECTION},
 #ifdef BUGFIX
     {NULL,                                    OBJ_EVENT_PAL_TAG_NONE},
 #else
@@ -1798,7 +1804,7 @@ u16 LoadSheetGraphicsInfo(const struct ObjectEventGraphicsInfo *info, u16 uuid, 
         sprite->usingSheet = FALSE;
 
     }
-    else if (sprite && !sprite->sheetTileStart && sprite->oam.size != info->oam->size)
+    else if (sprite && !sprite->sheetTileStart && (sprite->oam.size != info->oam->size || sprite->oam.shape != info->oam->shape))
     {
         // Not usingSheet and info size differs; realloc tiles
         ReallocSpriteTiles(sprite, info->images->size);
@@ -2933,11 +2939,12 @@ static void ObjectEventSetGraphics(struct ObjectEvent *objectEvent, const struct
 {
     struct Sprite *sprite = &gSprites[objectEvent->spriteId];
     u32 i = FindObjectEventPaletteIndexByTag(graphicsInfo->paletteTag);
-    if (i != 0xFF && graphicsInfo->paletteSlot != PALSLOT_PLAYER)
+    if (i != 0xFF)
         UpdateSpritePalette(&sObjectEventSpritePalettes[i], sprite);
 
     // If gfx size changes, we need to reallocate tiles
-    if (OW_LARGE_OW_SUPPORT && !OW_GFX_COMPRESS && graphicsInfo->oam->size != sprite->oam.size)
+    if (OW_LARGE_OW_SUPPORT && !OW_GFX_COMPRESS
+     && (graphicsInfo->oam->size != sprite->oam.size || graphicsInfo->oam->shape != sprite->oam.shape))
         ReallocSpriteTiles(sprite, graphicsInfo->images->size);
 
     #if OW_GFX_COMPRESS

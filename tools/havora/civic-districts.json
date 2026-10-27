@@ -4,9 +4,9 @@
     "north": "MAP_QUANTUM_HAVORA_NORTH_DISTRICT",
     "coast": "MAP_QUANTUM_HAVORA_COASTAL_DAYCARE",
     "walk": "MAP_QUANTUM_HAVORA_NORTH_WALK",
-    "gym": "MAP_QUANTUM_HAVORA_GYM",
-    "mart": "MAP_QUANTUM_HAVORA_MART",
-    "daycare": "MAP_QUANTUM_HAVORA_DAYCARE"
+    "gym": "MAP_HAVORA_GYM",
+    "mart": "MAP_HAVORA_MART",
+    "daycare": "MAP_HAVORA_DAYCARE_INTERIOR"
   },
   "west_dimensions": [
     48,

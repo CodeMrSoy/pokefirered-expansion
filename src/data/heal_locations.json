@@ -165,39 +165,39 @@
       "map": "MAP_HAVORA_NORTH_QUADRANT",
       "x": 52,
       "y": 11,
-      "respawn_map": "MAP_QUANTUM_PORT_CITY_POKEMON_CENTER1_F",
+      "respawn_map": "MAP_HAVORA_POKEMON_CENTER_1_F",
       "respawn_npc": "LOCALID_QUANTUM_PORT_CITY_NURSE"
     },
     {
       "id": "HEAL_LOCATION_QUANTUM_COASTAL_CITY",
-      "map": "MAP_QUANTUM_COASTAL_CITY",
+      "map": "MAP_CORVALA_TOWN",
       "x": 11,
       "y": 11,
-      "respawn_map": "MAP_QUANTUM_COASTAL_CITY_POKEMON_CENTER1_F",
+      "respawn_map": "MAP_CORVALA_TOWN_POKEMON_CENTER_1_F",
       "respawn_npc": "LOCALID_QUANTUM_COASTAL_CITY_NURSE"
     },
     {
       "id": "HEAL_LOCATION_QUANTUM_FOREST_TOWN",
-      "map": "MAP_QUANTUM_FOREST_TOWN",
+      "map": "MAP_ELDERVALE_VILLAGE",
       "x": 11,
       "y": 11,
-      "respawn_map": "MAP_QUANTUM_FOREST_TOWN_POKEMON_CENTER1_F",
+      "respawn_map": "MAP_ELDERVALE_VILLAGE_POKEMON_CENTER_1_F",
       "respawn_npc": "LOCALID_QUANTUM_FOREST_TOWN_NURSE"
     },
     {
       "id": "HEAL_LOCATION_QUANTUM_LAKE_TOWN",
-      "map": "MAP_QUANTUM_LAKE_TOWN",
+      "map": "MAP_MYRDAL_CITY",
       "x": 11,
       "y": 11,
-      "respawn_map": "MAP_QUANTUM_LAKE_TOWN_POKEMON_CENTER1_F",
+      "respawn_map": "MAP_MYRDAL_CITY_POKEMON_CENTER_1_F",
       "respawn_npc": "LOCALID_QUANTUM_LAKE_TOWN_NURSE"
     },
     {
       "id": "HEAL_LOCATION_QUANTUM_SNOW_TOWN",
-      "map": "MAP_QUANTUM_SNOW_TOWN",
+      "map": "MAP_ISKORA_VILLAGE",
       "x": 11,
       "y": 11,
-      "respawn_map": "MAP_QUANTUM_SNOW_TOWN_POKEMON_CENTER1_F",
+      "respawn_map": "MAP_ISKORA_VILLAGE_POKEMON_CENTER_1_F",
       "respawn_npc": "LOCALID_QUANTUM_SNOW_TOWN_NURSE"
     }
   ]

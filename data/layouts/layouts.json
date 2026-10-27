@@ -4383,219 +4383,219 @@
     },
     {
       "id": "LAYOUT_HAVORA_WEST_QUADRANT",
-      "name": "HavoraWestQuadrant_Layout",
+      "name": "Havora_WestQuadrant_Layout",
       "width": 36,
       "height": 80,
       "border_width": 2,
       "border_height": 2,
       "primary_tileset": "gTileset_HavoraCityPrimary",
       "secondary_tileset": "gTileset_HavoraCity",
-      "border_filepath": "data/layouts/HavoraWestQuadrant/border.bin",
-      "blockdata_filepath": "data/layouts/HavoraWestQuadrant/map.bin"
+      "border_filepath": "data/layouts/Havora_WestQuadrant/border.bin",
+      "blockdata_filepath": "data/layouts/Havora_WestQuadrant/map.bin"
     },
     {
-      "id": "LAYOUT_QUANTUM_COASTAL_CITY",
-      "name": "QuantumCoastalCity_Layout",
+      "id": "LAYOUT_CORVALA_TOWN",
+      "name": "Corvala_Town_Layout",
       "width": 24,
       "height": 24,
       "border_width": 2,
       "border_height": 2,
       "primary_tileset": "gTileset_General",
       "secondary_tileset": "gTileset_CinnabarIsland",
-      "border_filepath": "data/layouts/QuantumCoastalCity/border.bin",
-      "blockdata_filepath": "data/layouts/QuantumCoastalCity/map.bin"
+      "border_filepath": "data/layouts/Corvala_Town/border.bin",
+      "blockdata_filepath": "data/layouts/Corvala_Town/map.bin"
     },
     {
-      "id": "LAYOUT_QUANTUM_FOREST_TOWN",
-      "name": "QuantumForestTown_Layout",
+      "id": "LAYOUT_ELDERVALE_VILLAGE",
+      "name": "Eldervale_Village_Layout",
       "width": 24,
       "height": 24,
       "border_width": 2,
       "border_height": 2,
       "primary_tileset": "gTileset_General",
       "secondary_tileset": "gTileset_CinnabarIsland",
-      "border_filepath": "data/layouts/QuantumForestTown/border.bin",
-      "blockdata_filepath": "data/layouts/QuantumForestTown/map.bin"
+      "border_filepath": "data/layouts/Eldervale_Village/border.bin",
+      "blockdata_filepath": "data/layouts/Eldervale_Village/map.bin"
     },
     {
-      "id": "LAYOUT_QUANTUM_LAKE_TOWN",
-      "name": "QuantumLakeTown_Layout",
+      "id": "LAYOUT_MYRDAL_CITY",
+      "name": "Myrdal_City_Layout",
       "width": 24,
       "height": 24,
       "border_width": 2,
       "border_height": 2,
       "primary_tileset": "gTileset_General",
       "secondary_tileset": "gTileset_CinnabarIsland",
-      "border_filepath": "data/layouts/QuantumLakeTown/border.bin",
-      "blockdata_filepath": "data/layouts/QuantumLakeTown/map.bin"
+      "border_filepath": "data/layouts/Myrdal_City/border.bin",
+      "blockdata_filepath": "data/layouts/Myrdal_City/map.bin"
     },
     {
-      "id": "LAYOUT_QUANTUM_SNOW_TOWN",
-      "name": "QuantumSnowTown_Layout",
+      "id": "LAYOUT_ISKORA_VILLAGE",
+      "name": "Iskora_Village_Layout",
       "width": 24,
       "height": 24,
       "border_width": 2,
       "border_height": 2,
       "primary_tileset": "gTileset_General",
       "secondary_tileset": "gTileset_CinnabarIsland",
-      "border_filepath": "data/layouts/QuantumSnowTown/border.bin",
-      "blockdata_filepath": "data/layouts/QuantumSnowTown/map.bin"
+      "border_filepath": "data/layouts/Iskora_Village/border.bin",
+      "blockdata_filepath": "data/layouts/Iskora_Village/map.bin"
     },
     {
-      "id": "LAYOUT_QUANTUM_HARBOR_ROAD",
-      "name": "QuantumHarborRoad_Layout",
+      "id": "LAYOUT_VIDRA_HARBOR_ROAD",
+      "name": "Vidra_HarborRoad_Layout",
       "width": 24,
       "height": 24,
       "border_width": 2,
       "border_height": 2,
       "primary_tileset": "gTileset_General",
       "secondary_tileset": "gTileset_CinnabarIsland",
-      "border_filepath": "data/layouts/QuantumHarborRoad/border.bin",
-      "blockdata_filepath": "data/layouts/QuantumHarborRoad/map.bin"
+      "border_filepath": "data/layouts/Vidra_HarborRoad/border.bin",
+      "blockdata_filepath": "data/layouts/Vidra_HarborRoad/map.bin"
     },
     {
-      "id": "LAYOUT_QUANTUM_COASTAL_ROAD",
-      "name": "QuantumCoastalRoad_Layout",
+      "id": "LAYOUT_VIDRA_COASTAL_ROAD",
+      "name": "Vidra_CoastalRoad_Layout",
       "width": 24,
       "height": 24,
       "border_width": 2,
       "border_height": 2,
       "primary_tileset": "gTileset_General",
       "secondary_tileset": "gTileset_CinnabarIsland",
-      "border_filepath": "data/layouts/QuantumCoastalRoad/border.bin",
-      "blockdata_filepath": "data/layouts/QuantumCoastalRoad/map.bin"
+      "border_filepath": "data/layouts/Vidra_CoastalRoad/border.bin",
+      "blockdata_filepath": "data/layouts/Vidra_CoastalRoad/map.bin"
     },
     {
-      "id": "LAYOUT_QUANTUM_WOODLAND_LINK",
-      "name": "QuantumWoodlandLink_Layout",
+      "id": "LAYOUT_ELDERVIK_WOODS",
+      "name": "Eldervik_Woods_Layout",
       "width": 24,
       "height": 24,
       "border_width": 2,
       "border_height": 2,
       "primary_tileset": "gTileset_General",
       "secondary_tileset": "gTileset_CinnabarIsland",
-      "border_filepath": "data/layouts/QuantumWoodlandLink/border.bin",
-      "blockdata_filepath": "data/layouts/QuantumWoodlandLink/map.bin"
+      "border_filepath": "data/layouts/Eldervik_Woods/border.bin",
+      "blockdata_filepath": "data/layouts/Eldervik_Woods/map.bin"
     },
     {
-      "id": "LAYOUT_QUANTUM_MOUNTAIN_PASS",
-      "name": "QuantumMountainPass_Layout",
+      "id": "LAYOUT_FROSTFELL_MOUNTAINS",
+      "name": "Frostfell_Mountains_Layout",
       "width": 24,
       "height": 24,
       "border_width": 2,
       "border_height": 2,
       "primary_tileset": "gTileset_General",
       "secondary_tileset": "gTileset_CinnabarIsland",
-      "border_filepath": "data/layouts/QuantumMountainPass/border.bin",
-      "blockdata_filepath": "data/layouts/QuantumMountainPass/map.bin"
+      "border_filepath": "data/layouts/Frostfell_Mountains/border.bin",
+      "blockdata_filepath": "data/layouts/Frostfell_Mountains/map.bin"
     },
     {
       "id": "LAYOUT_HAVORA_HARBOR",
-      "name": "HavoraHarbor_Layout",
+      "name": "Havora_Harbor_Layout",
       "width": 41,
       "height": 32,
       "border_width": 2,
       "border_height": 2,
       "primary_tileset": "gTileset_HavoraCityPrimary",
       "secondary_tileset": "gTileset_HavoraCity",
-      "border_filepath": "data/layouts/HavoraHarbor/border.bin",
-      "blockdata_filepath": "data/layouts/HavoraHarbor/map.bin"
+      "border_filepath": "data/layouts/Havora_Harbor/border.bin",
+      "blockdata_filepath": "data/layouts/Havora_Harbor/map.bin"
     },
     {
       "id": "LAYOUT_HAVORA_RIVER",
-      "name": "HavoraRiver_Layout",
+      "name": "Havora_River_Layout",
       "width": 8,
       "height": 96,
       "border_width": 2,
       "border_height": 2,
       "primary_tileset": "gTileset_HavoraCityPrimary",
       "secondary_tileset": "gTileset_HavoraCity",
-      "border_filepath": "data/layouts/HavoraRiver/border.bin",
-      "blockdata_filepath": "data/layouts/HavoraRiver/map.bin"
+      "border_filepath": "data/layouts/Havora_River/border.bin",
+      "blockdata_filepath": "data/layouts/Havora_River/map.bin"
     },
     {
       "id": "LAYOUT_HAVORA_MARKET",
-      "name": "HavoraMarket_Layout",
+      "name": "Havora_Market_Layout",
       "width": 41,
       "height": 62,
       "border_width": 2,
       "border_height": 2,
       "primary_tileset": "gTileset_HavoraCityPrimary",
       "secondary_tileset": "gTileset_HavoraCity",
-      "border_filepath": "data/layouts/HavoraMarket/border.bin",
-      "blockdata_filepath": "data/layouts/HavoraMarket/map.bin"
+      "border_filepath": "data/layouts/Havora_Market/border.bin",
+      "blockdata_filepath": "data/layouts/Havora_Market/map.bin"
     },
     {
       "id": "LAYOUT_HAVORA_NORTH_QUADRANT",
-      "name": "HavoraNorthQuadrant_Layout",
+      "name": "Havora_NorthQuadrant_Layout",
       "width": 92,
       "height": 28,
       "border_width": 2,
       "border_height": 2,
       "primary_tileset": "gTileset_HavoraCityPrimary",
       "secondary_tileset": "gTileset_HavoraCity",
-      "border_filepath": "data/layouts/HavoraNorthQuadrant/border.bin",
-      "blockdata_filepath": "data/layouts/HavoraNorthQuadrant/map.bin"
+      "border_filepath": "data/layouts/Havora_NorthQuadrant/border.bin",
+      "blockdata_filepath": "data/layouts/Havora_NorthQuadrant/map.bin"
     },
     {
-      "id": "LAYOUT_HAVORA_DAYCARE",
-      "name": "HavoraDaycare_Layout",
+      "id": "LAYOUT_HAVORA_DAYCARE_EXTERIOR",
+      "name": "Havora_DaycareExterior_Layout",
       "width": 37,
       "height": 29,
       "border_width": 1,
       "border_height": 1,
       "primary_tileset": "gTileset_HavoraCityPrimary",
       "secondary_tileset": "gTileset_HavoraCity",
-      "border_filepath": "data/layouts/HavoraDaycare/border.bin",
-      "blockdata_filepath": "data/layouts/HavoraDaycare/map.bin"
+      "border_filepath": "data/layouts/Havora_DaycareExterior/border.bin",
+      "blockdata_filepath": "data/layouts/Havora_DaycareExterior/map.bin"
     },
     {
       "id": "LAYOUT_HAVORA_LOOKOUT",
-      "name": "HavoraLookout_Layout",
+      "name": "Havora_Lookout_Layout",
       "width": 14,
       "height": 19,
       "border_width": 2,
       "border_height": 2,
       "primary_tileset": "gTileset_HavoraCityPrimary",
       "secondary_tileset": "gTileset_HavoraCity",
-      "border_filepath": "data/layouts/HavoraLookout/border.bin",
-      "blockdata_filepath": "data/layouts/HavoraLookout/map.bin"
+      "border_filepath": "data/layouts/Havora_Lookout/border.bin",
+      "blockdata_filepath": "data/layouts/Havora_Lookout/map.bin"
     },
     {
       "id": "LAYOUT_HAVORA_COASTAL_CLIFFS",
-      "name": "HavoraCoastalCliffs_Layout",
+      "name": "Havora_CoastalCliffs_Layout",
       "width": 20,
       "height": 20,
       "border_width": 2,
       "border_height": 2,
       "primary_tileset": "gTileset_HavoraCityPrimary",
       "secondary_tileset": "gTileset_HavoraCity",
-      "border_filepath": "data/layouts/HavoraCoastalCliffs/border.bin",
-      "blockdata_filepath": "data/layouts/HavoraCoastalCliffs/map.bin"
+      "border_filepath": "data/layouts/Havora_CoastalCliffs/border.bin",
+      "blockdata_filepath": "data/layouts/Havora_CoastalCliffs/map.bin"
     },
     {
-      "id": "LAYOUT_QUANTUM_HAVORA_DAYCARE",
-      "name": "QuantumHavoraDaycare_Layout",
+      "id": "LAYOUT_HAVORA_DAYCARE_INTERIOR",
+      "name": "Havora_DaycareInterior_Layout",
       "width": 12,
       "height": 9,
       "border_width": 2,
       "border_height": 2,
       "primary_tileset": "gTileset_Building",
       "secondary_tileset": "gTileset_FanClubDaycare",
-      "border_filepath": "data/layouts/QuantumHavoraDaycare/border.bin",
-      "blockdata_filepath": "data/layouts/QuantumHavoraDaycare/map.bin"
+      "border_filepath": "data/layouts/Havora_DaycareInterior/border.bin",
+      "blockdata_filepath": "data/layouts/Havora_DaycareInterior/map.bin"
     },
     {
-      "id": "LAYOUT_HAVORA_CAPTAINS_TRIAL",
-      "name": "HavoraCaptainsTrial_Layout",
+      "id": "LAYOUT_HAVORA_GYM",
+      "name": "Havora_Gym_Layout",
       "width": 80,
-      "height": 40,
+      "height": 27,
       "border_width": 2,
       "border_height": 2,
       "primary_tileset": "gTileset_HavoraGymPrimary",
       "secondary_tileset": "gTileset_HavoraGym",
-      "border_filepath": "data/layouts/HavoraCaptainsTrial/border.bin",
-      "blockdata_filepath": "data/layouts/HavoraCaptainsTrial/map.bin"
+      "border_filepath": "data/layouts/Havora_Gym/border.bin",
+      "blockdata_filepath": "data/layouts/Havora_Gym/map.bin"
     }
   ]
 }

@@ -8,7 +8,7 @@ import struct
 from pathlib import Path
 
 R = Path(__file__).resolve().parents[2]
-NAME = 'QuantumHavoraNorthQuay'
+NAME = 'Havora_Market'
 MID = 'MAP_QUANTUM_HAVORA_NORTH_QUAY'
 
 def load(p): return json.loads((R / p).read_text())
@@ -119,10 +119,10 @@ def build():
     outdoor['show_map_name']=True
     for c in outdoor['connections']:
         if c['direction']=='left': c['offset']=27
-    west=load('data/maps/QuantumHavoraWestQuay/map.json')
+    west=load('data/maps/Havora_River/map.json')
     for c in west['connections']:
         if c['map']==MID: c['offset']=-27
-    save('data/maps/QuantumHavoraWestQuay/map.json',west)
+    save('data/maps/Havora_River/map.json',west)
     def npc(gfx,x,y,script,facing='DOWN'):
         return dict(type='object',graphics_id='OBJ_EVENT_GFX_'+gfx,x=x,y=y,
                     elevation=3,movement_type='MOVEMENT_TYPE_FACE_'+facing,
@@ -145,7 +145,7 @@ def build():
         ismart=b['name']=='Provisions'
         template='ThreeIsland_Mart' if ismart else 'TwoIsland_House'
         interior=load(f'data/maps/{template}/map.json')
-        interior.update(id=mid,name=name,region_map_section='MAPSEC_QUANTUM_PORT_CITY',allow_running=True)
+        interior.update(id=mid,name=name,region_map_section='MAPSEC_HAVORA_CITY',allow_running=True)
         if not ismart:interior['layout']='LAYOUT_HOUSE2' # House3 is retired by this repository.
         interior['object_events']=[npc('CLERK',2,3,NAME+'_Supplies','RIGHT')] if ismart else [npc('MAN',7,5,name+'_Owner')]
         interior['warp_events']=[dict(x=x,y=7,elevation=0,dest_map=MID,dest_warp_id=str(i)) for x in [4,3,5]]
@@ -161,7 +161,7 @@ def build():
           'Outfitters':'Headed north? Pack something warm!\\nOur stall outside sells travel supplies.',
           'Provisions':'Safe travels!'}[b['name']]
         (folder/'scripts.inc').write_text(f'{name}_MapScripts::\n\t.byte 0\n\n{name}_Owner::\n\tmsgbox {name}_Text, MSGBOX_NPC\n\tend\n\n{name}_Text::\n\t.string "{dialogue}$"\n')
-        if name not in groups['gMapGroup_QuantumIsland']:groups['gMapGroup_QuantumIsland'].append(name)
+        if name not in groups['gMapGroup_Havora']:groups['gMapGroup_Havora'].append(name)
         inc=f'\t.include "data/maps/{name}/scripts.inc"'
         if inc not in includes:includes+='\n'+inc+'\n'
     save(f'data/maps/{NAME}/map.json',outdoor)

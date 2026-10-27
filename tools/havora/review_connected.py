@@ -5,7 +5,7 @@ from PIL import Image,ImageDraw,ImageFont
 R=Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(R/'tools/havora'))
 from review_market import scene
-names=['HavoraMarket','HavoraHarbor','HavoraRiver','HavoraWestQuadrant','HavoraNorthQuadrant','HavoraDaycare','HavoraLookout','HavoraCoastalCliffs']
+names=['Havora_Market','Havora_Harbor','Havora_River','Havora_WestQuadrant','Havora_NorthQuadrant','Havora_DaycareExterior','Havora_Lookout','Havora_CoastalCliffs']
 meta={n:json.loads((R/f'data/maps/{n}/map.json').read_text()) for n in names}
 layouts={l['id']:l for l in json.loads((R/'data/layouts/layouts.json').read_text())['layouts']}
 def constant(n):return 'MAP_'+re.sub(r'(?<!^)(?=[A-Z])','_',n).upper()

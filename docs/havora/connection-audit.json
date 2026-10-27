@@ -41,19 +41,19 @@
     {
       "map": "QuantumPortCity",
       "warp_index": 1,
-      "interior": "MAP_QUANTUM_HAVORA_WEST_HOUSE1",
+      "interior": "MAP_HAVORA_WEST_HOUSE_1",
       "reason": "No door graphic/behavior; retained safe return landing only"
     },
     {
       "map": "QuantumPortCity",
       "warp_index": 7,
-      "interior": "MAP_QUANTUM_HAVORA_CLIFF_HOUSE5",
+      "interior": "MAP_HAVORA_CLIFF_HOUSE_5",
       "reason": "No door graphic/behavior; retained safe return landing only"
     },
     {
       "map": "QuantumPortCity",
       "warp_index": 8,
-      "interior": "MAP_QUANTUM_HAVORA_HARBOR_INN",
+      "interior": "MAP_HAVORA_HARBOR_INN",
       "reason": "No door graphic/behavior; retained safe return landing only"
     }
   ],

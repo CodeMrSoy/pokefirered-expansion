@@ -176,7 +176,7 @@ for l in layouts['layouts']:
   if old!=new:outputs[l[field]]=packed(new)
  l['primary_tileset']='gTileset_HavoraCityPrimary';l['secondary_tileset']='gTileset_HavoraCity'
 # Avoid whole-file reformatting: only the Harbor pair changes in layouts.json.
-b=read('data/layouts/layouts.json').replace(b'"gTileset_HavoraPrimary"',b'"gTileset_HavoraCityPrimary"').replace(b'"gTileset_HavoraHarbor"',b'"gTileset_HavoraCity"')
+b=read('data/layouts/layouts.json').replace(b'"gTileset_HavoraPrimary"',b'"gTileset_HavoraCityPrimary"').replace(b'"gTileset_Havora_Harbor"',b'"gTileset_HavoraCity"')
 outputs['data/layouts/layouts.json']=b
 for group,start,count in [('primary',0,640),('secondary',640,384)]:
  path=f'data/tilesets/{group}/havora_city'

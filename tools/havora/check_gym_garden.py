@@ -7,7 +7,7 @@ R=Path(__file__).resolve().parents[2];BASE='553b2f28'
 def old(p):return subprocess.check_output(['git','show',BASE+':'+p],cwd=R)
 def js(p):return json.loads((R/p).read_text())
 def words(b):return list(struct.unpack('<'+'H'*(len(b)//2),b))
-l=next(l for l in js('data/layouts/layouts.json')['layouts'] if l['name']=='HavoraWestQuadrant_Layout');w=l['width'];b=words((R/l['blockdata_filepath']).read_bytes());a=words(old(l['blockdata_filepath']));m=js('data/maps/HavoraWestQuadrant/map.json');om=json.loads(old('data/maps/HavoraWestQuadrant/map.json'))
+l=next(l for l in js('data/layouts/layouts.json')['layouts'] if l['name']=='Havora_WestQuadrant_Layout');w=l['width'];b=words((R/l['blockdata_filepath']).read_bytes());a=words(old(l['blockdata_filepath']));m=js('data/maps/Havora_WestQuadrant/map.json');om=json.loads(old('data/maps/Havora_WestQuadrant/map.json'))
 assert len(b)==w*l['height']
 assert m['connections']==om['connections']
 assert len(m['warp_events'])==len(om['warp_events'])

@@ -10,7 +10,7 @@ Three previously blank primary metatiles (492, 494, 495) provide sand and two wo
 
 Validation: `python tools/havora/check_gym_garden.py` passes. It checks the change boundary, original cliff/sea preservation, all other Havora map binaries and borders, original metatiles/graphics/palettes, warp coordinates, and walking routes with NPC occupancy and gym walls treated as obstacles. All seven local destinations are accessible. `git diff --check` passes. The complete ROM compiles successfully with ARM GCC; log: `build/gym-garden/build-final.log`. No Porymap UI or emulator walkthrough was performed.
 
-The broad legacy city audit stops at an existing issue outside this patch: `QuantumHavoraNorthLodge` exits to North Quadrant warp 7, while that map currently has five warp entries. It is left unchanged so the gym-garden patch does not alter other districts.
+The broad legacy city audit stops at an existing issue outside this patch: `Havora_NorthLodge` exits to North Quadrant warp 7, while that map currently has five warp entries. It is left unchanged so the gym-garden patch does not alter other districts.
 
 Preview images are native tile-and-sprite renders, not generated concept illustrations or Porymap screenshots. `gym-garden-preview.png` shows the plateau; `gym-garden-connected.png` shows the full city using actual connection offsets.
 

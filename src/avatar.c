@@ -8,23 +8,30 @@
 #include "constants/vars.h"
 
 static const u8 sNames[AVATAR_LOOK_COUNT][12] = {
-    _("Red"), _("Leaf"), _("Brendan"), _("May")
+    _("Red"), _("Leaf"), _("Brendan"), _("May"), _("Cody"), _("Ben"), _("Brandon")
 };
 static const u8 sStyles[AVATAR_LOOK_COUNT][20] = {
-    _("FireRed"), _("LeafGreen"), _("Emerald"), _("Emerald")
+    _("FireRed"), _("LeafGreen"), _("Emerald"), _("Emerald"), _("Quantum"), _("Quantum"), _("Quantum")
 };
 static const u16 sFrontPics[AVATAR_LOOK_COUNT] = {
     TRAINER_PIC_RED, TRAINER_PIC_LEAF, TRAINER_PIC_QUANTUM_BRENDAN,
-    TRAINER_PIC_QUANTUM_MAY
+    TRAINER_PIC_QUANTUM_MAY, TRAINER_PIC_QUANTUM_CODY, TRAINER_PIC_QUANTUM_BEN, TRAINER_PIC_QUANTUM_BRANDON
 };
 static const u16 sBackPics[AVATAR_LOOK_COUNT] = {
     TRAINER_BACK_PIC_RED, TRAINER_BACK_PIC_LEAF, TRAINER_BACK_PIC_QUANTUM_BRENDAN,
-    TRAINER_BACK_PIC_QUANTUM_MAY
+    TRAINER_BACK_PIC_QUANTUM_MAY, TRAINER_BACK_PIC_QUANTUM_CODY, TRAINER_BACK_PIC_QUANTUM_BEN, TRAINER_BACK_PIC_QUANTUM_BRANDON
 };
 
 u8 GetCurrentAvatarLook(void)
 {
     u16 saved = VarGet(VAR_PLAYER_AVATAR);
+    // Leave retired Ruby/Sapphire values 5 and 6 available for migration.
+    if (saved == 9)
+        return AVATAR_BRANDON;
+    if (saved == 8)
+        return AVATAR_BEN;
+    if (saved == 7)
+        return AVATAR_CODY;
     // Values 5 and 6 were Ruby/Sapphire looks; migrate to Emerald counterparts.
     if (saved == 5 || saved == 6)
     {
@@ -32,7 +39,7 @@ u8 GetCurrentAvatarLook(void)
         VarSet(VAR_PLAYER_AVATAR, saved);
     }
     // Zero is the legacy-save default. Gender and OT data stay independent.
-    if (saved == 0 || saved > AVATAR_LOOK_COUNT)
+    if (saved == 0 || saved > 4)
         return gSaveBlock2Ptr->playerGender == FEMALE ? AVATAR_LEAF : AVATAR_RED;
     return saved - 1;
 }
@@ -40,7 +47,7 @@ u8 GetCurrentAvatarLook(void)
 void SetCurrentAvatarLook(u8 look)
 {
     if (look < AVATAR_LOOK_COUNT)
-        VarSet(VAR_PLAYER_AVATAR, look + 1);
+        VarSet(VAR_PLAYER_AVATAR, look == AVATAR_BRANDON ? 9 : look == AVATAR_BEN ? 8 : look == AVATAR_CODY ? 7 : look + 1);
 }
 
 const u8 *GetAvatarLookName(u8 look)
@@ -71,6 +78,12 @@ u8 GetAvatarGraphicsId(u8 look, u8 state)
         look = AVATAR_RED;
     if (look <= AVATAR_LEAF)
         return look * 7 + slot;
+    if (look == AVATAR_BRANDON)
+        return OBJ_EVENT_GFX_AVATAR_BRANDON_NORMAL + slot;
+    if (look == AVATAR_BEN)
+        return OBJ_EVENT_GFX_AVATAR_BEN_NORMAL + slot;
+    if (look == AVATAR_CODY)
+        return OBJ_EVENT_GFX_AVATAR_CODY_NORMAL + slot;
     return OBJ_EVENT_GFX_AVATAR_BRENDAN_NORMAL + (look - AVATAR_BRENDAN) * 7 + slot;
 }
 
@@ -80,6 +93,12 @@ u8 GetAvatarBikeVsSeekerGraphicsId(u8 look)
         look = AVATAR_RED;
     if (look <= AVATAR_LEAF)
         return look * 7 + 6;
+    if (look == AVATAR_BRANDON)
+        return OBJ_EVENT_GFX_AVATAR_BRANDON_VSSEEKERBIKE;
+    if (look == AVATAR_BEN)
+        return OBJ_EVENT_GFX_AVATAR_BEN_VSSEEKERBIKE;
+    if (look == AVATAR_CODY)
+        return OBJ_EVENT_GFX_AVATAR_CODY_VSSEEKERBIKE;
     return OBJ_EVENT_GFX_AVATAR_BRENDAN_NORMAL + (look - AVATAR_BRENDAN) * 7 + 6;
 }
 
@@ -96,10 +115,4 @@ u16 GetCurrentAvatarFrontPic(void)
 u16 GetCurrentAvatarBackPic(void)
 {
     return sBackPics[GetCurrentAvatarLook()];
-}
-
-void ApplyAvatarLookToField(u8 look)
-{
-    SetCurrentAvatarLook(look);
-    ObjectEventSetGraphicsId(&gObjectEvents[gPlayerAvatar.objectEventId], GetPlayerAvatarGraphicsIdByCurrentState());
 }

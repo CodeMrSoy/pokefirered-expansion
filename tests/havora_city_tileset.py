@@ -12,7 +12,7 @@ for source,target in data['native_general_ids'].items():
  assert np.array_equal(np.array(general[int(source)])>>3,np.array(city[target])>>3),('native GBA color mismatch',source,target)
 assert data['graphics_used']<=1024
 compatible=set(data['compatible_metatiles'])
-raw=(R/'data/layouts/QuantumHavoraNorthQuay/map.bin').read_bytes();blocks=struct.unpack('<2560H',raw)
+raw=(R/'data/layouts/Havora_Market/map.bin').read_bytes();blocks=struct.unpack('<2560H',raw)
 # The harbor and west quay can draw these edge strips using their own tileset.
 assert all(v&1023 in compatible for v in blocks[56*40:])
 assert all(blocks[y*40+x]&1023 in compatible for y in range(43,64) for x in range(8))
@@ -26,6 +26,6 @@ print('PASS: native FireRed terrain pixels at GBA color depth, exact shared edge
 # The approaching coastal-road camera draws the city's first eight columns
 # with General/Cinnabar before the crossing: only shared paving/water here.
 assert city[472].tobytes()==general[472].tobytes()
-raw=(R/'data/layouts/QuantumPortCity/map.bin').read_bytes();west=struct.unpack('<4608H',raw)
+raw=(R/'data/layouts/Havora_WestQuadrant/map.bin').read_bytes();west=struct.unpack('<4608H',raw)
 assert all(west[y*48+x]&1023 in [449,472] for y in range(96) for x in range(8))
 print('PASS: coastal-road approach uses pixel-identical General water and paving')

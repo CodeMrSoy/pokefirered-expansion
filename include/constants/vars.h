@@ -302,7 +302,7 @@
 #define VAR_0x40F9                 0x40F9
 #define VAR_0x40FA                 0x40FA
 #define VAR_0x40FB                 0x40FB
-#define VAR_0x40FC                 0x40FC
+#define VAR_VIDRA_MAP_VERSION      0x40FC // One-time migration from the mixed QuantumIsland group
 #define VAR_PLAYER_AVATAR          0x40FD // 0: legacy gender default; 1..6: saved look
 #define VAR_0x40FE                 0x40FE
 #define VAR_0x40FF                 0x40FF

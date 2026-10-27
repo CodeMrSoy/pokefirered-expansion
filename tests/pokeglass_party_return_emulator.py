@@ -35,7 +35,6 @@ for name, count, warp in [('bedroom-one', 1, None), ('bedroom-six', 6, None),
         m.run(300)
     m.write(m.symbols['sHubCursor'], b'\x00')
     m.press(3)
-    m.press(8)
     m.press(7, 60)
     for cycle in range(3):
         m.press(8, 180)

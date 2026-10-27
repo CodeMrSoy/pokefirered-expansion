@@ -14880,7 +14880,7 @@
         },
         {
           "map": "MAP_HAVORA_HARBOR",
-          "base_label": "gHavoraHarbor",
+          "base_label": "gHavora_Harbor",
           "water_mons": {
             "encounter_rate": 2,
             "mons": [

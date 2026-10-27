@@ -23,7 +23,7 @@ m.snap('v2-qol-island-tablet-preview')
 m.press(0,90)
 groups=json.loads((m.root/'data/maps/map_groups.json').read_text())
 ids={n:(g,i) for g,k in enumerate(groups['group_order']) for i,n in enumerate(groups[k])}
-g,n=ids['QuantumHarbor']
+g,n=ids['Havora_Harbor']
 m.inject(b'\x39'+struct.pack('<BBBHH',g,n,255,8,5)+b'\x6b\x02');m.run(240)
 assert native('PokeGlassPlayerRegion')==2
 call('ShowPokeGlassMap')
@@ -34,5 +34,5 @@ assert m.read(m.symbols['sGlassStorage']+4,2)==b'\0\0'
 m.snap('v2-qol-harbor-storage');m.press(0,90)
 assert m.read(m.symbols['gPlayerParty'],600)==party
 save=struct.unpack('<I',m.read(m.symbols['gSaveBlock1Ptr'],4))[0]
-assert m.read(save+4,2)==bytes(ids['QuantumHarbor']),'QOL cleanup retired a new island map'
+assert m.read(save+4,2)==bytes(ids['Havora_Harbor']),'QOL cleanup retired a new island map'
 print('Independent candy/ticket flags, island tablet preview, Havora player map, storage and retained island map passed')

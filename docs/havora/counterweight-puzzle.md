@@ -1,6 +1,6 @@
 # Havora Counterweight Grove
 
-The user's maze in `HavoraNorthQuadrant` is playable. It uses the existing
+The user's maze in `Havora_NorthQuadrant` is playable. It uses the existing
 six boulders, three Cut trees, three pits and four buttons at their painted
 coordinates. The original installation changed 16 map cells: nine static
 pieces became grass under real object events, three pits acquired collision,

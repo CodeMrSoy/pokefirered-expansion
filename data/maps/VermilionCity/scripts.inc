@@ -182,4 +182,4 @@ VermilionCity_EventScript_StellarFerry::
 
 VermilionCity_Text_StellarFerry::
 	.string "A STELLAR TICKET! Shall we sail\n"
-	.string "to QUANTUM ISLAND?$"
+	.string "to VIDRA?$"

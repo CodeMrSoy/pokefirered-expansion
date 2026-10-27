@@ -1,0 +1,18 @@
+Eldervale_Village_PokemonCenter_1F_MapScripts::
+	map_script MAP_SCRIPT_ON_TRANSITION, Eldervale_Village_PokemonCenter_1F_OnTransition
+	map_script MAP_SCRIPT_ON_RESUME, CableClub_OnResume
+	.byte 0
+
+Eldervale_Village_PokemonCenter_1F_OnTransition::
+	goto_if_unset FLAG_QUANTUM_ARRIVED, Eldervale_Village_PokemonCenter_1F_End
+	setflag FLAG_QUANTUM_FOREST_CENTER
+	setrespawn HEAL_LOCATION_QUANTUM_FOREST_TOWN
+Eldervale_Village_PokemonCenter_1F_End::
+	end
+
+Eldervale_Village_PokemonCenter_1F_Nurse::
+	lock
+	faceplayer
+	call EventScript_PkmnCenterNurse
+	release
+	end

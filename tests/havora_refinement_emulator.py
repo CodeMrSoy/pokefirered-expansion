@@ -1,7 +1,7 @@
 """In-game checks for the visible quay boundary and Minior story marker."""
 import json,struct
 import havora_emulator_support as m
-groups=json.loads((m.root/'data/maps/map_groups.json').read_text())['gMapGroup_QuantumIsland']
+groups=json.loads((m.root/'data/maps/map_groups.json').read_text())['gMapGroup_Havora']
 def warp(name,x,y):
  m.inject(b'\x39'+struct.pack('<BBBHH',43,groups.index(name),255,x,y)+b'\x6b\x02');m.run(240)
 def loc():
@@ -10,10 +10,10 @@ def loc():
 def walk(key,frames):
  m.keys.add(key);m.run(frames);m.keys.clear();m.run(90)
 # Regression: the old invisible western boundary is now a visible railing.
-warp('QuantumPortCity',46,75);before=loc();walk(7,40);assert loc()==before
+warp('Havora_WestQuadrant',46,75);before=loc();walk(7,40);assert loc()==before
 m.snap('refined-west-railing')
 # Exercise the Minior story sign through normal facing + A interaction.
-warp('QuantumHavoraNorthWalk',5,21);walk(6,1);m.press(8);m.run(180)
+warp('Havora_Lookout',5,21);walk(6,1);m.press(8);m.run(180)
 import re
 charmap={a:int(b,16) for a,b in re.findall(r"^'(.)'\s*=\s*(?:0x)?([0-9A-Fa-f]{2})",(m.root/'charmap.txt').read_text(),re.M)}
 assert bytes(charmap[c] for c in 'MINIOR') in m.read(m.symbols['gStringVar4'],256),'Minior sign text did not open'
@@ -31,10 +31,10 @@ def primary_pixels(folder):
     for xx in range(0,8,2):out.append(im.getpixel((tx+xx,ty+yy)) | (im.getpixel((tx+xx+1,ty+yy))<<4))
  return out
 for source,x,y,key,target,folder in [
- ('QuantumHarborRoad',22,9,7,'QuantumPortCity','havora_city'),
- ('QuantumPortCity',1,69,6,'QuantumHarborRoad','general'),
- ('QuantumHarbor',5,1,4,'QuantumHavoraNorthQuay','havora_city'),
- ('QuantumHavoraNorthQuay',5,62,5,'QuantumHarbor','havora_harbor')]:
+ ('Vidra_HarborRoad',22,9,7,'Havora_WestQuadrant','havora_city'),
+ ('Havora_WestQuadrant',1,69,6,'Vidra_HarborRoad','general'),
+ ('Havora_Harbor',5,1,4,'Havora_Market','havora_city'),
+ ('Havora_Market',5,62,5,'Havora_Harbor','havora_harbor')]:
  warp(source,x,y);walk(key,35);assert loc()[0]==(43,groups.index(target))
  if folder=='general':
   active=struct.unpack('<I',m.read(m.symbols['gCurrentPrimaryTileset'],4))[0]

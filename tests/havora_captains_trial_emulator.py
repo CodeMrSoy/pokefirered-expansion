@@ -4,7 +4,7 @@ import havora_emulator_support as m
 source=(m.root/'tests/avatar_wardrobe_emulator.py').read_text();exec(source[source.index('native_dir ='):source.index('avatar_var = native')])
 groups=json.loads((m.root/'data/maps/map_groups.json').read_text());ids={n:(g,i) for g,k in enumerate(groups['group_order']) for i,n in enumerate(groups[k])}
 def warp(x,y):
- g,n=ids['QuantumHavoraGym'];m.inject(b'\x39'+struct.pack('<BBBHH',g,n,255,x,y)+b'\x6b\x02');m.run(120)
+ g,n=ids['Havora_Gym'];m.inject(b'\x39'+struct.pack('<BBBHH',g,n,255,x,y)+b'\x6b\x02');m.run(120)
 def pos():
  i=m.read(m.symbols['gPlayerAvatar']+5,1)[0];x,y=struct.unpack('<hh',m.read(m.symbols['gObjectEvents']+i*36+16,4));return x-7,y-7
 def value(v):return native('VarGet',v)&65535
@@ -43,7 +43,7 @@ print('PASS low/high boat rides, crew/navigator gates, persisted state, captain 
 # Actual floor warp back to the preserved exterior entrance.
 warp(20,33);m.keys.add(5);m.run(12);m.keys.clear();m.run(200)
 save=struct.unpack('<I',m.read(m.symbols['gSaveBlock1Ptr'],4))[0]
-assert tuple(m.read(save+4,2))==ids['HavoraWestQuadrant'],('gym exit',tuple(m.read(save+4,2)))
+assert tuple(m.read(save+4,2))==ids['Havora_WestQuadrant'],('gym exit',tuple(m.read(save+4,2)))
 # Open the entrance gangway through the real A-button/sign/Yes-No script.
 warp(5,32);native('VarSet',0x40d7,0);control(6);m.press(4,20)
 for _ in range(5):m.press(8,45)

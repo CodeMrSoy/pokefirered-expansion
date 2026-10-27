@@ -31,10 +31,10 @@ static struct {const u16 *src; uintptr_t dest; u16 size;} transfer[20];
 static unsigned count;
 static void AppendTilesetAnimToBuffer(const u16 *src,u16 *dest,u16 size){assert(count<20);transfer[count].src=src;transfer[count].dest=(uintptr_t)dest;transfer[count++].size=size;}
 '''.replace('IDS',','.join(map(str,j['animation_graphic_ids'])))
-code=header+'\n'.join(function(n) for n in ['TilesetAnim_HavoraHarbor','InitTilesetAnim_HavoraHarbor','TilesetAnim_HavoraCity','InitTilesetAnim_HavoraCity'])+'''
+code=header+'\n'.join(function(n) for n in ['TilesetAnim_Havora_Harbor','InitTilesetAnim_Havora_Harbor','TilesetAnim_HavoraCity','InitTilesetAnim_HavoraCity'])+'''
 int main(void){
  unsigned n,i,k,max=0;
- InitTilesetAnim_HavoraHarbor();assert(sSecondaryTilesetAnimCounterMax==128);assert(sSecondaryTilesetAnimCallback==TilesetAnim_HavoraHarbor);
+ InitTilesetAnim_Havora_Harbor();assert(sSecondaryTilesetAnimCounterMax==128);assert(sSecondaryTilesetAnimCallback==TilesetAnim_Havora_Harbor);
  InitTilesetAnim_HavoraCity();assert(sSecondaryTilesetAnimCounterMax==1920);assert(sSecondaryTilesetAnimCallback==TilesetAnim_HavoraCity);
  for(n=0;n<3840;n++){
   u16 timer=n%sSecondaryTilesetAnimCounterMax;count=0;k=0;sSecondaryTilesetAnimCallback(timer);

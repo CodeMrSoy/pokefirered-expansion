@@ -40,7 +40,7 @@ set_fixture_values(2, egg=True)
 original = m.read(m.symbols['gPlayerParty'], 300)
 
 field_palette = m.read(m.symbols['gPlttBufferUnfaded'], 13 * 32)
-m.inject(b'\x05' + struct.pack('<I', m.symbols['EventScript_AccessPokeGlass']))
+m.press(3)
 assert m.read(m.symbols['gPlttBufferUnfaded'], 13 * 32) == field_palette, 'Hub recolored map palettes'
 m.press(7); m.press(5); m.press(8)
 assert m.read(m.symbols['gPlttBufferUnfaded'], 13 * 32) == field_palette, 'Stats recolored map palettes'

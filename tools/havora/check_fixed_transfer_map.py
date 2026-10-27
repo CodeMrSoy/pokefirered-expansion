@@ -6,6 +6,9 @@ R=Path(__file__).resolve().parents[2]
 def module(name):
  spec=importlib.util.spec_from_file_location(name,R/'tools/havora'/f'{name}.py');m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m);return m
 geo=module('build_fixed_transfer_gym');model=module('solve_fixed_transfer_design')
+if getattr(geo,'ARTWORK_REVIEW',False):
+ print('SKIP retired puzzle geometry; use havora_artwork_assets.py and havora_artwork_review_emulator.py')
+ raise SystemExit(0)
 anchors=geo.ANCHORS
 actors=geo.ACTORS
 def flood(b,start):

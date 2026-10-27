@@ -33,13 +33,13 @@ def home(m,h,x,y,z,suffix,lines,width=4):
  # Use append-only map registration, retaining every established map number.
  if not any(e['dest_map']==mid for e in h['warp_events']):h['warp_events'].append(warp(dx,dy,z,mid))
  wi=next(i for i,e in enumerate(h['warp_events']) if e['dest_map']==mid)
- inside=read('data/maps/QuantumHavoraTraderHouse/map.json');inside.update(id=mid,name=name)
+ inside=read('data/maps/Havora_TraderHouse/map.json');inside.update(id=mid,name=name)
  for e in inside['warp_events']:e.update(dest_map=h['id'],dest_warp_id=str(wi))
  text(f'data/maps/{name}/scripts.inc',f'{name}_MapScripts::\n\t.byte 0\n')
  label=dialogue(name,'Resident',lines);inside['object_events']=[npc('WOMAN_1',2,3,3,label)]
  save(f'data/maps/{name}/map.json',inside)
  groups=read('data/maps/map_groups.json')
- if name not in groups['gMapGroup_QuantumIsland']:groups['gMapGroup_QuantumIsland'].append(name)
+ if name not in groups['gMapGroup_Havora']:groups['gMapGroup_Havora'].append(name)
  save('data/maps/map_groups.json',groups)
  p=R/'data/event_scripts.s';s=p.read_text();inc=f'\t.include "data/maps/{name}/scripts.inc"'
  if inc not in s:text('data/event_scripts.s',s+'\n'+inc+'\n')
@@ -53,7 +53,7 @@ def sculpt_west():
  for fn,stride in [('metatiles.bin',16),('metatile_attributes.bin',4)]:
   gp=R/'data/tilesets/primary/general'/fn;cp=R/'data/tilesets/primary/havora_city'/fn
   a=bytearray(cp.read_bytes());a[472*stride:473*stride]=gp.read_bytes()[472*stride:473*stride];cp.write_bytes(a)
- w,h,l=load('QuantumPortCity')
+ w,h,l=load('Havora_WestQuadrant')
  for y in range(96):
   left=14 if y<7 else 10 if y<28 else 12 if y<40 else 10 if y<62 else 14 if y<67 else 10 if y<82 else 14
   z=5 if y<28 else 4 if y<62 else 3
@@ -68,16 +68,16 @@ def sculpt_west():
   for x,v in enumerate(row):
    if v&1023==0x282 or (x<8 and v&1023==142):row[x]=(v&0xfc00)|472
  for c in h['connections']:
-  if c['map']=='MAP_QUANTUM_HARBOR_ROAD':c['offset']=60
+  if c['map']=='MAP_VIDRA_HARBOR_ROAD':c['offset']=60
  write(w,h,l)
- road=read('data/maps/QuantumHarborRoad/map.json')
+ road=read('data/maps/Vidra_HarborRoad/map.json')
  for c in road['connections']:
   if c['map']==h['id']:c['offset']=-60
- save('data/maps/QuantumHarborRoad/map.json',road)
+ save('data/maps/Vidra_HarborRoad/map.json',road)
 
 def build():
- assert load('QuantumHavoraWestQuay')[0].h==40, 'Refinement already applied; do not overwrite Porymap edits.'
- w,wh,wl=load('QuantumPortCity')
+ assert load('Havora_River')[0].h==40, 'Refinement already applied; do not overwrite Porymap edits.'
+ w,wh,wl=load('Havora_WestQuadrant')
  # An exposed lower coastal walk under the western residential cliffs.
  # The original west route retains its four-tile landing at y8..11.
  for y in range(96):
@@ -134,7 +134,7 @@ def build():
  write(w,wh,wl)
  # Extend the existing quay northward into the former empty eight-tile strip.
  # Its old cells move down 51 rows, preserving the existing harbor approaches.
- q,qh,ql=load('QuantumHavoraWestQuay');old=q.a
+ q,qh,ql=load('Havora_River');old=q.a
  assert q.h==40,'This pass expects the original 8x40 west quay.'
  q=Map(q.name,8,96,3)
  for y,row in enumerate(old):q.a[y+51]=row[:]
@@ -153,13 +153,13 @@ def build():
  qh['connections']=[connection('left','MAP_QUANTUM_PORT_CITY',0),connection('right','MAP_QUANTUM_HAVORA_NORTH_QUAY',0),connection('right','MAP_QUANTUM_HARBOR',64),connection('up','MAP_QUANTUM_HAVORA_NORTH_DISTRICT',-48)]
  layouts=read('data/layouts/layouts.json');layouts['layouts']=[ql if l['id']==ql['id'] else l for l in layouts['layouts']];save('data/layouts/layouts.json',layouts)
  write(q,qh,ql)
- for name in ['QuantumPortCity','QuantumHavoraNorthQuay','QuantumHarbor']:
+ for name in ['Havora_WestQuadrant','Havora_Market','Havora_Harbor']:
   h=read(f'data/maps/{name}/map.json')
   for c in h['connections']:
-   if c['map']==qh['id']:c['offset']=-64 if name=='QuantumHarbor' else 0
+   if c['map']==qh['id']:c['offset']=-64 if name=='Havora_Harbor' else 0
   save(f'data/maps/{name}/map.json',h)
  # Northern street frontage: preserve services and doors while filling long gaps.
- n,nh,nl=load('QuantumHavoraNorthDistrict')
+ n,nh,nl=load('Havora_NorthQuadrant')
  for x,y,z,suffix,lines,width in [
  (23,29,5,'NorthHouse4',['We mend the fishing crews coats.','Salt and wind are hard on cloth.'],6),
  (38,28,5,'NorthHouse5',['Look up on a clear mountain night.','Sometimes the stars come to us.'],6),
@@ -172,9 +172,9 @@ def build():
  # Reduce the visual width of the avenue; retain roomy service forecourts.
  for x in range(8,94):
   if not (16<=x<20 or 24<=x<28 or 48<=x<54 or 60<=x<86):n.native(x,25,1,1,1,5)
- grove(n,[(5,27),(7,30),(3,34),(6,35),(29,29),(31,33),(7,7),(9,7),(43,3),(45,5),(87,28),(89,30)],5)
+ grove(n,[(5,27),(7,30),(3,34),(6,35),(29,29),(31,33),(7,7),(9,7),(44, 0),(45,5),(87,28),(89,30)],5)
  # Correct the upper grove's metadata to the upper promenade level.
- for x,y in [(7,7),(9,7),(43,3),(45,5)]:n.tree(x,y,6)
+ for x,y in [(7,7),(9,7),(44, 0),(45,5)]:n.tree(x,y,6)
  n.flowers(29,36,5,5);n.flowers(4,37,8,5)
  n.path(50,39,4,1,5)
  nh['connections'].append(connection('down',qh['id'],48))
@@ -188,7 +188,7 @@ def build():
  ('PIDGEY',8,33,5,'GardenBird',['The POKéMON rustles in the garden.'],False)]:resident(n,nh,*args)
  write(n,nh,nl)
  # Daycare: sheltered tree groups and flower beds around the unchanged paddock.
- d,dh,dl=load('QuantumHavoraCoastalDaycare')
+ d,dh,dl=load('Havora_DaycareExterior')
  grove(d,[(9,5),(11,7),(14,4),(16,7),(10,17),(12,19),(20,3)],6)
  grove(d,[(8,34),(12,36),(26,35),(28,36)],5)
  d.flowers(20,15,5,6);d.flowers(20,23,2,6);d.flowers(31,23,2,6)
@@ -196,7 +196,7 @@ def build():
  resident(d,dh,'MAN',29,32,5,'CoastView',['The cliffs protect the little field.','Please keep the gate clear.'])
  write(d,dh,dl)
  # One small old impact hollow: an explicitly solid landscaped story landmark.
- p,ph,pl=load('QuantumHavoraNorthWalk')
+ p,ph,pl=load('Havora_Lookout')
  p.native(1,14,4,10,1,6)
  bowl=[[0x68,0x69,0x6A,0x6B],[0x70,0xBD,0xBE,0x73],[0x78,0x79,0x79,0x7A]]
  for yy,row in enumerate(bowl):
@@ -208,7 +208,7 @@ def build():
  p.path(5,21,1,2,6)
  write(p,ph,pl)
  # Preserve market activity and services; add intimate planted courtyards.
- m,mh,ml=load('QuantumHavoraNorthQuay')
+ m,mh,ml=load('Havora_Market')
  for x,y in [(29,42),(31,45),(29,48),(11,47),(13,50)]:
   # Only replace existing grass, never a building, stair or established path.
   if all((m.a[yy][xx]&1023)==NAT[1] for yy in range(y,y+3) for xx in range(x,x+2)):m.tree(x,y,3)
@@ -219,7 +219,7 @@ def build():
  data['stairs'] += [dict(map=q.name,x=2,y=16,upper=5,lower=4),dict(map=q.name,x=2,y=36,upper=4,lower=3)]
  save('tools/havora/civic-districts.json',data)
  sculpt_west()
- for name in ['QuantumPortCity','QuantumHavoraWestQuay']:
+ for name in ['Havora_WestQuadrant','Havora_River']:
   mm,hh,ll=load(name)
   for row in mm.a:
    for x,v in enumerate(row):

@@ -7,7 +7,7 @@ fixture=b''
 for species in (1,4,7,25,133,143):
  fixture+=b'\x23'+struct.pack('<I',(m.symbols['ScrCmd_createmon']|1)+0x2000000)+struct.pack('<BBHHI',0,6,species,25,0)
 m.inject(fixture+b'\x44'+struct.pack('<HH',717,1)+b'\x02')
-m.press(3);m.press(8);m.press(7,60)
+m.press(3);m.press(7,60)
 size=m.lib.retro_serialize_size();st=m.c.create_string_buffer(size);assert m.lib.retro_serialize(st,size)
 def reg(offset):return struct.unpack('<H',m.read(m.symbols['sGpuRegBuffer']+offset,2))[0]
 for count in (1,6):

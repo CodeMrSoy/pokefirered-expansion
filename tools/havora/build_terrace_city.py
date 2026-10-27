@@ -15,7 +15,7 @@ def words(p):
     b=(R/p).read_bytes();return list(struct.unpack('<'+'H'*(len(b)//2),b))
 
 def build():
-    blockpath='data/layouts/QuantumHavoraNorthQuay/map.bin'
+    blockpath='data/layouts/Havora_Market/map.bin'
     snapshot='tools/havora/market-base-blocks.json'
     # Frozen first-pass recipe, rather than repeatedly transforming authored data.
     if not (R/snapshot).exists():
@@ -26,7 +26,7 @@ def build():
     oldattrs=(R/'data/tilesets/primary/havora_harbor/metatile_attributes.bin').read_bytes()+(R/'data/tilesets/secondary/havora_harbor/metatile_attributes.bin').read_bytes()
     used={v&1023 for v in base}
     # Whole west quay plus ten northern harbor rows exceed the visible seam buffer.
-    for p in ['data/layouts/Quantum_Havora_Harbor_Layout/map.bin','data/layouts/QuantumHavoraWestQuay/map.bin']:
+    for p in ['data/layouts/Quantum_Havora_Harbor_Layout/map.bin','data/layouts/Havora_River/map.bin']:
         blocks=words(p);used.update(v&1023 for v in (blocks[:400] if 'Harbor_' in p else blocks))
     asset=read('tools/havora/assets.json')
     reserved=set(asset['reserved_primary_tiles'])|set(range(896,1024))
@@ -144,8 +144,8 @@ def build():
     # Lower terrace gardens and a broad stair landing. New terrain stays beyond
     # the eight-tile neighbor buffer on both harbor and west-quay boundaries.
     for x in [10,27]:
-        rect(x,43,7,13,1,False,3)
-        for yy in [43,47,51]:
+        rect(x,45, 1,13,1,False,3)
+        for yy in [43, 20,51]:
             for xx in [x,x+4]:tree(xx,yy,3)
         for xx in range(x,x+7):tile(xx,55,4,True,3)
         for xx in [x,x+6]:grid[56][xx]=0x3400|0x2B4
@@ -164,16 +164,16 @@ def build():
     layout=next(l for l in layouts['layouts'] if l['id']=='LAYOUT_QUANTUM_HAVORA_NORTH_QUAY')
     layout.update(height=64,primary_tileset='gTileset_HavoraCityPrimary',secondary_tileset='gTileset_HavoraCity')
     write('data/layouts/layouts.json',layouts)
-    city=read('data/maps/QuantumHavoraNorthQuay/map.json')
+    city=read('data/maps/Havora_Market/map.json')
     for c in city['connections']:
         if c['direction']=='left':c['offset']=51
     for group in ['object_events','warp_events']:
         for e in city[group]:e['elevation']=4
-    write('data/maps/QuantumHavoraNorthQuay/map.json',city)
-    west=read('data/maps/QuantumHavoraWestQuay/map.json')
+    write('data/maps/Havora_Market/map.json',city)
+    west=read('data/maps/Havora_River/map.json')
     for c in west['connections']:
         if c['map']==city['id']:c['offset']=-51
-    write('data/maps/QuantumHavoraWestQuay/map.json',west)
+    write('data/maps/Havora_River/map.json',west)
     write('tools/havora/city-tileset.json',{'dimensions':[40,64],'native_general_ids':mapping,
           'compatible_metatiles':sorted(used),'graphics_used':len(gfx),
           'native_graphics_added':len(set(tilemap.values())-reserved)+len(stairtiles),'stair_palette_bank':stairbank,'stairs':[{'x':x,'width':4,'top_y':38,'bottom_y':39} for x in [4,19]],

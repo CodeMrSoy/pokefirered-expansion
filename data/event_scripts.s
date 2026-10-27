@@ -1373,88 +1373,88 @@ Text_TestMsg::
 
 	.include "data/quantum/relocated_encounters.inc"
 
-	.include "data/maps/HavoraWestQuadrant/scripts.inc"
-	.include "data/maps/QuantumPortCityPokemonCenter1F/scripts.inc"
-	.include "data/maps/QuantumPortCityPokemonCenter2F/scripts.inc"
+	.include "data/maps/Havora_WestQuadrant/scripts.inc"
+	.include "data/maps/Havora_PokemonCenter_1F/scripts.inc"
+	.include "data/maps/Havora_PokemonCenter_2F/scripts.inc"
 
-	.include "data/maps/QuantumCoastalCity/scripts.inc"
-	.include "data/maps/QuantumCoastalCityPokemonCenter1F/scripts.inc"
-	.include "data/maps/QuantumCoastalCityPokemonCenter2F/scripts.inc"
+	.include "data/maps/Corvala_Town/scripts.inc"
+	.include "data/maps/Corvala_Town_PokemonCenter_1F/scripts.inc"
+	.include "data/maps/Corvala_Town_PokemonCenter_2F/scripts.inc"
 
-	.include "data/maps/QuantumForestTown/scripts.inc"
-	.include "data/maps/QuantumForestTownPokemonCenter1F/scripts.inc"
-	.include "data/maps/QuantumForestTownPokemonCenter2F/scripts.inc"
+	.include "data/maps/Eldervale_Village/scripts.inc"
+	.include "data/maps/Eldervale_Village_PokemonCenter_1F/scripts.inc"
+	.include "data/maps/Eldervale_Village_PokemonCenter_2F/scripts.inc"
 
-	.include "data/maps/QuantumLakeTown/scripts.inc"
-	.include "data/maps/QuantumLakeTownPokemonCenter1F/scripts.inc"
-	.include "data/maps/QuantumLakeTownPokemonCenter2F/scripts.inc"
+	.include "data/maps/Myrdal_City/scripts.inc"
+	.include "data/maps/Myrdal_City_PokemonCenter_1F/scripts.inc"
+	.include "data/maps/Myrdal_City_PokemonCenter_2F/scripts.inc"
 
-	.include "data/maps/QuantumSnowTown/scripts.inc"
-	.include "data/maps/QuantumSnowTownPokemonCenter1F/scripts.inc"
-	.include "data/maps/QuantumSnowTownPokemonCenter2F/scripts.inc"
-	.include "data/maps/QuantumHarborRoad/scripts.inc"
-	.include "data/maps/QuantumCoastalRoad/scripts.inc"
-	.include "data/maps/QuantumWoodlandLink/scripts.inc"
-	.include "data/maps/QuantumMountainPass/scripts.inc"
-	.include "data/maps/HavoraHarbor/scripts.inc"
+	.include "data/maps/Iskora_Village/scripts.inc"
+	.include "data/maps/Iskora_Village_PokemonCenter_1F/scripts.inc"
+	.include "data/maps/Iskora_Village_PokemonCenter_2F/scripts.inc"
+	.include "data/maps/Vidra_HarborRoad/scripts.inc"
+	.include "data/maps/Vidra_CoastalRoad/scripts.inc"
+	.include "data/maps/Eldervik_Woods/scripts.inc"
+	.include "data/maps/Frostfell_Mountains/scripts.inc"
+	.include "data/maps/Havora_Harbor/scripts.inc"
 
-	.include "data/maps/HavoraRiver/scripts.inc"
+	.include "data/maps/Havora_River/scripts.inc"
 
-	.include "data/maps/HavoraMarket/scripts.inc"
+	.include "data/maps/Havora_Market/scripts.inc"
 
-	.include "data/maps/QuantumHavoraShipwrightHouse/scripts.inc"
+	.include "data/maps/Havora_ShipwrightHouse/scripts.inc"
 
-	.include "data/maps/QuantumHavoraWeaverHouse/scripts.inc"
+	.include "data/maps/Havora_WeaverHouse/scripts.inc"
 
-	.include "data/maps/QuantumHavoraFisherHouse/scripts.inc"
+	.include "data/maps/Havora_FisherHouse/scripts.inc"
 
-	.include "data/maps/QuantumHavoraTraderHouse/scripts.inc"
+	.include "data/maps/Havora_TraderHouse/scripts.inc"
 
-	.include "data/maps/QuantumHavoraTradeHall/scripts.inc"
+	.include "data/maps/Havora_TradeHall/scripts.inc"
 
-	.include "data/maps/QuantumHavoraOutfitters/scripts.inc"
+	.include "data/maps/Havora_Outfitters/scripts.inc"
 
-	.include "data/maps/QuantumHavoraProvisions/scripts.inc"
+	.include "data/maps/Havora_Provisions/scripts.inc"
 
-	.include "data/maps/HavoraNorthQuadrant/scripts.inc"
+	.include "data/maps/Havora_NorthQuadrant/scripts.inc"
 
-	.include "data/maps/HavoraDaycare/scripts.inc"
+	.include "data/maps/Havora_DaycareExterior/scripts.inc"
 
-	.include "data/maps/HavoraLookout/scripts.inc"
+	.include "data/maps/Havora_Lookout/scripts.inc"
 
-	.include "data/maps/QuantumHavoraGym/scripts.inc"
+	.include "data/maps/Havora_Gym/scripts.inc"
 
-	.include "data/maps/QuantumHavoraMart/scripts.inc"
+	.include "data/maps/Havora_Mart/scripts.inc"
 
-	.include "data/maps/QuantumHavoraDaycare/scripts.inc"
+	.include "data/maps/Havora_DaycareInterior/scripts.inc"
 
-	.include "data/maps/QuantumHavoraWestHouse1/scripts.inc"
+	.include "data/maps/Havora_WestHouse_1/scripts.inc"
 
-	.include "data/maps/QuantumHavoraWestHouse2/scripts.inc"
+	.include "data/maps/Havora_WestHouse_2/scripts.inc"
 
-	.include "data/maps/QuantumHavoraNorthHouse1/scripts.inc"
+	.include "data/maps/Havora_NorthHouse_1/scripts.inc"
 
-	.include "data/maps/QuantumHavoraNorthHouse2/scripts.inc"
+	.include "data/maps/Havora_NorthHouse_2/scripts.inc"
 
-	.include "data/maps/QuantumHavoraNorthHouse3/scripts.inc"
+	.include "data/maps/Havora_NorthHouse_3/scripts.inc"
 
-	.include "data/maps/QuantumHavoraCliffHouse1/scripts.inc"
+	.include "data/maps/Havora_CliffHouse_1/scripts.inc"
 
-	.include "data/maps/QuantumHavoraCliffHouse2/scripts.inc"
+	.include "data/maps/Havora_CliffHouse_2/scripts.inc"
 
-	.include "data/maps/QuantumHavoraCliffHouse3/scripts.inc"
+	.include "data/maps/Havora_CliffHouse_3/scripts.inc"
 
-	.include "data/maps/QuantumHavoraCliffHouse4/scripts.inc"
+	.include "data/maps/Havora_CliffHouse_4/scripts.inc"
 
-	.include "data/maps/QuantumHavoraCliffHouse5/scripts.inc"
+	.include "data/maps/Havora_CliffHouse_5/scripts.inc"
 
-	.include "data/maps/QuantumHavoraHarborInn/scripts.inc"
+	.include "data/maps/Havora_HarborInn/scripts.inc"
 
-	.include "data/maps/QuantumHavoraNorthHouse4/scripts.inc"
+	.include "data/maps/Havora_NorthHouse_4/scripts.inc"
 
-	.include "data/maps/QuantumHavoraNorthHouse5/scripts.inc"
+	.include "data/maps/Havora_NorthHouse_5/scripts.inc"
 
-	.include "data/maps/QuantumHavoraNorthLodge/scripts.inc"
+	.include "data/maps/Havora_NorthLodge/scripts.inc"
 
-	.include "data/maps/HavoraCoastalCliffs/scripts.inc"
-	.include "data/maps/HavoraCoastalCliffs/text.inc"
+	.include "data/maps/Havora_CoastalCliffs/scripts.inc"
+	.include "data/maps/Havora_CoastalCliffs/text.inc"

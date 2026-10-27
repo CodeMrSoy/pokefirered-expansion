@@ -7,7 +7,7 @@ void UpdateTilesetAnimations(void);
 void TransferTilesetAnimsBuffer(void);
 
 void InitTilesetAnim_General(void);
-void InitTilesetAnim_HavoraHarbor(void);
+void InitTilesetAnim_Havora_Harbor(void);
 void InitTilesetAnim_HavoraCity(void);
 void InitTilesetAnim_CeladonCity(void);
 void InitTilesetAnim_VermilionGym(void);

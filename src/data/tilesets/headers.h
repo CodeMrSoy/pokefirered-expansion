@@ -1112,16 +1112,16 @@ const struct Tileset gTileset_IndigoPlateauWinter =
     .callback = NULL,
 };
 
-const struct Tileset gTileset_HavoraHarbor =
+const struct Tileset gTileset_Havora_Harbor =
 {
     .lightPalettes = 0,
     .isCompressed = TRUE,
     .isSecondary = TRUE,
-    .tiles = gTilesetTiles_HavoraHarbor,
-    .palettes = gTilesetPalettes_HavoraHarbor,
-    .metatiles = gMetatiles_HavoraHarbor,
-    .metatileAttributes = gMetatileAttributes_HavoraHarbor,
-    .callback = InitTilesetAnim_HavoraHarbor,
+    .tiles = gTilesetTiles_Havora_Harbor,
+    .palettes = gTilesetPalettes_Havora_Harbor,
+    .metatiles = gMetatiles_Havora_Harbor,
+    .metatileAttributes = gMetatileAttributes_Havora_Harbor,
+    .callback = InitTilesetAnim_Havora_Harbor,
 };
 
 const struct Tileset gTileset_HavoraPrimary =

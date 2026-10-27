@@ -67,8 +67,8 @@ def build():
  groups=read('data/maps/map_groups.json');layouts=read('data/layouts/layouts.json')
  ids={'west':'MAP_QUANTUM_PORT_CITY','north':'MAP_QUANTUM_HAVORA_NORTH_DISTRICT',
       'coast':'MAP_QUANTUM_HAVORA_COASTAL_DAYCARE','walk':'MAP_QUANTUM_HAVORA_NORTH_WALK',
-      'gym':'MAP_QUANTUM_HAVORA_GYM','mart':'MAP_QUANTUM_HAVORA_MART','daycare':'MAP_QUANTUM_HAVORA_DAYCARE'}
- template=read('data/maps/QuantumHavoraNorthQuay/map.json')
+      'gym':'MAP_HAVORA_GYM','mart':'MAP_HAVORA_MART','daycare':'MAP_HAVORA_DAYCARE_INTERIOR'}
+ template=read('data/maps/Havora_Market/map.json')
  def register(m,mid,con,events,warps):
   lid='LAYOUT_'+mid.removeprefix('MAP_');layout=m.write(lid)
   existing=next((i for i,l in enumerate(layouts['layouts']) if l['id']==lid),None)
@@ -77,9 +77,9 @@ def build():
   header=copy.deepcopy(template);header.update(id=mid,name=m.name,layout=lid,show_map_name=True,
      connections=con,object_events=events,warp_events=warps,coord_events=[],bg_events=[])
   save(f'data/maps/{m.name}/map.json',header)
-  if m.name not in groups['gMapGroup_QuantumIsland']:groups['gMapGroup_QuantumIsland'].append(m.name)
+  if m.name not in groups['gMapGroup_Havora']:groups['gMapGroup_Havora'].append(m.name)
  # Western district: two rises from the low waterfront to the gym plateau.
- w=Map('QuantumPortCity',48,96,3)
+ w=Map('Havora_WestQuadrant',48,96,3)
  w.native(8,0,32,28,1,5);w.native(8,30,32,32,1,4)
  w.path(0,0,8,96,3);w.path(40,0,8,96,3)
  w.cliff(28,8,40,5,4,[16]);w.cliff(62,8,40,4,3,[28])
@@ -88,9 +88,9 @@ def build():
  w.path(16,0,4,28,5);w.path(12,5,24,3,5);w.path(22,14,4,12,5)
  w.path(16,30,4,26,4);w.path(12,34,26,3,4);w.path(12,54,26,4,4);w.path(28,54,4,8,4)
  w.path(4,68,40,4,3);w.path(28,64,4,18,3)
- w.place(ART['gym'],20,9,5,(3,4));w.house(12,42,4);w.house(30,43,4)
+ w.place(ART['gym'],20,9,5,(3,4));w.house(12,42,4);w.house(30,44, 1)
  for x,y,z in [(10,3,5),(32,2,5),(35,13,5),(10,20,5),(29,20,5),
-                (10,32,4),(33,32,4),(22,43,4),(10,50,4),(35,50,4),
+                (10,32,4),(33,32,4),(22,44, 1),(10,50,4),(35,50,4),
                 (10,73,3),(15,74,3),(34,74,3)]:w.tree(x,y,z)
  for x,y,width,z in [(20,26,16,5),(10,39,7,4),(26,39,11,4),(10,59,13,4),(10,80,15,3)]:w.flowers(x,y,width,z)
  w.cliff(86,8,40,3,1,[]);w.rect(8,88,32,8,0x282,1,True)
@@ -101,25 +101,25 @@ def build():
  w.rect(0,0,48,1,0x1C1,5,True);w.path(16,0,4,1,5)
  # Right edge remains low for the existing quay, regardless of plateau elevation.
  w.rect(40,0,8,1,0x1C1,3,True)
- register(w,ids['west'],[connection('left','MAP_QUANTUM_HARBOR_ROAD'),connection('right','MAP_QUANTUM_HAVORA_WEST_QUAY',51),connection('up',ids['north'])],
-   [npc('GYM_GUY',26,17,5,'QuantumPortCity_GymGuide'),npc('SAILOR',42,66,3,'QuantumPortCity_Guide'),npc('MAN',23,49,4,'QuantumPortCity_Trader')],
-   [warp(23,13,5,ids['gym'],1),warp(14,45,4,'MAP_QUANTUM_HAVORA_WEST_HOUSE1'),warp(32,46,4,'MAP_QUANTUM_HAVORA_WEST_HOUSE2')])
- scripts('QuantumPortCity',{'GymGuide':'HAVORA GYM stands above the port.\\nThe view is worth every step!',
+ register(w,ids['west'],[connection('left','MAP_VIDRA_HARBOR_ROAD'),connection('right','MAP_QUANTUM_HAVORA_WEST_QUAY',51),connection('up',ids['north'])],
+   [npc('GYM_GUY',26,17,5,'Havora_WestQuadrant_GymGuide'),npc('SAILOR',42,66,3,'Havora_WestQuadrant_Guide'),npc('MAN',23,49,4,'Havora_WestQuadrant_Trader')],
+   [warp(23,13,5,ids['gym'],1),warp(14,45,4,'MAP_HAVORA_WEST_HOUSE_1'),warp(32,46,4,'MAP_HAVORA_WEST_HOUSE_2')])
+ scripts('Havora_WestQuadrant',{'GymGuide':'HAVORA GYM stands above the port.\\nThe view is worth every step!',
    'Guide':'East leads to the ferry harbor.\\nThe stairs climb into HAVORA.',
    'Trader':'Our homes rise with the cliffs.\\nThe northern square has the shops.'})
- quay=read('data/maps/QuantumHavoraWestQuay/map.json')
+ quay=read('data/maps/Havora_River/map.json')
  for c in quay['connections']:
   if c['map']==ids['west']:c['offset']=-51
- save('data/maps/QuantumHavoraWestQuay/map.json',quay)
+ save('data/maps/Havora_River/map.json',quay)
  # Update a narrow, event-free old-route boundary strip; retain its other cells.
- road=read('data/maps/QuantumHarborRoad/map.json');rl=next(l for l in layouts['layouts'] if l['id']==road['layout']);rw,rh=rl['width'],rl['height']
+ road=read('data/maps/Vidra_HarborRoad/map.json');rl=next(l for l in layouts['layouts'] if l['id']==road['layout']);rw,rh=rl['width'],rl['height']
  ra=list(struct.unpack('<'+'H'*(rw*rh),(R/rl['blockdata_filepath']).read_bytes()))
  for y in range(rh):
   for x in range(rw-8,rw):ra[y*rw+x]=0x31C1
   ra[y*rw+rw-1]=0x31C1 if 8<=y<12 else 0x35C1
  (R/rl['blockdata_filepath']).write_bytes(struct.pack('<'+'H'*len(ra),*ra))
  # Broad northern quadrant, spanning the gym hills and the existing market.
- n=Map('QuantumHavoraNorthDistrict',96,40,5)
+ n=Map('Havora_NorthQuadrant',96,40,5)
  n.native(0,0,96,10,1,6);n.cliff(10,0,96,6,5,[24,68])
  n.path(68,0,4,10,6);n.path(24,3,48,3,6);n.path(24,12,4,12,5)
  n.path(8,20,88,6,5);n.path(68,12,4,16,5)
@@ -133,21 +133,21 @@ def build():
  n.path(48,18,1,2,5)
  n.boundary(5);n.path(68,0,4,1,6);n.path(16,39,4,1,5);n.path(68,39,4,1,4);n.path(95,22,1,4,5)
  register(n,ids['north'],[connection('down',ids['west']),connection('down','MAP_QUANTUM_HAVORA_NORTH_QUAY',56),connection('right',ids['coast']),connection('up',ids['walk'],62)],
-  [npc('WOMAN_1',74,23,5,'QuantumHavoraNorthDistrict_Coast'),npc('MAN',60,23,5,'QuantumHavoraNorthDistrict_Services'),npc('SAILOR',29,6,6,'QuantumHavoraNorthDistrict_North')],
-  [warp(64,17,5,'MAP_QUANTUM_PORT_CITY_POKEMON_CENTER1_F',1),warp(82,17,5,ids['mart']),
-   warp(14,16,5,'MAP_QUANTUM_HAVORA_NORTH_HOUSE1'),warp(33,16,5,'MAP_QUANTUM_HAVORA_NORTH_HOUSE2'),warp(48,17,5,'MAP_QUANTUM_HAVORA_NORTH_HOUSE3')])
+  [npc('WOMAN_1',74,23,5,'Havora_NorthQuadrant_Coast'),npc('MAN',60,23,5,'Havora_NorthQuadrant_Services'),npc('SAILOR',29,6,6,'Havora_NorthQuadrant_North')],
+  [warp(64,17,5,'MAP_HAVORA_POKEMON_CENTER_1_F',1),warp(82,17,5,ids['mart']),
+   warp(14,16,5,'MAP_HAVORA_NORTH_HOUSE_1'),warp(33,16,5,'MAP_HAVORA_NORTH_HOUSE_2'),warp(48,17,5,'MAP_HAVORA_NORTH_HOUSE_3')])
  scripts(n.name,{'Coast':'The DAY CARE is east of the square,\\nright above the coastal cliffs.',
   'Services':'Welcome to the northern square!\\nThe CENTER and MART are right here.',
   'North':'The northern walk follows the cliffs.\\nYou can see the whole port from there.'})
- market=read('data/maps/QuantumHavoraNorthQuay/map.json')
+ market=read('data/maps/Havora_Market/map.json')
  market['connections']=[c for c in market['connections'] if c['direction']!='up']+[connection('up',ids['north'],-56)]
- save('data/maps/QuantumHavoraNorthQuay/map.json',market)
+ save('data/maps/Havora_Market/map.json',market)
  ml=next(l for l in layouts['layouts'] if l['id']==market['layout']);ma=list(struct.unpack('<2560H',(R/ml['blockdata_filepath']).read_bytes()))
  for y in range(12):
   for x in range(12,16):ma[y*40+x]=0x41C1
  (R/ml['blockdata_filepath']).write_bytes(struct.pack('<2560H',*ma))
  # Eastern coastal parcel, with the house above its fenced grounds.
- d=Map('QuantumHavoraCoastalDaycare',48,40,5)
+ d=Map('Havora_DaycareExterior',48,40,5)
  d.native(8,0,27,26,1,6);d.native(7,0,1,28,0x83,6,True)
  d.cliff(26,8,35,6,5,[22]);d.path(22,28,4,7,5);d.path(0,30,34,4,5)
  d.house(26,10,6,8);d.path(30,14,2,12,6);d.path(22,24,4,2,6)
@@ -156,50 +156,50 @@ def build():
  for x,y,z in [(10,3,6),(17,4,6),(24,2,6),(31,3,6),(10,14,6),(11,21,6),(10,35,5),(30,35,5)]:d.tree(x,y,z)
  d.flowers(21,8,13,6);d.flowers(10,24,7,6)
  d.native(35,0,1,40,0x83,6,True);d.native(36,0,1,40,0x79,3,True);d.rect(37,0,11,40,0x282,1,True)
- for x,y in [(39,5),(43,12),(40,23),(45,31),(42,36)]:d.rect(x,y,1,1,142,1,True)
+ for x,y in [(39,5),(47, 0),(40,23),(45,31),(42,36)]:d.rect(x,y,1,1,142,1,True)
  d.native(0,0,1,40,5,5,True);d.path(0,22,1,4,5);d.path(1,22,5,12,5)
  d.native(1,0,34,1,5,6,True);d.native(1,39,34,1,5,5,True)
  register(d,ids['coast'],[connection('left',ids['north'])],
-  [npc('GENTLEMAN',29,15,6,'QuantumHavoraCoastalDaycare_Caretaker'),npc('NIDORAN_F',21,20,6,'QuantumHavoraCoastalDaycare_Mon'),npc('PIDGEY',29,22,6,'QuantumHavoraCoastalDaycare_Mon')],
+  [npc('GENTLEMAN',29,15,6,'Havora_DaycareExterior_Caretaker'),npc('NIDORAN_F',21,20,6,'Havora_DaycareExterior_Mon'),npc('PIDGEY',29,22,6,'Havora_DaycareExterior_Mon')],
   [warp(30,13,6,ids['daycare'],1)])
  scripts(d.name,{'Caretaker':'The sea breeze keeps this place calm.\\nCome inside if your partner needs care.',
    'Mon':'The POKéMON looks happy and relaxed.$'.removesuffix('$')})
  # Northern promenade: a real connected outdoor walk and elevated lookout.
- p=Map('QuantumHavoraNorthWalk',16,32,6);p.native(0,0,16,10,1,7);p.cliff(10,1,15,7,6,[6]);p.path(6,12,4,20,6);p.path(4,3,8,5,7)
+ p=Map('Havora_Lookout',16,32,6);p.native(0,0,16,10,1,7);p.cliff(10,1,15,7,6,[6]);p.path(6,12,4,20,6);p.path(4,3,8,5,7)
  for x,y,z in [(1,1,7),(12,1,7),(1,6,7),(12,6,7),(1,14,6),(12,14,6),(1,20,6),(12,20,6),(1,26,6),(12,26,6)]:p.tree(x,y,z)
  p.boundary(6);p.path(6,31,4,1,6)
  register(p,ids['walk'],[connection('down',ids['north'],-62)],
-  [npc('FISHER',10,6,7,'QuantumHavoraNorthWalk_View')],[])
+  [npc('FISHER',10,6,7,'Havora_Lookout_View')],[])
  scripts(p.name,{'View':'The whole coast opens out below us.\\nHAVORA is a city of sea and stone.'})
  # Preserve the existing Center scripts and upper floor; relocate only exits.
- center=read('data/maps/QuantumPortCityPokemonCenter1F/map.json')
+ center=read('data/maps/Havora_PokemonCenter_1F/map.json')
  for e in center['warp_events'][:3]:e.update(dest_map=ids['north'],dest_warp_id='0')
- save('data/maps/QuantumPortCityPokemonCenter1F/map.json',center)
+ save('data/maps/Havora_PokemonCenter_1F/map.json',center)
  heal=read('src/data/heal_locations.json')
  entries=heal['heal_locations'] if 'heal_locations' in heal else next(v for v in heal.values() if isinstance(v,list))
  target=next(e for e in entries if e['id']=='HEAL_LOCATION_QUANTUM_PORT_CITY');target.update(map=ids['north'],x=64,y=18)
  save('src/data/heal_locations.json',heal)
  path=R/'src/region_map.c';s=path.read_text();s=s.replace('{MAP(MAP_QUANTUM_PORT_CITY), HEAL_LOCATION_QUANTUM_PORT_CITY}',f'{{MAP({ids["north"]}), HEAL_LOCATION_QUANTUM_PORT_CITY}}');text('src/region_map.c',s)
  # Private interiors use active stock layouts; original Kanto maps are untouched.
- interiors=[('QuantumHavoraGym',ids['gym'],'PewterCity_Gym',ids['west'],0),
-            ('QuantumHavoraMart',ids['mart'],'QuantumHavoraProvisions',ids['north'],1),
-            ('QuantumHavoraDaycare',ids['daycare'],'Route5_PokemonDayCare',ids['coast'],0),
-            ('QuantumHavoraWestHouse1','MAP_QUANTUM_HAVORA_WEST_HOUSE1','QuantumHavoraTraderHouse',ids['west'],1),
-            ('QuantumHavoraWestHouse2','MAP_QUANTUM_HAVORA_WEST_HOUSE2','QuantumHavoraTraderHouse',ids['west'],2),
-            ('QuantumHavoraNorthHouse1','MAP_QUANTUM_HAVORA_NORTH_HOUSE1','QuantumHavoraTraderHouse',ids['north'],2),
-            ('QuantumHavoraNorthHouse2','MAP_QUANTUM_HAVORA_NORTH_HOUSE2','QuantumHavoraTraderHouse',ids['north'],3),
-            ('QuantumHavoraNorthHouse3','MAP_QUANTUM_HAVORA_NORTH_HOUSE3','QuantumHavoraTraderHouse',ids['north'],4)]
+ interiors=[('Havora_Gym',ids['gym'],'PewterCity_Gym',ids['west'],0),
+            ('Havora_Mart',ids['mart'],'Havora_Provisions',ids['north'],1),
+            ('Havora_DaycareInterior',ids['daycare'],'Route5_PokemonDayCare',ids['coast'],0),
+            ('Havora_WestHouse_1','MAP_HAVORA_WEST_HOUSE_1','Havora_TraderHouse',ids['west'],1),
+            ('Havora_WestHouse_2','MAP_HAVORA_WEST_HOUSE_2','Havora_TraderHouse',ids['west'],2),
+            ('Havora_NorthHouse_1','MAP_HAVORA_NORTH_HOUSE_1','Havora_TraderHouse',ids['north'],2),
+            ('Havora_NorthHouse_2','MAP_HAVORA_NORTH_HOUSE_2','Havora_TraderHouse',ids['north'],3),
+            ('Havora_NorthHouse_3','MAP_HAVORA_NORTH_HOUSE_3','Havora_TraderHouse',ids['north'],4)]
  for name,mid,source,dest,wi in interiors:
-  m=read(f'data/maps/{source}/map.json');m.update(id=mid,name=name,region_map_section='MAPSEC_QUANTUM_PORT_CITY')
+  m=read(f'data/maps/{source}/map.json');m.update(id=mid,name=name,region_map_section='MAPSEC_HAVORA_CITY')
   for e in m['warp_events']:e.update(dest_map=dest,dest_warp_id=str(wi))
   if name.endswith('Gym'):
    m['object_events']=[npc('GYM_GUY',7,12,3,name+'_Welcome')];m['bg_events']=[];m['coord_events']=[]
    scripts(name,{'Welcome':'Welcome to HAVORA GYM!\\nEvery great battle starts with a plan.'})
   elif name.endswith('Mart'):
-   m['object_events']=[npc('CLERK',2,3,0,'QuantumHavoraNorthQuay_Supplies','RIGHT')];scripts(name,{})
+   m['object_events']=[npc('CLERK',2,3,0,'Havora_Market_Supplies','RIGHT')];scripts(name,{})
   else:scripts(name,{})
   save(f'data/maps/{name}/map.json',m)
-  if name not in groups['gMapGroup_QuantumIsland']:groups['gMapGroup_QuantumIsland'].append(name)
+  if name not in groups['gMapGroup_Havora']:groups['gMapGroup_Havora'].append(name)
  save('data/maps/map_groups.json',groups);save('data/layouts/layouts.json',layouts)
  includes=(R/'data/event_scripts.s').read_text()
  for name in [n.name,d.name,p.name]+[i[0] for i in interiors]:

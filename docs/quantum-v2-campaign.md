@@ -6,7 +6,7 @@ The authoritative cleanup manifest is `data/quantum/retired_content.json`. It re
 
 All 20 V2 island maps remain, including the 40×32 Havora harbor, 80×80 city layout, five towns and their Centers, and four connecting routes. The Stellar Ticket quest, original Seagallop sailing/return interaction, healing, visit flags and native Fly eligibility remain. Painted island layouts and the original regional artwork are preserved. This is still an island foundation under active map development.
 
-The tablet Map app previews Kanto and Quantum Island using L/R; A opens the native travel guide. Visiting a preview does not unlock travel. The existing native island map, region picker, location names and Fly behavior remain available.
+The tablet Map app previews Kanto and Vidra using L/R; A opens the native travel guide. Visiting a preview does not unlock travel. The existing native island map, region picker, location names and Fly behavior remain available.
 
 V2 campaign sanitation delegates map/warp recovery to QOL's expanded predicate and safe Pallet destination (10,9), then clears its obsolete story/travel flags. Early Oak starter states are preserved. The campaign retains its removal of the separate post-League Oak ceremony and upgraded rematch introductions.
 

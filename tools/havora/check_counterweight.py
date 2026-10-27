@@ -14,7 +14,7 @@ else:
  # change the closed-gate alias, but must not repaint any maps or event data.
  a=js('tools/havora/gate-animation.json');base=a['base_commit']
  assert not subprocess.check_output(['git','diff','--name-only',base,'--','data/maps','data/layouts'],cwd=R).strip(), 'User map/event edits changed'
- m=js('data/maps/HavoraNorthQuadrant/map.json')
+ m=js('data/maps/Havora_NorthQuadrant/map.json')
  assert len(m['object_events'])==19<64
  for key,first in [('boulders',11),('trees',17)]:
   for i,coord in enumerate(d[key]):

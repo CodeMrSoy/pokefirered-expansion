@@ -5,7 +5,7 @@ from collections import deque
 R=Path(__file__).resolve().parents[1]
 def load(p):return json.loads((R/p).read_text())
 layouts=load('data/layouts/layouts.json')['layouts']
-m=load('data/maps/QuantumHavoraNorthQuay/map.json')
+m=load('data/maps/Havora_Market/map.json')
 l=next(l for l in layouts if l['id']==m['layout'])
 assert (l['width'],l['height'])==(40,64)
 assert (40+15)*(64+14)<=0x2800
@@ -28,7 +28,7 @@ assert (0,54) in seen and (5,63) in seen and (20,36) in seen
 for e in m['object_events']:
  x,y=e['x'],e['y'];assert a[y*40+x]&0xFC00==0x4000 and e['elevation']==4
  assert any(p in seen for p in [(x-1,y),(x+1,y),(x,y-1),(x,y+1)])
-groups=load('data/maps/map_groups.json')['gMapGroup_QuantumIsland']
+groups=load('data/maps/map_groups.json')['gMapGroup_Havora']
 maps={load(f'data/maps/{n}/map.json')['id']:n for n in groups}
 assert len(m['warp_events'])==7
 retired=load('data/quantum/retired_content.json')['retired_layouts']
@@ -47,7 +47,7 @@ for i,e in enumerate(m['warp_events']):
   assert back['dest_map']==m['id'] and int(back['dest_warp_id'])==i
 assert not any(e['dest_map']=='MAP_QUANTUM_HARBOR' for e in m['warp_events'])
 # All three boundary maps now agree on one world-space position.
-w=load('data/maps/QuantumHavoraWestQuay/map.json');h=load('data/maps/QuantumHarbor/map.json')
+w=load('data/maps/Havora_River/map.json');h=load('data/maps/Havora_Harbor/map.json')
 offset=lambda mm,target:next(c['offset'] for c in mm['connections'] if c['map']==target)
 assert offset(m,w['id'])==0 and offset(w,m['id'])==0
 assert offset(w,h['id'])==64 and offset(h,w['id'])==-64

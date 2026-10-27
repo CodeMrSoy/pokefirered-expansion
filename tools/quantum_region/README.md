@@ -17,8 +17,8 @@ QOL has no island campaign maps or section IDs. It carries the conditional
 shared map code and assets, with only Kanto enabled. Merging with V2 or
 Havora-Development enables Vidra automatically through QUANTUM_MAPSEC_START.
 No campaign items, progression flags, maps or story are imported into QOL.
-Existing campaign names are preserved during regeneration: Havora City is
-confirmed; the other four settlements still have descriptive labels.
+Existing campaign names are preserved during regeneration: Havora City,
+Corvala Town, Eldervale Village, Myrdal City and Iskora Village.
 
 Use `tests/region_map_destinations_emulator.py` on QOL and the V2 integration
 build to exercise real F.I. Case/Sky Whistle entry, all city markers, locked

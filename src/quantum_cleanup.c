@@ -1,5 +1,6 @@
 #include "global.h"
 #include "field_tools.h"
+#include "vidra_maps.h"
 #include "quantum_cleanup.h"
 #include "pokemon.h"
 #include "pokemon_storage_system.h"
@@ -521,7 +522,9 @@ void QuantumMigrateLoadedWorld(void)
 {
     FieldTools_MigrateInventory();
     u32 readScene, writeScene = 0;
-    bool8 relocated = RetiredMap(&gSaveBlock1Ptr->location);
+    bool8 relocated;
+    VidraMigrateMapIds();
+    relocated = RetiredMap(&gSaveBlock1Ptr->location);
     if (relocated)
     {
         gSaveBlock1Ptr->pos.x = 10;
