@@ -15059,6 +15059,71 @@
         {
           "map": "MAP_HAVORA_WEST_QUADRANT",
           "base_label": "gHavora_WestQuadrant",
+          "land_mons": {
+            "encounter_rate": 12,
+            "mons": [
+              {
+                "min_level": 30,
+                "max_level": 34,
+                "species": "SPECIES_WINGULL"
+              },
+              {
+                "min_level": 30,
+                "max_level": 34,
+                "species": "SPECIES_ROOKIDEE"
+              },
+              {
+                "min_level": 30,
+                "max_level": 34,
+                "species": "SPECIES_MACHOP"
+              },
+              {
+                "min_level": 30,
+                "max_level": 34,
+                "species": "SPECIES_YAMPER"
+              },
+              {
+                "min_level": 30,
+                "max_level": 34,
+                "species": "SPECIES_MAGNEMITE"
+              },
+              {
+                "min_level": 32,
+                "max_level": 36,
+                "species": "SPECIES_TRANQUILL"
+              },
+              {
+                "min_level": 34,
+                "max_level": 37,
+                "species": "SPECIES_PELIPPER"
+              },
+              {
+                "min_level": 33,
+                "max_level": 37,
+                "species": "SPECIES_CORVISQUIRE"
+              },
+              {
+                "min_level": 35,
+                "max_level": 38,
+                "species": "SPECIES_MACHOKE"
+              },
+              {
+                "min_level": 32,
+                "max_level": 35,
+                "species": "SPECIES_TOXEL"
+              },
+              {
+                "min_level": 36,
+                "max_level": 39,
+                "species": "SPECIES_FARFETCHD"
+              },
+              {
+                "min_level": 38,
+                "max_level": 40,
+                "species": "SPECIES_SKARMORY"
+              }
+            ]
+          },
           "water_mons": {
             "encounter_rate": 5,
             "mons": [
@@ -15141,71 +15206,6 @@
                 "min_level": 38,
                 "max_level": 40,
                 "species": "SPECIES_GRAPPLOCT"
-              }
-            ]
-          },
-          "land_mons": {
-            "encounter_rate": 12,
-            "mons": [
-              {
-                "min_level": 30,
-                "max_level": 34,
-                "species": "SPECIES_WINGULL"
-              },
-              {
-                "min_level": 30,
-                "max_level": 34,
-                "species": "SPECIES_ROOKIDEE"
-              },
-              {
-                "min_level": 30,
-                "max_level": 34,
-                "species": "SPECIES_MACHOP"
-              },
-              {
-                "min_level": 30,
-                "max_level": 34,
-                "species": "SPECIES_YAMPER"
-              },
-              {
-                "min_level": 30,
-                "max_level": 34,
-                "species": "SPECIES_MAGNEMITE"
-              },
-              {
-                "min_level": 32,
-                "max_level": 36,
-                "species": "SPECIES_TRANQUILL"
-              },
-              {
-                "min_level": 34,
-                "max_level": 37,
-                "species": "SPECIES_PELIPPER"
-              },
-              {
-                "min_level": 33,
-                "max_level": 37,
-                "species": "SPECIES_CORVISQUIRE"
-              },
-              {
-                "min_level": 35,
-                "max_level": 38,
-                "species": "SPECIES_MACHOKE"
-              },
-              {
-                "min_level": 32,
-                "max_level": 35,
-                "species": "SPECIES_TOXEL"
-              },
-              {
-                "min_level": 36,
-                "max_level": 39,
-                "species": "SPECIES_FARFETCHD"
-              },
-              {
-                "min_level": 38,
-                "max_level": 40,
-                "species": "SPECIES_SKARMORY"
               }
             ]
           }

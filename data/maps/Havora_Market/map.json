@@ -266,8 +266,8 @@
       "flag": "0"
     },
     {
-      "type": "object",
       "local_id": "LOCALID_HAVORA_MARKET_KOGA",
+      "type": "object",
       "graphics_id": "OBJ_EVENT_GFX_KOGA",
       "x": 2,
       "y": 48,
