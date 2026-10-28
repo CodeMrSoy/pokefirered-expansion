@@ -439,8 +439,18 @@ static void DrawHubIcon(u8 app, u16 x, u16 y)
 // Stable script IDs, arranged in two rows on each phone-style page.
 static const u8 sHubPages[2][6] = {{0, 1, 2, 4, 3, 5}, {6, 7, 8, 9, 10, 11}};
 
+bool8 CanUsePokeGlass(void)
+{
+    // Oak hands over the device alongside the Pokédex, after his parcel.
+    return FlagGet(FLAG_SYS_POKEDEX_GET) && CheckBagHasItem(ITEM_POKEGLASS, 1);
+}
+
 static bool8 HubAppAvailable(u8 app)
 {
+    if (app == 0 && !FlagGet(FLAG_SYS_POKEDEX_GET))
+        return FALSE;
+    if ((app == 1 || app == 3) && CalculatePlayerPartyCount() == 0)
+        return FALSE;
     if (IsUpdateLinkStateCBActive() || InUnionRoom())
         return app == 1 || app == 5 || app == 6 || app == 7;
     if (app == 9) return DEBUG_OVERWORLD_MENU == TRUE;

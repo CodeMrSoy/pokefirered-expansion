@@ -8,6 +8,8 @@ fixture = b''
 for species, level in ((1, 25), (25, 50), (143, 75)):
     fixture += b'\x23' + struct.pack('<I', (m.symbols['ScrCmd_createmon'] | 1) + 0x2000000)
     fixture += struct.pack('<BBHHI', 0, 6, species, level, 0)
+# App-only fixture represents a player who already received Oak's device.
+fixture += b'\x29' + struct.pack('<H', 0x829)
 m.inject(fixture + b'\x44' + struct.pack('<HH', 717, 1) + b'\x02')
 assert m.read(m.symbols['gPlayerPartyCount'], 1) == b'\x03'
 

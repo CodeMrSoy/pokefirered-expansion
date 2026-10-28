@@ -1,6 +1,8 @@
 Havora_TraderHouse_MapScripts::
 	.byte 0
 
+@ Older connected houses still use this shared owner entry point.
+Havora_TraderHouse_Owner::
 Havora_TraderHouse_Merchant::
 	msgbox Havora_TraderHouse_Merchant_Text, MSGBOX_NPC
 	end

@@ -7,6 +7,7 @@ fixture=b''
 for species,level in ((1,9),(113,99),(25,25),(143,100),(4,9),(7,99)):
  fixture+=b'\x23'+struct.pack('<I',(m.symbols['ScrCmd_createmon']|1)+0x2000000)+struct.pack('<BBHHI',0,6,species,level,0)
 fixture+=b'\x44'+struct.pack('<HH',717,1)+b'\x44'+struct.pack('<HH',102,5)
+fixture+=b'\x29'+struct.pack('<H',0x829)
 m.inject(fixture+b'\x02');m.press(3);m.press(7);m.press(8)
 root=m.root;call_dir=m.d/'party-text-native';call_dir.mkdir(exist_ok=True)
 address=m.symbols['gDecompressionBuffer']+0x3000;result=address+0x800;value_addr=address+0x900

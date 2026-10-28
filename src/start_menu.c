@@ -504,6 +504,14 @@ void Task_StartMenuHandleInput(u8 taskId)
 
 void ShowStartMenu(void)
 {
+    if (!CanUsePokeGlass())
+    {
+        PlaySE(SE_FAILURE);
+        // Field input locks controls after this function returns. The script's
+        // ownership guard releases that lock without opening the tablet.
+        ScriptContext_SetupScript(EventScript_AccessPokeGlass);
+        return;
+    }
     if (!IsUpdateLinkStateCBActive())
     {
         FreezeObjectEvents();

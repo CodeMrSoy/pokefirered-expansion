@@ -8,6 +8,8 @@ fixture = b''
 for species in (1, 4, 7, 25, 133, 143):
     fixture += b'\x23' + struct.pack('<I', (m.symbols['ScrCmd_createmon'] | 1) + 0x2000000)
     fixture += struct.pack('<BBHHI', 0, 6, species, 25, 0)
+# App-only fixture represents a player who already received Oak's device.
+fixture += b'\x29' + struct.pack('<H', 0x829)
 m.inject(fixture + b'\x44' + struct.pack('<HH', 717, 1) + b'\x02')
 size = m.lib.retro_serialize_size()
 field = m.c.create_string_buffer(size)

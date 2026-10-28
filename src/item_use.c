@@ -507,6 +507,11 @@ void ItemUseOutOfBattle_Itemfinder(u8 taskId)
 
 void ItemUseOutOfBattle_PokeGlass(u8 taskId)
 {
+    if (!CanUsePokeGlass())
+    {
+        PrintNotTheTimeToUseThat(taskId, gTasks[taskId].tUsingRegisteredKeyItem);
+        return;
+    }
     sItemUseOnFieldCB = Task_AccessPokeGlass;
     SetUpItemUseOnFieldCallback(taskId);
 }

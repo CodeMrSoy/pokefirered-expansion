@@ -115,6 +115,7 @@ native('SetCurrentAvatarLook', 2)
 
 fixture = b'\x23' + struct.pack('<I', (m.symbols['ScrCmd_createmon'] | 1) + 0x2000000)
 fixture += struct.pack('<BBHHI', 0, 6, 1, 25, 0)
+fixture += b'\x29' + struct.pack('<H', 0x829)  # Post-Oak app fixture.
 fixture += b'\x44' + struct.pack('<HH', 717, 1) + b'\x02'
 m.inject(fixture)
 # The retired wardrobe entry point must not change the chosen outfit.

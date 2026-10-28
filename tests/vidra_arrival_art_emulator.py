@@ -60,7 +60,10 @@ assert 180 < frames < 360, ('Automatic artwork duration', frames)
 assert m.read(ptr('gSaveBlock1Ptr'), 6) == baseline
 print('PASS preview: complete image, early-input guard, deliberate skip, automatic return, same field', flush=True)
 
-m.inject(b'\x44' + struct.pack('<HH', 717, 1) + b'\x02')
+# Startup/Bag checks begin after Oak's grant.
+m.inject(b'\x23' + struct.pack('<I', (m.symbols['ScrCmd_createmon'] | 1) + 0x2000000)
+    + struct.pack('<BBHHI', 0, 6, 1, 5, 0)
+    + b'\x29' + struct.pack('<H', 0x829) + b'\x44' + struct.pack('<HH', 717, 1) + b'\x02')
 m.keys.add(3); m.run(2); m.keys.clear()
 until(lambda: task('Task_PokeGlassIntro'))
 # Capture the powered tablet before it yields to the launcher.

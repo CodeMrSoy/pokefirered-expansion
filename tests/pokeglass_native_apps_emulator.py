@@ -10,6 +10,7 @@ def constant(name):
 for f in ['FLAG_SYS_SEVII_MAP_123','FLAG_SYS_SEVII_MAP_4567']:native('FlagSet',constant(f))
 fixture=b''
 for species in [1,4,7]:fixture+=b'\x23'+struct.pack('<I',(m.symbols['ScrCmd_createmon']|1)+0x2000000)+struct.pack('<BBHHI',0,6,species,25,0)
+fixture+=b'\x29'+struct.pack('<H',0x829)
 m.inject(fixture+b'\x44'+struct.pack('<HH',717,1)+b'\x02')
 original=m.read(m.symbols['gPlayerParty'],300)
 m.press(3);wait_task('Task_PokeGlassHub');m.run(30)

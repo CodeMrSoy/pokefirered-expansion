@@ -5,6 +5,7 @@ fixture=b''
 for species in (1,4,7,25,133,143):
  fixture+=b'\x23'+struct.pack('<I',(m.symbols['ScrCmd_createmon']|1)+0x2000000)+struct.pack('<BBHHI',0,6,species,25,0)
 fixture+=b'\x29'+struct.pack('<H',0x829)
+fixture+=b'\x29'+struct.pack('<H',0x829)
 fixture+=b'\x44'+struct.pack('<HH',717,1)
 m.inject(fixture+b'\x02')
 m.press(3)

@@ -91,8 +91,15 @@ EventScript_ExitOaksPC::
 	goto EventScript_PCMainMenu
 	end
 
+EventScript_PokeGlassNotReceived::
+	releaseall
+	end
+
 EventScript_AccessPokeGlass::
 	lockall
+	goto_if_unset FLAG_SYS_POKEDEX_GET, EventScript_PokeGlassNotReceived
+	checkitem ITEM_POKEGLASS, 1
+	goto_if_eq VAR_RESULT, FALSE, EventScript_PokeGlassNotReceived
 	playse SE_SELECT
 	special StartPokeGlassIntro
 	waitstate

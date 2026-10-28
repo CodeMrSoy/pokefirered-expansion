@@ -2,6 +2,7 @@
 #define GUARD_POKE_GLASS_H
 
 bool8 IsPokeGlassActive(void);
+bool8 CanUsePokeGlass(void);
 void PreparePokeGlassReturn(void);
 void BeginPokeGlassReturn(void);
 void BeginPokeGlassAppLoad(void);

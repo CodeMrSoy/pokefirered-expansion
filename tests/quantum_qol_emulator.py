@@ -80,6 +80,7 @@ if __name__=='__main__':
  fixture=b''
  for species in (1,4,7,25,133,143):
   fixture+=b'\x23'+struct.pack('<I',(symbols['ScrCmd_createmon']|1)+0x2000000)+struct.pack('<BBHHI',0,6,species,25,0)
+ fixture+=b'\x29'+struct.pack('<H',0x829)  # Post-Oak app fixture.
  fixture+=b'\x44'+struct.pack('<HH',717,1)
  for slot,move in enumerate((33,52,45)):
   fixture+=b'\x7a'+struct.pack('<BBH',0,slot,move)
