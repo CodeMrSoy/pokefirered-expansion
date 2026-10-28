@@ -336,89 +336,87 @@ u16 RandomizerRandRange(enum RandomizerReason reason, u32 data1, u32 data2, u16 
     return RandomizerNextRange(&state, range);
 }
 
-// Utility functions for the field item randomizer.
-//static inline bool32 IsItemTMHM(u16 itemId)
-//{
-//  return ItemId_GetPocket(itemId) == POCKET_TM_HM;
-//}
-
-//static inline bool32 IsItemHM(u16 itemId)
-//{
-//    return itemId >= ITEM_HM01 && IsItemTMHM(itemId);
-//}
+// Field pickups keep story keys fixed; tools and Mail are never random rewards.
+static inline bool32 IsFieldToolOrHM(u16 itemId)
+{
+    return itemId >= ITEM_HM01 && itemId <= ITEM_HM08;
+}
 
 static inline bool32 IsKeyItem(u16 itemId)
 {
     return GetPocketByItemId(itemId) == POCKET_KEY_ITEMS;
 }
 
-// Don't randomize HMs or key items, that can make the game unwinnable.
-// ITEM_NONE also should not be randomized as it is invalid.
 static inline bool32 ShouldRandomizeItem(u16 itemId)
 {
-    return !(IsItemHM(itemId) || IsKeyItem(itemId) || itemId == ITEM_NONE
-        || ItemIsMail(itemId) || (itemId >= ITEM_NORMALIUM_Z && itemId <= ITEM_ULTRANECROZIUM_Z));
+    return itemId != ITEM_NONE && itemId < ITEMS_COUNT
+        && !IsFieldToolOrHM(itemId) && !IsKeyItem(itemId)
+        && !ItemIsMail(itemId)
+        && !(itemId >= ITEM_NORMALIUM_Z && itemId <= ITEM_ULTRANECROZIUM_Z);
 }
 
 #include "data/randomizer/item_whitelist.h"
 
-// Given a found item and its location in the game, returns a replacement for that item.
-u16 RandomizeFoundItem(u16 itemId, u8 mapNum, u8 mapGroup, u8 localId)
+// locationId is an object local ID or a hidden pickup's persistent flag.
+u16 RandomizeFoundItem(u16 itemId, u8 mapNum, u8 mapGroup, u16 locationId)
 {
     struct Sfc32State state;
     u16 result;
     u32 mapSeed;
 
-    if (!ShouldRandomizeItem(itemId))
+    // ITEM_NONE identifies hidden coins. Story keys must remain obtainable.
+    // Field tools use the key pocket too, but obsolete ground tools are replaced.
+    if (itemId == ITEM_NONE || itemId >= ITEMS_COUNT
+        || (IsKeyItem(itemId) && !IsFieldToolOrHM(itemId)))
         return itemId;
 
-    // Seed the generator using the original item and the object event that led up
-    // to this call.
-    mapSeed = ((u32)mapGroup) << 16;
-    mapSeed |= ((u32)mapNum) << 8;
-    mapSeed |= localId;
-
+    mapSeed = ((u32)mapGroup << 24) | ((u32)mapNum << 16) | locationId;
     state = RandomizerRandSeed(RANDOMIZER_REASON_FIELD_ITEM, mapSeed, itemId);
 
-    // Randomize TMs to TMs. Because HMs shouldn't be randomized, we can assume
-    // this is a TM.
-    if (IsItemTMHM(itemId))
-        return RandomizerNextRange(&state, RANDOMIZER_MAX_TM - ITEM_TM01 + 1) + ITEM_TM01;
+    // Choose a different TM without rejection sampling.
+    if (itemId >= ITEM_TM01 && itemId <= ITEM_TM100)
+    {
+        u16 count = RANDOMIZER_MAX_TM - ITEM_TM01 + 1;
+        if (itemId <= RANDOMIZER_MAX_TM)
+            count--;
+        result = RandomizerNextRange(&state, count) + ITEM_TM01;
+        if (itemId <= RANDOMIZER_MAX_TM && result >= itemId)
+            result++;
+        return result;
+    }
 
-    // Randomize everything else to everything else.
     do {
         result = sRandomizerItemWhitelist[RandomizerNextRange(&state, ITEM_WHITELIST_SIZE)];
-    } while(!ShouldRandomizeItem(result) || IsItemTMHM(result));
+    } while (!ShouldRandomizeItem(result) || IsItemTMHM(result) || result == itemId);
 
     return result;
-
 }
 
-// Takes a SpecialVar as an argument to simplify handling separate scripts.
-static inline void RandomizeFoundItemScript(u16 *scriptVar)
+void FindItemRandomize_NativeCall(struct ScriptContext *ctx)
 {
     if (RandomizerFeatureEnabled(RANDOMIZE_FIELD_ITEMS))
     {
-        // Pull the object event information from the current object event.
         u8 objEvent = gSelectedObjectEvent;
-        *scriptVar = RandomizeFoundItem(
-            *scriptVar,
-            gObjectEvents[objEvent].mapGroup,
+        gSpecialVar_0x8000 = RandomizeFoundItem(
+            gSpecialVar_0x8000,
             gObjectEvents[objEvent].mapNum,
+            gObjectEvents[objEvent].mapGroup,
             gObjectEvents[objEvent].localId);
     }
 }
 
-// These functions are invoked by the scripts that handle found items and
-// write the results of the randomization to the correct script variable.
-void FindItemRandomize_NativeCall(struct ScriptContext *ctx)
-{
-    RandomizeFoundItemScript(&gSpecialVar_0x8000);
-}
-
 void FindHiddenItemRandomize_NativeCall(struct ScriptContext *ctx)
 {
-    RandomizeFoundItemScript(&gSpecialVar_0x8005);
+    if (RandomizerFeatureEnabled(RANDOMIZE_FIELD_ITEMS))
+    {
+        // Hidden pickups do not select an object event. Their flag is stable
+        // across approaches, NPC interactions, full-Bag retries and reloads.
+        gSpecialVar_0x8005 = RandomizeFoundItem(
+            gSpecialVar_0x8005,
+            gSaveBlock1Ptr->location.mapNum,
+            gSaveBlock1Ptr->location.mapGroup,
+            gSpecialVar_0x8004);
+    }
 }
 
 // Both legendary and mythical Pokémon are included in this category.

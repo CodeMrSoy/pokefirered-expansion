@@ -112,7 +112,7 @@ static inline u8 RandomizeMonType(u16 species, u8 typeNum)
     return (u8)RandomizerRandRange(RANDOMIZER_REASON_SPECIES_TYPE, species, typeNum, NUMBER_OF_MON_TYPES);
 }
 
-u16 RandomizeFoundItem(u16 itemId, u8 mapNum, u8 mapGroup, u8 localId);
+u16 RandomizeFoundItem(u16 itemId, u8 mapNum, u8 mapGroup, u16 locationId);
 void FindItemRandomize_NativeCall(struct ScriptContext *ctx);
 void FindHiddenItemRandomize_NativeCall(struct ScriptContext *ctx);
 
