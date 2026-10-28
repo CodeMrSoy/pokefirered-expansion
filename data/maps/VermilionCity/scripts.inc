@@ -49,6 +49,7 @@ VermilionCity_EventScript_OldMan1SSAnneLeft::
 VermilionCity_EventScript_FerrySailor::
 	lock
 	faceplayer
+	goto_if_set FLAG_BADGE04_GET, VermilionCity_EventScript_VidraFerry
 	checkitem ITEM_STELLAR_TICKET
 	goto_if_eq VAR_RESULT, TRUE, VermilionCity_EventScript_StellarFerry
 VermilionCity_EventScript_NormalFerry::
@@ -98,6 +99,7 @@ VermilionCity_EventScript_CheckTicket::
 	applymovement LOCALID_VERMILION_FERRY_SAILOR, Common_Movement_WalkInPlaceFasterLeft
 	applymovement LOCALID_PLAYER, Common_Movement_WalkInPlaceFasterRight
 	waitmovement 0
+	goto_if_set FLAG_BADGE04_GET, VermilionCity_EventScript_VidraFerry
 	checkitem ITEM_STELLAR_TICKET
 	goto_if_eq VAR_RESULT, TRUE, VermilionCity_EventScript_StellarFerry
 	goto_if_eq VAR_MAP_SCENE_VERMILION_CITY, 3, VermilionCity_EventScript_CheckSeagallopPresentTrigger
@@ -171,11 +173,18 @@ VermilionCity_EventScript_HarborSign::
 	msgbox VermilionCity_Text_VermilionHarbor, MSGBOX_SIGN
 	end
 
+VermilionCity_EventScript_VidraFerry::
+	msgbox VermilionCity_Text_VidraFerry, MSGBOX_YESNO
+	goto VermilionCity_EventScript_ConfirmVidraFerry
+
 VermilionCity_EventScript_StellarFerry::
 	msgbox VermilionCity_Text_StellarFerry, MSGBOX_YESNO
+VermilionCity_EventScript_ConfirmVidraFerry::
 	goto_if_eq VAR_RESULT, NO, VermilionCity_EventScript_NormalFerry
+	goto_if_set FLAG_BADGE04_GET, VermilionCity_EventScript_BoardVidraFerry
 	checkitem ITEM_STELLAR_TICKET
 	goto_if_eq VAR_RESULT, FALSE, VermilionCity_EventScript_NormalFerry
+VermilionCity_EventScript_BoardVidraFerry::
 	setvar VAR_0x8004, SEAGALLOP_VERMILION_CITY
 	setvar VAR_0x8006, SEAGALLOP_QUANTUM_PORT
 	goto EventScript_SailToDest
@@ -183,3 +192,8 @@ VermilionCity_EventScript_StellarFerry::
 VermilionCity_Text_StellarFerry::
 	.string "A STELLAR TICKET! Shall we sail\n"
 	.string "to VIDRA?$"
+
+
+VermilionCity_Text_VidraFerry::
+	.string "A RAINBOWBADGE! Shall we sail\n"
+	.string "to HAVORA on VIDRA?$"

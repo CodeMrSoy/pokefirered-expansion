@@ -1301,8 +1301,8 @@
 #define FLAG_QUANTUM_SNOW_CENTER               0x4E6
 #define FLAG_HIDE_STELLAR_TICKET               0x4E7
 #define FLAG_CAP_CANDY_GIFT_PENDING               0x4E8
-#define FLAG_0x4E9               0x4E9
-#define FLAG_0x4EA               0x4EA
+#define FLAG_KOGA_RETURNED_FROM_HAVORA               0x4E9
+#define FLAG_HIDE_FUCHSIA_GYM_KOGA               0x4EA
 #define FLAG_0x4EB               0x4EB
 #define FLAG_0x4EC               0x4EC
 #define FLAG_0x4ED               0x4ED

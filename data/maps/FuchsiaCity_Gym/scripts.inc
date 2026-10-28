@@ -1,5 +1,18 @@
 FuchsiaCity_Gym_MapScripts::
+	map_script MAP_SCRIPT_ON_TRANSITION, FuchsiaCity_Gym_KogaState
 	.byte 0
+
+FuchsiaCity_Gym_KogaState::
+	goto_if_set FLAG_BADGE05_GET, FuchsiaCity_Gym_KogaPresent
+	goto_if_set FLAG_DEFEATED_KOGA, FuchsiaCity_Gym_KogaPresent
+	goto_if_set FLAG_KOGA_RETURNED_FROM_HAVORA, FuchsiaCity_Gym_KogaPresent
+	setflag FLAG_HIDE_FUCHSIA_GYM_KOGA
+	end
+
+FuchsiaCity_Gym_KogaPresent::
+	setflag FLAG_KOGA_RETURNED_FROM_HAVORA
+	clearflag FLAG_HIDE_FUCHSIA_GYM_KOGA
+	end
 
 FuchsiaCity_Gym_EventScript_Koga::
 	famechecker FAMECHECKER_KOGA, FCPICKSTATE_COLORED, UpdatePickStateFromSpecialVar8005
@@ -68,6 +81,7 @@ FuchsiaCity_Gym_EventScript_GymGuy::
 	lock
 	faceplayer
 	goto_if_set FLAG_DEFEATED_KOGA, FuchsiaCity_Gym_EventScript_GymGuyPostVictory
+	goto_if_set FLAG_HIDE_FUCHSIA_GYM_KOGA, FuchsiaCity_Gym_KogaAway
 	msgbox FuchsiaCity_Gym_Text_GymGuyAdvice
 	release
 	end
@@ -88,3 +102,17 @@ FuchsiaCity_Gym_EventScript_GymStatuePostVictory::
 	msgbox FuchsiaCity_Gym_Text_GymStatuePlayerWon
 	releaseall
 	end
+
+
+FuchsiaCity_Gym_KogaAway::
+	msgbox FuchsiaCity_Gym_Text_KogaAway
+	release
+	end
+
+FuchsiaCity_Gym_Text_KogaAway::
+	.string "KOGA went shopping in HAVORA,\n"
+	.string "a harbor city on VIDRA.\p"
+	.string "The ferry from VERMILION CITY\n"
+	.string "takes RAINBOWBADGE holders there.\p"
+	.string "Find him and remind him he has\n"
+	.string "a challenger waiting!$"

@@ -1,5 +1,17 @@
 Havora_Market_MapScripts::
+	map_script MAP_SCRIPT_ON_TRANSITION, Havora_Market_KogaState
 	.byte 0
+
+@ Existing saves that already earned the Soul Badge must not send Koga away.
+Havora_Market_KogaState::
+	goto_if_set FLAG_BADGE05_GET, Havora_Market_KogaAlreadyReturned
+	goto_if_set FLAG_DEFEATED_KOGA, Havora_Market_KogaAlreadyReturned
+	end
+
+Havora_Market_KogaAlreadyReturned::
+	setflag FLAG_KOGA_RETURNED_FROM_HAVORA
+	clearflag FLAG_HIDE_FUCHSIA_GYM_KOGA
+	end
 
 Havora_Market_Guide::
 	msgbox Havora_Market_Guide_Text, MSGBOX_NPC
@@ -283,3 +295,39 @@ Havora_Market_WalkingResident2::
 	end
 Havora_Market_WalkingResident2_Text::
 	.string "My partner knows every stall.\nI just follow the smell\nof something good to eat.$"
+
+
+Havora_Market_Koga::
+	goto_if_questlog EventScript_ReleaseEnd
+	lockall
+	faceplayer
+	msgbox Havora_Market_Text_KogaShopping
+	closemessage
+	playse SE_M_TELEPORT
+	applymovement LOCALID_HAVORA_MARKET_KOGA, Havora_Market_Movement_KogaLeave
+	waitmovement 0
+	removeobject LOCALID_HAVORA_MARKET_KOGA
+	setflag FLAG_KOGA_RETURNED_FROM_HAVORA
+	clearflag FLAG_HIDE_FUCHSIA_GYM_KOGA
+	releaseall
+	end
+
+@ A ninja exit avoids walking through the player or the crowded market stalls.
+Havora_Market_Movement_KogaLeave::
+	walk_in_place_faster_down
+	walk_in_place_faster_left
+	walk_in_place_faster_up
+	walk_in_place_faster_right
+	set_invisible
+	step_end
+
+Havora_Market_Text_KogaShopping::
+	.string "KOGA: Fwahahaha! You found me!\p"
+	.string "Even a ninja must stock up on\n"
+	.string "battle items.\p"
+	.string "HAVORA's market has quite the\n"
+	.string "selection of BERRIES!\p"
+	.string "My shopping is done. I shall\n"
+	.string "return to FUCHSIA CITY.\p"
+	.string "Come to my GYM when you're ready.\n"
+	.string "I will be waiting!$"

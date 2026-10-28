@@ -32,11 +32,15 @@ Havora_Harbor_Dockworker_Text::
 	.string "Mind the seawall!\nThe ferry boards at the main pier.$"
 
 Havora_Harbor_Visitor::
-	msgbox Havora_Harbor_Visitor_Text, MSGBOX_NPC
+	goto_if_set FLAG_KOGA_RETURNED_FROM_HAVORA, Havora_Harbor_KogaReturned
+	goto_if_set FLAG_BADGE05_GET, Havora_Harbor_KogaReturned
+	goto_if_set FLAG_DEFEATED_KOGA, Havora_Harbor_KogaReturned
+	msgbox Havora_Harbor_Text_KogaClue, MSGBOX_NPC
 	end
 
-Havora_Harbor_Visitor_Text::
-	.string "I came for the market and stayed\nfor the sea air.$"
+Havora_Harbor_KogaReturned::
+	msgbox Havora_Harbor_Text_KogaReturned, MSGBOX_NPC
+	end
 
 Havora_Harbor_LighthouseSign::
 	msgbox Havora_Harbor_LighthouseSign_Text, MSGBOX_SIGN
@@ -70,3 +74,16 @@ Havora_Harbor_WalkingResident2::
 	end
 Havora_Harbor_WalkingResident2_Text::
 	.string "I'm waiting for my sister.\nShe says she packed lightly.\pI'll believe it when I see\nher suitcase.$"
+
+
+Havora_Harbor_Text_KogaClue::
+	.string "Looking for KOGA? I saw him head\n"
+	.string "north toward HAVORA's market.\p"
+	.string "He said he needed battle items.\n"
+	.string "Try the BERRY stalls!$"
+
+Havora_Harbor_Text_KogaReturned::
+	.string "KOGA caught a ferry back to\n"
+	.string "FUCHSIA CITY.\p"
+	.string "He said he'd be waiting at his GYM\n"
+	.string "for a challenger.$"

@@ -264,6 +264,21 @@
       "trainer_sight_or_berry_tree_id": "0",
       "script": "Havora_Market_WalkingResident2",
       "flag": "0"
+    },
+    {
+      "type": "object",
+      "local_id": "LOCALID_HAVORA_MARKET_KOGA",
+      "graphics_id": "OBJ_EVENT_GFX_KOGA",
+      "x": 2,
+      "y": 48,
+      "elevation": 4,
+      "movement_type": "MOVEMENT_TYPE_FACE_LEFT",
+      "movement_range_x": 0,
+      "movement_range_y": 0,
+      "trainer_type": "TRAINER_TYPE_NONE",
+      "trainer_sight_or_berry_tree_id": "0",
+      "script": "Havora_Market_Koga",
+      "flag": "FLAG_KOGA_RETURNED_FROM_HAVORA"
     }
   ],
   "warp_events": [
