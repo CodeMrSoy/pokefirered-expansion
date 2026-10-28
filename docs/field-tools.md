@@ -8,9 +8,9 @@ Original battle moves remain available and can be forgotten normally.
 | --- | --- | --- | --- |
 | Cut | Pruning Shears | Cascade | S.S. Anne captain |
 | Fly | Sky Whistle | Thunder | Route 16 house |
-| Surf | Wailmer Wailer | Soul | Safari Zone Secret House |
+| Surf | Wailmer Wailer | Soul | Defeat Eirik in Havora Gym |
 | Strength | Power Gloves | Rainbow | Return the Warden's Gold Teeth |
-| Flash | Lantern | Boulder | Route 2 aide, ten caught/owned species |
+| Flash | Lantern | Boulder | Route 2 aide, ten species seen (national count) |
 | Rock Smash | Rock Hammer | Marsh | Worker southeast of Saffron Fighting Dojo (42, 16) |
 | Waterfall | Basculegion Bait | Volcano | Planned for Corvala, Vidra; placement deferred |
 
@@ -66,7 +66,7 @@ unrelated registered items. Repeated gifts/migration do not duplicate the case o
 tools. Acquiring the first tool with no Key Item space still refuses safely;
 subsequent rewards fit inside an existing case even with a full pocket. Gift
 text names the F.I. Case. Captain/Warden reward flags and Gold Teeth consumption
-advance only on a successful grant. The aide still needs ten caught species.
+advance only on a successful grant. The Route 2 aide needs ten species seen, not caught; species outside Kanto count.
 The retired Sevii rewards are not active acquisition paths. The earlier free
 Celadon 4F replacements were removed when the department store was relocated
 and its stock specialized. Rock Hammer now comes from a stationary worker
@@ -81,7 +81,16 @@ Select and multi-item wheel access, seven preview tile buffers, uncollected and
 badge locks, real Lantern use, and flash-save/Continue ownership. The field tool
 suite covers all seven traversal actions, migration/full pockets, legacy TMs,
 field banners, move forgetting, menus, and saving. Waterfall uses a RAM fixture
-because retained Kanto maps have none. The original reward suite documents the earlier five NPC conversations and
-retired Celadon shop setup. `tests/saffron_rock_hammer_emulator.py` validates the
+because retained Kanto maps have none. The reward suite covers the current Captain, Fly, Warden, Route 2 and Saffron
+NPC gifts; obsolete Celadon shop assertions have been retired. `tests/saffron_rock_hammer_emulator.py` validates the
 current Saffron source through real interactions, full-bag retry, both Rocket
 states, Sabrina's gate, actual rock clearing, save/reload and dialogue widths. Last-usable-Pokémon, Egg, Mail and held-item release protections remain.
+
+
+Surf/Strength progression: the Safari Secret House traveler gives the Stellar
+Ticket, while its attendant points to Eirik rather than giving a Wailer. Defeat
+Eirik to earn the Wailer, and earn Koga's Soul Badge to use it. Surf to the Gold
+Teeth island in Safari Zone West, then return the teeth to the Warden for Power
+Gloves. Erika's Rainbow Badge still authorizes Strength. These tools open the
+existing boulder maze toward Eldervik Woods. See
+`docs/vidra/eirik-surf-progression.md` for locations and verification.

@@ -157,13 +157,13 @@ assert flag('FLAG_RECEIVED_SAFARI_STELLAR_TICKET')==1
 pocket_after=m.read(slots,capacity*4)
 m.press(8,90); finish()
 assert m.read(slots,capacity*4)==pocket_after, 'Traveler gave duplicate ticket'
-# The original attendant still grants the separate Surf field tool.
+# The Secret House now offers directions; only Eirik supplies the Surf tool.
 warp('SafariZone_SecretHouse',6,6)
 m.press(4,12); m.press(8,90); finish()
-assert flag('FLAG_GOT_HM03')==1
-assert native('CheckBagHasItem',constant('ITEM_HM03','items.h'),1)==1
+assert flag('FLAG_GOT_HM03')==0
+assert native('CheckBagHasItem',constant('ITEM_WAILMER_WAILER','items.h'),1)==0
 assert flag('FLAG_BADGE05_GET')==0
-print('PASS real Safari traveler: full-bag retry, extra ticket and no duplicate; Surf attendant intact',flush=True)
+print('PASS Safari ticket: full-bag retry, no duplicate; attendant directs to Eirik without a Wailer',flush=True)
 warp('VermilionCity', 23, 30)
 m.inject(b'\x05' + struct.pack('<I', m.symbols['VermilionCity_EventScript_FerrySailor']))
 m.snap('safari-ticket-ferry-prompt')
@@ -300,7 +300,7 @@ for label in ('Havora_Market_Text_KogaShopping','Havora_Harbor_Text_KogaClue',
               'Havora_Harbor_Text_KogaReturned','FuchsiaCity_Gym_Text_KogaAway',
               'FuchsiaCity_Text_KogaLookout','SafariZone_SecretHouse_Text_KogaWentToVidra',
               'SafariZone_SecretHouse_Text_StellarFerryDirections','SafariZone_SecretHouse_Text_KogaReturned',
-              'SafariZone_SecretHouse_Text_NoRoomForTicket'):
+              'SafariZone_SecretHouse_Text_NoRoomForTicket','SafariZone_SecretHouse_Text_AskEirikForWailer'):
     start=m.symbols[label]-0x08000000
     text=m.rom[start:m.rom.index(b'\xff',start)]
     for line in re.split(b'[\xfe\xfb\xfa]',text):

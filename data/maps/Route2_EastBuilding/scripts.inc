@@ -9,12 +9,12 @@ Route2_EastBuilding_EventScript_Aide::
 	call Route2_EastBuilding_EventScript_GetAideRequestInfo
 	goto_if_set FLAG_GOT_HM05, Route2_EastBuilding_EventScript_AlreadyGotHM05
 	msgbox Route2_EastBuilding_Text_GiveHM05IfSeen10Mons, MSGBOX_YESNO
-	goto_if_eq VAR_RESULT, NO, Aide_EventScript_DeclineCheckMons
-	setvar VAR_0x8004, 0
+	goto_if_eq VAR_RESULT, NO, Route2_EastBuilding_EventScript_DeclineSeenCheck
+	setvar VAR_0x8004, 1
 	specialvar VAR_RESULT, GetPokedexCount
-	buffernumberstring STR_VAR_3, VAR_0x8006
+	buffernumberstring STR_VAR_3, VAR_0x8005
 	call Route2_EastBuilding_EventScript_GetAideRequestInfo
-	goto_if_lt VAR_0x8006, REQUIRED_SEEN_MONS, Aide_EventScript_HaventCaughtEnough
+	goto_if_lt VAR_0x8005, REQUIRED_SEEN_MONS, Route2_EastBuilding_EventScript_NotEnoughSeen
 	msgbox Route2_EastBuilding_Text_GreatHereYouGo
 	checkitemspace ITEM_HM05
 	goto_if_eq VAR_RESULT, FALSE, Aide_EventScript_NoRoomForItem
@@ -36,4 +36,14 @@ Route2_EastBuilding_EventScript_GetAideRequestInfo::
 
 Route2_EastBuilding_EventScript_Rocker::
 	msgbox Route2_EastBuilding_Text_CanGetThroughRockTunnel, MSGBOX_NPC
+	end
+
+Route2_EastBuilding_EventScript_NotEnoughSeen::
+	msgbox Route2_EastBuilding_Text_NotEnoughSeen
+	release
+	end
+
+Route2_EastBuilding_EventScript_DeclineSeenCheck::
+	msgbox Route2_EastBuilding_Text_DeclineSeenCheck
+	release
 	end

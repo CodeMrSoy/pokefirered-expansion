@@ -64,9 +64,9 @@ base = snapshot()
 rewards = [
     ('SSAnne_CaptainsOffice', 5, 5, 'Captain', 682, 0x237),
     ('Route16_House', 4, 3, 'Woman', 683, 0x238),
-    ('SafariZone_SecretHouse', 6, 6, 'Attendant', 684, 0x239),
     ('FuchsiaCity_WardensHouse', 3, 6, 'Warden', 685, 0x23a),
     ('Route2_EastBuilding', 4, 7, 'Aide', 686, 0x23b),
+    ('SaffronCity', 42, 17, 'RockHammerWorker', 687, 0x2ef),
 ]
 for name, x, y, npc, item, flag in rewards:
     restore(base)
@@ -76,7 +76,7 @@ for name, x, y, npc, item, flag in rewards:
         native('FlagSet', 0x189)  # Original Gold Teeth pickup flag
     if item == 686:
         for dex in range(1, 11):
-            native('GetSetPokedexFlag', dex, 3)  # SET_CAUGHT
+            native('GetSetPokedexFlag', dex, 2)  # SET_SEEN
     warp(name, x, y)
     ptr, capacity = pocket()
     m.write(ptr, struct.pack('<HH', 349, 1) * capacity)
@@ -105,50 +105,7 @@ for name, x, y, npc, item, flag in rewards:
     m.snap(name + '-reward')
     print('PASS:', name, 'collects field tool', item, '; full pocket/retry/repeat safe', flush=True)
 
-# The aide must still require ten caught/owned species, not just ten seen.
-restore(base)
-native('FlagClear', 0x23b)
-for dex in range(1, 11):
-    native('GetSetPokedexFlag', dex, 2)  # SET_SEEN
-warp('Route2_EastBuilding', 4, 7)
-start('Route2_EastBuilding_EventScript_Aide')
-finish()
-assert quantity(686) == 0 and native('FlagGet', 0x23b) == 0
-for dex in range(1, 10):
-    native('GetSetPokedexFlag', dex, 3)
-start('Route2_EastBuilding_EventScript_Aide')
-finish()
-assert quantity(686) == 0 and native('FlagGet', 0x23b) == 0
-print('PASS: Lantern keeps the ten caught/owned species requirement', flush=True)
-
-# The retired Sevii scripts must not masquerade as live acquisition paths.
-for retired in ('OneIsland_KindleRoad_EmberSpa', 'FourIsland_IcefallCave_1F'):
-    assert m.symbols[retired] == m.symbols['PalletTown'], retired
-assert (m.symbols['OneIsland_KindleRoad_EmberSpa_EventScript_RockSmashMan']
-        == m.symbols['QuantumRetiredScript'])
-inventory = []
-ptr = m.symbols['CeladonCity_DepartmentStore_4F_Items']
-for i in range(100):
-    item = struct.unpack('<H', m.read(ptr + i * 2, 2))[0]
-    if not item:
-        break
-    inventory.append(item)
-else:
-    raise AssertionError('Unterminated replacement shop')
-for item in (687, 688):
-    assert item in inventory and native('GetItemPocket', item) == 1
-    assert native('GetItemPrice', item) == 0
-    restore(base)
-    warp('CeladonCity_DepartmentStore_4F', 3, 14)
-    start('CeladonCity_DepartmentStore_4F_EventScript_Clerk')
-    m.press(8, 240)  # Buy
-    for _ in range(inventory.index(item)):
-        m.press(5, 20)
-    for _ in range(6):
-        m.press(8, 90)
-    for _ in range(5):
-        m.press(0, 90)
-    finish()
-    assert quantity(item) == 1
-    print('PASS: actual Celadon 4F purchase adds field tool to case', item, flush=True)
-print('All retained HM gifts and both relocated acquisition paths passed.', flush=True)
+# Boundary checks, Eirik's moved reward, no-Surf island and save compatibility
+# are covered by eirik_surf_progression_emulator.py. The former Celadon shop
+# source was removed when the store moved to Havora; do not test stale scripts.
+print('PASS current Captain/Fly/Warden/Route 2/Saffron reward scripts',flush=True)

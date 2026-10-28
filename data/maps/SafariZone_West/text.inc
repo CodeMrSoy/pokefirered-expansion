@@ -2,12 +2,9 @@ SafariZone_West_Text_RestHouse::
     .string "REST HOUSE$"
 
 SafariZone_West_Text_PleaseFindWardensLostTeeth::
-    .string "REQUEST NOTICE\p"
-    .string "Please find the SAFARI WARDEN's\n"
-    .string "lost GOLD TEETH.\l"
-    .string "They're around here somewhere.\p"
-    .string "Reward offered!\n"
-    .string "Contact: WARDEN$"
+    .string "The WARDEN lost his GOLD TEETH!\p"
+    .string "Check the island in this area's\n"
+    .string "pond. You'll need to Surf.$"
 
 SafariZone_West_Text_SearchForSecretHouse::
     .string "TRAINER TIPS\p"

@@ -387,6 +387,10 @@ HavoraTrial_LockkeeperAfter::
  .string "Depart RIGHT for AR3 at\nA/B MID; then return to B.$"
 HavoraTrial_Captain::
  lockall
+ setvar VAR_0x8004, 23
+ setvar VAR_0x8005, 4
+ special HavoraGym_Control
+ goto_if_eq VAR_RESULT, TRUE, HavoraTrial_CaptainFinished
  goto_if_defeated TRAINER_HAVORA_CAPTAIN, HavoraTrial_CaptainFinished
  setvar VAR_0x8004, 24
  special HavoraGym_Control
@@ -398,8 +402,7 @@ HavoraTrial_Captain::
  msgbox HavoraTrial_CaptainAfter
  goto HavoraTide_Recovery
 HavoraTrial_CaptainFinished::
- msgbox HavoraTrial_CaptainAfter
- goto HavoraTide_Recovery
+ goto HavoraTrial_GiveWailmerWailer
 HavoraTrial_CaptainWon::
  setvar VAR_0x8004, 22
  setvar VAR_0x8005, 4
@@ -407,7 +410,19 @@ HavoraTrial_CaptainWon::
  setvar VAR_0x8004, 6
  special HavoraGym_Control
  msgbox HavoraTrial_CrestText
+HavoraTrial_GiveWailmerWailer::
+ checkitem ITEM_WAILMER_WAILER, 1
+ goto_if_eq VAR_RESULT, TRUE, HavoraTrial_ExplainWailmerWailer
+ msgbox HavoraTrial_WailmerWailerGift
+ giveitem ITEM_WAILMER_WAILER, 1
+ goto_if_eq VAR_RESULT, FALSE, HavoraTrial_NoRoomForWailmerWailer
+HavoraTrial_ExplainWailmerWailer::
+ setflag FLAG_GOT_HM03
+ msgbox HavoraTrial_WailmerWailerInstructions
  msgbox HavoraTrial_CaptainAfter
+ goto HavoraTide_Recovery
+HavoraTrial_NoRoomForWailmerWailer::
+ msgbox HavoraTrial_WailmerWailerNoRoom
  goto HavoraTide_Recovery
 HavoraTrial_Clearance::
  msgbox HavoraTrial_ClearanceText
@@ -449,3 +464,10 @@ HavoraTrial_CrestText::
  .string "You earned the HAVORA CREST!$"
 HavoraTrial_CaptainAfter::
  .string "The HAVORA CREST marks you as\na trusted partner of this port.$"
+
+HavoraTrial_WailmerWailerGift::
+ .string "A captain needs a way across\nthe waves. Take this Wailer!$"
+HavoraTrial_WailmerWailerInstructions::
+ .string "With KOGA's SOULBADGE, face\nwater and press A to Surf.\pThe Wailmer Wailer calls a sea\nPOKéMON to carry you across.$"
+HavoraTrial_WailmerWailerNoRoom::
+ .string "Your BAG is full. Make room,\nthen return for your Wailer.\pYou've earned it.\nI'll keep it safe for you!$"

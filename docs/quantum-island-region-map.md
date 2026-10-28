@@ -39,7 +39,8 @@ The Stellar Ticket is given by a traveler in the Safari Zone Secret House.
 A guide blocks Fuchsia Gym while Koga is away and directs players to that house.
 The traveler explains that Koga went to Vidra's Havora Market and offers an
 extra ticket. Talking to Koga there sends him home and reopens his gym. The
-original Secret House attendant's Surf reward remains separate. The reusable
+Secret House attendant directs players to Eirik, whose Havora Gym victory now
+awards the Wailmer Wailer. Koga's Soul Badge still authorizes Surf. The reusable
 Key Item is required by the Vermilion ferry, and Havora's sailor returns the
 player to Vermilion. See `docs/vidra/koga-market-encounter.md` for current details.
 

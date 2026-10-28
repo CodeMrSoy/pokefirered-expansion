@@ -8,7 +8,8 @@ when the player speaks to Koga in Havora and he returns to his gym.
 A traveler at Safari Zone Secret House (2, 5) says Koga headed to Vidra, the next
 region over, to buy battle items at Havora's market. He gives the player his
 extra Stellar Ticket and explains how to take Vermilion's ferry. This is a
-separate NPC; the original attendant still gives the Wailmer Wailer for Surf.
+separate NPC; the original attendant now directs players to Eirik for the
+Wailmer Wailer. Defeating Eirik awards the tool; Koga still authorizes Surf.
 The gift retries if the Key Item pocket is full and never duplicates a ticket.
 
 Vermilion's ferry requires the Stellar Ticket. The prior Rainbow Badge bypass
@@ -43,7 +44,7 @@ or Koga's defeated flag: Koga remains in his gym, the blocker is absent, and the
 market encounter is skipped. Old ticket-drop flag numbers stay reserved.
 
 Validation: `tests/havora_koga_emulator.py` exercises the physical gym blockade,
-Safari gift and full-bag recovery, separate Surf reward, ticketed ferry and
+Safari gift and full-bag recovery, Eirik directions without a Surf gift, ticketed ferry and
 arrival, normal walking without Surf, Koga interactions from all four sides,
 reopened gym entrance, original leader battle starting, flash save/reload,
 existing saves, restored Giovanni rewards and native-font dialogue widths.
