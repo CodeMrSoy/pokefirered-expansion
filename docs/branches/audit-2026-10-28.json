@@ -1,0 +1,81 @@
+{
+  "date": "2026-10-28",
+  "repository": "CodeMrSoy/pokefirered-expansion",
+  "v2_baseline": "3bb28b77bf5de7e2dc8402d88297ab6ee5a622e6",
+  "default_branch_before_cleanup": "master",
+  "open_pull_requests_before_cleanup": 0,
+  "branches": [
+    {
+      "branch": "Corvala-dev",
+      "sha_before_cleanup": "19e2b70ade8c96111327cefda10028b9d7f7c85e",
+      "tree": "4a9d4184f01bbfc711123ab451394235e6dc8d29",
+      "commits_only_on_branch": 7,
+      "commits_only_on_v2": 8,
+      "unique_commits": [
+        "19e2b70ade8c96111327cefda10028b9d7f7c85e",
+        "0cf3408d830a395d017b9959a63e611f4c45f694",
+        "57af6a4d957acbb5fd02f21a60130d2f8bcdc01f",
+        "961098682abb2b553c35d5ae23595f9676e3d9fd",
+        "52b0f285d55c5046a97cc5f21cfb623687420b0c",
+        "20978c782d1f9017c293a9614561310bbeee3799",
+        "25d021682e87e9d3e51dbbf768f17af9b547d051"
+      ]
+    },
+    {
+      "branch": "Havora-Development",
+      "sha_before_cleanup": "776dc1340c955bbf820e85660e2aa9ad9d216884",
+      "tree": "975b46f828213f3084beee756c24444e5f0d01ba",
+      "commits_only_on_branch": 0,
+      "commits_only_on_v2": 42,
+      "unique_commits": []
+    },
+    {
+      "branch": "Pokemon-Quantum-V1",
+      "sha_before_cleanup": "26d5c4a1582d3e3c229f91016bac3c08dcb17589",
+      "tree": "b0160ebf1aac73fef22bf5f89d2fd259055d1750",
+      "commits_only_on_branch": 0,
+      "commits_only_on_v2": 111,
+      "unique_commits": []
+    },
+    {
+      "branch": "Pokemon-Quantum-V2",
+      "sha_before_cleanup": "3bb28b77bf5de7e2dc8402d88297ab6ee5a622e6",
+      "tree": "5fba5e3193e7fa4be6117bf0eef0e45a817e595d",
+      "commits_only_on_branch": 0,
+      "commits_only_on_v2": 0,
+      "unique_commits": []
+    },
+    {
+      "branch": "QOL",
+      "sha_before_cleanup": "906b6ec003929807af461f1bbfa20f2d2b227726",
+      "tree": "e30f322dd35d7c92f3fc9bae61243d068af71378",
+      "commits_only_on_branch": 0,
+      "commits_only_on_v2": 100,
+      "unique_commits": []
+    },
+    {
+      "branch": "Randomizer",
+      "sha_before_cleanup": "21eb7016182da06184d9105b3e09ee0b3a051d8b",
+      "tree": "4e4c3363f5ad026e3c46d42d6cdad57c4547387f",
+      "commits_only_on_branch": 0,
+      "commits_only_on_v2": 144,
+      "unique_commits": []
+    },
+    {
+      "branch": "Sprites",
+      "sha_before_cleanup": "ac853c9086c5c47609098baaa5c3e9935727b4e8",
+      "tree": "c3117ae58e6c0fda899033bf579cf56fe4b44480",
+      "commits_only_on_branch": 0,
+      "commits_only_on_v2": 121,
+      "unique_commits": []
+    },
+    {
+      "branch": "master",
+      "sha_before_cleanup": "edf0138121c4a40ac38b5cb26db55afc033e00d3",
+      "tree": "7685bfef726756a16c559994352ec519994c386c",
+      "commits_only_on_branch": 0,
+      "commits_only_on_v2": 156,
+      "unique_commits": []
+    }
+  ]
+}
