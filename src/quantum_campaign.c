@@ -15,6 +15,11 @@ void SanitizeQuantumCampaignSave(void)
 {
     u32 i;
     QuantumMigrateLoadedWorld();
+    // Retire Giovanni's old ticket object, including saved map templates.
+    FlagSet(FLAG_HIDE_STELLAR_TICKET);
+    // Earlier Quantum builds withheld his badge for an unfinished Vidra arc.
+    if (FlagGet(FLAG_DEFEATED_LEADER_GIOVANNI))
+        FlagSet(FLAG_BADGE08_GET);
     for (i = 0; i < ARRAY_COUNT(sQuantumRetiredWorldMapFlags); i++)
         FlagClear(sQuantumRetiredWorldMapFlags[i]);
     FlagClear(FLAG_SYS_CAN_LINK_WITH_RS);

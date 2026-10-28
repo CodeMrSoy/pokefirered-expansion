@@ -35,17 +35,23 @@ stairs; upstairs maps remain for compatibility with older V2 saves. The field la
 Kanto tiles; the finished port market, daycare, snowy terrain, hot springs and
 island story are future work. The regional artwork remains the accepted concept.
 
-Giovanni's gym victory no longer grants the Earth Badge. He leaves a recoverable
-Stellar Ticket beside him, still offers TM26, and departs. The ticket is a reusable
-Key Item: the Vermilion ferry sailor offers the Quantum trip even before Bill's
-early-island visit. The harbor's sailor returns the player to Vermilion. Old saves
-that already earned the Earth Badge keep it; Continue does not remove badges.
+The Stellar Ticket is given by a traveler in the Safari Zone Secret House.
+A guide blocks Fuchsia Gym while Koga is away and directs players to that house.
+The traveler explains that Koga went to Vidra's Havora Market and offers an
+extra ticket. Talking to Koga there sends him home and reopens his gym. The
+original Secret House attendant's Surf reward remains separate. The reusable
+Key Item is required by the Vermilion ferry, and Havora's sailor returns the
+player to Vermilion. See `docs/vidra/koga-market-encounter.md` for current details.
+
+Giovanni's normal Earth Badge, TM26 and retirement sequence has been restored.
+Saves from the former Vidra pursuit arc receive the withheld badge if Giovanni
+was already defeated; previously obtained Stellar Tickets remain valid.
 
 A legitimate ticketed voyage sets the arrival flag. Each town's Center entrance
 then sets its own saved Fly flag and healing point; arrival or viewing the map
 alone unlocks no town. Fly can subsequently cross between Kanto and visited
-island towns. The Earth Badge guard still blocks the League until the later
-island confrontation awards the badge; that confrontation has not been authored.
+island towns. The Earth Badge guard opens after the ordinary Giovanni gym
+victory; no additional Vidra confrontation is required.
 New map and healing IDs are appended, preserving every existing V1 map ID and
 retired-map save migration.
 

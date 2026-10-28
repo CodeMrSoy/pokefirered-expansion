@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Actual early ferry, market conversation, gym return and saved progression."""
+"""Safari ticket, blocked gym, Koga shopping trip, Giovanni and saved progression."""
 import ctypes as c
 import collections
 import re
@@ -111,24 +111,62 @@ gym_koga = next(i for i,e in enumerate(gym['object_events'], 1) if e['graphics_i
 market_koga = next(i for i,e in enumerate(market['object_events'], 1) if e['script'] == 'Havora_Market_Koga')
 for name in ('FLAG_BADGE04_GET', 'FLAG_BADGE05_GET', 'FLAG_DEFEATED_KOGA', 'FLAG_KOGA_RETURNED_FROM_HAVORA'):
     setflag(name, False)
+fuchsia = json.loads((m.root / 'data/maps/FuchsiaCity/map.json').read_text())
+lookout = next(i for i,e in enumerate(fuchsia['object_events'],1) if e['script']=='FuchsiaCity_EventScript_KogaLookout')
+warp('FuchsiaCity',9,34)
+assert present('FuchsiaCity',lookout)
+m.keys.add(4); m.run(90); m.keys.clear(); m.run(20)
+assert current()==ids['FuchsiaCity'] and position()==(9,34), 'Gym door not blocked'
+m.press(8,90); assert not field(); m.snap('gym-door-safari-clue'); finish()
 warp('FuchsiaCity_Gym', 11, 20)
 assert not present('FuchsiaCity_Gym', gym_koga)
 m.press(4, 12); m.press(8, 90); m.snap('gym-koga-away'); finish()
-print('PASS Koga absent before encounter; gym guide directs player to Havora ferry', flush=True)
+print('PASS actual gym door blocked; outside NPC and gym guide direct player to Safari house', flush=True)
 
-# Arrival guard still rejects an unqualified request.
-native('VarSet', 0x8004, 0); native('VarSet', 0x8006, 11)
-assert native('IsVidraArrival') == 0
-setflag('FLAG_BADGE04_GET', True)
-assert flag('FLAG_BADGE05_GET') == 0
-assert native('CheckBagHasItem', constant('ITEM_STELLAR_TICKET', 'items.h'), 1) == 0
-native('VarSet', 0x8004, 0); native('VarSet', 0x8006, 11)
-assert native('IsVidraArrival') == 1
-native('VarSet', 0x8004, 1)
-assert native('IsVidraArrival') == 0
+# Even Erika's badge must not bypass the Safari ticket quest. Exercise the
+# actual rejected sailing rather than a private helper the compiler can inline.
+setflag('FLAG_BADGE04_GET',True)
+assert flag('FLAG_BADGE05_GET')==0
+assert native('CheckBagHasItem',constant('ITEM_STELLAR_TICKET','items.h'),1)==0
+warp('VermilionCity',23,30)
+native('VarSet',0x8004,0); native('VarSet',0x8006,11)
+m.inject(b'\x05'+struct.pack('<I',m.symbols['EventScript_SetSail']))
+saw_boat=callback('MainCB2_SeaGallop')
+for _ in range(1600):
+    m.run(1)
+    assert not callback('CB2_VidraArrival'), 'Rainbow Badge bypassed the ticket requirement'
+    saw_boat |= callback('MainCB2_SeaGallop')
+    if saw_boat and current()==ids['VermilionCity'] and field(): break
+else: raise AssertionError('No-ticket sailing did not return safely')
+assert flag('FLAG_QUANTUM_ARRIVED')==0
+print('PASS Rainbow Badge alone cannot unlock the Vidra ferry',flush=True)
+warp('SafariZone_SecretHouse',2,6)
+ticket = constant('ITEM_STELLAR_TICKET','items.h')
+pocket=m.symbols['gBagPockets']+8
+slots=struct.unpack('<I',m.read(pocket,4))[0]; capacity=m.read(pocket+4,1)[0]
+original=m.read(slots,capacity*4)
+for i in range(capacity): m.write(slots+i*4,struct.pack('<HH',349,1))
+assert native('CheckBagHasSpace',ticket,1)==0
+m.press(4,12); m.press(8,90); assert not field(); m.snap('safari-ticket-traveler'); finish()
+assert native('CheckBagHasItem',ticket,1)==0
+assert flag('FLAG_RECEIVED_SAFARI_STELLAR_TICKET')==0
+m.write(slots,original)
+m.press(4,12); m.press(8,90); finish()
+assert native('CheckBagHasItem',ticket,1)==1
+assert flag('FLAG_RECEIVED_SAFARI_STELLAR_TICKET')==1
+pocket_after=m.read(slots,capacity*4)
+m.press(8,90); finish()
+assert m.read(slots,capacity*4)==pocket_after, 'Traveler gave duplicate ticket'
+# The original attendant still grants the separate Surf field tool.
+warp('SafariZone_SecretHouse',6,6)
+m.press(4,12); m.press(8,90); finish()
+assert flag('FLAG_GOT_HM03')==1
+assert native('CheckBagHasItem',constant('ITEM_HM03','items.h'),1)==1
+assert flag('FLAG_BADGE05_GET')==0
+print('PASS real Safari traveler: full-bag retry, extra ticket and no duplicate; Surf attendant intact',flush=True)
 warp('VermilionCity', 23, 30)
 m.inject(b'\x05' + struct.pack('<I', m.symbols['VermilionCity_EventScript_FerrySailor']))
-m.snap('rainbowbadge-ferry-prompt')
+m.snap('safari-ticket-ferry-prompt')
 for _ in range(15):
     m.press(8, 15)
     if callback('CB2_SetUpSeagallopScene') or callback('MainCB2_SeaGallop'): break
@@ -139,12 +177,12 @@ for _ in range(1600):
     if callback('CB2_VidraArrival'): phases.add('art')
     if task('Task_VidraDisembark'): phases.add('walking')
     if 'walking' in phases and not task('Task_VidraDisembark') and current() == ids['Havora_Harbor'] and field(): break
-else: raise AssertionError(('Badge-four ferry failed', phases))
+else: raise AssertionError(('Safari ticket ferry failed', phases))
 assert phases == {'boat','art','walking'}
 assert position() == (20,20)
 assert flag('FLAG_QUANTUM_ARRIVED') == 1
 m.snap('early-havora-landing')
-print('PASS real Rainbow Badge ferry, no Stellar Ticket or Soul Badge: boat, art, landing', flush=True)
+print('PASS real Safari ticket ferry, no Soul Badge: boat, art, landing', flush=True)
 
 walk_to('Havora_Harbor', 15, 24)
 m.press(4, 12); m.press(8, 90); assert not field(); m.snap('harbor-koga-market-clue'); finish()
@@ -168,6 +206,13 @@ for x,y,direction in ((2,49,4), (1,48,7), (3,48,6), (2,47,5)):
     assert field()
 print('PASS actual Koga conversation and ninja departure from all four sides; no battle/badge granted', flush=True)
 
+warp('FuchsiaCity',9,34)
+assert not present('FuchsiaCity',lookout)
+m.keys.add(4)
+try: until(lambda: current()==ids['FuchsiaCity_Gym'],180)
+finally: m.keys.clear()
+m.run(120); assert field()
+print('PASS Koga return removes the door blocker and actual gym entrance works',flush=True)
 warp('FuchsiaCity_Gym', 7, 14)
 assert present('FuchsiaCity_Gym', gym_koga)
 m.snap('koga-back-at-gym')
@@ -189,7 +234,11 @@ assert not present('Havora_Market', market_koga)
 assert native('TrySavingData', 0) == 1
 m.lib.retro_reset(); m.run(360); m.press(3); m.press(8, 240); m.press(0, 60)
 assert flag('FLAG_KOGA_RETURNED_FROM_HAVORA') == 1
+assert flag('FLAG_RECEIVED_SAFARI_STELLAR_TICKET') == 1
+assert native('CheckBagHasItem',ticket,1)==1
 assert not present('Havora_Market', market_koga)
+warp('FuchsiaCity',9,34)
+assert not present('FuchsiaCity',lookout)
 warp('FuchsiaCity_Gym', 7,14)
 assert present('FuchsiaCity_Gym', gym_koga)
 print('PASS save/reload and repeat visits preserve Koga at gym, absent from market', flush=True)
@@ -199,6 +248,8 @@ for earned in ('FLAG_BADGE05_GET','FLAG_DEFEATED_KOGA'):
     for name in ('FLAG_BADGE05_GET','FLAG_DEFEATED_KOGA','FLAG_KOGA_RETURNED_FROM_HAVORA'):
         setflag(name, False)
     setflag(earned, True)
+    warp('FuchsiaCity',9,34)
+    assert not present('FuchsiaCity',lookout)
     warp('Havora_Market', 2,49)
     assert not present('Havora_Market', market_koga)
     warp('FuchsiaCity_Gym', 7,14)
@@ -206,10 +257,50 @@ for earned in ('FLAG_BADGE05_GET','FLAG_DEFEATED_KOGA'):
 print('PASS existing post-Koga saves skip the shopping event safely', flush=True)
 
 
+# Old ticket owners keep their pass and cannot obtain an extra one.
+setflag('FLAG_RECEIVED_SAFARI_STELLAR_TICKET',False)
+warp('SafariZone_SecretHouse',2,6)
+slots=struct.unpack('<I',m.read(pocket,4))[0]
+pocket_after=m.read(slots,capacity*4)
+m.press(4,12); m.press(8,90); finish()
+assert flag('FLAG_RECEIVED_SAFARI_STELLAR_TICKET')==1
+assert m.read(slots,capacity*4)==pocket_after
+print('PASS existing Stellar Ticket owners retain their ticket without a duplicate',flush=True)
+
+# Exercise Giovanni's restored victory rewards independently of his unchanged
+# battle engine. First prove he no longer creates a ticket, then his normal
+# post-TM farewell removes him permanently on the second interaction.
+native('RemoveBagItem',ticket,1)
+for name in ('FLAG_BADGE08_GET','FLAG_DEFEATED_LEADER_GIOVANNI','FLAG_GOT_TM26_FROM_GIOVANNI','FLAG_HIDE_VIRIDIAN_GIOVANNI'):
+    setflag(name,False)
+warp('ViridianCity_Gym',3,3)
+assert not any(e['graphics_id']=='OBJ_EVENT_GFX_ITEM_BALL' for e in json.loads((m.root/'data/maps/ViridianCity_Gym/map.json').read_text())['object_events'])
+native('SetTrainerFlag',constant('TRAINER_LEADER_GIOVANNI','opponents.h'))
+m.inject(b'\x05'+struct.pack('<I',m.symbols['ViridianCity_Gym_EventScript_DefeatedGiovanni']))
+finish()
+assert flag('FLAG_BADGE08_GET')==1
+assert flag('FLAG_DEFEATED_LEADER_GIOVANNI')==1
+assert flag('FLAG_GOT_TM26_FROM_GIOVANNI')==1
+assert native('CheckBagHasItem',constant('ITEM_TM26','items.h'),1)==1
+assert native('CheckBagHasItem',ticket,1)==0
+m.inject(b'\x05'+struct.pack('<I',m.symbols['ViridianCity_Gym_EventScript_Giovanni']))
+finish()
+assert flag('FLAG_HIDE_VIRIDIAN_GIOVANNI')==1
+assert native('CheckBagHasItem',ticket,1)==0
+# Upgrade saves from the published arc that withheld the Earth Badge.
+setflag('FLAG_BADGE08_GET',False)
+setflag('FLAG_HIDE_STELLAR_TICKET',False)
+native('SanitizeQuantumCampaignSave')
+assert flag('FLAG_BADGE08_GET')==1
+assert flag('FLAG_HIDE_STELLAR_TICKET')==1
+print('PASS Giovanni awards Earth Badge and TM26, retires normally, drops no ticket; old saves repaired',flush=True)
+
 # Measure the actual encoded new dialogue with the game's normal font.
 for label in ('Havora_Market_Text_KogaShopping','Havora_Harbor_Text_KogaClue',
               'Havora_Harbor_Text_KogaReturned','FuchsiaCity_Gym_Text_KogaAway',
-              'VermilionCity_Text_VidraFerry'):
+              'FuchsiaCity_Text_KogaLookout','SafariZone_SecretHouse_Text_KogaWentToVidra',
+              'SafariZone_SecretHouse_Text_StellarFerryDirections','SafariZone_SecretHouse_Text_KogaReturned',
+              'SafariZone_SecretHouse_Text_NoRoomForTicket'):
     start=m.symbols[label]-0x08000000
     text=m.rom[start:m.rom.index(b'\xff',start)]
     for line in re.split(b'[\xfe\xfb\xfa]',text):

@@ -10,21 +10,33 @@ ViridianCity_Gym_Text_GiovanniIntro::
     .string "GIOVANNI, the greatest TRAINER!{PLAY_BGM}{MUS_ENCOUNTER_ROCKET}$"
 
 ViridianCity_Gym_Text_GiovanniDefeat::
-    .string "Ha! You have won this battle.\p"
-    .string "But the EARTHBADGE stays with me!$"
-
+    .string "Ha!\n"
+    .string "That was a truly intense fight.\l"
+    .string "You have won!\p"
+    .string "As proof, here is the EARTHBADGE!\n"
+    .string "{PAUSE_MUSIC}{PLAY_BGM}{MUS_OBTAIN_BADGE}{PAUSE 0xFE}{PAUSE 0x56}{RESUME_MUSIC}$"
 
 ViridianCity_Gym_Text_GiovanniPostBattle::
-    .string "My next move is on VIDRA.\p"
-    .string "The League will have to wait.\n"
-    .string "Catch me if you can!$"
-
+    .string "Having lost in this fashion, \n"
+    .string "I can't face my followers.\l"
+    .string "I have betrayed their trust.\p"
+    .string "As of today, TEAM ROCKET is\n"
+    .string "finished forever!\p"
+    .string "As for myself, I shall dedicate\n"
+    .string "my life to training again.\p"
+    .string "Let us meet again someday!\n"
+    .string "Farewell!$"
 
 ViridianCity_Gym_Text_ExplainEarthBadgeTakeThis::
-    .string "If you want the EARTHBADGE,\n"
-    .string "follow me to VIDRA.\p"
-    .string "First, take this TM.$"
-
+    .string "The EARTHBADGE makes POKéMON of\n"
+    .string "any level obey without question.\p"
+    .string "It is evidence of your mastery as\n"
+    .string "a POKéMON TRAINER.\p"
+    .string "With it, you can challenge the\n"
+    .string "POKéMON LEAGUE.\p"
+    .string "Also, take this TM.\p"
+    .string "Consider it a gift for your POKéMON\n"
+    .string "LEAGUE challenge.$"
 
 ViridianCity_Gym_Text_ReceivedTM26FromGiovanni::
     .string "{PLAYER} received TM26\n"
@@ -156,9 +168,3 @@ ViridianCity_Gym_Text_GymStatuePlayerWon::
     .string "LEADER: GIOVANNI\p"
     .string "WINNING TRAINERS:\n"
     .string "{RIVAL}, {PLAYER}$"
-
-
-ViridianCity_Gym_Text_StellarTicket::
-    .string "GIOVANNI dropped this ticket!\p"
-    .string "The ferry at VERMILION's port can\n"
-    .string "take you to VIDRA.$"

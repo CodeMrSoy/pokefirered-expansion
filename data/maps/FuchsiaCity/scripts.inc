@@ -3,6 +3,7 @@ FuchsiaCity_MapScripts::
 	.byte 0
 
 FuchsiaCity_OnTransition::
+	call FuchsiaCity_EventScript_UpdateKogaLookout
 	setworldmapflag FLAG_WORLD_MAP_FUCHSIA_CITY
 	call_if_set FLAG_GOT_DOME_FOSSIL, FuchsiaCity_EventScript_SetOmanyteGfx
 	call_if_unset FLAG_GOT_DOME_FOSSIL, FuchsiaCity_EventScript_SetKabutoGfx
@@ -137,3 +138,26 @@ FuchsiaCity_EventScript_OmanyteSign::
 	hidemonpic
 	releaseall
 	end
+
+
+FuchsiaCity_EventScript_UpdateKogaLookout::
+	goto_if_set FLAG_BADGE05_GET, FuchsiaCity_EventScript_KogaLookoutGone
+	goto_if_set FLAG_DEFEATED_KOGA, FuchsiaCity_EventScript_KogaLookoutGone
+	return
+
+FuchsiaCity_EventScript_KogaLookoutGone::
+	setflag FLAG_KOGA_RETURNED_FROM_HAVORA
+	clearflag FLAG_HIDE_FUCHSIA_GYM_KOGA
+	return
+
+FuchsiaCity_EventScript_KogaLookout::
+	msgbox FuchsiaCity_Text_KogaLookout, MSGBOX_NPC
+	end
+
+FuchsiaCity_Text_KogaLookout::
+	.string "KOGA has left for the SAFARI ZONE.\p"
+	.string "I'd check the house at the far\n"
+	.string "end. Someone there may know\l"
+	.string "where he's gone.\p"
+	.string "The GYM will reopen when\n"
+	.string "he returns.$"

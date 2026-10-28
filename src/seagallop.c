@@ -304,7 +304,7 @@ static bool8 IsVidraArrival(void)
 #ifdef MAP_HAVORA_HARBOR
     return gSpecialVar_0x8004 == SEAGALLOP_VERMILION_CITY
         && gSpecialVar_0x8006 == SEAGALLOP_QUANTUM_PORT
-        && (FlagGet(FLAG_BADGE04_GET) || CheckBagHasItem(ITEM_STELLAR_TICKET, 1));
+        && CheckBagHasItem(ITEM_STELLAR_TICKET, 1);
 #else
     // QOL gains this route when merged with the Vidra map branch.
     return FALSE;
@@ -345,7 +345,7 @@ static void Task_Seagallop_3(void)
     if (gSpecialVar_0x8006 == SEAGALLOP_QUANTUM_PORT)
     {
         if (gSpecialVar_0x8004 == SEAGALLOP_VERMILION_CITY
-            && (FlagGet(FLAG_BADGE04_GET) || CheckBagHasItem(ITEM_STELLAR_TICKET, 1)))
+            && CheckBagHasItem(ITEM_STELLAR_TICKET, 1))
             FlagSet(FLAG_QUANTUM_ARRIVED);
         else
             gSpecialVar_0x8006 = SEAGALLOP_VERMILION_CITY;

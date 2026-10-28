@@ -110,9 +110,6 @@ FuchsiaCity_Gym_KogaAway::
 	end
 
 FuchsiaCity_Gym_Text_KogaAway::
-	.string "KOGA went shopping in HAVORA,\n"
-	.string "a harbor city on VIDRA.\p"
-	.string "The ferry from VERMILION CITY\n"
-	.string "takes RAINBOWBADGE holders there.\p"
-	.string "Find him and remind him he has\n"
-	.string "a challenger waiting!$"
+	.string "KOGA has left for the SAFARI ZONE.\p"
+	.string "Try the house at the far end.\n"
+	.string "Someone there may know more.$"
