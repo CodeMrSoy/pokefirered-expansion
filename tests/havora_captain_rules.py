@@ -40,19 +40,21 @@ blocks={}
 for name,body in re.findall(r'^(\w+)::\n(.*?)(?=^\w+::|\Z)',scripts,re.M|re.S):
     blocks[name]=body.strip().splitlines()
 def trace(ready=True,defeated=False,clearance=1):
-    label='HavoraTrial_Captain';result=None;events=[]
+    label='HavoraTrial_Captain';result=None;events=[];command=None
     for _ in range(20):
         jumped=False
         for raw in blocks[label]:
             line=raw.strip()
             if line.startswith('goto_if_defeated ') and defeated:
                 label=line.split(', ')[1];jumped=True;break
-            if line=='special HavoraGym_Control':result=clearance
+            if line.startswith('setvar VAR_0x8004, '):command=int(line.split(', ')[1])
+            if line=='special HavoraGym_Control':result=int(defeated) if command==23 else clearance
+            if line.startswith('checkitem '):result=1
             if line=='msgbox HavoraTrial_CaptainReadyText, MSGBOX_YESNO':
                 events.append('prompt');result=1 if ready else 0
             if line.startswith('goto_if_eq VAR_RESULT, '):
                 _,value,target=line.split(', ')
-                value=0 if value=='NO' else int(value)
+                value={'NO':0,'FALSE':0,'TRUE':1,'YES':1}[value] if value in ('NO','FALSE','TRUE','YES') else int(value)
                 if result==value:label=target;jumped=True;break
             if line.startswith('trainerbattle_double '):events.append('battle');return events
             if line=='releaseall':events.append('release')

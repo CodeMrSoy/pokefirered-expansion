@@ -1,0 +1,98 @@
+{
+  "water_habitats": {
+    "Havora_Harbor": "Harbor",
+    "Havora_River": "River",
+    "Havora_WestQuadrant": "Western coast"
+  },
+  "grass_habitats": {
+    "Havora_Market": "Market gardens",
+    "Havora_WestQuadrant": "Western residential grass"
+  },
+  "land_weights": [
+    20,
+    20,
+    10,
+    10,
+    10,
+    10,
+    5,
+    5,
+    4,
+    4,
+    1,
+    1
+  ],
+  "water_weights": [
+    60,
+    30,
+    5,
+    4,
+    1
+  ],
+  "rod_weights": {
+    "old_rod": [
+      70,
+      30
+    ],
+    "good_rod": [
+      60,
+      20,
+      20
+    ],
+    "super_rod": [
+      40,
+      40,
+      15,
+      4,
+      1
+    ]
+  },
+  "river_launch": {
+    "shore": [
+      3,
+      13
+    ],
+    "water": [
+      3,
+      12
+    ],
+    "approach": [
+      3,
+      14
+    ],
+    "elevation_changes": [
+      {
+        "x": 3,
+        "y": 13,
+        "before": 20613,
+        "after": 12421
+      },
+      {
+        "x": 2,
+        "y": 13,
+        "before": 20613,
+        "after": 133
+      },
+      {
+        "x": 4,
+        "y": 13,
+        "before": 20613,
+        "after": 133
+      },
+      {
+        "x": 3,
+        "y": 14,
+        "before": 20626,
+        "after": 146
+      }
+    ]
+  },
+  "level_range": [
+    30,
+    40
+  ],
+  "signature_species": {
+    "SPECIES_CLOBBOPUS": "MAP_HAVORA_HARBOR",
+    "SPECIES_GRAPPLOCT": "MAP_HAVORA_WEST_QUADRANT"
+  }
+}

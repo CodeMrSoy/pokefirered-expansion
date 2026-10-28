@@ -7,7 +7,7 @@
 #define EXP_CAP_SOFT                    2 // Pokémon with a level >= the level cap will gain reduced experience
 
 #define LEVEL_CAP_NONE                  0 // No level cap, only applicable if B_EXP_CAP_TYPE is EXP_CAP_NONE
-#define LEVEL_CAP_FLAG_LIST             1 // Level cap is chosen according to the first unset flag in `sLevelCapFlagMap`
+#define LEVEL_CAP_FLAG_LIST             1 // Level cap is chosen according to the first unfinished milestone in `sLevelCapMilestones`
 #define LEVEL_CAP_VARIABLE              2 // Level cap is chosen according to the contents of the event variable specified by B_LEVEL_CAP_VARIABLE
 
 // Level Cap Configs

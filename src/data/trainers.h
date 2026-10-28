@@ -6454,7 +6454,7 @@
 #line 2575
             .iv = TRAINER_PARTY_IVS(3, 3, 3, 3, 3, 3),
 #line 2574
-            .lvl = 40,
+            .lvl = 72,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -6465,7 +6465,7 @@
 #line 2579
             .iv = TRAINER_PARTY_IVS(3, 3, 3, 3, 3, 3),
 #line 2578
-            .lvl = 40,
+            .lvl = 72,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -6476,7 +6476,7 @@
 #line 2583
             .iv = TRAINER_PARTY_IVS(3, 3, 3, 3, 3, 3),
 #line 2582
-            .lvl = 40,
+            .lvl = 72,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -6996,7 +6996,7 @@
 #line 2793
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 2792
-            .lvl = 36,
+            .lvl = 52,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -7007,7 +7007,7 @@
 #line 2797
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 2796
-            .lvl = 36,
+            .lvl = 52,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -7018,7 +7018,7 @@
 #line 2801
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 2800
-            .lvl = 36,
+            .lvl = 52,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -7050,7 +7050,7 @@
 #line 2814
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 2813
-            .lvl = 34,
+            .lvl = 50,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -7061,7 +7061,7 @@
 #line 2818
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 2817
-            .lvl = 34,
+            .lvl = 50,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -7072,7 +7072,7 @@
 #line 2822
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 2821
-            .lvl = 34,
+            .lvl = 50,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -7083,7 +7083,7 @@
 #line 2826
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 2825
-            .lvl = 34,
+            .lvl = 50,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -7115,7 +7115,7 @@
 #line 2839
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 2838
-            .lvl = 41,
+            .lvl = 57,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -7147,7 +7147,7 @@
 #line 2852
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 2851
-            .lvl = 37,
+            .lvl = 53,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -7158,7 +7158,7 @@
 #line 2856
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 2855
-            .lvl = 37,
+            .lvl = 53,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -7928,7 +7928,7 @@
 #line 3171
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3170
-            .lvl = 28,
+            .lvl = 20,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -7946,7 +7946,7 @@
 #line 3179
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3178
-            .lvl = 28,
+            .lvl = 20,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -7964,7 +7964,7 @@
 #line 3187
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3186
-            .lvl = 28,
+            .lvl = 20,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -8003,7 +8003,7 @@
 #line 3204
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3203
-            .lvl = 29,
+            .lvl = 21,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -8021,7 +8021,7 @@
 #line 3212
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3211
-            .lvl = 29,
+            .lvl = 21,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -8060,7 +8060,7 @@
 #line 3229
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3228
-            .lvl = 25,
+            .lvl = 17,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -8078,7 +8078,7 @@
 #line 3237
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3236
-            .lvl = 25,
+            .lvl = 17,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -8096,7 +8096,7 @@
 #line 3245
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3244
-            .lvl = 25,
+            .lvl = 17,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -8114,7 +8114,7 @@
 #line 3253
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3252
-            .lvl = 25,
+            .lvl = 17,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -8132,7 +8132,7 @@
 #line 3261
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3260
-            .lvl = 25,
+            .lvl = 17,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -8171,7 +8171,7 @@
 #line 3278
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3277
-            .lvl = 28,
+            .lvl = 20,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -8189,7 +8189,7 @@
 #line 3286
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3285
-            .lvl = 28,
+            .lvl = 20,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -8207,7 +8207,7 @@
 #line 3294
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3293
-            .lvl = 28,
+            .lvl = 20,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -8246,7 +8246,7 @@
 #line 3311
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3310
-            .lvl = 29,
+            .lvl = 21,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -8264,7 +8264,7 @@
 #line 3319
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3318
-            .lvl = 29,
+            .lvl = 21,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -8335,7 +8335,7 @@
 #line 3349
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3348
-            .lvl = 33,
+            .lvl = 25,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -8367,7 +8367,7 @@
 #line 3362
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3361
-            .lvl = 28,
+            .lvl = 20,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -8385,7 +8385,7 @@
 #line 3370
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3369
-            .lvl = 28,
+            .lvl = 20,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -8403,7 +8403,7 @@
 #line 3378
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3377
-            .lvl = 28,
+            .lvl = 20,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -8442,7 +8442,7 @@
 #line 3395
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3394
-            .lvl = 33,
+            .lvl = 25,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -8474,7 +8474,7 @@
 #line 3408
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3407
-            .lvl = 29,
+            .lvl = 21,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -8492,7 +8492,7 @@
 #line 3416
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3415
-            .lvl = 29,
+            .lvl = 21,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -8531,7 +8531,7 @@
 #line 3433
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3432
-            .lvl = 29,
+            .lvl = 21,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -8549,7 +8549,7 @@
 #line 3441
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3440
-            .lvl = 29,
+            .lvl = 21,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -8588,7 +8588,7 @@
 #line 3458
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3457
-            .lvl = 25,
+            .lvl = 17,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -8606,7 +8606,7 @@
 #line 3466
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3465
-            .lvl = 25,
+            .lvl = 17,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -8624,7 +8624,7 @@
 #line 3474
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3473
-            .lvl = 25,
+            .lvl = 17,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -8642,7 +8642,7 @@
 #line 3482
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3481
-            .lvl = 25,
+            .lvl = 17,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -8660,7 +8660,7 @@
 #line 3490
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3489
-            .lvl = 25,
+            .lvl = 17,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -8699,7 +8699,7 @@
 #line 3507
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3506
-            .lvl = 26,
+            .lvl = 18,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -8717,7 +8717,7 @@
 #line 3515
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3514
-            .lvl = 26,
+            .lvl = 18,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -8735,7 +8735,7 @@
 #line 3523
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3522
-            .lvl = 26,
+            .lvl = 18,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -8753,7 +8753,7 @@
 #line 3531
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3530
-            .lvl = 26,
+            .lvl = 18,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -8792,7 +8792,7 @@
 #line 3548
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3547
-            .lvl = 28,
+            .lvl = 20,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -8810,7 +8810,7 @@
 #line 3556
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3555
-            .lvl = 28,
+            .lvl = 20,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -8828,7 +8828,7 @@
 #line 3564
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3563
-            .lvl = 28,
+            .lvl = 20,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -8867,7 +8867,7 @@
 #line 3581
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3580
-            .lvl = 29,
+            .lvl = 21,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -8885,7 +8885,7 @@
 #line 3589
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3588
-            .lvl = 29,
+            .lvl = 21,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -9053,7 +9053,7 @@
 #line 3657
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3656
-            .lvl = 36,
+            .lvl = 52,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -9064,7 +9064,7 @@
 #line 3661
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3660
-            .lvl = 36,
+            .lvl = 52,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -9075,7 +9075,7 @@
 #line 3665
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3664
-            .lvl = 36,
+            .lvl = 52,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -9107,7 +9107,7 @@
 #line 3678
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3677
-            .lvl = 41,
+            .lvl = 57,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -9139,7 +9139,7 @@
 #line 3691
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3690
-            .lvl = 37,
+            .lvl = 53,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -9150,7 +9150,7 @@
 #line 3695
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3694
-            .lvl = 37,
+            .lvl = 53,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -9182,7 +9182,7 @@
 #line 3708
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3707
-            .lvl = 34,
+            .lvl = 50,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -9193,7 +9193,7 @@
 #line 3712
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3711
-            .lvl = 34,
+            .lvl = 50,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -9268,7 +9268,7 @@
 #line 3742
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3741
-            .lvl = 38,
+            .lvl = 54,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -9300,7 +9300,7 @@
 #line 3755
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3754
-            .lvl = 34,
+            .lvl = 50,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -9311,7 +9311,7 @@
 #line 3759
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3758
-            .lvl = 34,
+            .lvl = 50,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -9580,7 +9580,7 @@
 #line 3865
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3864
-            .lvl = 22,
+            .lvl = 14,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -9591,7 +9591,7 @@
 #line 3869
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3868
-            .lvl = 22,
+            .lvl = 14,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -9602,7 +9602,7 @@
 #line 3873
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3872
-            .lvl = 22,
+            .lvl = 14,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -9634,7 +9634,7 @@
 #line 3886
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3885
-            .lvl = 24,
+            .lvl = 16,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -9645,7 +9645,7 @@
 #line 3890
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3889
-            .lvl = 24,
+            .lvl = 16,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -9677,7 +9677,7 @@
 #line 3903
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3902
-            .lvl = 27,
+            .lvl = 19,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -9709,7 +9709,7 @@
 #line 3916
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3915
-            .lvl = 21,
+            .lvl = 13,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -9720,7 +9720,7 @@
 #line 3920
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3919
-            .lvl = 21,
+            .lvl = 13,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -9731,7 +9731,7 @@
 #line 3924
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3923
-            .lvl = 21,
+            .lvl = 13,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -9742,7 +9742,7 @@
 #line 3928
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3927
-            .lvl = 21,
+            .lvl = 13,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -9774,7 +9774,7 @@
 #line 3941
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3940
-            .lvl = 28,
+            .lvl = 44,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -9785,7 +9785,7 @@
 #line 3945
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3944
-            .lvl = 28,
+            .lvl = 44,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -9796,7 +9796,7 @@
 #line 3949
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3948
-            .lvl = 28,
+            .lvl = 44,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -9807,7 +9807,7 @@
 #line 3953
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3952
-            .lvl = 28,
+            .lvl = 44,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -9839,7 +9839,7 @@
 #line 3966
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3965
-            .lvl = 31,
+            .lvl = 47,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -9850,7 +9850,7 @@
 #line 3970
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3969
-            .lvl = 31,
+            .lvl = 47,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -9882,7 +9882,7 @@
 #line 3983
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3982
-            .lvl = 27,
+            .lvl = 43,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -9893,7 +9893,7 @@
 #line 3987
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3986
-            .lvl = 27,
+            .lvl = 43,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -9904,7 +9904,7 @@
 #line 3991
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3990
-            .lvl = 27,
+            .lvl = 43,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -9915,7 +9915,7 @@
 #line 3995
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3994
-            .lvl = 27,
+            .lvl = 43,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -9926,7 +9926,7 @@
 #line 3999
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 3998
-            .lvl = 27,
+            .lvl = 43,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -9937,7 +9937,7 @@
 #line 4003
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4002
-            .lvl = 27,
+            .lvl = 43,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -9969,7 +9969,7 @@
 #line 4016
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4015
-            .lvl = 33,
+            .lvl = 49,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -9980,7 +9980,7 @@
 #line 4020
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4019
-            .lvl = 33,
+            .lvl = 49,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -10012,7 +10012,7 @@
 #line 4033
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4032
-            .lvl = 24,
+            .lvl = 16,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -10023,7 +10023,7 @@
 #line 4037
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4036
-            .lvl = 24,
+            .lvl = 16,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -10098,7 +10098,7 @@
 #line 4067
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4066
-            .lvl = 30,
+            .lvl = 46,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -10109,7 +10109,7 @@
 #line 4071
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4070
-            .lvl = 30,
+            .lvl = 46,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -10141,7 +10141,7 @@
 #line 4084
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4083
-            .lvl = 29,
+            .lvl = 45,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -10152,7 +10152,7 @@
 #line 4088
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4087
-            .lvl = 29,
+            .lvl = 45,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -10163,7 +10163,7 @@
 #line 4092
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4091
-            .lvl = 29,
+            .lvl = 45,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -10195,7 +10195,7 @@
 #line 4105
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4104
-            .lvl = 30,
+            .lvl = 46,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -10206,7 +10206,7 @@
 #line 4109
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4108
-            .lvl = 30,
+            .lvl = 46,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -10238,7 +10238,7 @@
 #line 4122
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4121
-            .lvl = 27,
+            .lvl = 43,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -10249,7 +10249,7 @@
 #line 4126
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4125
-            .lvl = 27,
+            .lvl = 43,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -10260,7 +10260,7 @@
 #line 4130
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4129
-            .lvl = 27,
+            .lvl = 43,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -10271,7 +10271,7 @@
 #line 4134
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4133
-            .lvl = 27,
+            .lvl = 43,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -10303,7 +10303,7 @@
 #line 4147
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4146
-            .lvl = 29,
+            .lvl = 45,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -10314,7 +10314,7 @@
 #line 4151
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4150
-            .lvl = 29,
+            .lvl = 45,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -10325,7 +10325,7 @@
 #line 4155
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4154
-            .lvl = 29,
+            .lvl = 45,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -10357,7 +10357,7 @@
 #line 4168
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4167
-            .lvl = 30,
+            .lvl = 46,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -10368,7 +10368,7 @@
 #line 4172
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4171
-            .lvl = 30,
+            .lvl = 46,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -10400,7 +10400,7 @@
 #line 4185
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4184
-            .lvl = 27,
+            .lvl = 43,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -10411,7 +10411,7 @@
 #line 4189
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4188
-            .lvl = 27,
+            .lvl = 43,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -10422,7 +10422,7 @@
 #line 4193
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4192
-            .lvl = 27,
+            .lvl = 43,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -10433,7 +10433,7 @@
 #line 4197
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4196
-            .lvl = 27,
+            .lvl = 43,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -10444,7 +10444,7 @@
 #line 4201
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4200
-            .lvl = 27,
+            .lvl = 43,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -10476,7 +10476,7 @@
 #line 4214
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4213
-            .lvl = 31,
+            .lvl = 47,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -10487,7 +10487,7 @@
 #line 4218
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4217
-            .lvl = 31,
+            .lvl = 47,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -10519,7 +10519,7 @@
 #line 4231
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4230
-            .lvl = 35,
+            .lvl = 51,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -10551,7 +10551,7 @@
 #line 4244
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4243
-            .lvl = 28,
+            .lvl = 44,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -10562,7 +10562,7 @@
 #line 4248
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4247
-            .lvl = 28,
+            .lvl = 44,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -10573,7 +10573,7 @@
 #line 4252
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4251
-            .lvl = 28,
+            .lvl = 44,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -10584,7 +10584,7 @@
 #line 4256
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4255
-            .lvl = 28,
+            .lvl = 44,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -10616,7 +10616,7 @@
 #line 4269
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4268
-            .lvl = 33,
+            .lvl = 49,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -10627,7 +10627,7 @@
 #line 4273
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4272
-            .lvl = 33,
+            .lvl = 49,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -10659,7 +10659,7 @@
 #line 4286
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4285
-            .lvl = 37,
+            .lvl = 53,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -10691,7 +10691,7 @@
 #line 4299
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4298
-            .lvl = 33,
+            .lvl = 49,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -10702,7 +10702,7 @@
 #line 4303
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4302
-            .lvl = 33,
+            .lvl = 49,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -10734,7 +10734,7 @@
 #line 4316
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4315
-            .lvl = 32,
+            .lvl = 48,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -10745,7 +10745,7 @@
 #line 4320
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4319
-            .lvl = 32,
+            .lvl = 48,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -10756,7 +10756,7 @@
 #line 4324
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4323
-            .lvl = 32,
+            .lvl = 48,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -10788,7 +10788,7 @@
 #line 4337
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4336
-            .lvl = 28,
+            .lvl = 20,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -10799,7 +10799,7 @@
 #line 4341
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4340
-            .lvl = 28,
+            .lvl = 20,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -10810,7 +10810,7 @@
 #line 4345
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4344
-            .lvl = 28,
+            .lvl = 20,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -10842,7 +10842,7 @@
 #line 4358
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4357
-            .lvl = 29,
+            .lvl = 21,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -10853,7 +10853,7 @@
 #line 4362
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4361
-            .lvl = 29,
+            .lvl = 21,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -10885,7 +10885,7 @@
 #line 4375
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4374
-            .lvl = 29,
+            .lvl = 21,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -10896,7 +10896,7 @@
 #line 4379
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4378
-            .lvl = 29,
+            .lvl = 21,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -10928,7 +10928,7 @@
 #line 4392
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4391
-            .lvl = 29,
+            .lvl = 21,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -10939,7 +10939,7 @@
 #line 4396
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4395
-            .lvl = 29,
+            .lvl = 21,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -10971,7 +10971,7 @@
 #line 4409
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4408
-            .lvl = 29,
+            .lvl = 21,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -10982,7 +10982,7 @@
 #line 4413
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4412
-            .lvl = 29,
+            .lvl = 21,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -11014,7 +11014,7 @@
 #line 4426
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4425
-            .lvl = 33,
+            .lvl = 25,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -11046,7 +11046,7 @@
 #line 4439
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4438
-            .lvl = 26,
+            .lvl = 18,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -11057,7 +11057,7 @@
 #line 4443
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4442
-            .lvl = 26,
+            .lvl = 18,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -11068,7 +11068,7 @@
 #line 4447
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4446
-            .lvl = 26,
+            .lvl = 18,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -11079,7 +11079,7 @@
 #line 4451
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4450
-            .lvl = 26,
+            .lvl = 18,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -11111,7 +11111,7 @@
 #line 4464
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4463
-            .lvl = 29,
+            .lvl = 21,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -11122,7 +11122,7 @@
 #line 4468
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4467
-            .lvl = 29,
+            .lvl = 21,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -11649,7 +11649,7 @@
 #line 4676
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4675
-            .lvl = 27,
+            .lvl = 19,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -11660,7 +11660,7 @@
 #line 4680
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4679
-            .lvl = 27,
+            .lvl = 19,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -11671,7 +11671,7 @@
 #line 4684
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4683
-            .lvl = 27,
+            .lvl = 19,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -11703,7 +11703,7 @@
 #line 4697
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4696
-            .lvl = 29,
+            .lvl = 21,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -11714,7 +11714,7 @@
 #line 4701
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4700
-            .lvl = 29,
+            .lvl = 21,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -11746,7 +11746,7 @@
 #line 4714
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4713
-            .lvl = 35,
+            .lvl = 51,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -11778,7 +11778,7 @@
 #line 4727
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4726
-            .lvl = 30,
+            .lvl = 46,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -11789,7 +11789,7 @@
 #line 4731
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4730
-            .lvl = 30,
+            .lvl = 46,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -11800,7 +11800,7 @@
 #line 4735
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4734
-            .lvl = 30,
+            .lvl = 46,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -11832,7 +11832,7 @@
 #line 4748
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4747
-            .lvl = 31,
+            .lvl = 47,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -11843,7 +11843,7 @@
 #line 4752
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4751
-            .lvl = 31,
+            .lvl = 47,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -11875,7 +11875,7 @@
 #line 4765
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4764
-            .lvl = 29,
+            .lvl = 21,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -11886,7 +11886,7 @@
 #line 4769
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4768
-            .lvl = 29,
+            .lvl = 21,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -11918,7 +11918,7 @@
 #line 4782
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4781
-            .lvl = 29,
+            .lvl = 21,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -11929,7 +11929,7 @@
 #line 4786
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4785
-            .lvl = 29,
+            .lvl = 21,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -12015,7 +12015,7 @@
 #line 4820
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4819
-            .lvl = 27,
+            .lvl = 43,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -12026,7 +12026,7 @@
 #line 4824
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4823
-            .lvl = 27,
+            .lvl = 43,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -12037,7 +12037,7 @@
 #line 4828
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4827
-            .lvl = 27,
+            .lvl = 43,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -12048,7 +12048,7 @@
 #line 4832
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4831
-            .lvl = 27,
+            .lvl = 43,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -12059,7 +12059,7 @@
 #line 4836
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4835
-            .lvl = 27,
+            .lvl = 43,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -12091,7 +12091,7 @@
 #line 4849
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4848
-            .lvl = 30,
+            .lvl = 46,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -12102,7 +12102,7 @@
 #line 4853
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4852
-            .lvl = 30,
+            .lvl = 46,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -12134,7 +12134,7 @@
 #line 4866
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4865
-            .lvl = 29,
+            .lvl = 45,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -12145,7 +12145,7 @@
 #line 4870
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4869
-            .lvl = 29,
+            .lvl = 45,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -12156,7 +12156,7 @@
 #line 4874
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4873
-            .lvl = 29,
+            .lvl = 45,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -12188,7 +12188,7 @@
 #line 4887
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4886
-            .lvl = 30,
+            .lvl = 46,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -12199,7 +12199,7 @@
 #line 4891
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4890
-            .lvl = 30,
+            .lvl = 46,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -12210,7 +12210,7 @@
 #line 4895
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 4894
-            .lvl = 30,
+            .lvl = 46,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -12242,7 +12242,7 @@
 #line 4908
             .iv = TRAINER_PARTY_IVS(6, 6, 6, 6, 6, 6),
 #line 4907
-            .lvl = 31,
+            .lvl = 38,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -12253,7 +12253,7 @@
 #line 4912
             .iv = TRAINER_PARTY_IVS(6, 6, 6, 6, 6, 6),
 #line 4911
-            .lvl = 31,
+            .lvl = 38,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -12264,7 +12264,7 @@
 #line 4916
             .iv = TRAINER_PARTY_IVS(6, 6, 6, 6, 6, 6),
 #line 4915
-            .lvl = 31,
+            .lvl = 38,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -12275,7 +12275,7 @@
 #line 4920
             .iv = TRAINER_PARTY_IVS(6, 6, 6, 6, 6, 6),
 #line 4919
-            .lvl = 31,
+            .lvl = 38,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -12307,7 +12307,7 @@
 #line 4933
             .iv = TRAINER_PARTY_IVS(6, 6, 6, 6, 6, 6),
 #line 4932
-            .lvl = 34,
+            .lvl = 41,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -12318,7 +12318,7 @@
 #line 4937
             .iv = TRAINER_PARTY_IVS(6, 6, 6, 6, 6, 6),
 #line 4936
-            .lvl = 34,
+            .lvl = 41,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -12350,7 +12350,7 @@
 #line 4950
             .iv = TRAINER_PARTY_IVS(6, 6, 6, 6, 6, 6),
 #line 4949
-            .lvl = 33,
+            .lvl = 40,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -12361,7 +12361,7 @@
 #line 4954
             .iv = TRAINER_PARTY_IVS(6, 6, 6, 6, 6, 6),
 #line 4953
-            .lvl = 33,
+            .lvl = 40,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -12372,7 +12372,7 @@
 #line 4958
             .iv = TRAINER_PARTY_IVS(6, 6, 6, 6, 6, 6),
 #line 4957
-            .lvl = 33,
+            .lvl = 40,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -12404,7 +12404,7 @@
 #line 4971
             .iv = TRAINER_PARTY_IVS(6, 6, 6, 6, 6, 6),
 #line 4970
-            .lvl = 38,
+            .lvl = 45,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -12490,7 +12490,7 @@
 #line 5005
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5004
-            .lvl = 29,
+            .lvl = 21,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -12501,7 +12501,7 @@
 #line 5009
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5008
-            .lvl = 29,
+            .lvl = 21,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -12533,7 +12533,7 @@
 #line 5022
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5021
-            .lvl = 29,
+            .lvl = 36,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -12544,7 +12544,7 @@
 #line 5026
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5025
-            .lvl = 29,
+            .lvl = 36,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -12576,7 +12576,7 @@
 #line 5039
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5038
-            .lvl = 41,
+            .lvl = 73,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -12587,7 +12587,7 @@
 #line 5043
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5042
-            .lvl = 41,
+            .lvl = 73,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -12598,7 +12598,7 @@
 #line 5047
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5046
-            .lvl = 41,
+            .lvl = 73,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -12609,7 +12609,7 @@
 #line 5051
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5050
-            .lvl = 41,
+            .lvl = 73,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -12641,7 +12641,7 @@
 #line 5064
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5063
-            .lvl = 31,
+            .lvl = 23,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -12652,7 +12652,7 @@
 #line 5068
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5067
-            .lvl = 31,
+            .lvl = 23,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -12663,7 +12663,7 @@
 #line 5072
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5071
-            .lvl = 31,
+            .lvl = 23,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -12674,7 +12674,7 @@
 #line 5076
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5075
-            .lvl = 31,
+            .lvl = 23,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -12706,7 +12706,7 @@
 #line 5089
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5088
-            .lvl = 34,
+            .lvl = 26,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -12717,7 +12717,7 @@
 #line 5093
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5092
-            .lvl = 34,
+            .lvl = 26,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -12749,7 +12749,7 @@
 #line 5106
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5105
-            .lvl = 48,
+            .lvl = 80,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -12788,7 +12788,7 @@
 #line 5167
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5166
-            .lvl = 38,
+            .lvl = 30,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -12820,7 +12820,7 @@
 #line 5180
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5179
-            .lvl = 34,
+            .lvl = 26,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -12831,7 +12831,7 @@
 #line 5184
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5183
-            .lvl = 34,
+            .lvl = 26,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -12863,7 +12863,7 @@
 #line 5197
             .iv = TRAINER_PARTY_IVS(4, 4, 4, 4, 4, 4),
 #line 5196
-            .lvl = 34,
+            .lvl = 26,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -12874,7 +12874,7 @@
 #line 5201
             .iv = TRAINER_PARTY_IVS(4, 4, 4, 4, 4, 4),
 #line 5200
-            .lvl = 34,
+            .lvl = 26,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -12906,7 +12906,7 @@
 #line 5214
             .iv = TRAINER_PARTY_IVS(4, 4, 4, 4, 4, 4),
 #line 5213
-            .lvl = 33,
+            .lvl = 25,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -12917,7 +12917,7 @@
 #line 5218
             .iv = TRAINER_PARTY_IVS(4, 4, 4, 4, 4, 4),
 #line 5217
-            .lvl = 33,
+            .lvl = 25,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -12928,7 +12928,7 @@
 #line 5222
             .iv = TRAINER_PARTY_IVS(4, 4, 4, 4, 4, 4),
 #line 5221
-            .lvl = 33,
+            .lvl = 25,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -13035,7 +13035,7 @@
 #line 5265
             .iv = TRAINER_PARTY_IVS(4, 4, 4, 4, 4, 4),
 #line 5264
-            .lvl = 44,
+            .lvl = 76,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -13046,7 +13046,7 @@
 #line 5269
             .iv = TRAINER_PARTY_IVS(4, 4, 4, 4, 4, 4),
 #line 5268
-            .lvl = 44,
+            .lvl = 76,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -13143,7 +13143,7 @@
 #line 5307
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5306
-            .lvl = 29,
+            .lvl = 21,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -13154,7 +13154,7 @@
 #line 5311
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5310
-            .lvl = 29,
+            .lvl = 21,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -13186,7 +13186,7 @@
 #line 5324
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5323
-            .lvl = 25,
+            .lvl = 17,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -13197,7 +13197,7 @@
 #line 5328
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5327
-            .lvl = 25,
+            .lvl = 17,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -13208,7 +13208,7 @@
 #line 5332
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5331
-            .lvl = 25,
+            .lvl = 17,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -13219,7 +13219,7 @@
 #line 5336
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5335
-            .lvl = 25,
+            .lvl = 17,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -13230,7 +13230,7 @@
 #line 5340
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5339
-            .lvl = 25,
+            .lvl = 17,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -13262,7 +13262,7 @@
 #line 5353
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5352
-            .lvl = 26,
+            .lvl = 18,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -13273,7 +13273,7 @@
 #line 5357
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5356
-            .lvl = 26,
+            .lvl = 18,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -13284,7 +13284,7 @@
 #line 5361
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5360
-            .lvl = 26,
+            .lvl = 18,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -13295,7 +13295,7 @@
 #line 5365
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5364
-            .lvl = 26,
+            .lvl = 18,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -13327,7 +13327,7 @@
 #line 5378
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5377
-            .lvl = 33,
+            .lvl = 25,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -13359,7 +13359,7 @@
 #line 5391
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5390
-            .lvl = 29,
+            .lvl = 21,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -13370,7 +13370,7 @@
 #line 5395
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5394
-            .lvl = 29,
+            .lvl = 21,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -13402,7 +13402,7 @@
 #line 5408
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5407
-            .lvl = 26,
+            .lvl = 18,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -13413,7 +13413,7 @@
 #line 5412
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5411
-            .lvl = 26,
+            .lvl = 18,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -13424,7 +13424,7 @@
 #line 5416
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5415
-            .lvl = 26,
+            .lvl = 18,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -13435,7 +13435,7 @@
 #line 5420
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5419
-            .lvl = 26,
+            .lvl = 18,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -13467,7 +13467,7 @@
 #line 5433
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5432
-            .lvl = 28,
+            .lvl = 20,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -13478,7 +13478,7 @@
 #line 5437
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5436
-            .lvl = 28,
+            .lvl = 20,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -13489,7 +13489,7 @@
 #line 5441
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5440
-            .lvl = 28,
+            .lvl = 20,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -13521,7 +13521,7 @@
 #line 5454
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5453
-            .lvl = 29,
+            .lvl = 21,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -13532,7 +13532,7 @@
 #line 5458
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5457
-            .lvl = 29,
+            .lvl = 21,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -13564,7 +13564,7 @@
 #line 5471
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5470
-            .lvl = 34,
+            .lvl = 26,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -13596,7 +13596,7 @@
 #line 5484
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5483
-            .lvl = 26,
+            .lvl = 18,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -13607,7 +13607,7 @@
 #line 5488
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5487
-            .lvl = 26,
+            .lvl = 18,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -13618,7 +13618,7 @@
 #line 5492
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5491
-            .lvl = 26,
+            .lvl = 18,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -13629,7 +13629,7 @@
 #line 5496
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5495
-            .lvl = 26,
+            .lvl = 18,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -13661,7 +13661,7 @@
 #line 5509
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5508
-            .lvl = 30,
+            .lvl = 46,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -13672,7 +13672,7 @@
 #line 5513
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5512
-            .lvl = 30,
+            .lvl = 46,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -13683,7 +13683,7 @@
 #line 5517
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5516
-            .lvl = 30,
+            .lvl = 46,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -13823,7 +13823,7 @@
 #line 5572
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5571
-            .lvl = 28,
+            .lvl = 20,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -13834,7 +13834,7 @@
 #line 5576
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5575
-            .lvl = 28,
+            .lvl = 20,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -13845,7 +13845,7 @@
 #line 5580
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5579
-            .lvl = 28,
+            .lvl = 20,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -13877,7 +13877,7 @@
 #line 5593
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5592
-            .lvl = 26,
+            .lvl = 18,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -13888,7 +13888,7 @@
 #line 5597
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5596
-            .lvl = 26,
+            .lvl = 18,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -13899,7 +13899,7 @@
 #line 5601
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5600
-            .lvl = 26,
+            .lvl = 18,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -13910,7 +13910,7 @@
 #line 5605
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5604
-            .lvl = 26,
+            .lvl = 18,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -13942,7 +13942,7 @@
 #line 5618
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5617
-            .lvl = 29,
+            .lvl = 21,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -13953,7 +13953,7 @@
 #line 5622
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5621
-            .lvl = 29,
+            .lvl = 21,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -13985,7 +13985,7 @@
 #line 5635
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5634
-            .lvl = 28,
+            .lvl = 20,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -13996,7 +13996,7 @@
 #line 5639
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5638
-            .lvl = 28,
+            .lvl = 20,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -14007,7 +14007,7 @@
 #line 5643
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 5642
-            .lvl = 28,
+            .lvl = 20,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -14041,7 +14041,7 @@
 #line 5656
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
 #line 5655
-            .lvl = 37,
+            .lvl = 44,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -14054,7 +14054,7 @@
 #line 5660
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
 #line 5659
-            .lvl = 37,
+            .lvl = 44,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -14088,7 +14088,7 @@
 #line 5673
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
 #line 5672
-            .lvl = 31,
+            .lvl = 38,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -14101,7 +14101,7 @@
 #line 5677
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
 #line 5676
-            .lvl = 31,
+            .lvl = 38,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -14114,7 +14114,7 @@
 #line 5681
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
 #line 5680
-            .lvl = 31,
+            .lvl = 38,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -14148,7 +14148,7 @@
 #line 5694
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
 #line 5693
-            .lvl = 32,
+            .lvl = 39,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -14161,7 +14161,7 @@
 #line 5698
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
 #line 5697
-            .lvl = 32,
+            .lvl = 39,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -14195,7 +14195,7 @@
 #line 5711
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
 #line 5710
-            .lvl = 36,
+            .lvl = 43,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -14229,7 +14229,7 @@
 #line 5724
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
 #line 5723
-            .lvl = 31,
+            .lvl = 38,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -14242,7 +14242,7 @@
 #line 5728
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
 #line 5727
-            .lvl = 31,
+            .lvl = 38,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -14255,7 +14255,7 @@
 #line 5732
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
 #line 5731
-            .lvl = 31,
+            .lvl = 38,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -14430,7 +14430,7 @@
 #line 5796
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
 #line 5795
-            .lvl = 43,
+            .lvl = 75,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -14443,7 +14443,7 @@
 #line 5800
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
 #line 5799
-            .lvl = 43,
+            .lvl = 75,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -14456,7 +14456,7 @@
 #line 5804
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
 #line 5803
-            .lvl = 43,
+            .lvl = 75,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -15025,7 +15025,7 @@
 #line 6036
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 6035
-            .lvl = 29,
+            .lvl = 45,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -15036,7 +15036,7 @@
 #line 6040
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 6039
-            .lvl = 29,
+            .lvl = 45,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -15068,7 +15068,7 @@
 #line 6053
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 6052
-            .lvl = 26,
+            .lvl = 33,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -15086,7 +15086,7 @@
 #line 6061
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 6060
-            .lvl = 26,
+            .lvl = 33,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -15104,7 +15104,7 @@
 #line 6069
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 6068
-            .lvl = 26,
+            .lvl = 33,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -15122,7 +15122,7 @@
 #line 6077
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 6076
-            .lvl = 26,
+            .lvl = 33,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -15161,7 +15161,7 @@
 #line 6094
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 6093
-            .lvl = 28,
+            .lvl = 35,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -15172,7 +15172,7 @@
 #line 6098
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 6097
-            .lvl = 28,
+            .lvl = 35,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -15183,7 +15183,7 @@
 #line 6102
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 6101
-            .lvl = 28,
+            .lvl = 35,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -15215,7 +15215,7 @@
 #line 6115
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 6114
-            .lvl = 29,
+            .lvl = 36,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -15233,7 +15233,7 @@
 #line 6123
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 6122
-            .lvl = 29,
+            .lvl = 36,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -15272,7 +15272,7 @@
 #line 6140
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 6139
-            .lvl = 33,
+            .lvl = 40,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -15304,7 +15304,7 @@
 #line 6153
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 6152
-            .lvl = 26,
+            .lvl = 33,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -15322,7 +15322,7 @@
 #line 6161
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 6160
-            .lvl = 26,
+            .lvl = 33,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -15340,7 +15340,7 @@
 #line 6169
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 6168
-            .lvl = 26,
+            .lvl = 33,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -15358,7 +15358,7 @@
 #line 6177
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 6176
-            .lvl = 26,
+            .lvl = 33,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -15397,7 +15397,7 @@
 #line 6194
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 6193
-            .lvl = 25,
+            .lvl = 32,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -15415,7 +15415,7 @@
 #line 6202
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 6201
-            .lvl = 25,
+            .lvl = 32,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -15433,7 +15433,7 @@
 #line 6210
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 6209
-            .lvl = 25,
+            .lvl = 32,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -15451,7 +15451,7 @@
 #line 6218
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 6217
-            .lvl = 25,
+            .lvl = 32,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -15469,7 +15469,7 @@
 #line 6226
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 6225
-            .lvl = 25,
+            .lvl = 32,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -15508,7 +15508,7 @@
 #line 6243
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 6242
-            .lvl = 29,
+            .lvl = 36,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -15519,7 +15519,7 @@
 #line 6247
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 6246
-            .lvl = 29,
+            .lvl = 36,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -15551,7 +15551,7 @@
 #line 6260
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 6259
-            .lvl = 29,
+            .lvl = 36,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -15562,7 +15562,7 @@
 #line 6264
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 6263
-            .lvl = 29,
+            .lvl = 36,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -15594,7 +15594,7 @@
 #line 6277
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 6276
-            .lvl = 28,
+            .lvl = 35,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -15612,7 +15612,7 @@
 #line 6285
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 6284
-            .lvl = 28,
+            .lvl = 35,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -15630,7 +15630,7 @@
 #line 6293
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 6292
-            .lvl = 28,
+            .lvl = 35,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -15669,7 +15669,7 @@
 #line 6310
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 6309
-            .lvl = 29,
+            .lvl = 36,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -15680,7 +15680,7 @@
 #line 6314
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 6313
-            .lvl = 29,
+            .lvl = 36,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -15712,7 +15712,7 @@
 #line 6327
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 6326
-            .lvl = 33,
+            .lvl = 49,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -15723,7 +15723,7 @@
 #line 6331
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 6330
-            .lvl = 33,
+            .lvl = 49,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -15734,7 +15734,7 @@
 #line 6335
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 6334
-            .lvl = 33,
+            .lvl = 49,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -15766,7 +15766,7 @@
 #line 6348
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 6347
-            .lvl = 34,
+            .lvl = 50,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -15777,7 +15777,7 @@
 #line 6352
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 6351
-            .lvl = 34,
+            .lvl = 50,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -15863,7 +15863,7 @@
 #line 6386
             .iv = TRAINER_PARTY_IVS(30, 30, 30, 30, 30, 30),
 #line 6385
-            .lvl = 37,
+            .lvl = 44,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -15874,7 +15874,7 @@
 #line 6390
             .iv = TRAINER_PARTY_IVS(30, 30, 30, 30, 30, 30),
 #line 6389
-            .lvl = 35,
+            .lvl = 42,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -15885,7 +15885,7 @@
 #line 6394
             .iv = TRAINER_PARTY_IVS(30, 30, 30, 30, 30, 30),
 #line 6393
-            .lvl = 37,
+            .lvl = 44,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -15896,7 +15896,7 @@
 #line 6398
             .iv = TRAINER_PARTY_IVS(30, 30, 30, 30, 30, 30),
 #line 6397
-            .lvl = 41,
+            .lvl = 48,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -15930,7 +15930,7 @@
 #line 6412
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 6411
-            .lvl = 45,
+            .lvl = 77,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -15948,7 +15948,7 @@
 #line 6420
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 6419
-            .lvl = 42,
+            .lvl = 74,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -15966,7 +15966,7 @@
 #line 6428
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 6427
-            .lvl = 44,
+            .lvl = 76,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -15984,7 +15984,7 @@
 #line 6436
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 6435
-            .lvl = 45,
+            .lvl = 77,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -16002,7 +16002,7 @@
 #line 6444
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 6443
-            .lvl = 50,
+            .lvl = 82,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -17197,7 +17197,7 @@
 #line 6924
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 6923
-            .lvl = 29,
+            .lvl = 36,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -17208,7 +17208,7 @@
 #line 6928
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 6927
-            .lvl = 29,
+            .lvl = 36,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -17240,7 +17240,7 @@
 #line 6941
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 6940
-            .lvl = 25,
+            .lvl = 32,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -17251,7 +17251,7 @@
 #line 6945
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 6944
-            .lvl = 25,
+            .lvl = 32,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -17262,7 +17262,7 @@
 #line 6949
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 6948
-            .lvl = 25,
+            .lvl = 32,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -17273,7 +17273,7 @@
 #line 6953
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 6952
-            .lvl = 25,
+            .lvl = 32,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -17284,7 +17284,7 @@
 #line 6957
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 6956
-            .lvl = 25,
+            .lvl = 32,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -17316,7 +17316,7 @@
 #line 6970
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 6969
-            .lvl = 28,
+            .lvl = 35,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -17327,7 +17327,7 @@
 #line 6974
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 6973
-            .lvl = 28,
+            .lvl = 35,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -17338,7 +17338,7 @@
 #line 6978
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 6977
-            .lvl = 28,
+            .lvl = 35,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -17370,7 +17370,7 @@
 #line 6991
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 6990
-            .lvl = 29,
+            .lvl = 36,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -17381,7 +17381,7 @@
 #line 6995
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 6994
-            .lvl = 29,
+            .lvl = 36,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -17413,7 +17413,7 @@
 #line 7008
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 7007
-            .lvl = 28,
+            .lvl = 35,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -17424,7 +17424,7 @@
 #line 7012
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 7011
-            .lvl = 28,
+            .lvl = 35,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -17435,7 +17435,7 @@
 #line 7016
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 7015
-            .lvl = 28,
+            .lvl = 35,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -17467,7 +17467,7 @@
 #line 7029
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 7028
-            .lvl = 33,
+            .lvl = 40,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -17499,7 +17499,7 @@
 #line 7042
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 7041
-            .lvl = 33,
+            .lvl = 40,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -17531,7 +17531,7 @@
 #line 7055
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 7054
-            .lvl = 29,
+            .lvl = 36,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -17542,7 +17542,7 @@
 #line 7059
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 7058
-            .lvl = 29,
+            .lvl = 36,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -17574,7 +17574,7 @@
 #line 7072
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 7071
-            .lvl = 28,
+            .lvl = 35,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -17585,7 +17585,7 @@
 #line 7076
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 7075
-            .lvl = 28,
+            .lvl = 35,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -17596,7 +17596,7 @@
 #line 7080
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 7079
-            .lvl = 28,
+            .lvl = 35,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -17628,7 +17628,7 @@
 #line 7093
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 7092
-            .lvl = 26,
+            .lvl = 33,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -17646,7 +17646,7 @@
 #line 7101
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 7100
-            .lvl = 26,
+            .lvl = 33,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -17664,7 +17664,7 @@
 #line 7109
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 7108
-            .lvl = 26,
+            .lvl = 33,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -17682,7 +17682,7 @@
 #line 7117
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 7116
-            .lvl = 26,
+            .lvl = 33,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -17721,7 +17721,7 @@
 #line 7134
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 7133
-            .lvl = 29,
+            .lvl = 36,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -17732,7 +17732,7 @@
 #line 7138
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 7137
-            .lvl = 29,
+            .lvl = 36,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -17764,7 +17764,7 @@
 #line 7151
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 7150
-            .lvl = 29,
+            .lvl = 36,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -17775,7 +17775,7 @@
 #line 7155
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 7154
-            .lvl = 29,
+            .lvl = 36,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -17807,7 +17807,7 @@
 #line 7168
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 7167
-            .lvl = 26,
+            .lvl = 33,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -17818,7 +17818,7 @@
 #line 7172
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 7171
-            .lvl = 26,
+            .lvl = 33,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -17829,7 +17829,7 @@
 #line 7176
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 7175
-            .lvl = 26,
+            .lvl = 33,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -17840,7 +17840,7 @@
 #line 7180
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 7179
-            .lvl = 26,
+            .lvl = 33,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -17872,7 +17872,7 @@
 #line 7193
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 7192
-            .lvl = 28,
+            .lvl = 35,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -17883,7 +17883,7 @@
 #line 7197
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 7196
-            .lvl = 28,
+            .lvl = 35,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -17894,7 +17894,7 @@
 #line 7201
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 7200
-            .lvl = 28,
+            .lvl = 35,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -17926,7 +17926,7 @@
 #line 7214
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 7213
-            .lvl = 28,
+            .lvl = 35,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -17937,7 +17937,7 @@
 #line 7218
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 7217
-            .lvl = 28,
+            .lvl = 35,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -17948,7 +17948,7 @@
 #line 7222
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 7221
-            .lvl = 28,
+            .lvl = 35,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -17980,7 +17980,7 @@
 #line 7235
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 7234
-            .lvl = 28,
+            .lvl = 35,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -17991,7 +17991,7 @@
 #line 7239
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 7238
-            .lvl = 28,
+            .lvl = 35,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -18002,7 +18002,7 @@
 #line 7243
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 7242
-            .lvl = 28,
+            .lvl = 35,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -18034,7 +18034,7 @@
 #line 7256
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 7255
-            .lvl = 33,
+            .lvl = 40,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -18066,7 +18066,7 @@
 #line 7269
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 7268
-            .lvl = 25,
+            .lvl = 32,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -18077,7 +18077,7 @@
 #line 7273
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 7272
-            .lvl = 25,
+            .lvl = 32,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -18088,7 +18088,7 @@
 #line 7277
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 7276
-            .lvl = 25,
+            .lvl = 32,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -18099,7 +18099,7 @@
 #line 7281
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 7280
-            .lvl = 25,
+            .lvl = 32,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -18110,7 +18110,7 @@
 #line 7285
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 7284
-            .lvl = 25,
+            .lvl = 32,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -18142,7 +18142,7 @@
 #line 7298
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 7297
-            .lvl = 32,
+            .lvl = 39,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -18153,7 +18153,7 @@
 #line 7302
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 7301
-            .lvl = 32,
+            .lvl = 39,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -18164,7 +18164,7 @@
 #line 7306
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 7305
-            .lvl = 32,
+            .lvl = 39,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -18311,7 +18311,7 @@
 #line 7370
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
 #line 7369
-            .lvl = 42,
+            .lvl = 74,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -18329,7 +18329,7 @@
 #line 7378
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
 #line 7377
-            .lvl = 42,
+            .lvl = 74,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -18347,7 +18347,7 @@
 #line 7386
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
 #line 7385
-            .lvl = 42,
+            .lvl = 74,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -18365,7 +18365,7 @@
 #line 7394
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
 #line 7393
-            .lvl = 42,
+            .lvl = 74,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -18383,7 +18383,7 @@
 #line 7402
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
 #line 7401
-            .lvl = 42,
+            .lvl = 74,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -18424,7 +18424,7 @@
 #line 7420
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
 #line 7419
-            .lvl = 41,
+            .lvl = 73,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -18442,7 +18442,7 @@
 #line 7428
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
 #line 7427
-            .lvl = 42,
+            .lvl = 74,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -18460,7 +18460,7 @@
 #line 7436
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
 #line 7435
-            .lvl = 42,
+            .lvl = 74,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -18478,7 +18478,7 @@
 #line 7444
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
 #line 7443
-            .lvl = 42,
+            .lvl = 74,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -18496,7 +18496,7 @@
 #line 7452
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
 #line 7451
-            .lvl = 43,
+            .lvl = 75,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -18650,7 +18650,7 @@
 #line 7520
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
 #line 7519
-            .lvl = 42,
+            .lvl = 74,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -18668,7 +18668,7 @@
 #line 7528
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
 #line 7527
-            .lvl = 42,
+            .lvl = 74,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -18686,7 +18686,7 @@
 #line 7536
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
 #line 7535
-            .lvl = 42,
+            .lvl = 74,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -18704,7 +18704,7 @@
 #line 7544
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
 #line 7543
-            .lvl = 42,
+            .lvl = 74,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -18722,7 +18722,7 @@
 #line 7552
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
 #line 7551
-            .lvl = 42,
+            .lvl = 74,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -19441,7 +19441,7 @@
 #line 7870
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
 #line 7869
-            .lvl = 42,
+            .lvl = 74,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -19459,7 +19459,7 @@
 #line 7878
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
 #line 7877
-            .lvl = 42,
+            .lvl = 74,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -19477,7 +19477,7 @@
 #line 7886
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
 #line 7885
-            .lvl = 42,
+            .lvl = 74,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -19495,7 +19495,7 @@
 #line 7894
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
 #line 7893
-            .lvl = 42,
+            .lvl = 74,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -19513,7 +19513,7 @@
 #line 7902
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
 #line 7901
-            .lvl = 42,
+            .lvl = 74,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -19554,7 +19554,7 @@
 #line 7920
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
 #line 7919
-            .lvl = 42,
+            .lvl = 74,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -19572,7 +19572,7 @@
 #line 7928
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
 #line 7927
-            .lvl = 42,
+            .lvl = 74,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -19590,7 +19590,7 @@
 #line 7936
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
 #line 7935
-            .lvl = 42,
+            .lvl = 74,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -19608,7 +19608,7 @@
 #line 7944
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
 #line 7943
-            .lvl = 42,
+            .lvl = 74,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -19626,7 +19626,7 @@
 #line 7952
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
 #line 7951
-            .lvl = 42,
+            .lvl = 74,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -19780,7 +19780,7 @@
 #line 8020
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
 #line 8019
-            .lvl = 42,
+            .lvl = 74,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -19798,7 +19798,7 @@
 #line 8028
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
 #line 8027
-            .lvl = 42,
+            .lvl = 74,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -19816,7 +19816,7 @@
 #line 8036
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
 #line 8035
-            .lvl = 42,
+            .lvl = 74,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -19834,7 +19834,7 @@
 #line 8044
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
 #line 8043
-            .lvl = 42,
+            .lvl = 74,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -19852,7 +19852,7 @@
 #line 8052
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
 #line 8051
-            .lvl = 42,
+            .lvl = 74,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -20234,7 +20234,7 @@
 #line 8221
             .iv = TRAINER_PARTY_IVS(30, 30, 30, 30, 30, 30),
 #line 8220
-            .lvl = 52,
+            .lvl = 79,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -20252,7 +20252,7 @@
 #line 8229
             .iv = TRAINER_PARTY_IVS(30, 30, 30, 30, 30, 30),
 #line 8228
-            .lvl = 51,
+            .lvl = 78,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -20270,7 +20270,7 @@
 #line 8237
             .iv = TRAINER_PARTY_IVS(30, 30, 30, 30, 30, 30),
 #line 8236
-            .lvl = 52,
+            .lvl = 79,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -20288,7 +20288,7 @@
 #line 8245
             .iv = TRAINER_PARTY_IVS(30, 30, 30, 30, 30, 30),
 #line 8244
-            .lvl = 54,
+            .lvl = 81,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -20308,7 +20308,7 @@
 #line 8253
             .iv = TRAINER_PARTY_IVS(30, 30, 30, 30, 30, 30),
 #line 8252
-            .lvl = 54,
+            .lvl = 81,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -20351,7 +20351,7 @@
 #line 8272
             .iv = TRAINER_PARTY_IVS(30, 30, 30, 30, 30, 30),
 #line 8271
-            .lvl = 51,
+            .lvl = 78,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -20369,7 +20369,7 @@
 #line 8280
             .iv = TRAINER_PARTY_IVS(30, 30, 30, 30, 30, 30),
 #line 8279
-            .lvl = 53,
+            .lvl = 80,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -20387,7 +20387,7 @@
 #line 8288
             .iv = TRAINER_PARTY_IVS(30, 30, 30, 30, 30, 30),
 #line 8287
-            .lvl = 53,
+            .lvl = 80,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -20405,7 +20405,7 @@
 #line 8296
             .iv = TRAINER_PARTY_IVS(30, 30, 30, 30, 30, 30),
 #line 8295
-            .lvl = 54,
+            .lvl = 81,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -20425,7 +20425,7 @@
 #line 8304
             .iv = TRAINER_PARTY_IVS(30, 30, 30, 30, 30, 30),
 #line 8303
-            .lvl = 56,
+            .lvl = 83,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -20468,7 +20468,7 @@
 #line 8323
             .iv = TRAINER_PARTY_IVS(30, 30, 30, 30, 30, 30),
 #line 8322
-            .lvl = 54,
+            .lvl = 81,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -20486,7 +20486,7 @@
 #line 8331
             .iv = TRAINER_PARTY_IVS(30, 30, 30, 30, 30, 30),
 #line 8330
-            .lvl = 54,
+            .lvl = 81,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -20504,7 +20504,7 @@
 #line 8339
             .iv = TRAINER_PARTY_IVS(30, 30, 30, 30, 30, 30),
 #line 8338
-            .lvl = 53,
+            .lvl = 80,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -20522,7 +20522,7 @@
 #line 8347
             .iv = TRAINER_PARTY_IVS(30, 30, 30, 30, 30, 30),
 #line 8346
-            .lvl = 56,
+            .lvl = 83,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -20542,7 +20542,7 @@
 #line 8355
             .iv = TRAINER_PARTY_IVS(30, 30, 30, 30, 30, 30),
 #line 8354
-            .lvl = 58,
+            .lvl = 85,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -20585,7 +20585,7 @@
 #line 8374
             .iv = TRAINER_PARTY_IVS(30, 30, 30, 30, 30, 30),
 #line 8373
-            .lvl = 56,
+            .lvl = 83,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -20603,7 +20603,7 @@
 #line 8382
             .iv = TRAINER_PARTY_IVS(30, 30, 30, 30, 30, 30),
 #line 8381
-            .lvl = 54,
+            .lvl = 81,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -20621,7 +20621,7 @@
 #line 8390
             .iv = TRAINER_PARTY_IVS(30, 30, 30, 30, 30, 30),
 #line 8389
-            .lvl = 54,
+            .lvl = 81,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -20639,7 +20639,7 @@
 #line 8398
             .iv = TRAINER_PARTY_IVS(30, 30, 30, 30, 30, 30),
 #line 8397
-            .lvl = 58,
+            .lvl = 85,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -20659,7 +20659,7 @@
 #line 8406
             .iv = TRAINER_PARTY_IVS(30, 30, 30, 30, 30, 30),
 #line 8405
-            .lvl = 60,
+            .lvl = 87,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -20967,7 +20967,7 @@
 #line 8540
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 8539
-            .lvl = 37,
+            .lvl = 29,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -20985,7 +20985,7 @@
 #line 8548
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 8547
-            .lvl = 39,
+            .lvl = 31,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -21003,7 +21003,7 @@
 #line 8556
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 8555
-            .lvl = 37,
+            .lvl = 29,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -21021,7 +21021,7 @@
 #line 8564
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 8563
-            .lvl = 43,
+            .lvl = 35,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -21062,7 +21062,7 @@
 #line 8582
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 8581
-            .lvl = 42,
+            .lvl = 58,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -21080,7 +21080,7 @@
 #line 8590
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 8589
-            .lvl = 40,
+            .lvl = 56,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -21098,7 +21098,7 @@
 #line 8598
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 8597
-            .lvl = 42,
+            .lvl = 58,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -21116,7 +21116,7 @@
 #line 8606
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 8605
-            .lvl = 47,
+            .lvl = 63,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -21157,7 +21157,7 @@
 #line 8624
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 8623
-            .lvl = 38,
+            .lvl = 45,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -21175,7 +21175,7 @@
 #line 8632
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 8631
-            .lvl = 37,
+            .lvl = 44,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -21193,7 +21193,7 @@
 #line 8640
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 8639
-            .lvl = 38,
+            .lvl = 45,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -21211,7 +21211,7 @@
 #line 8648
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 8647
-            .lvl = 43,
+            .lvl = 50,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -21866,7 +21866,7 @@
 #line 8904
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
 #line 8903
-            .lvl = 37,
+            .lvl = 44,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -21877,7 +21877,7 @@
 #line 8908
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
 #line 8907
-            .lvl = 38,
+            .lvl = 45,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -21888,7 +21888,7 @@
 #line 8912
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
 #line 8911
-            .lvl = 35,
+            .lvl = 42,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -21899,7 +21899,7 @@
 #line 8916
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
 #line 8915
-            .lvl = 35,
+            .lvl = 42,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -21910,7 +21910,7 @@
 #line 8920
             .iv = TRAINER_PARTY_IVS(18, 18, 18, 18, 18, 18),
 #line 8919
-            .lvl = 40,
+            .lvl = 47,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -21942,7 +21942,7 @@
 #line 8933
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
 #line 8932
-            .lvl = 37,
+            .lvl = 44,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -21953,7 +21953,7 @@
 #line 8937
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
 #line 8936
-            .lvl = 38,
+            .lvl = 45,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -21964,7 +21964,7 @@
 #line 8941
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
 #line 8940
-            .lvl = 35,
+            .lvl = 42,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -21975,7 +21975,7 @@
 #line 8945
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
 #line 8944
-            .lvl = 35,
+            .lvl = 42,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -21986,7 +21986,7 @@
 #line 8949
             .iv = TRAINER_PARTY_IVS(18, 18, 18, 18, 18, 18),
 #line 8948
-            .lvl = 40,
+            .lvl = 47,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -22018,7 +22018,7 @@
 #line 8962
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
 #line 8961
-            .lvl = 37,
+            .lvl = 44,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -22029,7 +22029,7 @@
 #line 8966
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
 #line 8965
-            .lvl = 38,
+            .lvl = 45,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -22040,7 +22040,7 @@
 #line 8970
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
 #line 8969
-            .lvl = 35,
+            .lvl = 42,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -22051,7 +22051,7 @@
 #line 8974
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
 #line 8973
-            .lvl = 35,
+            .lvl = 42,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -22062,7 +22062,7 @@
 #line 8978
             .iv = TRAINER_PARTY_IVS(18, 18, 18, 18, 18, 18),
 #line 8977
-            .lvl = 40,
+            .lvl = 47,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -22485,7 +22485,7 @@
 #line 9164
             .iv = TRAINER_PARTY_IVS(31, 31, 31, 31, 31, 31),
 #line 9163
-            .lvl = 59,
+            .lvl = 86,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -22503,7 +22503,7 @@
 #line 9172
             .iv = TRAINER_PARTY_IVS(31, 31, 31, 31, 31, 31),
 #line 9171
-            .lvl = 57,
+            .lvl = 84,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -22521,7 +22521,7 @@
 #line 9180
             .iv = TRAINER_PARTY_IVS(31, 31, 31, 31, 31, 31),
 #line 9179
-            .lvl = 59,
+            .lvl = 86,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -22539,7 +22539,7 @@
 #line 9188
             .iv = TRAINER_PARTY_IVS(31, 31, 31, 31, 31, 31),
 #line 9187
-            .lvl = 59,
+            .lvl = 86,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -22557,7 +22557,7 @@
 #line 9196
             .iv = TRAINER_PARTY_IVS(31, 31, 31, 31, 31, 31),
 #line 9195
-            .lvl = 61,
+            .lvl = 88,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -22577,7 +22577,7 @@
 #line 9204
             .iv = TRAINER_PARTY_IVS(31, 31, 31, 31, 31, 31),
 #line 9203
-            .lvl = 63,
+            .lvl = 90,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -22620,7 +22620,7 @@
 #line 9223
             .iv = TRAINER_PARTY_IVS(31, 31, 31, 31, 31, 31),
 #line 9222
-            .lvl = 59,
+            .lvl = 86,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -22638,7 +22638,7 @@
 #line 9231
             .iv = TRAINER_PARTY_IVS(31, 31, 31, 31, 31, 31),
 #line 9230
-            .lvl = 57,
+            .lvl = 84,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -22656,7 +22656,7 @@
 #line 9239
             .iv = TRAINER_PARTY_IVS(31, 31, 31, 31, 31, 31),
 #line 9238
-            .lvl = 59,
+            .lvl = 86,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -22674,7 +22674,7 @@
 #line 9247
             .iv = TRAINER_PARTY_IVS(31, 31, 31, 31, 31, 31),
 #line 9246
-            .lvl = 59,
+            .lvl = 86,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -22692,7 +22692,7 @@
 #line 9255
             .iv = TRAINER_PARTY_IVS(31, 31, 31, 31, 31, 31),
 #line 9254
-            .lvl = 61,
+            .lvl = 88,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -22712,7 +22712,7 @@
 #line 9263
             .iv = TRAINER_PARTY_IVS(31, 31, 31, 31, 31, 31),
 #line 9262
-            .lvl = 63,
+            .lvl = 90,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -22755,7 +22755,7 @@
 #line 9282
             .iv = TRAINER_PARTY_IVS(31, 31, 31, 31, 31, 31),
 #line 9281
-            .lvl = 59,
+            .lvl = 86,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -22773,7 +22773,7 @@
 #line 9290
             .iv = TRAINER_PARTY_IVS(31, 31, 31, 31, 31, 31),
 #line 9289
-            .lvl = 57,
+            .lvl = 84,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -22791,7 +22791,7 @@
 #line 9298
             .iv = TRAINER_PARTY_IVS(31, 31, 31, 31, 31, 31),
 #line 9297
-            .lvl = 59,
+            .lvl = 86,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -22809,7 +22809,7 @@
 #line 9306
             .iv = TRAINER_PARTY_IVS(31, 31, 31, 31, 31, 31),
 #line 9305
-            .lvl = 59,
+            .lvl = 86,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -22827,7 +22827,7 @@
 #line 9314
             .iv = TRAINER_PARTY_IVS(31, 31, 31, 31, 31, 31),
 #line 9313
-            .lvl = 61,
+            .lvl = 88,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -22847,7 +22847,7 @@
 #line 9322
             .iv = TRAINER_PARTY_IVS(31, 31, 31, 31, 31, 31),
 #line 9321
-            .lvl = 63,
+            .lvl = 90,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -23613,7 +23613,7 @@
 #line 9632
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 9631
-            .lvl = 34,
+            .lvl = 41,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -23624,7 +23624,7 @@
 #line 9636
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 9635
-            .lvl = 34,
+            .lvl = 41,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -23656,7 +23656,7 @@
 #line 9649
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 9648
-            .lvl = 38,
+            .lvl = 45,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -23688,7 +23688,7 @@
 #line 9662
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 9661
-            .lvl = 33,
+            .lvl = 40,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -23699,7 +23699,7 @@
 #line 9666
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 9665
-            .lvl = 33,
+            .lvl = 40,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -23710,7 +23710,7 @@
 #line 9670
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 9669
-            .lvl = 33,
+            .lvl = 40,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -23785,7 +23785,7 @@
 #line 9700
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 9699
-            .lvl = 28,
+            .lvl = 20,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -23796,7 +23796,7 @@
 #line 9704
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 9703
-            .lvl = 28,
+            .lvl = 20,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -23807,7 +23807,7 @@
 #line 9708
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 9707
-            .lvl = 28,
+            .lvl = 20,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -23839,7 +23839,7 @@
 #line 9721
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 9720
-            .lvl = 24,
+            .lvl = 16,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -23850,7 +23850,7 @@
 #line 9725
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 9724
-            .lvl = 24,
+            .lvl = 16,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -23861,7 +23861,7 @@
 #line 9729
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 9728
-            .lvl = 24,
+            .lvl = 16,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -23872,7 +23872,7 @@
 #line 9733
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 9732
-            .lvl = 24,
+            .lvl = 16,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -23883,7 +23883,7 @@
 #line 9737
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 9736
-            .lvl = 24,
+            .lvl = 16,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -23915,7 +23915,7 @@
 #line 9750
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 9749
-            .lvl = 30,
+            .lvl = 22,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -23926,7 +23926,7 @@
 #line 9754
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 9753
-            .lvl = 30,
+            .lvl = 22,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -23958,7 +23958,7 @@
 #line 9767
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 9766
-            .lvl = 27,
+            .lvl = 19,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -23969,7 +23969,7 @@
 #line 9771
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 9770
-            .lvl = 27,
+            .lvl = 19,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -23980,7 +23980,7 @@
 #line 9775
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 9774
-            .lvl = 27,
+            .lvl = 19,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -23991,7 +23991,7 @@
 #line 9779
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 9778
-            .lvl = 27,
+            .lvl = 19,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -24023,7 +24023,7 @@
 #line 9792
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 9791
-            .lvl = 28,
+            .lvl = 20,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -24041,7 +24041,7 @@
 #line 9800
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 9799
-            .lvl = 28,
+            .lvl = 20,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -24059,7 +24059,7 @@
 #line 9808
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 9807
-            .lvl = 28,
+            .lvl = 20,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -24141,7 +24141,7 @@
 #line 9842
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 9841
-            .lvl = 31,
+            .lvl = 47,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -24152,7 +24152,7 @@
 #line 9846
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 9845
-            .lvl = 31,
+            .lvl = 47,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -24184,7 +24184,7 @@
 #line 9859
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 9858
-            .lvl = 30,
+            .lvl = 46,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -24195,7 +24195,7 @@
 #line 9863
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 9862
-            .lvl = 30,
+            .lvl = 46,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -24206,7 +24206,7 @@
 #line 9867
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 9866
-            .lvl = 30,
+            .lvl = 46,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -24400,7 +24400,7 @@
 #line 9943
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 9942
-            .lvl = 29,
+            .lvl = 21,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -24411,7 +24411,7 @@
 #line 9947
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 9946
-            .lvl = 29,
+            .lvl = 21,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -24443,7 +24443,7 @@
 #line 9960
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 9959
-            .lvl = 29,
+            .lvl = 21,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -24454,7 +24454,7 @@
 #line 9964
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 9963
-            .lvl = 29,
+            .lvl = 21,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -24465,7 +24465,7 @@
 #line 9968
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 9967
-            .lvl = 29,
+            .lvl = 21,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -24497,7 +24497,7 @@
 #line 9981
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 9980
-            .lvl = 28,
+            .lvl = 20,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -24508,7 +24508,7 @@
 #line 9985
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 9984
-            .lvl = 28,
+            .lvl = 20,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -24519,7 +24519,7 @@
 #line 9989
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 9988
-            .lvl = 28,
+            .lvl = 20,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -24551,7 +24551,7 @@
 #line 10002
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 10001
-            .lvl = 29,
+            .lvl = 21,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -24562,7 +24562,7 @@
 #line 10006
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 10005
-            .lvl = 29,
+            .lvl = 21,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -24594,7 +24594,7 @@
 #line 10019
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 10018
-            .lvl = 33,
+            .lvl = 25,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -24744,7 +24744,7 @@
 #line 10079
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
 #line 10078
-            .lvl = 45,
+            .lvl = 77,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -24762,7 +24762,7 @@
 #line 10087
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
 #line 10086
-            .lvl = 45,
+            .lvl = 77,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -24801,7 +24801,7 @@
 #line 10104
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 10103
-            .lvl = 24,
+            .lvl = 16,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -24812,7 +24812,7 @@
 #line 10108
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 10107
-            .lvl = 24,
+            .lvl = 16,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -24844,7 +24844,7 @@
 #line 10121
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 10120
-            .lvl = 29,
+            .lvl = 21,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -24855,7 +24855,7 @@
 #line 10125
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 10124
-            .lvl = 29,
+            .lvl = 21,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -24889,7 +24889,7 @@
 #line 10138
             .iv = TRAINER_PARTY_IVS(6, 6, 6, 6, 6, 6),
 #line 10137
-            .lvl = 29,
+            .lvl = 21,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -24902,7 +24902,7 @@
 #line 10142
             .iv = TRAINER_PARTY_IVS(6, 6, 6, 6, 6, 6),
 #line 10141
-            .lvl = 29,
+            .lvl = 21,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -24934,7 +24934,7 @@
 #line 10155
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 10154
-            .lvl = 29,
+            .lvl = 21,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -24945,7 +24945,7 @@
 #line 10159
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 10158
-            .lvl = 29,
+            .lvl = 21,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -24977,7 +24977,7 @@
 #line 10172
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 10171
-            .lvl = 30,
+            .lvl = 46,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -24988,7 +24988,7 @@
 #line 10176
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 10175
-            .lvl = 30,
+            .lvl = 46,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -25020,7 +25020,7 @@
 #line 10189
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 10188
-            .lvl = 33,
+            .lvl = 49,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -25031,7 +25031,7 @@
 #line 10193
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 10192
-            .lvl = 33,
+            .lvl = 49,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -26179,7 +26179,7 @@
 #line 10981
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 10980
-            .lvl = 33,
+            .lvl = 49,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -26190,7 +26190,7 @@
 #line 10985
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 10984
-            .lvl = 33,
+            .lvl = 49,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -26201,7 +26201,7 @@
 #line 10989
             .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
 #line 10988
-            .lvl = 34,
+            .lvl = 50,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -27847,7 +27847,7 @@
 #line 13640
             .iv = TRAINER_PARTY_IVS(7, 7, 7, 7, 7, 7),
 #line 13639
-            .lvl = 28,
+            .lvl = 20,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -27858,7 +27858,7 @@
 #line 13644
             .iv = TRAINER_PARTY_IVS(7, 7, 7, 7, 7, 7),
 #line 13643
-            .lvl = 28,
+            .lvl = 20,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -27869,7 +27869,7 @@
 #line 13648
             .iv = TRAINER_PARTY_IVS(7, 7, 7, 7, 7, 7),
 #line 13647
-            .lvl = 28,
+            .lvl = 20,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -27880,7 +27880,7 @@
 #line 13652
             .iv = TRAINER_PARTY_IVS(7, 7, 7, 7, 7, 7),
 #line 13651
-            .lvl = 28,
+            .lvl = 20,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -27912,7 +27912,7 @@
 #line 13665
             .iv = TRAINER_PARTY_IVS(7, 7, 7, 7, 7, 7),
 #line 13664
-            .lvl = 33,
+            .lvl = 25,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -27923,7 +27923,7 @@
 #line 13669
             .iv = TRAINER_PARTY_IVS(7, 7, 7, 7, 7, 7),
 #line 13668
-            .lvl = 33,
+            .lvl = 25,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -27955,7 +27955,7 @@
 #line 13682
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 13681
-            .lvl = 49,
+            .lvl = 41,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -27966,7 +27966,7 @@
 #line 13686
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 13685
-            .lvl = 49,
+            .lvl = 41,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -27998,7 +27998,7 @@
 #line 13699
             .iv = TRAINER_PARTY_IVS(7, 7, 7, 7, 7, 7),
 #line 13698
-            .lvl = 28,
+            .lvl = 20,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -28009,7 +28009,7 @@
 #line 13703
             .iv = TRAINER_PARTY_IVS(7, 7, 7, 7, 7, 7),
 #line 13702
-            .lvl = 28,
+            .lvl = 20,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -28020,7 +28020,7 @@
 #line 13707
             .iv = TRAINER_PARTY_IVS(7, 7, 7, 7, 7, 7),
 #line 13706
-            .lvl = 28,
+            .lvl = 20,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -28031,7 +28031,7 @@
 #line 13711
             .iv = TRAINER_PARTY_IVS(7, 7, 7, 7, 7, 7),
 #line 13710
-            .lvl = 28,
+            .lvl = 20,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -28063,7 +28063,7 @@
 #line 13724
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 13723
-            .lvl = 47,
+            .lvl = 39,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -28074,7 +28074,7 @@
 #line 13728
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 13727
-            .lvl = 47,
+            .lvl = 39,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -28085,7 +28085,7 @@
 #line 13732
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 13731
-            .lvl = 47,
+            .lvl = 39,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -28096,7 +28096,7 @@
 #line 13736
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 13735
-            .lvl = 47,
+            .lvl = 39,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -28128,7 +28128,7 @@
 #line 13749
             .iv = TRAINER_PARTY_IVS(7, 7, 7, 7, 7, 7),
 #line 13748
-            .lvl = 27,
+            .lvl = 19,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -28139,7 +28139,7 @@
 #line 13753
             .iv = TRAINER_PARTY_IVS(7, 7, 7, 7, 7, 7),
 #line 13752
-            .lvl = 27,
+            .lvl = 19,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -28150,7 +28150,7 @@
 #line 13757
             .iv = TRAINER_PARTY_IVS(7, 7, 7, 7, 7, 7),
 #line 13756
-            .lvl = 27,
+            .lvl = 19,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -28161,7 +28161,7 @@
 #line 13761
             .iv = TRAINER_PARTY_IVS(7, 7, 7, 7, 7, 7),
 #line 13760
-            .lvl = 27,
+            .lvl = 19,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -28172,7 +28172,7 @@
 #line 13765
             .iv = TRAINER_PARTY_IVS(7, 7, 7, 7, 7, 7),
 #line 13764
-            .lvl = 27,
+            .lvl = 19,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -28204,7 +28204,7 @@
 #line 13778
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 13777
-            .lvl = 47,
+            .lvl = 39,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -28215,7 +28215,7 @@
 #line 13782
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 13781
-            .lvl = 47,
+            .lvl = 39,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -28226,7 +28226,7 @@
 #line 13786
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 13785
-            .lvl = 47,
+            .lvl = 39,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -28237,7 +28237,7 @@
 #line 13790
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 13789
-            .lvl = 47,
+            .lvl = 39,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -28248,7 +28248,7 @@
 #line 13794
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 13793
-            .lvl = 47,
+            .lvl = 39,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -28280,7 +28280,7 @@
 #line 13807
             .iv = TRAINER_PARTY_IVS(14, 14, 14, 14, 14, 14),
 #line 13806
-            .lvl = 52,
+            .lvl = 44,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -28291,7 +28291,7 @@
 #line 13811
             .iv = TRAINER_PARTY_IVS(14, 14, 14, 14, 14, 14),
 #line 13810
-            .lvl = 52,
+            .lvl = 44,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -28302,7 +28302,7 @@
 #line 13815
             .iv = TRAINER_PARTY_IVS(14, 14, 14, 14, 14, 14),
 #line 13814
-            .lvl = 52,
+            .lvl = 44,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -28313,7 +28313,7 @@
 #line 13819
             .iv = TRAINER_PARTY_IVS(14, 14, 14, 14, 14, 14),
 #line 13818
-            .lvl = 52,
+            .lvl = 44,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -28324,7 +28324,7 @@
 #line 13823
             .iv = TRAINER_PARTY_IVS(14, 14, 14, 14, 14, 14),
 #line 13822
-            .lvl = 52,
+            .lvl = 44,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -28356,7 +28356,7 @@
 #line 13836
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 13835
-            .lvl = 47,
+            .lvl = 39,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -28367,7 +28367,7 @@
 #line 13840
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 13839
-            .lvl = 47,
+            .lvl = 39,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -28378,7 +28378,7 @@
 #line 13844
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 13843
-            .lvl = 47,
+            .lvl = 39,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -28389,7 +28389,7 @@
 #line 13848
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 13847
-            .lvl = 47,
+            .lvl = 39,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -28421,7 +28421,7 @@
 #line 13861
             .iv = TRAINER_PARTY_IVS(7, 7, 7, 7, 7, 7),
 #line 13860
-            .lvl = 32,
+            .lvl = 24,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -28432,7 +28432,7 @@
 #line 13865
             .iv = TRAINER_PARTY_IVS(7, 7, 7, 7, 7, 7),
 #line 13864
-            .lvl = 32,
+            .lvl = 24,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -28464,7 +28464,7 @@
 #line 13878
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 13877
-            .lvl = 49,
+            .lvl = 41,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -28475,7 +28475,7 @@
 #line 13882
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 13881
-            .lvl = 49,
+            .lvl = 41,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -28507,7 +28507,7 @@
 #line 13895
             .iv = TRAINER_PARTY_IVS(7, 7, 7, 7, 7, 7),
 #line 13894
-            .lvl = 30,
+            .lvl = 22,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -28518,7 +28518,7 @@
 #line 13899
             .iv = TRAINER_PARTY_IVS(7, 7, 7, 7, 7, 7),
 #line 13898
-            .lvl = 30,
+            .lvl = 22,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -28529,7 +28529,7 @@
 #line 13903
             .iv = TRAINER_PARTY_IVS(7, 7, 7, 7, 7, 7),
 #line 13902
-            .lvl = 30,
+            .lvl = 22,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -28561,7 +28561,7 @@
 #line 13916
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 13915
-            .lvl = 48,
+            .lvl = 40,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -28572,7 +28572,7 @@
 #line 13920
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 13919
-            .lvl = 48,
+            .lvl = 40,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -28583,7 +28583,7 @@
 #line 13924
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 13923
-            .lvl = 48,
+            .lvl = 40,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -28615,7 +28615,7 @@
 #line 13937
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 13936
-            .lvl = 49,
+            .lvl = 41,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -28626,7 +28626,7 @@
 #line 13941
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 13940
-            .lvl = 49,
+            .lvl = 41,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -28658,7 +28658,7 @@
 #line 13954
             .iv = TRAINER_PARTY_IVS(7, 7, 7, 7, 7, 7),
 #line 13953
-            .lvl = 30,
+            .lvl = 22,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -28669,7 +28669,7 @@
 #line 13958
             .iv = TRAINER_PARTY_IVS(7, 7, 7, 7, 7, 7),
 #line 13957
-            .lvl = 30,
+            .lvl = 22,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -28680,7 +28680,7 @@
 #line 13962
             .iv = TRAINER_PARTY_IVS(7, 7, 7, 7, 7, 7),
 #line 13961
-            .lvl = 30,
+            .lvl = 22,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -28712,7 +28712,7 @@
 #line 13975
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 13974
-            .lvl = 48,
+            .lvl = 40,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -28723,7 +28723,7 @@
 #line 13979
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 13978
-            .lvl = 48,
+            .lvl = 40,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -28734,7 +28734,7 @@
 #line 13983
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 13982
-            .lvl = 48,
+            .lvl = 40,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -28766,7 +28766,7 @@
 #line 13996
             .iv = TRAINER_PARTY_IVS(7, 7, 7, 7, 7, 7),
 #line 13995
-            .lvl = 32,
+            .lvl = 24,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -28777,7 +28777,7 @@
 #line 14000
             .iv = TRAINER_PARTY_IVS(7, 7, 7, 7, 7, 7),
 #line 13999
-            .lvl = 32,
+            .lvl = 24,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -28809,7 +28809,7 @@
 #line 14013
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 14012
-            .lvl = 49,
+            .lvl = 41,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -28820,7 +28820,7 @@
 #line 14017
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 14016
-            .lvl = 49,
+            .lvl = 41,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -28852,7 +28852,7 @@
 #line 14030
             .iv = TRAINER_PARTY_IVS(14, 14, 14, 14, 14, 14),
 #line 14029
-            .lvl = 54,
+            .lvl = 46,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -28863,7 +28863,7 @@
 #line 14034
             .iv = TRAINER_PARTY_IVS(14, 14, 14, 14, 14, 14),
 #line 14033
-            .lvl = 54,
+            .lvl = 46,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -28897,7 +28897,7 @@
 #line 14047
             .iv = TRAINER_PARTY_IVS(13, 13, 13, 13, 13, 13),
 #line 14046
-            .lvl = 33,
+            .lvl = 25,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -28910,7 +28910,7 @@
 #line 14051
             .iv = TRAINER_PARTY_IVS(13, 13, 13, 13, 13, 13),
 #line 14050
-            .lvl = 33,
+            .lvl = 25,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -28944,7 +28944,7 @@
 #line 14064
             .iv = TRAINER_PARTY_IVS(15, 15, 15, 15, 15, 15),
 #line 14063
-            .lvl = 51,
+            .lvl = 43,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -28957,7 +28957,7 @@
 #line 14068
             .iv = TRAINER_PARTY_IVS(15, 15, 15, 15, 15, 15),
 #line 14067
-            .lvl = 51,
+            .lvl = 43,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -28991,7 +28991,7 @@
 #line 14081
             .iv = TRAINER_PARTY_IVS(20, 20, 20, 20, 20, 20),
 #line 14080
-            .lvl = 56,
+            .lvl = 48,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -29004,7 +29004,7 @@
 #line 14085
             .iv = TRAINER_PARTY_IVS(20, 20, 20, 20, 20, 20),
 #line 14084
-            .lvl = 56,
+            .lvl = 48,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -29036,7 +29036,7 @@
 #line 14098
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 14097
-            .lvl = 48,
+            .lvl = 40,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -29047,7 +29047,7 @@
 #line 14102
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 14101
-            .lvl = 48,
+            .lvl = 40,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -29058,7 +29058,7 @@
 #line 14106
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 14105
-            .lvl = 48,
+            .lvl = 40,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -29090,7 +29090,7 @@
 #line 14119
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 14118
-            .lvl = 49,
+            .lvl = 41,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -29101,7 +29101,7 @@
 #line 14123
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 14122
-            .lvl = 49,
+            .lvl = 41,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -29133,7 +29133,7 @@
 #line 14136
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 14135
-            .lvl = 49,
+            .lvl = 41,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -29144,7 +29144,7 @@
 #line 14140
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 14139
-            .lvl = 49,
+            .lvl = 41,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -29176,7 +29176,7 @@
 #line 14153
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 14152
-            .lvl = 49,
+            .lvl = 41,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -29187,7 +29187,7 @@
 #line 14157
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 14156
-            .lvl = 49,
+            .lvl = 41,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -29219,7 +29219,7 @@
 #line 14170
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 14169
-            .lvl = 49,
+            .lvl = 41,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -29230,7 +29230,7 @@
 #line 14174
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 14173
-            .lvl = 49,
+            .lvl = 41,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -29262,7 +29262,7 @@
 #line 14187
             .iv = TRAINER_PARTY_IVS(7, 7, 7, 7, 7, 7),
 #line 14186
-            .lvl = 28,
+            .lvl = 20,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -29273,7 +29273,7 @@
 #line 14191
             .iv = TRAINER_PARTY_IVS(7, 7, 7, 7, 7, 7),
 #line 14190
-            .lvl = 28,
+            .lvl = 20,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -29284,7 +29284,7 @@
 #line 14195
             .iv = TRAINER_PARTY_IVS(7, 7, 7, 7, 7, 7),
 #line 14194
-            .lvl = 28,
+            .lvl = 20,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -29295,7 +29295,7 @@
 #line 14199
             .iv = TRAINER_PARTY_IVS(7, 7, 7, 7, 7, 7),
 #line 14198
-            .lvl = 28,
+            .lvl = 20,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -29327,7 +29327,7 @@
 #line 14212
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 14211
-            .lvl = 47,
+            .lvl = 39,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -29338,7 +29338,7 @@
 #line 14216
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 14215
-            .lvl = 47,
+            .lvl = 39,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -29349,7 +29349,7 @@
 #line 14220
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 14219
-            .lvl = 47,
+            .lvl = 39,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -29360,7 +29360,7 @@
 #line 14224
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 14223
-            .lvl = 47,
+            .lvl = 39,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -29392,7 +29392,7 @@
 #line 14237
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 14236
-            .lvl = 49,
+            .lvl = 65,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -29403,7 +29403,7 @@
 #line 14241
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 14240
-            .lvl = 49,
+            .lvl = 65,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -29435,7 +29435,7 @@
 #line 14254
             .iv = TRAINER_PARTY_IVS(14, 14, 14, 14, 14, 14),
 #line 14253
-            .lvl = 52,
+            .lvl = 68,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -29446,7 +29446,7 @@
 #line 14258
             .iv = TRAINER_PARTY_IVS(14, 14, 14, 14, 14, 14),
 #line 14257
-            .lvl = 52,
+            .lvl = 68,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -29457,7 +29457,7 @@
 #line 14262
             .iv = TRAINER_PARTY_IVS(14, 14, 14, 14, 14, 14),
 #line 14261
-            .lvl = 52,
+            .lvl = 68,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -29468,7 +29468,7 @@
 #line 14266
             .iv = TRAINER_PARTY_IVS(14, 14, 14, 14, 14, 14),
 #line 14265
-            .lvl = 52,
+            .lvl = 68,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -29500,7 +29500,7 @@
 #line 14279
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 14278
-            .lvl = 49,
+            .lvl = 65,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -29511,7 +29511,7 @@
 #line 14283
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 14282
-            .lvl = 49,
+            .lvl = 65,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -29543,7 +29543,7 @@
 #line 14296
             .iv = TRAINER_PARTY_IVS(14, 14, 14, 14, 14, 14),
 #line 14295
-            .lvl = 54,
+            .lvl = 70,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -29554,7 +29554,7 @@
 #line 14300
             .iv = TRAINER_PARTY_IVS(14, 14, 14, 14, 14, 14),
 #line 14299
-            .lvl = 54,
+            .lvl = 70,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -29586,7 +29586,7 @@
 #line 14313
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 14312
-            .lvl = 47,
+            .lvl = 63,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -29597,7 +29597,7 @@
 #line 14317
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 14316
-            .lvl = 47,
+            .lvl = 63,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -29608,7 +29608,7 @@
 #line 14321
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 14320
-            .lvl = 47,
+            .lvl = 63,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -29619,7 +29619,7 @@
 #line 14325
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 14324
-            .lvl = 47,
+            .lvl = 63,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -29630,7 +29630,7 @@
 #line 14329
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 14328
-            .lvl = 47,
+            .lvl = 63,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -29641,7 +29641,7 @@
 #line 14333
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 14332
-            .lvl = 47,
+            .lvl = 63,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -29673,7 +29673,7 @@
 #line 14346
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 14345
-            .lvl = 50,
+            .lvl = 66,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -29705,7 +29705,7 @@
 #line 14359
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 14358
-            .lvl = 50,
+            .lvl = 66,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -29716,7 +29716,7 @@
 #line 14363
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 14362
-            .lvl = 50,
+            .lvl = 66,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -29748,7 +29748,7 @@
 #line 14376
             .iv = TRAINER_PARTY_IVS(14, 14, 14, 14, 14, 14),
 #line 14375
-            .lvl = 55,
+            .lvl = 71,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -29759,7 +29759,7 @@
 #line 14380
             .iv = TRAINER_PARTY_IVS(14, 14, 14, 14, 14, 14),
 #line 14379
-            .lvl = 55,
+            .lvl = 71,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -29791,7 +29791,7 @@
 #line 14393
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 14392
-            .lvl = 50,
+            .lvl = 66,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -29825,7 +29825,7 @@
 #line 14406
             .iv = TRAINER_PARTY_IVS(15, 15, 15, 15, 15, 15),
 #line 14405
-            .lvl = 50,
+            .lvl = 66,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -29838,7 +29838,7 @@
 #line 14410
             .iv = TRAINER_PARTY_IVS(15, 15, 15, 15, 15, 15),
 #line 14409
-            .lvl = 50,
+            .lvl = 66,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -29872,7 +29872,7 @@
 #line 14423
             .iv = TRAINER_PARTY_IVS(20, 20, 20, 20, 20, 20),
 #line 14422
-            .lvl = 55,
+            .lvl = 71,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -29885,7 +29885,7 @@
 #line 14427
             .iv = TRAINER_PARTY_IVS(20, 20, 20, 20, 20, 20),
 #line 14426
-            .lvl = 55,
+            .lvl = 71,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -29919,7 +29919,7 @@
 #line 14440
             .iv = TRAINER_PARTY_IVS(15, 15, 15, 15, 15, 15),
 #line 14439
-            .lvl = 50,
+            .lvl = 66,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -29932,7 +29932,7 @@
 #line 14444
             .iv = TRAINER_PARTY_IVS(15, 15, 15, 15, 15, 15),
 #line 14443
-            .lvl = 50,
+            .lvl = 66,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -29966,7 +29966,7 @@
 #line 14457
             .iv = TRAINER_PARTY_IVS(20, 20, 20, 20, 20, 20),
 #line 14456
-            .lvl = 55,
+            .lvl = 71,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -29979,7 +29979,7 @@
 #line 14461
             .iv = TRAINER_PARTY_IVS(20, 20, 20, 20, 20, 20),
 #line 14460
-            .lvl = 55,
+            .lvl = 71,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -30013,7 +30013,7 @@
 #line 14474
             .iv = TRAINER_PARTY_IVS(21, 21, 21, 21, 21, 21),
 #line 14473
-            .lvl = 50,
+            .lvl = 66,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -30026,7 +30026,7 @@
 #line 14478
             .iv = TRAINER_PARTY_IVS(21, 21, 21, 21, 21, 21),
 #line 14477
-            .lvl = 50,
+            .lvl = 66,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -30060,7 +30060,7 @@
 #line 14491
             .iv = TRAINER_PARTY_IVS(26, 26, 26, 26, 26, 26),
 #line 14490
-            .lvl = 55,
+            .lvl = 71,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -30073,7 +30073,7 @@
 #line 14495
             .iv = TRAINER_PARTY_IVS(26, 26, 26, 26, 26, 26),
 #line 14494
-            .lvl = 55,
+            .lvl = 71,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -30107,7 +30107,7 @@
 #line 14508
             .iv = TRAINER_PARTY_IVS(21, 21, 21, 21, 21, 21),
 #line 14507
-            .lvl = 50,
+            .lvl = 66,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -30120,7 +30120,7 @@
 #line 14512
             .iv = TRAINER_PARTY_IVS(21, 21, 21, 21, 21, 21),
 #line 14511
-            .lvl = 50,
+            .lvl = 66,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -30154,7 +30154,7 @@
 #line 14525
             .iv = TRAINER_PARTY_IVS(26, 26, 26, 26, 26, 26),
 #line 14524
-            .lvl = 55,
+            .lvl = 71,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -30167,7 +30167,7 @@
 #line 14529
             .iv = TRAINER_PARTY_IVS(26, 26, 26, 26, 26, 26),
 #line 14528
-            .lvl = 55,
+            .lvl = 71,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -30201,7 +30201,7 @@
 #line 14542
             .iv = TRAINER_PARTY_IVS(15, 15, 15, 15, 15, 15),
 #line 14541
-            .lvl = 51,
+            .lvl = 67,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -30214,7 +30214,7 @@
 #line 14546
             .iv = TRAINER_PARTY_IVS(15, 15, 15, 15, 15, 15),
 #line 14545
-            .lvl = 51,
+            .lvl = 67,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -30248,7 +30248,7 @@
 #line 14559
             .iv = TRAINER_PARTY_IVS(20, 20, 20, 20, 20, 20),
 #line 14558
-            .lvl = 56,
+            .lvl = 72,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -30261,7 +30261,7 @@
 #line 14563
             .iv = TRAINER_PARTY_IVS(20, 20, 20, 20, 20, 20),
 #line 14562
-            .lvl = 56,
+            .lvl = 72,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -30293,7 +30293,7 @@
 #line 14576
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 14575
-            .lvl = 47,
+            .lvl = 63,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -30304,7 +30304,7 @@
 #line 14580
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 14579
-            .lvl = 47,
+            .lvl = 63,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -30315,7 +30315,7 @@
 #line 14584
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 14583
-            .lvl = 47,
+            .lvl = 63,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -30347,7 +30347,7 @@
 #line 14597
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 14596
-            .lvl = 49,
+            .lvl = 65,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -30358,7 +30358,7 @@
 #line 14601
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 14600
-            .lvl = 49,
+            .lvl = 65,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -30526,7 +30526,7 @@
 #line 14669
             .iv = TRAINER_PARTY_IVS(7, 7, 7, 7, 7, 7),
 #line 14668
-            .lvl = 30,
+            .lvl = 22,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -30537,7 +30537,7 @@
 #line 14673
             .iv = TRAINER_PARTY_IVS(7, 7, 7, 7, 7, 7),
 #line 14672
-            .lvl = 30,
+            .lvl = 22,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -30569,7 +30569,7 @@
 #line 14686
             .iv = TRAINER_PARTY_IVS(14, 14, 14, 14, 14, 14),
 #line 14685
-            .lvl = 55,
+            .lvl = 47,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -30580,7 +30580,7 @@
 #line 14690
             .iv = TRAINER_PARTY_IVS(14, 14, 14, 14, 14, 14),
 #line 14689
-            .lvl = 55,
+            .lvl = 47,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -31985,7 +31985,7 @@
 #line 15274
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 15273
-            .lvl = 49,
+            .lvl = 65,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -31996,7 +31996,7 @@
 #line 15278
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 15277
-            .lvl = 49,
+            .lvl = 65,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -32028,7 +32028,7 @@
 #line 15291
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 15290
-            .lvl = 49,
+            .lvl = 65,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -32039,7 +32039,7 @@
 #line 15295
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 15294
-            .lvl = 49,
+            .lvl = 65,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -32071,7 +32071,7 @@
 #line 15308
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 15307
-            .lvl = 49,
+            .lvl = 65,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -32082,7 +32082,7 @@
 #line 15312
             .iv = TRAINER_PARTY_IVS(9, 9, 9, 9, 9, 9),
 #line 15311
-            .lvl = 49,
+            .lvl = 65,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             },
@@ -32120,7 +32120,7 @@
 #line 15746
             .ability = ABILITY_THICK_FAT,
 #line 15745
-            .lvl = 47,
+            .lvl = 39,
 #line 15747
             .nature = NATURE_ADAMANT,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
@@ -32145,7 +32145,7 @@
 #line 15757
             .ability = ABILITY_NO_GUARD,
 #line 15756
-            .lvl = 48,
+            .lvl = 40,
 #line 15758
             .nature = NATURE_ADAMANT,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
@@ -32191,7 +32191,7 @@
 #line 15777
             .ability = ABILITY_STURDY,
 #line 15776
-            .lvl = 49,
+            .lvl = 41,
 #line 15778
             .nature = NATURE_MODEST,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
@@ -32216,7 +32216,7 @@
 #line 15788
             .ability = ABILITY_VOLT_ABSORB,
 #line 15787
-            .lvl = 49,
+            .lvl = 41,
 #line 15789
             .nature = NATURE_MODEST,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
@@ -32241,7 +32241,7 @@
 #line 15799
             .ability = ABILITY_WATER_ABSORB,
 #line 15798
-            .lvl = 48,
+            .lvl = 40,
 #line 15800
             .nature = NATURE_MODEST,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
@@ -32287,7 +32287,7 @@
 #line 15819
             .ability = ABILITY_STURDY,
 #line 15818
-            .lvl = 50,
+            .lvl = 42,
 #line 15820
             .nature = NATURE_IMPISH,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
@@ -32312,7 +32312,7 @@
 #line 15830
             .ability = ABILITY_LEVITATE,
 #line 15829
-            .lvl = 50,
+            .lvl = 42,
 #line 15831
             .nature = NATURE_MODEST,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
@@ -32337,7 +32337,7 @@
 #line 15841
             .ability = ABILITY_TECHNICIAN,
 #line 15840
-            .lvl = 49,
+            .lvl = 41,
 #line 15842
             .nature = NATURE_ADAMANT,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
@@ -32383,7 +32383,7 @@
 #line 15861
             .ability = ABILITY_LEVITATE,
 #line 15860
-            .lvl = 51,
+            .lvl = 43,
 #line 15862
             .nature = NATURE_RELAXED,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
@@ -32408,7 +32408,7 @@
 #line 15872
             .ability = ABILITY_WATER_BUBBLE,
 #line 15871
-            .lvl = 51,
+            .lvl = 43,
 #line 15873
             .nature = NATURE_BRAVE,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
@@ -32433,7 +32433,7 @@
 #line 15883
             .ability = ABILITY_ADAPTABILITY,
 #line 15882
-            .lvl = 51,
+            .lvl = 43,
 #line 15884
             .nature = NATURE_BRAVE,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
@@ -32458,7 +32458,7 @@
 #line 15894
             .ability = ABILITY_SUCTION_CUPS,
 #line 15893
-            .lvl = 50,
+            .lvl = 42,
 #line 15895
             .nature = NATURE_QUIET,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
@@ -32504,7 +32504,7 @@
 #line 15914
             .ability = ABILITY_DRIZZLE,
 #line 15913
-            .lvl = 52,
+            .lvl = 44,
 #line 15915
             .nature = NATURE_MODEST,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
@@ -32529,7 +32529,7 @@
 #line 15925
             .ability = ABILITY_SWIFT_SWIM,
 #line 15924
-            .lvl = 52,
+            .lvl = 44,
 #line 15926
             .nature = NATURE_MODEST,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
@@ -32554,7 +32554,7 @@
 #line 15936
             .ability = ABILITY_TECHNICIAN,
 #line 15935
-            .lvl = 51,
+            .lvl = 43,
 #line 15937
             .nature = NATURE_ADAMANT,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
@@ -32579,7 +32579,7 @@
 #line 15947
             .ability = ABILITY_VOLT_ABSORB,
 #line 15946
-            .lvl = 51,
+            .lvl = 43,
 #line 15948
             .nature = NATURE_MODEST,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
@@ -32625,7 +32625,7 @@
 #line 15967
             .ability = ABILITY_DRIZZLE,
 #line 15966
-            .lvl = 53,
+            .lvl = 45,
 #line 15968
             .nature = NATURE_TIMID,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
@@ -32650,7 +32650,7 @@
 #line 15978
             .ability = ABILITY_STAMINA,
 #line 15977
-            .lvl = 53,
+            .lvl = 45,
 #line 15979
             .nature = NATURE_MODEST,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
@@ -32675,7 +32675,7 @@
 #line 15989
             .ability = ABILITY_SWIFT_SWIM,
 #line 15988
-            .lvl = 53,
+            .lvl = 45,
 #line 15990
             .nature = NATURE_MODEST,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
@@ -32700,7 +32700,7 @@
 #line 16000
             .ability = ABILITY_GUTS,
 #line 15999
-            .lvl = 52,
+            .lvl = 44,
 #line 16001
             .nature = NATURE_ADAMANT,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
@@ -32725,7 +32725,7 @@
 #line 16011
             .ability = ABILITY_WATER_ABSORB,
 #line 16010
-            .lvl = 52,
+            .lvl = 44,
 #line 16012
             .nature = NATURE_BOLD,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
@@ -32750,7 +32750,7 @@
 #line 16022
             .ability = ABILITY_STEELWORKER,
 #line 16021
-            .lvl = 54,
+            .lvl = 46,
 #line 16023
             .nature = NATURE_JOLLY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
@@ -32796,7 +32796,7 @@
 #line 16042
             .ability = ABILITY_THICK_FAT,
 #line 16041
-            .lvl = 47,
+            .lvl = 39,
 #line 16043
             .nature = NATURE_ADAMANT,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
@@ -32821,7 +32821,7 @@
 #line 16053
             .ability = ABILITY_NO_GUARD,
 #line 16052
-            .lvl = 48,
+            .lvl = 40,
 #line 16054
             .nature = NATURE_ADAMANT,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
@@ -32867,7 +32867,7 @@
 #line 16074
             .ability = ABILITY_STURDY,
 #line 16073
-            .lvl = 50,
+            .lvl = 42,
 #line 16075
             .nature = NATURE_IMPISH,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
@@ -32892,7 +32892,7 @@
 #line 16085
             .ability = ABILITY_LEVITATE,
 #line 16084
-            .lvl = 50,
+            .lvl = 42,
 #line 16086
             .nature = NATURE_MODEST,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
@@ -32917,7 +32917,7 @@
 #line 16096
             .ability = ABILITY_TECHNICIAN,
 #line 16095
-            .lvl = 49,
+            .lvl = 41,
 #line 16097
             .nature = NATURE_ADAMANT,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
