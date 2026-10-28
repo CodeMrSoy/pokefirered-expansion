@@ -113,3 +113,28 @@ SaffronCity_Text_HowCanClubNotRecognizeLance::
     .string "He's cool, and yet passionate!\l"
     .string "He's the greatest, LANCE!$"
 
+
+
+SaffronCity_Text_RockHammerOffer::
+    .string "I keep the DOJO's paths clear.\p"
+    .string "Loose rocks are no match for\n"
+    .string "my ROCK HAMMER!\p"
+    .string "I've got a spare.\n"
+    .string "Take it on your travels!$"
+
+SaffronCity_Text_RockHammerNeedsBadge::
+    .string "Beat SABRINA and earn the\n"
+    .string "MARSHBADGE to use that hammer.\p"
+    .string "Then face a cracked rock and\n"
+    .string "press A to smash it.\p"
+    .string "No POKéMON needs to learn a move!$"
+
+SaffronCity_Text_RockHammerReady::
+    .string "You've got the MARSHBADGE!\n"
+    .string "That ROCK HAMMER is ready to go.\p"
+    .string "Face a cracked rock and press A.\n"
+    .string "Keep the hammer for your travels!$"
+
+SaffronCity_Text_RockHammerNoRoom::
+    .string "Your BAG is full. Make room,\n"
+    .string "then come back for the hammer.$"

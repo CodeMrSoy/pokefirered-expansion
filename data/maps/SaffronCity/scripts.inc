@@ -122,3 +122,30 @@ SaffronCity_EventScript_SilphProductSign::
 SaffronCity_EventScript_TrainerFanClubSign::
 	msgbox SaffronCity_Text_TrainerFanClubSign, MSGBOX_SIGN
 	end
+
+
+SaffronCity_EventScript_RockHammerWorker::
+	goto_if_questlog EventScript_ReleaseEnd
+	lock
+	faceplayer
+	checkitem ITEM_ROCK_HAMMER, 1
+	goto_if_eq VAR_RESULT, TRUE, SaffronCity_EventScript_RockHammerOwned
+	msgbox SaffronCity_Text_RockHammerOffer
+	giveitem ITEM_ROCK_HAMMER, 1
+	goto_if_eq VAR_RESULT, FALSE, SaffronCity_EventScript_RockHammerNoRoom
+SaffronCity_EventScript_RockHammerOwned::
+	setflag FLAG_GOT_HM06
+	goto_if_set FLAG_BADGE06_GET, SaffronCity_EventScript_RockHammerReady
+	msgbox SaffronCity_Text_RockHammerNeedsBadge
+	release
+	end
+
+SaffronCity_EventScript_RockHammerReady::
+	msgbox SaffronCity_Text_RockHammerReady
+	release
+	end
+
+SaffronCity_EventScript_RockHammerNoRoom::
+	msgbox SaffronCity_Text_RockHammerNoRoom
+	release
+	end

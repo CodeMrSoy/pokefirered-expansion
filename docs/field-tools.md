@@ -1,4 +1,4 @@
-# QOL Field Item Case
+# Quantum Field Item Case
 
 Seven traversal tools live inside one reusable F.I. Case in Key Items. Each tool
 still requires its original reward and badge; no party move/species is needed.
@@ -11,8 +11,8 @@ Original battle moves remain available and can be forgotten normally.
 | Surf | Wailmer Wailer | Soul | Safari Zone Secret House |
 | Strength | Power Gloves | Rainbow | Return the Warden's Gold Teeth |
 | Flash | Lantern | Boulder | Route 2 aide, ten caught/owned species |
-| Rock Smash | Rock Hammer | Marsh | Celadon Department Store, 4F |
-| Waterfall | Basculegion Bait | Volcano | Celadon Department Store, 4F |
+| Rock Smash | Rock Hammer | Marsh | Worker southeast of Saffron Fighting Dojo (42, 16) |
+| Waterfall | Basculegion Bait | Volcano | Planned for Corvala, Vidra; placement deferred |
 
 
 The first tool automatically adds the F.I. Case. Further tools occupy no extra
@@ -67,13 +67,21 @@ tools. Acquiring the first tool with no Key Item space still refuses safely;
 subsequent rewards fit inside an existing case even with a full pocket. Gift
 text names the F.I. Case. Captain/Warden reward flags and Gold Teeth consumption
 advance only on a successful grant. The aide still needs ten caught species.
-Retired Sevii HM06/HM07 gifts remain replaced by free Celadon 4F purchases.
+The retired Sevii rewards are not active acquisition paths. The earlier free
+Celadon 4F replacements were removed when the department store was relocated
+and its stock specialized. Rock Hammer now comes from a stationary worker
+southeast of Saffron's Fighting Dojo, available both during and after the Rocket
+occupation. He gives it before or after Sabrina, but the Marsh Badge is still
+required to use it. Failed grants can be retried; existing owners get advice
+without another tool or case. `FLAG_GOT_HM06` remains the reward flag.
+Basculegion Bait is reserved for Corvala later; this update does not place it.
 
 Validation: field_item_case_emulator covers real Bag/back navigation, direct
 Select and multi-item wheel access, seven preview tile buffers, uncollected and
 badge locks, real Lantern use, and flash-save/Continue ownership. The field tool
 suite covers all seven traversal actions, migration/full pockets, legacy TMs,
 field banners, move forgetting, menus, and saving. Waterfall uses a RAM fixture
-because retained Kanto maps have none. The reward suite exercises all five NPC
-conversations and both actual shop purchases. All are in the QOL regression
-runner. Last-usable-Pokémon, Egg, Mail and held-item release protections remain.
+because retained Kanto maps have none. The original reward suite documents the earlier five NPC conversations and
+retired Celadon shop setup. `tests/saffron_rock_hammer_emulator.py` validates the
+current Saffron source through real interactions, full-bag retry, both Rocket
+states, Sabrina's gate, actual rock clearing, save/reload and dialogue widths. Last-usable-Pokémon, Egg, Mail and held-item release protections remain.
