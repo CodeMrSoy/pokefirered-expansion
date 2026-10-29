@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
-"""Import Cody's supplied 40x40 atlas into FireRed's native frame layouts.
+"""Import supplied Quantum character 40x40 atlas into FireRed's native frame layouts.
 
+Defaults to Cody; pass ben or brandon to import their atlases.
 Only overworld sheets/palettes and the map icon are written. The trainer
 portrait and battle back sprite have separate palettes and remain untouched.
 """
+import argparse
 import json
 from pathlib import Path
 
@@ -11,11 +13,14 @@ import numpy as np
 from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
-DEST = ROOT / 'graphics/avatars/cody'
-SOURCE = DEST / 'source/overworld'
 
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("character", nargs="?", default="cody", choices=("cody", "ben", "brandon"))
+    character = parser.parse_args().character
+    DEST = ROOT / "graphics/avatars" / character
+    SOURCE = DEST / "source/overworld"
     metadata = json.loads((SOURCE / 'atlas.json').read_text())
     atlas = Image.open(SOURCE / 'atlas.png').convert('RGBA')
     assert atlas.size == (metadata['size']['w'], metadata['size']['h'])

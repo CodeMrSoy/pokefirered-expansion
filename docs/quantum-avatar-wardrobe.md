@@ -86,3 +86,7 @@ for the revised FireRed-scale walking art, aligned action silhouettes, trainer
 and trainer ground shadows. Cody retains his original trainer artwork and palette. This command
 reruns the importer before applying the corrections so exports are repeatable.
 The revised walking silhouettes use Red's 19-pixel visible height and baseline.
+
+## Ben and Brandon supplied overworld atlases
+
+Run `python3 tools/import_cody_overworld.py ben` or `python3 tools/import_cody_overworld.py brandon` to rebuild the supplied atlases in each character’s `source/overworld/` folder. This uses Cody’s native layout adapter and shared 15-visible-color palette. Trainer front and battle back artwork stay separate. Missing N/A throw directions and VS Seeker poses retain legacy artwork. Fishing is fitted to 32×32; surfing exports the rider for the engine mount effect.
