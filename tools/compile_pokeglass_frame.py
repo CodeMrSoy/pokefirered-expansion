@@ -5,11 +5,31 @@ root=Path(__file__).resolve().parents[1]
 pixels=[[13]*240 for _ in range(160)]
 def rect(c,x,y,w,h):
  for row in range(y,y+h): pixels[row][x:x+w]=[c]*w
-rect(2,2,2,236,156)
+def rounded(c,x,y,w,h,r):
+ for yy in range(h):
+  for xx in range(w):
+   dx=max(r-xx,xx-(w-1-r),0)
+   dy=max(r-yy,yy-(h-1-r),0)
+   if dx*dx+dy*dy<=r*r: pixels[y+yy][x+xx]=c
+# Brushed rim, charcoal body, recessed glass and small hardware details.
+pixels=[[0]*240 for _ in range(160)]
+rounded(1,0,0,240,160,9)
+rounded(12,1,1,238,158,8)
+rounded(2,2,2,236,156,7)
+rounded(1,5,6,230,148,4)
 rect(4,8,8,224,144)
-for x in (0,224):
- for y in (0,152): rect(10,x,y,16,8)
-rect(8,8,6,224,1)
+rect(14,15,3,88,1)
+rect(1,106,3,12,2)
+rect(12,108,3,8,1)
+rect(1,122,2,5,4)
+rect(5,123,3,3,2)
+rect(8,124,3,1,1)
+rect(6,133,3,2,2)
+rounded(1,109,154,22,4,2)
+rect(14,114,155,12,1)
+rect(14,0,43,1,12)
+rect(14,0,60,1,18)
+
 def pack(tx,ty,frame=False):
  return bytes((0 if frame and 8<=tx*8+x<232 and 8<=ty*8+y<152 else pixels[ty*8+y][tx*8+x]) | ((0 if frame and 8<=tx*8+x+1<232 and 8<=ty*8+y<152 else pixels[ty*8+y][tx*8+x+1])<<4) for y in range(8) for x in range(0,8,2))
 shell=b''.join(pack(x,y) for y in range(20) for x in range(30))
