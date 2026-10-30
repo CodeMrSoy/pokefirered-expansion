@@ -40,7 +40,7 @@ def ready(name):
   p=struct.unpack('<I',m.read(m.symbols['sOptionMenuPtr'],4))[0]
   return m.read(p+0x10,1)[0]>=2
  return True
-shell=np.zeros((160,240),bool);shell[10:150,12:228]=True;shell[23:136,20:220]=False
+shell=np.zeros((160,240),bool);shell[:,:]=True;shell[8:152,8:232]=False
 results=[]
 def trace(label,key,predicate,embedded=False,reference=None,maximum=900):
  frames=[];black=[];changed=[];stages=[];last=None;streak=0

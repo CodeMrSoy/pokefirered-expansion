@@ -51,8 +51,8 @@ static void DrawGlassStorage(u8 taskId)
     struct Pokemon mon;
     DrawTabletShell((u8 *)GetWindowAttribute(sHubWindow, WINDOW_TILE_DATA));
     // Quiet the scenery behind dense management text without another buffer.
-    SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(16, 2));
-    HubRect(4, 17, 15, 191, 113);
+    SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(14, 4));
+    HubRect(4, 8, 8, 224, 144);
     if (d[9] == 2)
     {
         GlassReadSlot(d[3], d[5], d[4], &mon);
@@ -66,7 +66,7 @@ static void DrawGlassStorage(u8 taskId)
     }
     if (d[9] == 1)
     {
-        StatsText(18, 16, COMPOUND_STRING("Give held item"));
+        StatsText(16, 14, COMPOUND_STRING("Give held item"));
         for (row = 0; row < 6; row++)
         {
             u16 index = d[10] / 6 * 6 + row, item = GlassBagItem(index);
@@ -78,18 +78,18 @@ static void DrawGlassStorage(u8 taskId)
         StatsText(18, 113, COMPOUND_STRING("A:Give  B:Cancel"));
         goto copy;
     }
-    StatsText(18, 16, COMPOUND_STRING("PARTY"));
-    StatsText(104, 16, gPokemonStoragePtr->boxNames[d[0]]);
-    StatsNumber(192, 16, d[0] + 1);
-    StatsText(193, 16, COMPOUND_STRING("/6"));
+    StatsText(16, 14, COMPOUND_STRING("PARTY"));
+    StatsText(128, 14, gPokemonStoragePtr->boxNames[d[0]]);
+    StatsNumber(211, 14, d[0] + 1);
+    StatsText(212, 14, COMPOUND_STRING("/6"));
     for (side = 0; side < 2; side++)
         for (row = 0; row < PARTY_SIZE; row++)
         {
             u8 index = side ? d[1] * PARTY_SIZE + row : row;
-            u8 x = side ? 105 : 18, y = 27 + row * 11;
+            u8 x = side ? 128 : 16, y = 30 + row * 14;
             bool8 selected = d[2] == side * PARTY_SIZE + row;
             bool8 source = d[6] && d[3] == !side && d[4] == index && (d[3] || d[5] == d[0]);
-            HubRect(selected ? 5 : 4, x - 2, y, side ? 103 : 82, 11);
+            HubRect(selected ? 5 : 4, x - 2, y, side ? 100 : 108, 14);
             GlassReadSlot(!side, d[0], index, &mon);
             if (GetMonData(&mon, MON_DATA_SANITY_HAS_SPECIES))
             {
@@ -100,29 +100,29 @@ static void DrawGlassStorage(u8 taskId)
             StatsText(x + 7, y, text);
             if (source) StatsText(x, y, COMPOUND_STRING(">"));
         }
-    HubRect(6, 17, 93, 191, 1);
-    StatsText(18, 94, COMPOUND_STRING("Page"));
-    StatsNumber(52, 94, d[1] + 1);
-    StatsText(53, 94, COMPOUND_STRING("/5"));
-    StatsNumber(186, 94, CountMonsInBox(d[0]));
-    StatsText(187, 94, COMPOUND_STRING("/30"));
+    HubRect(6, 12, 113, 216, 1);
+    StatsText(18, 114, COMPOUND_STRING("Page"));
+    StatsNumber(52, 114, d[1] + 1);
+    StatsText(53, 114, COMPOUND_STRING("/5"));
+    StatsNumber(186, 114, CountMonsInBox(d[0]));
+    StatsText(187, 114, COMPOUND_STRING("/30"));
     if (d[7] == 1)
-        StatsText(18, 105, COMPOUND_STRING("Keep one able POKéMON."));
+        StatsText(16, 126, COMPOUND_STRING("Keep one able POKéMON."));
     else if (d[7] == 2)
-        StatsText(18, 105, COMPOUND_STRING("Remove MAIL first."));
+        StatsText(16, 126, COMPOUND_STRING("Remove MAIL first."));
     else if (d[7] == 3)
-        StatsText(18, 105, COMPOUND_STRING("BAG full. Item unchanged."));
+        StatsText(16, 126, COMPOUND_STRING("BAG full. Item unchanged."));
     else if (d[7] == 4)
-        StatsText(18, 105, COMPOUND_STRING("Item moved to BAG."));
+        StatsText(16, 126, COMPOUND_STRING("Item moved to BAG."));
     else if (d[7] == 5)
-        StatsText(18, 105, COMPOUND_STRING("Held item given."));
+        StatsText(16, 126, COMPOUND_STRING("Held item given."));
     else if (d[7] == 6)
-        StatsText(18, 105, COMPOUND_STRING("Eggs cannot be released."));
+        StatsText(16, 126, COMPOUND_STRING("Eggs cannot be released."));
     else if (d[6])
-        StatsText(18, 105, COMPOUND_STRING("A:Place SELECT:Release B:Cancel"));
+        StatsText(16, 126, COMPOUND_STRING("A:Place SELECT:Release B:Cancel"));
     else
-        StatsText(18, 105, COMPOUND_STRING("A:Move  SELECT:Held item"));
-    StatsText(18, 115, COMPOUND_STRING("L/R:Box START:Page B:Back"));
+        StatsText(16, 126, COMPOUND_STRING("A:Move  SELECT:Held item"));
+    StatsText(16, 138, COMPOUND_STRING("L/R:Box START:Page B:Back"));
 copy:
     PutWindowTilemap(sHubWindow);
     CopyWindowToVram(sHubWindow, COPYWIN_FULL);

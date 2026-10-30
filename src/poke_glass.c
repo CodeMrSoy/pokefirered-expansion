@@ -285,8 +285,8 @@ static const u8 sHubLabels[][16] = {
     _("Trainer Card"), _("Options"), _("Save"), _("Debug"), _("DexNav"), _("Retire")
 };
 static const struct WindowTemplate sHubTemplate = {
-    .bg = 0, .tilemapLeft = 1, .tilemapTop = 1,
-    .width = 28, .height = 18, .paletteNum = TABLET_PALETTE, .baseBlock = 0x038,
+    .bg = 0, .tilemapLeft = 0, .tilemapTop = 0,
+    .width = 30, .height = 20, .paletteNum = TABLET_PALETTE, .baseBlock = 0x038,
 };
 
 static void TabletRect(u8 *pixels, u8 color, u16 x, u16 y, u16 width, u16 height)
@@ -297,7 +297,7 @@ static void TabletRect(u8 *pixels, u8 color, u16 x, u16 y, u16 width, u16 height
     for (py = y; py < y + height; py++)
         for (px = x; px < x + width;)
         {
-            u32 offset = ((py / 8) * 28 + px / 8) * 32 + (py & 7) * 4 + (px & 7) / 2;
+            u32 offset = ((py / 8) * 30 + px / 8) * 32 + (py & 7) * 4 + (px & 7) / 2;
             if (!(px & 7) && px + 8 <= x + width)
             {
                 *(u32 *)(pixels + offset) = fill;
@@ -321,8 +321,8 @@ static void HubRect(u8 color, u16 x, u16 y, u16 width, u16 height)
 // cards/sprites are clipped to the display during switching animations.
 void SetPokeGlassBlend(bool8 field)
 {
-    SetGpuReg(REG_OFFSET_WIN1H, WIN_RANGE(20, 220));
-    SetGpuReg(REG_OFFSET_WIN1V, WIN_RANGE(23, 136));
+    SetGpuReg(REG_OFFSET_WIN1H, WIN_RANGE(8, 232));
+    SetGpuReg(REG_OFFSET_WIN1V, WIN_RANGE(8, 152));
     SetGpuReg(REG_OFFSET_WININ, WININ_WIN1_BG_ALL | WININ_WIN1_OBJ | WININ_WIN1_CLR);
     SetGpuReg(REG_OFFSET_WINOUT, field ? WINOUT_WIN01_BG_ALL | WINOUT_WIN01_OBJ
         : WINOUT_WIN01_BG1 | WINOUT_WIN01_BG3);
@@ -472,33 +472,31 @@ static void DrawHubApp(u8 slot)
 {
     static const u8 textColors[] = {0, 8, 4};
     u8 app = sHubPages[sHubCursor >= 6][slot];
-    u16 x = 18 + (slot % 3) * 64, y = 32 + (slot / 3) * 44;
+    u16 x = 12 + (slot % 3) * 74, y = 35 + (slot / 3) * 50;
     bool8 selected = app == sHubCursor;
     if (!HubAppAvailable(app)) return;
-    HubRect(selected ? 8 : 6, x, y, 60, 42);
-    HubRect(selected ? 5 : 4, x + 2, y + 2, 56, 38);
-    DrawHubIcon(app, x + 18, y + 2);
+    HubRect(selected ? 8 : 6, x, y, 68, 46);
+    HubRect(selected ? 5 : 4, x + 2, y + 2, 64, 42);
+    DrawHubIcon(app, x + 22, y + 4);
     AddTextPrinterParameterized3(sHubWindow, FONT_SMALL,
-        x + (60 - GetStringWidth(FONT_SMALL, sHubLabels[app], 0)) / 2,
-        y + 26, textColors, TEXT_SKIP_DRAW, sHubLabels[app]);
+        x + (68 - GetStringWidth(FONT_SMALL, sHubLabels[app], 0)) / 2,
+        y + 30, textColors, TEXT_SKIP_DRAW, sHubLabels[app]);
 }
 
 // Pre-rendered from the original rectangle drawing, with identical palette indices.
-static const u32 sTabletShellGfx[] = INCBIN_U32("graphics/poke_glass_shell.4bpp");
+#include "data/poke_glass_frame.h"
 
 static void DrawTabletShell(u8 *pixels)
 {
-    CpuCopy16(sTabletShellGfx, pixels, 28 * 18 * 32);
+    CpuCopy16(sTabletFullShellGfx, pixels, 30 * 20 * 32);
 }
-
-#include "data/poke_glass_frame.h"
 
 void DrawPokeGlassFrame(u8 bg)
 {
     FillBgTilemapBufferRect(bg, 0x180, 0, 0, 32, 32, 11);
     LoadPalette(sPalette, BG_PLTT_ID(11), sizeof(sPalette));
     CpuCopy16(sTabletFrameTiles, (void *)(VRAM + 0x7000), sizeof(sTabletFrameTiles));
-    CopyToBgTilemapBufferRect_ChangePalette(bg, sTabletFrameMap, 1, 1, 28, 18, 11);
+    CopyToBgTilemapBufferRect_ChangePalette(bg, sTabletFrameMap, 0, 0, 30, 20, 11);
     ScheduleBgCopyTilemapToVram(bg);
 }
 
@@ -537,7 +535,7 @@ static void BeginTabletCover(bool8 entering)
     u16 firstTile = entering ? 88 : RETURN_COVER_FIRST_TILE;
     if (!sTabletActive || !sTabletNative || sFieldBackdrop == NULL)
         return;
-    pixels = AllocZeroed(28 * 18 * 32);
+    pixels = AllocZeroed(30 * 20 * 32);
     tiles = AllocZeroed(RETURN_COVER_TILES * 32);
     map = AllocZeroed(32 * 32 * sizeof(u16));
     if (entering) backdropMap = AllocZeroed(32 * 32 * sizeof(u16));
@@ -547,7 +545,7 @@ static void BeginTabletCover(bool8 entering)
     for (y = 0; y < 20; y++)
         for (x = 0; x < 30; x++)
         {
-            bool8 shell = x > 0 && x < 29 && y > 0 && y < 19;
+            bool8 shell = TRUE;
             const u8 *source;
             if (entering)
             {
@@ -558,7 +556,7 @@ static void BeginTabletCover(bool8 entering)
                     continue;
                 }
             }
-            source = shell ? pixels + ((y - 1) * 28 + x - 1) * 32
+            source = shell ? pixels + (y * 30 + x) * 32
                 : sFieldBackdrop + (y * 30 + x) * 32;
             for (tile = 0; tile < count; tile++)
                 if (memcmp(source, tiles + tile * 32, 32) == 0) break;
@@ -641,6 +639,10 @@ void VBlankCB_PokeGlassReturn(void)
     }
     if (sReturnCoverReady && WaitDma3Request(-1) == 0 && sCoverReadyVBlanks++ != 0)
     {
+        if (!sCoverEntering && sHubWindow != WINDOW_NONE)
+            DmaCopy16(3, (void *)GetWindowAttribute(sHubWindow, WINDOW_TILE_DATA),
+                (void *)(VRAM + GetBgAttribute(0, BG_ATTR_CHARBASEINDEX) * 0x4000
+                    + GetWindowAttribute(sHubWindow, WINDOW_BASE_BLOCK) * 32), 30 * 20 * 32);
         REG_BG3CNT = GetGpuReg(REG_OFFSET_BG3CNT);
         REG_BG3HOFS = GetGpuReg(REG_OFFSET_BG3HOFS);
         REG_BG3VOFS = GetGpuReg(REG_OFFSET_BG3VOFS);
@@ -654,6 +656,9 @@ void VBlankCB_PokeGlassReturn(void)
         sReturnCoverActive = FALSE;
         return;
     }
+    // Field reconstruction can overwrite the tiny cover tile range. Restore
+    // its ROM-backed tiles each VBlank until the handoff is complete.
+    DmaCopy16(3, sTabletCoverTiles, (void *)(VRAM + 0xC000 + (sCoverEntering ? 88 : RETURN_COVER_FIRST_TILE) * 32), sizeof(sTabletCoverTiles));
     *(vu16 *)PLTT = RGB_BLACK;
     CpuCopy16(sReturnCoverPalette, (void *)(PLTT + 13 * 32), 64);
     REG_BG0CNT = BGCNT_CHARBASE(3) | BGCNT_SCREENBASE(sCoverEntering && sCoverPhase == 2 ? 29 : 27);
@@ -678,7 +683,7 @@ static void DrawHub(void)
     static const u8 textColors[] = {0, 8, 4};
     u8 i;
     DrawTabletShell((u8 *)GetWindowAttribute(sHubWindow, WINDOW_TILE_DATA));
-    AddTextPrinterParameterized3(sHubWindow, FONT_SMALL, 75, 18, textColors, TEXT_SKIP_DRAW, sHubTitle);
+    AddTextPrinterParameterized3(sHubWindow, FONT_SMALL, 83, 14, textColors, TEXT_SKIP_DRAW, sHubTitle);
     // Signal and battery indicators on the glass.
     for (i = 0; i < 3; i++) HubRect(8, 176 + i * 4, 26 - i * 2, 2, 2 + i * 2);
     HubRect(8, 191, 20, 16, 7);
@@ -686,8 +691,8 @@ static void DrawHub(void)
     HubRect(6, 193, 22, 10, 3);
     for (i = 0; i < 6; i++) DrawHubApp(i);
     // Two page dots and edge arrows keep horizontal paging discoverable.
-    HubRect(sHubCursor < 6 ? 8 : 6, 106, 121, 4, 3);
-    HubRect(sHubCursor >= 6 ? 8 : 6, 115, 121, 4, 3);
+    HubRect(sHubCursor < 6 ? 8 : 6, 110, 140, 4, 3);
+    HubRect(sHubCursor >= 6 ? 8 : 6, 120, 140, 4, 3);
     AddTextPrinterParameterized3(sHubWindow, FONT_SMALL, 15, 17, textColors, TEXT_SKIP_DRAW, COMPOUND_STRING("{LEFT_ARROW}"));
     AddTextPrinterParameterized3(sHubWindow, FONT_SMALL, 35, 17, textColors, TEXT_SKIP_DRAW, COMPOUND_STRING("{RIGHT_ARROW}"));
     PutWindowTilemap(sHubWindow);

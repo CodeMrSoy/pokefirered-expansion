@@ -49,3 +49,12 @@ locations), and the avatar regression (all seven appearances, battle backs,
 Fly landing, and real save/reset/Continue). The standard-build launcher check
 also exercises the native field-item return callback. Live multiplayer sessions
 were not exercised in the emulator.
+
+## Full-screen glass
+
+The shared frame fills the 240×160 display, with an eight-pixel edge bezel and
+a 224×144 translucent work area. The launcher and Storage use the expanded
+space. Embedded apps share the larger window; native app returns use the same
+frame geometry. Storage uses a slightly darker glass tint for dense text.
+The frame and its native-app tiles are generated together by
+`tools/compile_pokeglass_frame.py`.
