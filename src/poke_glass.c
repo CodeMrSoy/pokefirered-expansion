@@ -917,6 +917,8 @@ static void StatsNumber(u16 right, u16 y, u16 value)
     StatsText(right - GetStringWidth(FONT_SMALL, text, 0), y, text);
 }
 
+#include "poke_glass_storage.inc"
+
 static void DestroyStatsMonSprite(void)
 {
     if (sStatsMonSprite != 0xFFFF)
@@ -1516,8 +1518,7 @@ void OpenPokeGlassSystemApp(void)
 void ShowPokeGlassStorage(void)
 {
     QuantumRecoverStoredItemsAndPokemon();
-    CloseTabletForNativeApp();
-    ShowPokemonStorageSystemPC();
+    OpenGlassStorage();
 }
 
 void ShowPokeGlassMap(void)

@@ -84,7 +84,7 @@ field=save()
 trace('tablet-open',3,hub)
 base=np.asarray(m.screen).copy();launcher=save()
 apps=[('pokedex',0,'Task_PokeGlassPokedex',True),('party',1,'Task_HandleChooseMonInput',True),
- ('storage',2,'Task_PCMainMenu',False),('stats',3,'Task_PokeGlassStats',True),('map',4,'Task_RegionMap',False),
+ ('storage',2,'Task_PokeGlassStorage',True),('stats',3,'Task_PokeGlassStats',True),('map',4,'Task_RegionMap',False),
  ('bag',5,'Task_BagMenu_HandleInput',False),('trainer-card',6,'Task_TrainerCard',False),('options',7,'Task_OptionMenu',False),
  ('save',8,'task50_save_game',False)]
 if 'DebugTask_HandleMenuInput_Main' in m.symbols:

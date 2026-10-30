@@ -23,6 +23,8 @@ sessions retain only Party, Bag, Trainer Card and Options.
 Bag, Trainer Card, Options and Debug use their existing game screens. Save
 uses the existing confirmation/overwrite flow and flash-save implementation.
 The Pokédex and storage unlock restrictions remain in their script handlers.
+Storage now opens the [embedded six-box management app](pokeglass-storage.md),
+sharing the tablet window instead of opening the native PC interface.
 Party and Stats require at least one Pokémon.
 
 The wardrobe app, preview screen and outfit-changing task have been removed.
@@ -41,7 +43,7 @@ that the retired wardrobe function cannot change the saved appearance. Existing
 PokéGlass emulator fixtures use the direct Start entry point.
 
 Verified with standard and `DEVELOPMENT=1` ROM builds, the two-page launcher
-emulator regression, the native PC/Town Map regression (real deposits and
+emulator regression, the Storage/Town Map regression (real deposits and
 withdrawals), the repeated Party-return regression (12 returns across four
 locations), and the avatar regression (all seven appearances, battle backs,
 Fly landing, and real save/reset/Continue). The standard-build launcher check

@@ -276,6 +276,10 @@ static void Task_SetWin0BldRegsAndCheckSaveFile(u8 taskId)
             // gTasks[taskId].func = Task_SetWin0BldRegsNoSaveFileCheck;
             gTasks[taskId].func = Task_MainMenuCheckBattery;
             break;
+        case SAVE_STATUS_STORAGE_FULL:
+            SetStdFrame0OnBg(0);
+            PrintSaveErrorStatus(taskId, COMPOUND_STRING("Storage needs conversion.\nOpen the previous ROM and keep\n180 or fewer boxed POKEMON."));
+            break;
         case SAVE_STATUS_INVALID:
             SetStdFrame0OnBg(0);
             gTasks[taskId].tMenuType = MAIN_MENU_NEWGAME;
@@ -356,7 +360,9 @@ static void Task_WaitForBatteryDryErrorWindow(u8 taskId)
         }
         else
         {
-            if (!IsTextPrinterActive(MAIN_MENU_WINDOW_ERROR) && JOY_NEW(A_BUTTON))
+            if (gSaveFileStatus == SAVE_STATUS_STORAGE_FULL)
+            return; // Preserve the flash; no Continue or New Game on overflow.
+        if (!IsTextPrinterActive(MAIN_MENU_WINDOW_ERROR) && JOY_NEW(A_BUTTON))
             {
                 ClearWindowTilemap(MAIN_MENU_WINDOW_ERROR);
                 MainMenu_EraseWindow(&sWindowTemplate[MAIN_MENU_WINDOW_ERROR]);

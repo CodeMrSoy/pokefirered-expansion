@@ -39,7 +39,7 @@ m.snap('phone-page-one')
 # Every app on page one and native return paths.
 app('Task_PokeGlassPokedex', 'pokedex')
 move(7, 1); app('Task_HandleChooseMonInput', 'party')
-move(7, 2); app('Task_PCMainMenu', 'pc')
+move(7, 2); app('Task_PokeGlassStorage', 'storage')
 move(5, 5); app('Task_BagMenu_HandleInput', 'bag')
 move(6, 3); app('Task_PokeGlassStats', 'stats')
 move(6, 4); app('Task_RegionMap', 'map')

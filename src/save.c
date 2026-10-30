@@ -1,4 +1,8 @@
 #include "global.h"
+#include <stddef.h>
+#include "malloc.h"
+#include "event_data.h"
+#include "constants/vars.h"
 #include "quantum_cleanup.h"
 
 #include "gba/flash_internal.h"
@@ -14,6 +18,8 @@
 #include "save_failed_screen.h"
 #include "task.h"
 #include "trainer_tower.h"
+
+static void SerializeStorageSector(u16 sectorId, u16 size);
 
 static u8 HandleWriteSector(u16 sectorId, const struct SaveSectorLocation *locations);
 static u8 TryWriteSector(u8 sectorNum, u8 *data);
@@ -66,15 +72,15 @@ struct
     SAVEBLOCK_CHUNK(struct SaveBlock1, 2),
     SAVEBLOCK_CHUNK(struct SaveBlock1, 3), // SECTOR_ID_SAVEBLOCK1_END
 
-    SAVEBLOCK_CHUNK(struct PokemonStorage, 0), // SECTOR_ID_PKMN_STORAGE_START
-    SAVEBLOCK_CHUNK(struct PokemonStorage, 1),
-    SAVEBLOCK_CHUNK(struct PokemonStorage, 2),
-    SAVEBLOCK_CHUNK(struct PokemonStorage, 3),
-    SAVEBLOCK_CHUNK(struct PokemonStorage, 4),
-    SAVEBLOCK_CHUNK(struct PokemonStorage, 5),
-    SAVEBLOCK_CHUNK(struct PokemonStorage, 6),
-    SAVEBLOCK_CHUNK(struct PokemonStorage, 7),
-    SAVEBLOCK_CHUNK(struct PokemonStorage, 8), // SECTOR_ID_PKMN_STORAGE_END
+    SAVEBLOCK_CHUNK(struct LegacyPokemonStorage, 0), // SECTOR_ID_PKMN_STORAGE_START
+    SAVEBLOCK_CHUNK(struct LegacyPokemonStorage, 1),
+    SAVEBLOCK_CHUNK(struct LegacyPokemonStorage, 2),
+    SAVEBLOCK_CHUNK(struct LegacyPokemonStorage, 3),
+    SAVEBLOCK_CHUNK(struct LegacyPokemonStorage, 4),
+    SAVEBLOCK_CHUNK(struct LegacyPokemonStorage, 5),
+    SAVEBLOCK_CHUNK(struct LegacyPokemonStorage, 6),
+    SAVEBLOCK_CHUNK(struct LegacyPokemonStorage, 7),
+    SAVEBLOCK_CHUNK(struct LegacyPokemonStorage, 8), // SECTOR_ID_PKMN_STORAGE_END
 };
 
 // These will produce an error if a save struct is larger than the space
@@ -204,12 +210,15 @@ static u8 HandleWriteSector(u16 sectorId, const struct SaveSectorLocation *locat
     gReadWriteSector->counter = gSaveCounter;
 
     // Copy current data to temp buffer for writing
-    for (i = 0; i < size; i++)
-        gReadWriteSector->data[i] = data[i];
+    if (sectorId >= SECTOR_ID_PKMN_STORAGE_START)
+        SerializeStorageSector(sectorId, size);
+    else
+        for (i = 0; i < size; i++)
+            gReadWriteSector->data[i] = data[i];
 
     CopyFromSaveBlock3(sectorId, gReadWriteSector);
 
-    gReadWriteSector->checksum = CalculateChecksum(data, size);
+    gReadWriteSector->checksum = CalculateChecksum(gReadWriteSector->data, size);
 
     return TryWriteSector(sector, gReadWriteSector->data);
 }
@@ -339,12 +348,15 @@ static u8 HandleReplaceSector(u16 sectorId, const struct SaveSectorLocation *loc
     gReadWriteSector->counter = gSaveCounter;
 
     // Copy current data to temp buffer for writing
-    for (i = 0; i < size; i++)
-        gReadWriteSector->data[i] = data[i];
+    if (sectorId >= SECTOR_ID_PKMN_STORAGE_START)
+        SerializeStorageSector(sectorId, size);
+    else
+        for (i = 0; i < size; i++)
+            gReadWriteSector->data[i] = data[i];
 
     CopyFromSaveBlock3(sectorId, gReadWriteSector);
 
-    gReadWriteSector->checksum = CalculateChecksum(data, size);
+    gReadWriteSector->checksum = CalculateChecksum(gReadWriteSector->data, size);
 
     // Erase old save data
     EraseFlashSector(sector);
@@ -471,6 +483,8 @@ static u8 WriteSectorSignatureByte(u16 sectorId, const struct SaveSectorLocation
     }
 }
 
+#include "storage_save.inc"
+
 static u8 TryLoadSaveSlot(u16 sectorId, struct SaveSectorLocation *locations)
 {
     u8 status;
@@ -483,7 +497,11 @@ static u8 TryLoadSaveSlot(u16 sectorId, struct SaveSectorLocation *locations)
     else
     {
         status = GetSaveValidStatus(locations);
-        CopySaveSlotData(FULL_SAVE_SLOT, locations);
+        if (status == SAVE_STATUS_OK || status == SAVE_STATUS_ERROR)
+        {
+            u8 storageStatus = CopySaveSlotData(FULL_SAVE_SLOT, locations);
+            if (storageStatus != SAVE_STATUS_OK) status = storageStatus;
+        }
     }
 
     return status;
@@ -496,12 +514,15 @@ static u8 CopySaveSlotData(u16 sectorId, struct SaveSectorLocation *locations)
     u16 checksum;
     u16 slotOffset = NUM_SECTORS_PER_SLOT * (gSaveCounter % NUM_SAVE_SLOTS);
     u16 id;
+    struct LegacyPokemonStorage *legacy = AllocZeroed(sizeof(*legacy));
+    if (legacy == NULL) return SAVE_STATUS_STORAGE_FULL;
 
     for (i = 0; i < NUM_SECTORS_PER_SLOT; i++)
     {
         ReadFlashSector(i + slotOffset, gReadWriteSector);
 
         id = gReadWriteSector->id;
+        if (id >= NUM_SECTORS_PER_SLOT) continue;
         if (id == 0)
             gLastWrittenSector = i;
 
@@ -511,13 +532,20 @@ static u8 CopySaveSlotData(u16 sectorId, struct SaveSectorLocation *locations)
         if (gReadWriteSector->signature == SECTOR_SIGNATURE && gReadWriteSector->checksum == checksum)
         {
             u16 j;
+            u8 *dest = id >= SECTOR_ID_PKMN_STORAGE_START
+                ? (u8 *)legacy + (id - SECTOR_ID_PKMN_STORAGE_START) * SECTOR_DATA_SIZE
+                : locations[id].data;
             for (j = 0; j < locations[id].size; j++)
-                ((u8 *)locations[id].data)[j] = gReadWriteSector->data[j];
+                dest[j] = gReadWriteSector->data[j];
             CopyToSaveBlock3(id, gReadWriteSector);
         }
     }
 
-    return SAVE_STATUS_OK;
+    {
+        bool8 imported = ImportLegacyStorage(legacy);
+        Free(legacy);
+        return imported ? SAVE_STATUS_OK : SAVE_STATUS_STORAGE_FULL;
+    }
 }
 
 static u8 GetSaveValidStatus(const struct SaveSectorLocation *locations)
@@ -538,7 +566,7 @@ static u8 GetSaveValidStatus(const struct SaveSectorLocation *locations)
     for (sector = 0; sector < NUM_SECTORS_PER_SLOT; sector++)
     {
         ReadFlashSector(sector, gReadWriteSector);
-        if (gReadWriteSector->signature == SECTOR_SIGNATURE)
+        if (gReadWriteSector->signature == SECTOR_SIGNATURE && gReadWriteSector->id < NUM_SECTORS_PER_SLOT)
         {
             signatureValid = TRUE;
             checksum = CalculateChecksum(gReadWriteSector->data, locations[gReadWriteSector->id].size);
@@ -566,7 +594,7 @@ static u8 GetSaveValidStatus(const struct SaveSectorLocation *locations)
     for (sector = 0; sector < NUM_SECTORS_PER_SLOT; sector++)
     {
         ReadFlashSector(NUM_SECTORS_PER_SLOT + sector, gReadWriteSector);
-        if (gReadWriteSector->signature == SECTOR_SIGNATURE)
+        if (gReadWriteSector->signature == SECTOR_SIGNATURE && gReadWriteSector->id < NUM_SECTORS_PER_SLOT)
         {
             signatureValid = TRUE;
             checksum = CalculateChecksum(gReadWriteSector->data, locations[gReadWriteSector->id].size);
@@ -696,7 +724,7 @@ static void UpdateSaveAddresses(void)
 
     for (; i <= SECTOR_ID_PKMN_STORAGE_END; i++) //setting i to SECTOR_ID_PKMN_STORAGE_START does not match
     {
-        gRamSaveSectorLocations[i].data = (void *)(gPokemonStoragePtr) + sSaveSlotLayout[i].offset;
+        gRamSaveSectorLocations[i].data = NULL; // Serialized through the legacy flash layout.
         gRamSaveSectorLocations[i].size = sSaveSlotLayout[i].size;
     }
 }

@@ -25,12 +25,16 @@ def cycle():
     # Dex, Party and Stats allocate the largest embedded app resources.
     for app, path, taskname in ((0, [], 'Task_PokeGlassPokedex'),
             (1, [7], 'Task_HandleChooseMonInput'),
-            (3, [5], 'Task_PokeGlassStats')):
+            (2, [7], 'Task_PokeGlassStorage'),
+            (3, [5, 6], 'Task_PokeGlassStats')):
         for key in path:
             m.press(key, 30)
         assert byte('sHubCursor') == app
+        before = heap_state()
         m.press(8, 100)
         assert ready(taskname), taskname
+        if app == 2:
+            assert heap_state() == before, ('Storage allocated a second screen', before, heap_state())
         m.press(0, 100)
         assert hub()
     # Restore the remembered launcher cursor for the next real session.
