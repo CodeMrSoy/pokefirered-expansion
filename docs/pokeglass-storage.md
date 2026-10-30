@@ -3,8 +3,8 @@
 Storage is an embedded full-screen tablet app. It uses the launcher's existing window and
 tile buffer instead of loading the native PC menu and its storage-screen data.
 Six boxes provide 180 slots. Party and box slots appear side by side; six box
-entries are visible per page, across five pages. The 240×160 frame uses a thin
-edge bezel around 224×144 pixels of translucent glass, with wider columns and
+entries are visible per page, across five pages. The 240×160 frame uses a slightly thicker red-and-white
+edge bezel around 220×140 pixels of translucent glass, with wider columns and
 14-pixel row spacing.
 
 ## Controls

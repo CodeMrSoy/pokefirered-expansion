@@ -52,7 +52,7 @@ static void DrawGlassStorage(u8 taskId)
     DrawTabletShell((u8 *)GetWindowAttribute(sHubWindow, WINDOW_TILE_DATA));
     // Quiet the scenery behind dense management text without another buffer.
     SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(14, 4));
-    HubRect(4, 8, 8, 224, 144);
+    HubRect(4, 10, 10, 220, 140);
     if (d[9] == 2)
     {
         GlassReadSlot(d[3], d[5], d[4], &mon);
@@ -86,7 +86,7 @@ static void DrawGlassStorage(u8 taskId)
         for (row = 0; row < PARTY_SIZE; row++)
         {
             u8 index = side ? d[1] * PARTY_SIZE + row : row;
-            u8 x = side ? 128 : 16, y = 30 + row * 14;
+            u8 x = side ? 128 : 16, y = 28 + row * 14;
             bool8 selected = d[2] == side * PARTY_SIZE + row;
             bool8 source = d[6] && d[3] == !side && d[4] == index && (d[3] || d[5] == d[0]);
             HubRect(selected ? 5 : 4, x - 2, y, side ? 100 : 108, 14);
@@ -100,29 +100,29 @@ static void DrawGlassStorage(u8 taskId)
             StatsText(x + 7, y, text);
             if (source) StatsText(x, y, COMPOUND_STRING(">"));
         }
-    HubRect(6, 12, 113, 216, 1);
-    StatsText(18, 114, COMPOUND_STRING("Page"));
-    StatsNumber(52, 114, d[1] + 1);
-    StatsText(53, 114, COMPOUND_STRING("/5"));
-    StatsNumber(186, 114, CountMonsInBox(d[0]));
-    StatsText(187, 114, COMPOUND_STRING("/30"));
+    HubRect(6, 12, 111, 216, 1);
+    StatsText(18, 112, COMPOUND_STRING("Page"));
+    StatsNumber(52, 112, d[1] + 1);
+    StatsText(53, 112, COMPOUND_STRING("/5"));
+    StatsNumber(186, 112, CountMonsInBox(d[0]));
+    StatsText(187, 112, COMPOUND_STRING("/30"));
     if (d[7] == 1)
-        StatsText(16, 126, COMPOUND_STRING("Keep one able POKéMON."));
+        StatsText(16, 124, COMPOUND_STRING("Keep one able POKéMON."));
     else if (d[7] == 2)
-        StatsText(16, 126, COMPOUND_STRING("Remove MAIL first."));
+        StatsText(16, 124, COMPOUND_STRING("Remove MAIL first."));
     else if (d[7] == 3)
-        StatsText(16, 126, COMPOUND_STRING("BAG full. Item unchanged."));
+        StatsText(16, 124, COMPOUND_STRING("BAG full. Item unchanged."));
     else if (d[7] == 4)
-        StatsText(16, 126, COMPOUND_STRING("Item moved to BAG."));
+        StatsText(16, 124, COMPOUND_STRING("Item moved to BAG."));
     else if (d[7] == 5)
-        StatsText(16, 126, COMPOUND_STRING("Held item given."));
+        StatsText(16, 124, COMPOUND_STRING("Held item given."));
     else if (d[7] == 6)
-        StatsText(16, 126, COMPOUND_STRING("Eggs cannot be released."));
+        StatsText(16, 124, COMPOUND_STRING("Eggs cannot be released."));
     else if (d[6])
-        StatsText(16, 126, COMPOUND_STRING("A:Place SELECT:Release B:Cancel"));
+        StatsText(16, 124, COMPOUND_STRING("A:Place SELECT:Release B:Cancel"));
     else
-        StatsText(16, 126, COMPOUND_STRING("A:Move  SELECT:Held item"));
-    StatsText(16, 138, COMPOUND_STRING("L/R:Box START:Page B:Back"));
+        StatsText(16, 124, COMPOUND_STRING("A:Move  SELECT:Held item"));
+    StatsText(16, 136, COMPOUND_STRING("L/R:Box START:Page B:Back"));
 copy:
     PutWindowTilemap(sHubWindow);
     CopyWindowToVram(sHubWindow, COPYWIN_FULL);

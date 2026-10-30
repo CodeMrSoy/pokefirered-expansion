@@ -11,27 +11,33 @@ def rounded(c,x,y,w,h,r):
    dx=max(r-xx,xx-(w-1-r),0)
    dy=max(r-yy,yy-(h-1-r),0)
    if dx*dx+dy*dy<=r*r: pixels[y+yy][x+xx]=c
-# Brushed rim, charcoal body, recessed glass and small hardware details.
+# Slightly thicker red-and-white case, matching the Pokeglass item.
 pixels=[[0]*240 for _ in range(160)]
 rounded(1,0,0,240,160,9)
 rounded(12,1,1,238,158,8)
-rounded(2,2,2,236,156,7)
-rounded(1,5,6,230,148,4)
-rect(4,8,8,224,144)
-rect(14,15,3,88,1)
+rounded(13,2,2,236,156,7)
+for y in range(2,80):
+ for x in range(2,238):
+  if pixels[y][x]==13: pixels[y][x]=10
+rect(11,16,3,86,1)
+rect(15,16,156,86,1)
+rounded(1,7,8,226,144,4)
+rect(4,10,10,220,140)
 rect(1,106,3,12,2)
-rect(12,108,3,8,1)
+rect(11,108,3,8,1)
 rect(1,122,2,5,4)
 rect(5,123,3,3,2)
 rect(8,124,3,1,1)
-rect(6,133,3,2,2)
-rounded(1,109,154,22,4,2)
-rect(14,114,155,12,1)
-rect(14,0,43,1,12)
-rect(14,0,60,1,18)
+rect(15,133,3,2,2)
+rounded(9,109,153,22,5,2)
+rect(11,114,154,12,1)
+rect(9,0,43,2,12)
+rect(9,0,60,2,18)
+rect(1,2,79,5,2)
+rect(1,233,79,5,2)
 
 def pack(tx,ty,frame=False):
- return bytes((0 if frame and 8<=tx*8+x<232 and 8<=ty*8+y<152 else pixels[ty*8+y][tx*8+x]) | ((0 if frame and 8<=tx*8+x+1<232 and 8<=ty*8+y<152 else pixels[ty*8+y][tx*8+x+1])<<4) for y in range(8) for x in range(0,8,2))
+ return bytes((0 if frame and 10<=tx*8+x<230 and 10<=ty*8+y<150 else pixels[ty*8+y][tx*8+x]) | ((0 if frame and 10<=tx*8+x+1<230 and 10<=ty*8+y<150 else pixels[ty*8+y][tx*8+x+1])<<4) for y in range(8) for x in range(0,8,2))
 shell=b''.join(pack(x,y) for y in range(20) for x in range(30))
 tiles=[bytes(32)]; lookup={tiles[0]:0}; tilemap=[]
 for y in range(20):

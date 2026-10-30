@@ -321,8 +321,8 @@ static void HubRect(u8 color, u16 x, u16 y, u16 width, u16 height)
 // cards/sprites are clipped to the display during switching animations.
 void SetPokeGlassBlend(bool8 field)
 {
-    SetGpuReg(REG_OFFSET_WIN1H, WIN_RANGE(8, 232));
-    SetGpuReg(REG_OFFSET_WIN1V, WIN_RANGE(8, 152));
+    SetGpuReg(REG_OFFSET_WIN1H, WIN_RANGE(10, 230));
+    SetGpuReg(REG_OFFSET_WIN1V, WIN_RANGE(10, 150));
     SetGpuReg(REG_OFFSET_WININ, WININ_WIN1_BG_ALL | WININ_WIN1_OBJ | WININ_WIN1_CLR);
     SetGpuReg(REG_OFFSET_WINOUT, field ? WINOUT_WIN01_BG_ALL | WINOUT_WIN01_OBJ
         : WINOUT_WIN01_BG1 | WINOUT_WIN01_BG3);

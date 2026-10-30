@@ -58,8 +58,8 @@ def check_storage(m, native, wait_task, task_active, original):
     assert party_payload(0) == original[:80]
     assert box_payload(0) == original[100:180]
     # Box switches wrap over precisely six boxes. Pages wrap over 30 slots.
-    for _ in range(6): m.press(11, 5)
-    for _ in range(5): m.press(3, 5)
+    for _ in range(6): m.press(11, 20)
+    for _ in range(5): m.press(3, 20)
     t = next(i for i in range(16) if struct.unpack('<I', m.read(m.symbols['gTasks']+40*i,4))[0] == m.symbols['Task_PokeGlassStorage'] | 1)
     data = m.symbols['gTasks'] + 40*t + 8
     assert struct.unpack('<hh', m.read(data, 4)) == (0, 0)
