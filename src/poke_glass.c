@@ -363,13 +363,16 @@ static void DrawHubIcon(u8 app, u16 x, u16 y)
         HubRect(8, x + 3, y + 9, 18, 10);
         HubRect(8, x + 6, y + 19, 12, 3);
         break;
-    case 2: // PC storage: a box with a handle and inset drawer.
-        HubRect(8, x + 7, y + 1, 10, 3);
-        HubRect(8, x + 5, y + 3, 3, 5);
-        HubRect(8, x + 16, y + 3, 3, 5);
-        HubRect(8, x + 3, y + 7, 18, 16);
-        HubRect(5, x + 7, y + 11, 10, 9);
-        HubRect(8, x + 10, y + 13, 4, 2);
+    case 2: // PC storage: monitor, terminal prompt and desktop stand.
+        HubRect(8, x, y + 1, 24, 16);
+        HubRect(4, x + 2, y + 3, 20, 12);
+        HubRect(5, x + 3, y + 4, 18, 10);
+        HubRect(8, x + 6, y + 6, 2, 2);
+        HubRect(8, x + 8, y + 8, 2, 2);
+        HubRect(8, x + 6, y + 10, 2, 2);
+        HubRect(8, x + 11, y + 11, 5, 1);
+        HubRect(8, x + 10, y + 17, 4, 4);
+        HubRect(8, x + 5, y + 21, 14, 2);
         break;
     case 3: // Stats: a rising bar chart.
         HubRect(8, x + 2, y + 16, 20, 2);
