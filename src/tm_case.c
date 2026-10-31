@@ -1566,7 +1566,7 @@ static void InitWindowTemplatesAndPals(void)
         struct WindowTemplate windows[] = {
             {0,12,4,16,8,15,0x90}, {0,3,14,24,4,15,0x110},
             {0,2,14,26,4,15,0x170}, {0,2,2,26,2,15,0x1D8},
-            {0,2,7,8,7,15,0x20C}, {0,8,8,3,5,15,0x244},
+            {0,2,9,9,5,15,0x20C}, {0,2,12,9,2,15,0x239},
             {0,2,14,26,4,15,0x253}, {0,15,9,12,4,15,0x2BB},
             {0,2,2,8,3,15,0x2EB}, DUMMY_WIN_TEMPLATE
         };
@@ -1650,9 +1650,9 @@ static void DrawMoveInfoLabels(void)
     if (IsPokeGlassSessionActive())
     {
         FillWindowPixelBuffer(WIN_MOVE_INFO_LABELS, 0);
-        TMCase_Print(WIN_MOVE_INFO_LABELS, FONT_SMALL, COMPOUND_STRING("Power"), 0, 11, 0, 0, TEXT_SKIP_DRAW, COLOR_LIGHT);
-        TMCase_Print(WIN_MOVE_INFO_LABELS, FONT_SMALL, COMPOUND_STRING("Acc."), 0, 23, 0, 0, TEXT_SKIP_DRAW, COLOR_LIGHT);
-        TMCase_Print(WIN_MOVE_INFO_LABELS, FONT_SMALL, COMPOUND_STRING("PP"), 0, 35, 0, 0, TEXT_SKIP_DRAW, COLOR_LIGHT);
+        TMCase_Print(WIN_MOVE_INFO_LABELS, FONT_SMALL, COMPOUND_STRING("Pow"), 0, 12, 0, 0, TEXT_SKIP_DRAW, COLOR_LIGHT);
+        TMCase_Print(WIN_MOVE_INFO_LABELS, FONT_SMALL, COMPOUND_STRING("Acc"), 26, 12, 0, 0, TEXT_SKIP_DRAW, COLOR_LIGHT);
+        TMCase_Print(WIN_MOVE_INFO_LABELS, FONT_SMALL, COMPOUND_STRING("PP"), 52, 12, 0, 0, TEXT_SKIP_DRAW, COLOR_LIGHT);
         CopyWindowToVram(WIN_MOVE_INFO_LABELS, COPYWIN_GFX);
         return;
     }
@@ -1689,7 +1689,7 @@ static void PrintMoveInfo(u16 itemId)
             u16 value = i == 0 ? gMovesInfo[move].power : i == 1 ? gMovesInfo[move].accuracy : gMovesInfo[move].pp;
             if (itemId == ITEM_NONE || (i == 0 && value < 2) || (i == 1 && !value)) StringCopy(number, COMPOUND_STRING("-"));
             else ConvertIntToDecimalStringN(number, value, STR_CONV_MODE_LEFT_ALIGN, 3);
-            TMCase_Print(WIN_MOVE_INFO, FONT_SMALL, number, 23 - GetStringWidth(FONT_SMALL, number, 0), 3 + i * 12, 0, 0, TEXT_SKIP_DRAW, COLOR_LIGHT);
+            TMCase_Print(WIN_MOVE_INFO, FONT_SMALL, number, i * 26 + (24 - GetStringWidth(FONT_SMALL, number, 0)) / 2, 2, 0, 0, TEXT_SKIP_DRAW, COLOR_LIGHT);
         }
         CopyWindowToVram(WIN_TITLE, COPYWIN_FULL);
         CopyWindowToVram(WIN_MOVE_INFO_LABELS, COPYWIN_FULL);
@@ -1903,8 +1903,8 @@ static void SpriteCB_SwapDisc(struct Sprite *sprite)
 static void UpdateGlassCard(struct Sprite *sprite)
 {
     u8 frame = min(sprite->y2 / 4, 5);
-    sprite->x = 44;
-    sprite->y = 40 - sprite->y2;
+    sprite->x = 46;
+    sprite->y = 44 - sprite->y2;
     sprite->oam.priority = 0;
     sprite->animPaused = TRUE;
     sprite->animBeginning = FALSE;
@@ -1915,11 +1915,16 @@ static void UpdateGlassCard(struct Sprite *sprite)
 static void DrawGlassCardCase(void)
 {
     u8 x, y;
-    // BG1's tile 0x160 ends before the panel tiles at 0x170 (VRAM 0x6E00).
-    CpuCopy16(sGlassTMCardCaseGfx, (void *)(VRAM + 0x6C00), sizeof(sGlassTMCardCaseGfx));
+    struct BgTemplate art = {.bg = 2, .charBaseIndex = 3, .mapBaseIndex = 29, .priority = 1};
+    volatile u16 *map = (void *)(VRAM + 0xE800);
+    // Captured-field tiles end at 0xCB00; art fits at 0xCC00..0xD0A0.
+    InitBgFromTemplate(&art);
+    CpuFill16(0, (void *)(VRAM + 0xCC00), 32);
+    CpuCopy16(sGlassTMCardCaseGfx, (void *)(VRAM + 0xCC20), sizeof(sGlassTMCardCaseGfx));
+    CpuFill16(0x60, (void *)map, 0x800);
     LoadPalette(sGlassTMCasePalette, BG_PLTT_ID(12), sizeof(sGlassTMCasePalette));
-    for (y = 0; y < 3; y++)
-        for (x = 0; x < 5; x++)
-            FillBgTilemapBufferRect(1, 0x160 + y * 5 + x, 3 + x, 4 + y, 1, 1, 12);
-    ScheduleBgCopyTilemapToVram(1);
+    for (y = 0; y < 6; y++)
+        for (x = 0; x < 6; x++)
+            map[(3 + y) * 32 + 2 + x] = (12 << 12) | (0x61 + y * 6 + x);
+    ShowBg(2);
 }

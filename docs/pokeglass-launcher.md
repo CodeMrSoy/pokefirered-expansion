@@ -107,7 +107,7 @@ The current QOL change places Trainer Card, Save and Options in the final three
 slots, including when the optional utility is hidden. Native TM teaching,
 consumption, Party cancellation, Bag entry and flash Continue are retained.
 The glass layout adds no persistent EWRAM: 238,828 bytes used (91.11%).
-The ROM uses 21,830,452 bytes before padding; the build log is the authoritative
+The ROM uses 21,831,164 bytes before padding; the build log is the authoritative
 size if a later edit changes this figure.
 
 `tests/pokeglass_tm_layout_emulator.py` covers a dense list, scrolling, move
@@ -152,3 +152,29 @@ so insertion stays behind the case instead of crossing its shaded front.
 The animation regression checks that lip pixel by pixel during all six positions.
 Evidence for this refinement is under `emulator-qol-tm-sd-depth` and
 `emulator-qol-tm-sd-depth-final`. Persistent EWRAM is unchanged.
+
+
+## Reference-based open SD case (2026-11-01)
+
+The current case follows the supplied reference: an open gold shell, a blue
+stripe and Poké Ball lid emblem, dark card tray, colored stored cards and silver
+front latch. A transparent standalone illustration was created with built-in
+imagegen and exported to a 44-by-43 indexed PNG with fifteen opaque colors.
+The native source and exact generation prompt are under
+`graphics/pokeglass/tm_case_reference/`. The full-size generated source is also
+saved in the workspace preview artifacts.
+
+The art uses BG2 at VRAM 0xCC20..0xD0A0, with a reserved transparent tile at
+0xCC00 and tilemap at 0xE800. It sits above the glass and below text windows;
+it adds no persistent EWRAM or heap allocations. Type appears below the case,
+with Power (Pow), Accuracy (Acc) and PP in three columns. A smaller selected
+card rises through the empty tray slot. Native teaching, quantities and callbacks
+are retained; non-PokéGlass screens keep their original presentation.
+
+`emulator-qol-reference-case-final` covers learning/consumption, flash Continue,
+layout, and eight repeated sessions returning to the same heap baseline.
+The subsequent `emulator-qol-reference-case-render` verifies the corrected
+layer order, visible gold/blue pixels, art tilemap, animated slot clipping,
+rapid scrolling, CLOSE/reopen, window tile bounds and field return. Earlier
+captures exposed the art layer being obscured by glass; those are not used as
+final visual evidence.

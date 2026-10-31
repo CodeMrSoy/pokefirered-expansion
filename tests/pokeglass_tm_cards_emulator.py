@@ -8,32 +8,38 @@ fixture=b'\x29'+struct.pack('<H',0x829)
 for item,q in [(717,1),(582,2),(583,3),(584,4),(598,5)]:fixture+=b'\x44'+struct.pack('<HH',item,q)
 m.inject(fixture+b'\x02')
 m.press(3);wait_task('Task_PokeGlassHub');m.run(40);m.press(6,30);m.press(8);wait_task('Task_HandleListInput');m.run(100)
-m.snap('tm-sd-card-fighting');first_card=np.asarray(m.screen)[28:46,32:59].copy()
+art=np.asarray(m.screen)[28:71,20:64].astype(int)
+gold=(art[:,:,0]>120)&(art[:,:,1]>70)&(art[:,:,2]<100)&(art[:,:,0]>art[:,:,1])
+blue=(art[:,:,2]>art[:,:,0]+40)&(art[:,:,2]>art[:,:,1]+20)&(art[:,:,2]>100)
+assert gold.sum()>150 and blue.sum()>30,('Case art hidden or wrong palette',gold.sum(),blue.sum())
+m.snap('tm-sd-card-fighting');first_card=np.asarray(m.screen)[42:55,38:56].copy()
 def sprite():
  # Find the card from its callback/template-independent position and tile tag.
  for i in range(64):
   p=m.symbols['gSprites']+i*68
-  if struct.unpack('<h',m.read(p+0x20,2))[0]==44:return p
+  if struct.unpack('<h',m.read(p+0x20,2))[0]==46:return p
  raise AssertionError('Missing SD card sprite')
-p=sprite();case=np.asarray(m.screen)[48:56,25:64].copy();frames=[];offsets=[];tiles=[]
+assert struct.unpack('<H',m.read(0x0600E800,2))[0]==0x60, 'Missing transparent art tile'
+assert struct.unpack('<H',m.read(0x0600E800+(3*32+2)*2,2))[0]==0xC061
+p=sprite();case=np.asarray(m.screen)[61:72,20:64].copy();frames=[];offsets=[];tiles=[]
 front_mask=np.zeros((160,240),bool)
-for x in range(34,54):front_mask[47-(x-34)*7//20:56,x]=True
+for x in range(40,52):front_mask[54-(x-40)//4:72,x]=True
 front=np.asarray(m.screen)[front_mask].copy()
 m.keys.add(5)
 for frame in range(28):
  m.run(1)
  if frame==0:m.keys.clear()
  frames.append(m.screen.copy());offsets.append(struct.unpack('<h',m.read(p+0x26,2))[0]);tiles.append(struct.unpack('<H',m.read(p+4,2))[0]&1023)
- assert np.array_equal(case,np.asarray(m.screen)[48:56,25:64]),('Case moved or card escaped slot',frame)
+ assert np.array_equal(case,np.asarray(m.screen)[61:72,20:64]),('Case moved or card escaped slot',frame)
  assert np.array_equal(front,np.asarray(m.screen)[front_mask]),('Card drew over angled front lip',frame)
 assert max(offsets)==20 and offsets[-1]==0 and len(set(tiles))==6,(offsets,tiles)
-assert any(not np.array_equal(np.asarray(frames[0])[28:46,32:59],np.asarray(f)[28:46,32:59]) for f in frames[1:])
+assert any(not np.array_equal(np.asarray(frames[0])[42:55,38:56],np.asarray(f)[42:55,38:56]) for f in frames[1:])
 frames[0].save(m.d/'tm-sd-card-scroll.gif',save_all=True,append_images=frames[1:],duration=34,loop=0)
 sheet=Image.new('RGB',(240*3,180*2));draw=ImageDraw.Draw(sheet)
 for i,n in enumerate([0,3,5,7,9,13]):
  x=i%3*240;y=i//3*180;sheet.paste(frames[n],(x,y+20));draw.text((x+4,y+4),'Frame '+str(n+1),fill='white')
 sheet.resize((1440,720)).save(m.d/'tm-sd-card-animation.png')
-m.run(40);m.snap('tm-sd-card-dragon');assert not np.array_equal(first_card,np.asarray(m.screen)[28:46,32:59]),'Type color unchanged'
+m.run(40);m.snap('tm-sd-card-dragon');assert not np.array_equal(first_card,np.asarray(m.screen)[42:55,38:56]),'Type color unchanged'
 # Cancel/CLOSE retracts the card fully; scrolling back raises it again.
 for _ in range(3):m.press(5,30)
 assert struct.unpack('<h',m.read(p+0x26,2))[0]==20
