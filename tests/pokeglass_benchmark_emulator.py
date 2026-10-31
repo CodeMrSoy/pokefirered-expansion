@@ -93,7 +93,7 @@ apps.append(('field-kit',9,'Task_PokeGlassFieldKit',True))
 apps.append(('tm-case',12,'Task_HandleListInput',False))
 for label,app,taskname,embedded in apps:
  restore(launcher)
- paths={0:[],1:[7],2:[7,7],3:[5,7],4:[5],5:[5,7,7],6:[7,7,7],7:[7,7,7,5],8:[7,7,7,7,7],9:[7,7,7,7],12:[5,6]}
+ paths={0:[],1:[7],2:[7,7],3:[5,7],4:[5],5:[5,7,7],6:[6,5,6],7:[5,6],8:[6,5],9:[6,6],12:[6]}
  for key in paths[app]:m.press(key,30)
  assert byte('sHubCursor')==app,(label,byte('sHubCursor'))
  if label=='save':

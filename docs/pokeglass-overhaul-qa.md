@@ -57,3 +57,28 @@ Local evidence groups (under `v2-integration-test/results/` in the workspace):
 `emulator-qol-overhaul-release`. Use the latest successful rerun for a given
 suite; the earlier Bag item-ID and rounded-corner mask failures are preserved.
 The complete group includes eight sessions with Field Kit allocation checks.
+
+
+## Launcher order and glass TM Case (2026-10-31)
+
+Page two now holds Field Kit, TM Case and the optional utility above Trainer
+Card, Save and Options. TM Case shares the glass panels and font treatment,
+retaining its disc animation and native teaching/item callbacks. The selected
+move title, type, power, accuracy, PP, quantities and description have dedicated
+areas. Context actions sit over the right list and replace the entire description
+panel, keeping the stat column and text clear of their borders.
+
+Native standard build and mGBA libretro checks are recorded in the workspace:
+`emulator-qol-tm-glass-final` (teaching/Continue, grid/save, glass Bag,
+repeated-session resources, transition benchmark and Field Kit/Summary actions)
+and `emulator-qol-tm-glass-release` (final window placement, dense TM list,
+scrolling, cyan popup tiles, no-party error, VRAM ranges and real teaching).
+The final layout uses no additional persistent EWRAM. The shared border builder
+is reused by Bag and TM Case; the Bag regression retains its original pocket
+animation and item management checks. Live link play and physical hardware
+remain untested.
+
+Earlier layout attempts remain in the workspace logs: one sampled quantity text
+instead of panel fill; another used B where the native error requires A. Their
+failures are not counted as passes. Final captures also prompted tighter stat
+spacing so an open dialog does not obscure PP.

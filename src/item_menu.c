@@ -2987,24 +2987,6 @@ static void PrintPocketName(void)
     }
 }
 
-static void LoadGlassBagBorders(void)
-{
-    u8 ALIGNED(4) tiles[9 * 32] = {0};
-    u8 tile, x, y;
-    for (tile = 0; tile < 9; tile++)
-        for (y = 0; y < 8; y++)
-            for (x = 0; x < 8; x++)
-            {
-                u8 row = tile / 3, col = tile % 3;
-                bool8 line = (row == 0 && y == 7 && (col == 1 || (col == 0 ? x == 7 : x == 0)))
-                    || (row == 2 && y == 0 && (col == 1 || (col == 0 ? x == 7 : x == 0)))
-                    || (row == 1 && ((col == 0 && x == 7) || (col == 2 && x == 0)));
-                tiles[tile * 32 + y * 4 + x / 2] |= (line ? 6 : 4) << ((x & 1) * 4);
-            }
-    CpuCopy16(tiles, (void *)(VRAM + 0x64 * 32), sizeof(tiles));
-    CpuCopy16(tiles, (void *)(VRAM + 0x81 * 32), sizeof(tiles));
-}
-
 static void LoadBagMenuTextWindows(void)
 {
     u32 i;
@@ -3041,7 +3023,8 @@ static void LoadBagMenuTextWindows(void)
     LoadPalette(sBagWindowPalF, BG_PLTT_ID(15), sizeof(sBagWindowPalF));
     if (IsPokeGlassSessionActive())
     {
-        LoadGlassBagBorders();
+        LoadPokeGlassWindowBorder(0x64);
+        LoadPokeGlassWindowBorder(0x81);
         for (i = 12; i <= 15; i++) LoadPokeGlassMenuPalette(i);
     }
     for (i = 0; i <= WIN_POCKET_NAME; i++)

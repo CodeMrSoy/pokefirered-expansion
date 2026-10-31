@@ -454,13 +454,13 @@ static void DrawHubIcon(u8 app, u16 x, u16 y)
 }
 
 // Stable script IDs, arranged in two rows on each phone-style page.
-static const u8 sHubPages[2][6] = {{0, 1, 2, 4, 3, 5}, {6, 9, 8, 7, 12, 11}};
+static const u8 sHubPages[2][6] = {{0, 1, 2, 4, 3, 5}, {9, 12, 11, 6, 8, 7}};
 
 // The final utility slot shows Safari Retire during a Safari session, and
 // retains the optional DexNav outside Safari when that feature is enabled.
 static u8 HubAppAt(u8 page, u8 slot)
 {
-    if (page == 1 && slot == 5 && !GetSafariZoneFlag()) return 10;
+    if (page == 1 && slot == 2 && !GetSafariZoneFlag()) return 10;
     return sHubPages[page][slot];
 }
 
@@ -536,6 +536,23 @@ void LoadPokeGlassMenuPalette(u8 slot)
     LoadPalette(palette, BG_PLTT_ID(slot), sizeof(palette));
 }
 
+void LoadPokeGlassWindowBorder(u16 baseTile)
+{
+    u8 ALIGNED(4) tiles[9 * 32] = {0};
+    u8 tile, x, y;
+    for (tile = 0; tile < 9; tile++)
+        for (y = 0; y < 8; y++)
+            for (x = 0; x < 8; x++)
+            {
+                u8 row = tile / 3, col = tile % 3;
+                bool8 line = (row == 0 && y == 7 && (col == 1 || (col == 0 ? x == 7 : x == 0)))
+                    || (row == 2 && y == 0 && (col == 1 || (col == 0 ? x == 7 : x == 0)))
+                    || (row == 1 && ((col == 0 && x == 7) || (col == 2 && x == 0)));
+                tiles[tile * 32 + y * 4 + x / 2] |= (line ? 6 : 4) << ((x & 1) * 4);
+            }
+    CpuCopy16(tiles, (void *)(VRAM + baseTile * 32), sizeof(tiles));
+}
+
 static void DrawGlassBagPanel(u8 left, u8 top, u8 width, u8 height)
 {
     u8 x, y;
@@ -548,7 +565,7 @@ static void DrawGlassBagPanel(u8 left, u8 top, u8 width, u8 height)
         }
 }
 
-void DrawPokeGlassBagFrame(void)
+static void DrawPokeGlassInventoryFrame(bool8 tmCase)
 {
     u8 edge, x, y;
     u8 ALIGNED(4) tiles[9 * 32] = {0};
@@ -564,10 +581,13 @@ void DrawPokeGlassBagFrame(void)
             }
     CpuCopy16(tiles, (void *)(VRAM + 0x6E00), sizeof(tiles));
     DrawGlassBagPanel(11, 4, 17, 9);
-    DrawGlassBagPanel(2, 13, 26, 5);
+    DrawGlassBagPanel(2, tmCase ? 14 : 13, 26, tmCase ? 4 : 5);
     ScheduleBgCopyTilemapToVram(1);
     SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(14, 4));
 }
+
+void DrawPokeGlassBagFrame(void) { DrawPokeGlassInventoryFrame(FALSE); }
+void DrawPokeGlassTMFrame(void) { DrawPokeGlassInventoryFrame(TRUE); }
 
 // Native Bag/Map keep their original input and item/map logic. Only their
 // outside pixels are covered by the same tablet bezel as embedded apps.

@@ -23,8 +23,8 @@ m.press(8);wait_task('Task_PokeGlassStats');m.run(100);m.snap('overhaul-stats')
 m.press(2,30);m.run(60);m.snap('overhaul-profile');m.press(2,30);m.run(60);m.snap('overhaul-training');m.press(0);wait_task('Task_PokeGlassHub');m.run(70)
 m.press(6,30);app('Task_RegionMap','map')
 m.press(6,30);m.run(60);m.snap('overhaul-launcher-two')
-# TM Case (12) -> Field Kit (9).
-m.press(4,30);app('Task_PokeGlassFieldKit','field-kit')
+# Options (7) -> Save (8) -> Trainer Card (6) -> Field Kit (9).
+m.press(6,30);m.press(6,30);m.press(4,30);app('Task_PokeGlassFieldKit','field-kit')
 m.press(0);m.run(120)
 assert m.read(m.symbols['sGlobalScriptContextStatus'],1)==b'\x02'
 print('PASS populated app previews, native Bag/Map, Field Kit and unlocked field return',flush=True)

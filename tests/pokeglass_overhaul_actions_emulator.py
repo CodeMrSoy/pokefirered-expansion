@@ -5,7 +5,7 @@ exec(compile(setup.read_text().split("fixture = b'\\x23'")[0],str(setup),'exec')
 fixture=b'\x23'+struct.pack('<I',(m.symbols['ScrCmd_createmon']|1)+0x2000000)+struct.pack('<BBHHI',0,6,1,25,0)
 m.inject(fixture+b'\x29'+struct.pack('<H',0x829)+b'\x44'+struct.pack('<HH',717,1)+b'\x02')
 m.press(3);wait_task('Task_PokeGlassHub');m.run(40)
-for _ in range(4):m.press(7,30)
+for _ in range(3):m.press(7,30)
 m.press(8);wait_task('Task_PokeGlassFieldKit');m.run(40)
 m.press(8,30);assert task_active('Task_PokeGlassFieldKit')
 m.press(0,30);wait_task('Task_PokeGlassHub');m.run(30);m.press(0)
@@ -21,8 +21,8 @@ assert m.read(m.symbols['sLockFieldControls'],1)==b'\x00'
 assert native('FieldTool_IsOwned',4)==1
 print('PASS Field Kit missing-tool guard, collected Lantern use, retained tool and field unlock',flush=True)
 m.press(3);wait_task('Task_PokeGlassHub');m.run(40)
-# Field Kit -> Trainer Card -> Storage -> Party.
-for _ in range(3):m.press(6,30)
+# Field Kit -> Storage -> Party.
+for _ in range(2):m.press(6,30)
 m.press(8);wait_task('Task_HandleChooseMonInput');m.run(60)
 m.press(8);m.run(60);m.press(8);wait_task('Task_InputHandler_Info');m.run(90)
 summary=struct.unpack('<I',m.read(m.symbols['sMonSummaryScreen'],4))[0]

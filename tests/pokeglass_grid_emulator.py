@@ -43,14 +43,12 @@ move(7, 2); app('Task_PokeGlassStorage', 'storage')
 move(5, 5); app('Task_BagMenu_HandleInput', 'bag')
 move(6, 3); app('Task_PokeGlassStats', 'stats')
 move(6, 4); app('Task_RegionMap', 'map')
-# Left beyond the lower row enters page two, skipping unused slots.
-move(6, 12); app('Task_HandleListInput', 'tm-case')
-move(6, 7)
-m.snap('phone-page-two')
-app('Task_OptionMenu', 'options')
-move(4, 6); app('Task_TrainerCard', 'trainer-card')
-move(7, 9); app('Task_PokeGlassFieldKit', 'field-kit')
-move(7, 8)
+# Page two keeps Trainer Card, Save and Options in its final row.
+move(6, 7); m.snap('phone-page-two'); app('Task_OptionMenu', 'options')
+move(6, 8); move(6, 6); app('Task_TrainerCard', 'trainer-card')
+move(4, 9); app('Task_PokeGlassFieldKit', 'field-kit')
+move(7, 12); app('Task_HandleListInput', 'tm-case')
+move(5, 8)
 # Cancel Save and return to the same page/tile.
 m.press(8);wait_task('task50_save_game');m.run(120);m.snap('phone-save-prompt')
 m.press(0);wait_task('Task_PokeGlassHub');m.run(30)
@@ -64,7 +62,7 @@ wait_task('Task_PokeGlassHub');m.run(30)
 assert m.read(m.symbols['gSaveAttemptStatus'],2) == b'\x01\x00'
 assert current_look() == original_look
 # Right past page two returns to page one, and left goes back.
-move(7,0);move(6,8);move(7,0)
+move(7,7);move(7,4);move(6,7);move(7,4)
 # Exit releases scripts/controls and Start reopens PokéGlass directly.
 m.press(0)
 assert m.read(m.symbols['sGlobalScriptContextStatus'],1) == b'\x02'

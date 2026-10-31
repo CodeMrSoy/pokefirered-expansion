@@ -10,7 +10,7 @@ def open_app():
  except AssertionError:
   m.snap('tm-app-open-error');print('OPEN ERROR',m.read(m.symbols['sLockFieldControls'],1),m.read(m.symbols['sGlobalScriptContextStatus'],1),flush=True);raise
  m.run(40)
- if cursor()==0:m.press(5,30);m.press(6,30)
+ if cursor()==0:m.press(6,30)
  assert cursor()==12,cursor()
  m.snap('tm-app-launcher');m.press(8);wait_task('Task_HandleListInput');m.run(90)
 def close_app():

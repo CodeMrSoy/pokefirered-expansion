@@ -15,6 +15,8 @@ void PreservePokeGlassCoverPalette(void);
 void EndPokeGlassSession(void);
 void DrawPokeGlassFrame(u8 bg);
 void DrawPokeGlassBagFrame(void);
+void DrawPokeGlassTMFrame(void);
+void LoadPokeGlassWindowBorder(u16 baseTile);
 void LoadPokeGlassMenuPalette(u8 slot);
 void DrawPokeGlassNativeOverlay(bool8 bag);
 void DrawPokeGlassCaseOverlay(void);

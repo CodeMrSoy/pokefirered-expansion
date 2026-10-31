@@ -40,7 +40,7 @@ def border(x,y,w,h):
  assert np.all(a[y+h-1,x:x+w]==6),('text crosses bottom border',x,y+h-1)
  assert np.all(a[y:y+h,x]==6) and np.all(a[y:y+h,x+w-1]==6),('text crosses side border',x,y)
 m.press(3);wait_task('Task_PokeGlassHub');m.run(80);base=save();capture('launcher-one')
-paths={0:[],1:[7],2:[7,7],3:[5,7],4:[5],5:[5,7,7],6:[7,7,7],7:[7,7,7,5],8:[7,7,7,7,7],9:[7,7,7,7]}
+paths={0:[],1:[7],2:[7,7],3:[5,7],4:[5],5:[5,7,7],6:[6,5,6],7:[5,6],8:[6,5],9:[6,6]}
 def open_app(app,task):
  restore(base)
  for key in paths[app]:m.press(key,30)

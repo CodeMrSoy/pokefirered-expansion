@@ -12,11 +12,11 @@ selected.
 | Page | Top row | Bottom row |
 | --- | --- | --- |
 | 1 | Pokédex, Party, Storage | Map, Stats, Bag |
-| 2 | Trainer Card, Field Kit, Save | Options, TM Case, utility slot |
+| 2 | Field Kit, TM Case, utility slot | Trainer Card, Save, Options |
 
 Field Kit is always available and shows owned and missing field tools. TM Case
 is available even with no TMs, and uses the normal teaching and item rules.
-The final utility slot shows Retire during Safari; outside Safari it shows
+The top-right utility slot shows Retire during Safari; outside Safari it shows
 DexNav if that optional feature is enabled and unlocked. Save is unavailable
 during Safari and link sessions. Hidden
 slots are skipped, including when a whole row is empty. Link and Union Room
@@ -83,8 +83,12 @@ For the current overhaul's executed checks and limitations, see
 
 ## TM Case app
 
-The TM Case tile opens the existing native case directly within the tablet
-border. B returns to the selected tile on page two. The normal Bag case and
+The TM Case tile opens a glass-styled case within the tablet border. It uses
+the same translucent panels, cyan rules and small type as Bag and the other
+apps. The animated disc sits beside type, power, accuracy and PP; the right
+panel holds five rows with quantities. A full move title and a wrapped two-line
+description replace the old cream-paper case layout. Action dialogs use the
+same cyan borders. Outside a PokéGlass session the original case is retained. B returns to the selected tile on page two. The normal Bag case and
 registered-item entry remain available, with their own return callbacks.
 Teaching or cancelling the Pokémon choice reopens the case; closing that case
 returns to PokéGlass. No new save fields or persistent EWRAM buffers are added.
@@ -96,3 +100,17 @@ The grid, transition, Bag and repeated-session allocation suites also include
 the new app. Evidence is under `v2-integration-test/results/emulator-qol-tm-app-*`
 in the workspace. The transition fixture waits for native setup/fade-in before
 pressing B; creation of its input task alone is too early.
+
+## TM Case glass layout validation
+
+The current QOL change places Trainer Card, Save and Options in the final three
+slots, including when the optional utility is hidden. Native TM teaching,
+consumption, Party cancellation, Bag entry and flash Continue are retained.
+The glass layout adds no persistent EWRAM: 238,828 bytes used (91.11%).
+The ROM uses 21,826,436 bytes before padding; the build log is the authoritative
+size if a later edit changes this figure.
+
+`tests/pokeglass_tm_layout_emulator.py` covers a dense list, scrolling, move
+stats, context cancellation, the no-party error, custom border tiles surviving
+initialization, disjoint window graphics and field return. The teaching test
+continues to check a real learned move and flash save/reset/Continue.

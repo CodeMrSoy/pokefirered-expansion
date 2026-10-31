@@ -17,6 +17,7 @@
 #include "shop.h"
 #include "teachy_tv.h"
 #include "move.h"
+#include "battle_main.h"
 #include "pokemon_storage_system.h"
 #include "party_menu.h"
 #include "data.h"
@@ -556,7 +557,7 @@ static bool8 DoSetUpTMCaseUI(void)
         gMain.state++;
         break;
     default:
-        if (IsPokeGlassSessionActive()) DrawPokeGlassCaseOverlay();
+        if (IsPokeGlassSessionActive()) DrawPokeGlassTMFrame();
         SetVBlankCallback(VBlankCB_Idle);
         SetMainCallback2(CB2_Idle);
         return TRUE;
@@ -582,7 +583,13 @@ static void LoadBGTemplates(void)
     *ptr = AllocZeroed(0x800);
     ResetBgsAndClearDma3BusyFlags(0);
     InitBgsFromTemplates(0, sBGTemplates, ARRAY_COUNT(sBGTemplates));
-    SetBgTilemapBuffer(2, *ptr);
+    if (IsPokeGlassSessionActive())
+    {
+        struct BgTemplate glass = {.bg = 1, .charBaseIndex = 1, .mapBaseIndex = 30, .priority = 2};
+        InitBgFromTemplate(&glass);
+        SetBgTilemapBuffer(1, *ptr);
+    }
+    else SetBgTilemapBuffer(2, *ptr);
     ResetAllBgsCoordinates();
     ScheduleBgCopyTilemapToVram(1);
     ScheduleBgCopyTilemapToVram(2);
@@ -590,11 +597,17 @@ static void LoadBGTemplates(void)
     SetGpuReg(REG_OFFSET_BLDCNT, 0);
     ShowBg(0);
     ShowBg(1);
-    ShowBg(2);
+    if (IsPokeGlassSessionActive()) HideBg(2);
+    else ShowBg(2);
 }
 
 static bool8 HandleLoadTMCaseGraphicsAndPalettes(void)
 {
+    if (IsPokeGlassSessionActive())
+    {
+        LoadCompressedSpriteSheet(&sSpriteSheet_Disc);
+        return TRUE;
+    }
     switch (sTMCaseDynamicResources->seqId)
     {
     case 0:
@@ -663,10 +676,11 @@ static void InitTMCaseListMenuItems(void)
     gMultiuseListMenuTemplate.itemVerticalPadding = 2;
     gMultiuseListMenuTemplate.upText_Y = 2;
     gMultiuseListMenuTemplate.maxShowed = sTMCaseDynamicResources->maxTMsShown;
-    gMultiuseListMenuTemplate.fontId = FONT_NORMAL;
-    gMultiuseListMenuTemplate.cursorPal = 2;
+    gMultiuseListMenuTemplate.fontId = IsPokeGlassSessionActive() ? FONT_SMALL : FONT_NORMAL;
+    if (IsPokeGlassSessionActive()) { gMultiuseListMenuTemplate.itemVerticalPadding = 0; gMultiuseListMenuTemplate.upText_Y = 0; }
+    gMultiuseListMenuTemplate.cursorPal = IsPokeGlassSessionActive() ? 8 : 2;
     gMultiuseListMenuTemplate.fillValue = 0;
-    gMultiuseListMenuTemplate.cursorShadowPal = 3;
+    gMultiuseListMenuTemplate.cursorShadowPal = IsPokeGlassSessionActive() ? 4 : 3;
     gMultiuseListMenuTemplate.moveCursorFunc = List_MoveCursorFunc;
     gMultiuseListMenuTemplate.itemPrintFunc = List_ItemPrintFunc;
     gMultiuseListMenuTemplate.cursorKind = 0;
@@ -675,6 +689,19 @@ static void InitTMCaseListMenuItems(void)
 
 static void GetTMNumberAndMoveString(u8 * dest, u16 itemId)
 {
+    if (IsPokeGlassSessionActive())
+    {
+        StringCopy(gStringVar4, IsItemHM(itemId) ? COMPOUND_STRING("HM") : COMPOUND_STRING("TM"));
+        ConvertIntToDecimalStringN(gStringVar1, IsItemHM(itemId) ? itemId - ITEM_HM01 + 1 : itemId - ITEM_TM01 + 1, STR_CONV_MODE_LEADING_ZEROS, 2);
+        StringAppend(gStringVar4, gStringVar1);
+        StringAppend(gStringVar4, COMPOUND_STRING(" "));
+        StringCopy(gStringVar1, gMovesInfo[ItemIdToBattleMoveId(itemId)].name);
+        FitPokeGlassText(gStringVar1, FONT_SMALL, 60);
+        StringAppend(gStringVar4, gStringVar1);
+        StringCopy(dest, gStringVar4);
+        return;
+    }
+
     StringCopy(gStringVar4, gText_FontSmall);
     if (IsItemHM(itemId))
     {
@@ -731,9 +758,9 @@ static void List_ItemPrintFunc(u8 windowId, u32 itemIndex, u8 y)
             {
                 StringCopy(gStringVar4, gText_EmptyString3);
             }
-            TMCase_Print(windowId, FONT_SMALL, gStringVar4, IsPokeGlassSessionActive() ? 118 : 126, y, 0, 0, TEXT_SKIP_DRAW, COLOR_DARK);
+            TMCase_Print(windowId, FONT_SMALL, gStringVar4, IsPokeGlassSessionActive() ? 104 : 126, y, 0, 0, TEXT_SKIP_DRAW, COLOR_DARK);
         }
-        else
+        else if (!IsPokeGlassSessionActive())
         {
             PlaceHMTileInWindow(windowId, 8, y);
         }
@@ -747,6 +774,33 @@ static void PrintDescription(s32 itemIndex)
         str = GetItemDescription(GetBagItemId(POCKET_TM_HM, itemIndex));
     else
         str = gText_TMCaseWillBePutAway;
+    if (IsPokeGlassSessionActive())
+    {
+        u8 plain[256], line[256], row;
+        u16 i, count, split;
+        const u8 *text = plain;
+        StringCopyN(plain, str, sizeof(plain) - 1); plain[sizeof(plain) - 1] = EOS;
+        StripExtCtrlCodes(plain);
+        for (i = 0; plain[i] != EOS; i++) if (plain[i] == CHAR_NEWLINE) plain[i] = CHAR_SPACE;
+        FillWindowPixelBuffer(WIN_DESCRIPTION, 0);
+        for (row = 0; row < 2 && *text != EOS; row++)
+        {
+            count = split = 0;
+            while (text[count] != EOS && count < sizeof(line) - 2)
+            {
+                line[count] = text[count]; line[count + 1] = EOS;
+                if (GetStringWidth(FONT_SMALL, line, 0) > 192) break;
+                if (text[count] == CHAR_SPACE) split = count;
+                count++;
+            }
+            if (row == 1) { StringCopyN(line, text, sizeof(line) - 1); line[sizeof(line) - 1] = EOS; FitPokeGlassText(line, FONT_SMALL, 192); }
+            else { if (text[count] != EOS && split) count = split; line[count] = EOS; }
+            TMCase_Print(WIN_DESCRIPTION, FONT_SMALL, line, 0, 2 + row * 13, 0, 0, TEXT_SKIP_DRAW, COLOR_LIGHT);
+            text += count; while (*text == CHAR_SPACE) text++;
+        }
+        CopyWindowToVram(WIN_DESCRIPTION, COPYWIN_FULL);
+        return;
+    }
     FillWindowPixelBuffer(WIN_DESCRIPTION, 0);
     TMCase_Print(WIN_DESCRIPTION, FONT_NORMAL, str, 2, 3, 1, 0, 0, COLOR_LIGHT);
 }
@@ -755,6 +809,7 @@ static void PrintDescription(s32 itemIndex)
 // shade=0: lighten, shade=1: darken
 static void SetDescriptionWindowShade(s32 shade)
 {
+    if (IsPokeGlassSessionActive()) return;
     SetBgTilemapPalette(2, 0, 12, 30, 8, 2 * shade + 1);
     ScheduleBgCopyTilemapToVram(2);
 }
@@ -781,7 +836,7 @@ static void PrintListCursorAtRow(u8 y, u8 colorIdx)
 static void CreateListScrollArrows(void)
 {
     sTMCaseDynamicResources->scrollArrowsTaskId = AddScrollIndicatorArrowPairParameterized(SCROLL_ARROW_UP,
-                                                                                           160, 8, 88,
+                                                                                           IsPokeGlassSessionActive() ? 224 : 160, IsPokeGlassSessionActive() ? 40 : 8, IsPokeGlassSessionActive() ? 92 : 88,
                                                                                            sTMCaseDynamicResources->numTMs - sTMCaseDynamicResources->maxTMsShown + 1,
                                                                                            TAG_SCROLL_ARROW, TAG_SCROLL_ARROW,
                                                                                            &sTMCaseStaticResources.scrollOffset);
@@ -970,24 +1025,24 @@ static void Task_SelectedTMHM_Field(u8 taskId)
 
     // Print context window actions
     PrintMenuActionTexts(sTMCaseDynamicResources->contextMenuWindowId,
-                                  FONT_NORMAL,
+                                  IsPokeGlassSessionActive() ? FONT_SMALL : FONT_NORMAL,
                                   GetMenuCursorDimensionByFont(FONT_NORMAL, 0),
                                   2,
                                   0,
-                                  GetFontAttribute(FONT_NORMAL, FONTATTR_MAX_LETTER_HEIGHT) + 2,
+                                  IsPokeGlassSessionActive() ? 13 : GetFontAttribute(FONT_NORMAL, FONTATTR_MAX_LETTER_HEIGHT) + 2,
                                   sTMCaseDynamicResources->numMenuActions,
                                   sMenuActions,
                                   sTMCaseDynamicResources->menuActionIndices);
 
-    InitMenuNormal(sTMCaseDynamicResources->contextMenuWindowId, FONT_NORMAL, 0, 2, GetFontAttribute(FONT_NORMAL, FONTATTR_MAX_LETTER_HEIGHT) + 2, sTMCaseDynamicResources->numMenuActions, 0);
+    InitMenuNormal(sTMCaseDynamicResources->contextMenuWindowId, IsPokeGlassSessionActive() ? FONT_SMALL : FONT_NORMAL, 0, 2, IsPokeGlassSessionActive() ? 13 : GetFontAttribute(FONT_NORMAL, FONTATTR_MAX_LETTER_HEIGHT) + 2, sTMCaseDynamicResources->numMenuActions, 0);
     
     // Print label text next to the context window
     strbuf = Alloc(256);
     GetTMNumberAndMoveString(strbuf, gSpecialVar_ItemId);
     StringAppend(strbuf, gText_Var1IsSelected + 2); // +2 skips over the stringvar
-    TMCase_Print(WIN_SELECTED_MSG, FONT_NORMAL, strbuf, 0, 2, 1, 0, 0, COLOR_DARK);
+    TMCase_Print(WIN_SELECTED_MSG, FONT_NORMAL, IsPokeGlassSessionActive() ? COMPOUND_STRING("Choose an action.") : strbuf, 0, 2, 1, 0, 0, COLOR_DARK);
     Free(strbuf);
-    if (IsItemHM(gSpecialVar_ItemId))
+    if (IsItemHM(gSpecialVar_ItemId) && !IsPokeGlassSessionActive())
     {
         PlaceHMTileInWindow(WIN_SELECTED_MSG, 0, 2);
         CopyWindowToVram(WIN_SELECTED_MSG, COPYWIN_GFX);
@@ -1494,29 +1549,31 @@ static void InitWindowTemplatesAndPals(void)
 
     if (IsPokeGlassSessionActive())
     {
-        struct WindowTemplate windows[ARRAY_COUNT(sWindowTemplates)];
-        memcpy(windows, sWindowTemplates, sizeof(windows));
-        windows[WIN_LIST].tilemapTop = 2;
-        windows[WIN_LIST].width = 18;
-        windows[WIN_DESCRIPTION].width = 16;
-        windows[WIN_DESCRIPTION].height = 6;
-        for (i = 0; i < ARRAY_COUNT(windows) - 1; i++)
-        {
-            windows[i].tilemapLeft = max(2, min(windows[i].tilemapLeft, 28 - windows[i].width));
-            windows[i].tilemapTop = max(2, min(windows[i].tilemapTop, 18 - windows[i].height));
-        }
+        struct WindowTemplate windows[] = {
+            {0,12,4,16,8,15,0x90}, {0,3,14,24,4,15,0x110},
+            {0,2,14,26,4,15,0x170}, {0,2,2,26,2,15,0x1D8},
+            {0,2,7,8,7,15,0x20C}, {0,8,8,3,5,15,0x244},
+            {0,2,14,26,4,15,0x253}, {0,15,9,12,4,15,0x2BB},
+            {0,2,2,8,3,15,0x2EB}, DUMMY_WIN_TEMPLATE
+        };
         InitWindows(windows);
     }
     else InitWindows(sWindowTemplates);
     DeactivateAllTextPrinters();
-    LoadUserWindowBorderGfx(0, 0x5B, BG_PLTT_ID(14));
+    if (!IsPokeGlassSessionActive()) LoadUserWindowBorderGfx(0, 0x5B, BG_PLTT_ID(14));
     LoadMessageBoxGfx(0, 0x64, BG_PLTT_ID(11));
-    LoadStdWindowGfx(0, 0x78, BG_PLTT_ID(13));
+    if (!IsPokeGlassSessionActive()) LoadStdWindowGfx(0, 0x78, BG_PLTT_ID(13));
     LoadPalette(gStandardMenuPalette, BG_PLTT_ID(15), PLTT_SIZE_4BPP);
     LoadPalette(gStandardMenuPalette, BG_PLTT_ID(10), PLTT_SIZE_4BPP);
     LoadPalette(sPal3Override, BG_PLTT_ID(15) + 6, sizeof(sPal3Override));
     LoadPalette(sPal3Override, BG_PLTT_ID(13) + 6, sizeof(sPal3Override));
     ListMenuLoadStdPalAt(BG_PLTT_ID(12), 1);
+    if (IsPokeGlassSessionActive())
+    {
+        for (i = 12; i <= 15; i++) LoadPokeGlassMenuPalette(i);
+        LoadPokeGlassWindowBorder(0x5B);
+        LoadPokeGlassWindowBorder(0x78);
+    }
     for (i = 0; i < ARRAY_COUNT(sWindowTemplates) - 1; i++)
         FillWindowPixelBuffer(i, 0x00);
     PutWindowTilemap(WIN_LIST);
@@ -1529,9 +1586,12 @@ static void InitWindowTemplatesAndPals(void)
 
 static void TMCase_Print(u8 windowId, u8 fontId, const u8 * str, u8 x, u8 y, u8 letterSpacing, u8 lineSpacing, u8 speed, u8 colorIdx)
 {
-    if (IsPokeGlassSessionActive() && windowId == WIN_DESCRIPTION)
-    { fontId = FONT_SMALL; letterSpacing = 0; }
-    AddTextPrinterParameterized4(windowId, fontId, x, y, letterSpacing, lineSpacing, sTextColors[colorIdx], speed, str);
+    if (IsPokeGlassSessionActive())
+    {
+        static const u8 colors[] = {0, 8, 4};
+        AddTextPrinterParameterized4(windowId, FONT_SMALL, x + (windowId == WIN_SELECTED_MSG || windowId == WIN_MESSAGE ? 3 : 0), y, 0, 0, colors, speed, str);
+    }
+    else AddTextPrinterParameterized4(windowId, fontId, x, y, letterSpacing, lineSpacing, sTextColors[colorIdx], speed, str);
 }
 
 static void TMCase_SetWindowBorder1(u8 windowId)
@@ -1546,18 +1606,42 @@ static void TMCase_SetWindowBorder2(u8 windowId)
 
 static void PrintMessageWithFollowupTask(u8 taskId, u8 fontId, const u8 * str, TaskFunc func)
 {
+    if (IsPokeGlassSessionActive())
+    {
+        TMCase_SetWindowBorder2(WIN_MESSAGE);
+        if (str != gStringVar4) StringExpandPlaceholders(gStringVar4, str);
+        TMCase_Print(WIN_MESSAGE, FONT_SMALL, gStringVar4, 3, 2, 0, 0, TEXT_SKIP_DRAW, COLOR_LIGHT);
+        CopyWindowToVram(WIN_MESSAGE, COPYWIN_FULL);
+        if (func != NULL) gTasks[taskId].func = func;
+        return;
+    }
     DisplayMessageAndContinueTask(taskId, WIN_MESSAGE, 0x64, 0x0B, fontId, GetPlayerTextSpeedDelay(), str, func);
     ScheduleBgCopyTilemapToVram(1);
 }
 
 static void PrintTitle(void)
 {
+    if (IsPokeGlassSessionActive())
+    {
+        TMCase_Print(WIN_TITLE, FONT_SMALL, COMPOUND_STRING("TM CASE"), 0, 0, 0, 0, TEXT_SKIP_DRAW, COLOR_LIGHT);
+        CopyWindowToVram(WIN_TITLE, COPYWIN_FULL);
+        return;
+    }
     u32 distance = 72 - GetStringWidth(FONT_NORMAL_COPY_1, gText_TMCase, 0);
     AddTextPrinterParameterized3(WIN_TITLE, FONT_NORMAL_COPY_1, distance / 2, 1, sTextColors[COLOR_LIGHT], 0, gText_TMCase);
 }
 
 static void DrawMoveInfoLabels(void)
 {
+    if (IsPokeGlassSessionActive())
+    {
+        FillWindowPixelBuffer(WIN_MOVE_INFO_LABELS, 0);
+        TMCase_Print(WIN_MOVE_INFO_LABELS, FONT_SMALL, COMPOUND_STRING("Power"), 0, 11, 0, 0, TEXT_SKIP_DRAW, COLOR_LIGHT);
+        TMCase_Print(WIN_MOVE_INFO_LABELS, FONT_SMALL, COMPOUND_STRING("Acc."), 0, 23, 0, 0, TEXT_SKIP_DRAW, COLOR_LIGHT);
+        TMCase_Print(WIN_MOVE_INFO_LABELS, FONT_SMALL, COMPOUND_STRING("PP"), 0, 35, 0, 0, TEXT_SKIP_DRAW, COLOR_LIGHT);
+        CopyWindowToVram(WIN_MOVE_INFO_LABELS, COPYWIN_GFX);
+        return;
+    }
     BlitMenuInfoIcon(WIN_MOVE_INFO_LABELS, MENU_INFO_ICON_TYPE, 0, 0);
     BlitMenuInfoIcon(WIN_MOVE_INFO_LABELS, MENU_INFO_ICON_POWER, 0, 12);
     BlitMenuInfoIcon(WIN_MOVE_INFO_LABELS, MENU_INFO_ICON_ACCURACY, 0, 24);
@@ -1571,6 +1655,33 @@ static void PrintMoveInfo(u16 itemId)
     u16 move;
     const u8 * str;
 
+    if (IsPokeGlassSessionActive())
+    {
+        u8 name[64], number[8];
+        FillWindowPixelBuffer(WIN_TITLE, 0);
+        PrintTitle();
+        DrawMoveInfoLabels();
+        FillWindowPixelBuffer(WIN_MOVE_INFO, 0);
+        if (itemId != ITEM_NONE)
+        {
+            move = ItemIdToBattleMoveId(itemId);
+            StringCopy(name, gMovesInfo[move].name); FitPokeGlassText(name, FONT_SMALL, 128);
+            TMCase_Print(WIN_TITLE, FONT_SMALL, name, 80, 0, 0, 0, TEXT_SKIP_DRAW, COLOR_LIGHT);
+            TMCase_Print(WIN_MOVE_INFO_LABELS, FONT_SMALL, gTypesInfo[gMovesInfo[move].type].name, 0, 0, 0, 0, TEXT_SKIP_DRAW, COLOR_LIGHT);
+        }
+        else { move = MOVE_NONE; TMCase_Print(WIN_TITLE, FONT_SMALL, COMPOUND_STRING("Choose a TM"), 80, 0, 0, 0, TEXT_SKIP_DRAW, COLOR_LIGHT); }
+        for (i = 0; i < 3; i++)
+        {
+            u16 value = i == 0 ? gMovesInfo[move].power : i == 1 ? gMovesInfo[move].accuracy : gMovesInfo[move].pp;
+            if (itemId == ITEM_NONE || (i == 0 && value < 2) || (i == 1 && !value)) StringCopy(number, COMPOUND_STRING("-"));
+            else ConvertIntToDecimalStringN(number, value, STR_CONV_MODE_LEFT_ALIGN, 3);
+            TMCase_Print(WIN_MOVE_INFO, FONT_SMALL, number, 23 - GetStringWidth(FONT_SMALL, number, 0), 3 + i * 12, 0, 0, TEXT_SKIP_DRAW, COLOR_LIGHT);
+        }
+        CopyWindowToVram(WIN_TITLE, COPYWIN_FULL);
+        CopyWindowToVram(WIN_MOVE_INFO_LABELS, COPYWIN_FULL);
+        CopyWindowToVram(WIN_MOVE_INFO, COPYWIN_FULL);
+        return;
+    }
     FillWindowPixelRect(WIN_MOVE_INFO, 0, 0, 0, 40, 48);
     if (itemId == ITEM_NONE)
     {
@@ -1624,14 +1735,19 @@ static void PrintPlayersMoney(void)
 
 static void HandleCreateYesNoMenu(u8 taskId, const struct YesNoFuncTable *ptrs)
 {
-    CreateYesNoMenuWithCallbacks(taskId, &sYesNoWindowTemplate, FONT_NORMAL, 0, 2, 91, 14, ptrs);
+    struct WindowTemplate window = sYesNoWindowTemplate;
+    if (IsPokeGlassSessionActive()) { window.bg = 0; window.baseBlock = 0x330; }
+    CreateYesNoMenuWithCallbacks(taskId, &window, IsPokeGlassSessionActive() ? FONT_SMALL : FONT_NORMAL, 0, 2, 91, 14, ptrs);
 }
 
 static u8 AddContextMenu(u8 * windowId, u8 windowIndex)
 {
     if (*windowId == WINDOW_NONE)
     {
-        *windowId = AddWindow(&sWindowTemplates_ContextMenu[windowIndex]);
+        struct WindowTemplate window = sWindowTemplates_ContextMenu[windowIndex];
+        if (IsPokeGlassSessionActive())
+        { window.bg = 0; window.tilemapLeft = 20; window.tilemapTop = 5; window.height = windowIndex == WIN_USE_GIVE_EXIT ? 6 : 4; window.baseBlock = 0x303; }
+        *windowId = AddWindow(&window);
         TMCase_SetWindowBorder1(*windowId);
         ScheduleBgCopyTilemapToVram(0);
     }
@@ -1690,6 +1806,13 @@ static void TintDiscpriteByType(u8 type)
 static void SetDiscSpritePosition(struct Sprite *sprite, u8 tmIdx)
 {
     s32 x, y;
+    if (IsPokeGlassSessionActive())
+    {
+        sprite->x = 44; sprite->y = 44; sprite->oam.priority = 0;
+        sprite->invisible = tmIdx == DISC_HIDDEN;
+        if (tmIdx == DISC_HIDDEN) sprite->y2 = DISC_CASE_DISTANCE;
+        return;
+    }
     if (tmIdx == DISC_HIDDEN)
     {
         x = 27;
@@ -1752,4 +1875,5 @@ static void SpriteCB_SwapDisc(struct Sprite *sprite)
         else
             sprite->y2 -= DISC_Y_MOVE;
     }
+    if (IsPokeGlassSessionActive()) sprite->invisible = sprite->y2 > 0;
 }
