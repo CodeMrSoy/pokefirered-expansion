@@ -83,98 +83,35 @@ For the current overhaul's executed checks and limitations, see
 
 ## TM Case app
 
-The TM Case tile opens a glass-styled case within the tablet border. It uses
-the same translucent panels, cyan rules and small type as Bag and the other
-apps. The animated SD card and angled TM case sit beside type, power, accuracy and PP; the right
-panel holds five rows with quantities. A full move title and a wrapped two-line
-description replace the old cream-paper case layout. Action dialogs use the
-same cyan borders. Outside a PokéGlass session the original case is retained. B returns to the selected tile on page two. The normal Bag case and
-registered-item entry remain available, with their own return callbacks.
-Teaching or cancelling the Pokémon choice reopens the case; closing that case
-returns to PokéGlass. No new save fields or persistent EWRAM buffers are added.
+The TM Case tile opens the regular case inside the PokéGlass tablet border,
+using the original gold case picture, type-colored discs, native list/stat
+panels, and the original insertion/ejection animation. The launcher icon is a
+disc again. B returns to the selected TM Case tile on page two. Trainer Card,
+Save and Options remain the final three apps.
 
-`tests/pokeglass_tm_app_emulator.py` checks empty access without a physical case,
-a real compatible Pokémon learning a TM, cancellation without consumption,
-normal TM consumption, repeated launch/return, and flash save/reset/Continue.
-The grid, transition, Bag and repeated-session allocation suites also include
-the new app. Evidence is under `v2-integration-test/results/emulator-qol-tm-app-*`
-in the workspace. The transition fixture waits for native setup/fade-in before
-pressing B; creation of its input task alone is too early.
+The Bag and registered-item routes remain available with their existing return
+callbacks. Teaching and cancelling the Pokémon choice return to the case;
+closing it returns to PokéGlass. Native TM consumption and flash saves are
+unchanged. No SD-card artwork is loaded by the active TM screen. The experimental
+art and its generator remain saved as unused assets for future reference.
 
-## TM Case glass layout validation
+The native case implementation is restored from the direct-app baseline
+`b611c0a0`; later launcher ordering, Bag styling and other apps are retained. The regular
+list starts at its original top row so a full list and CLOSE fit above the lower
+panel border inside the tablet.
+`tests/pokeglass_tm_case_emulator.py` compares the loaded disc graphics with the
+original compressed ROM asset and checks the gold case, native 0/10/20-pixel
+swap offsets, CLOSE/reopen, rapid scrolling and field return.
+`tests/pokeglass_tm_layout_emulator.py` covers the regular list, scrolling,
+context and no-party message, and window tile bounds.
+`tests/pokeglass_tm_app_emulator.py` checks empty access, compatible teaching,
+cancellation, real TM consumption, repeated entry and flash save/reset/Continue.
+The previous `pokeglass_tm_cards_emulator.py` path now delegates to the regular
+case regression for compatibility with older suite commands.
 
-The current QOL change places Trainer Card, Save and Options in the final three
-slots, including when the optional utility is hidden. Native TM teaching,
-consumption, Party cancellation, Bag entry and flash Continue are retained.
-The glass layout adds no persistent EWRAM: 238,828 bytes used (91.11%).
-The ROM uses 21,831,164 bytes before padding; the build log is the authoritative
-size if a later edit changes this figure.
-
-`tests/pokeglass_tm_layout_emulator.py` covers a dense list, scrolling, move
-stats, context cancellation, the no-party error, custom border tiles surviving
-initialization, disjoint window graphics and field return. The teaching test
-continues to check a real learned move and flash save/reset/Continue.
-
-
-### SD cards and case animation
-
-Inside PokéGlass, TMs use SD cards with a clipped corner, gold contacts, a label
-and a body tinted by move type. The launcher icon also uses an SD card. The
-case reuses the original gold shell artwork and gray rim, with a raised
-opening, shaded side face and beveled front in a three-quarter view. It stays visible beneath the card: changing selection slides the old card
-into the slot, changes its type color while concealed, then raises the new one.
-CLOSE leaves the slot empty. Rapid scrolling uses the native swap state machine.
-Six generated positions crop the moving card at the slot, keeping it out of the
-type/stat text. The original non-PokéGlass case remains available unchanged.
-
-`tools/compile_pokeglass_tm_cards.py` generates the indexed sprite and case tiles
-in `src/data/poke_glass_tm_cards.h`. No new persistent EWRAM is required.
-`tests/pokeglass_tm_cards_emulator.py` records an actual scroll animation and
-checks all six positions, a fixed case/slot, type changes, CLOSE/reopen, rapid
-scrolling and field return. Layout, real teaching and flash Continue regressions
-are included in `emulator-qol-tm-sd-cards`; final launcher and allocation checks
-are in `emulator-qol-tm-sd-release` in the workspace evidence directory.
-
-The squared case is reconstructed from the existing indexed TM case tiles and
-tilemap. Its original palette and front ribbing are reused; the source PNG is
-unchanged. Final animation, layout and real teaching/Continue evidence is in
-`emulator-qol-tm-sd-square`. The earlier repeated-session resource suite passed
-with all eight sessions returning to the same allocation baseline.
-
-
-### Case depth refinement
-
-The case retains a rectangular SD opening while restoring the original's
-three-quarter perspective. A raised back rim, recessed opening, darker side,
-and textured gold front give the case thickness. The original palette and shell
-texture remain the source. Each card frame clips against the angled front lip,
-so insertion stays behind the case instead of crossing its shaded front.
-The animation regression checks that lip pixel by pixel during all six positions.
-Evidence for this refinement is under `emulator-qol-tm-sd-depth` and
-`emulator-qol-tm-sd-depth-final`. Persistent EWRAM is unchanged.
-
-
-## Reference-based open SD case (2026-11-01)
-
-The current case follows the supplied reference: an open gold shell, a blue
-stripe and Poké Ball lid emblem, dark card tray, colored stored cards and silver
-front latch. A transparent standalone illustration was created with built-in
-imagegen and exported to a 44-by-43 indexed PNG with fifteen opaque colors.
-The native source and exact generation prompt are under
-`graphics/pokeglass/tm_case_reference/`. The full-size generated source is also
-saved in the workspace preview artifacts.
-
-The art uses BG2 at VRAM 0xCC20..0xD0A0, with a reserved transparent tile at
-0xCC00 and tilemap at 0xE800. It sits above the glass and below text windows;
-it adds no persistent EWRAM or heap allocations. Type appears below the case,
-with Power (Pow), Accuracy (Acc) and PP in three columns. A smaller selected
-card rises through the empty tray slot. Native teaching, quantities and callbacks
-are retained; non-PokéGlass screens keep their original presentation.
-
-`emulator-qol-reference-case-final` covers learning/consumption, flash Continue,
-layout, and eight repeated sessions returning to the same heap baseline.
-The subsequent `emulator-qol-reference-case-render` verifies the corrected
-layer order, visible gold/blue pixels, art tilemap, animated slot clipping,
-rapid scrolling, CLOSE/reopen, window tile bounds and field return. Earlier
-captures exposed the art layer being obscured by glass; those are not used as
-final visual evidence.
+Build and emulator evidence for this restoration is saved under
+`v2-integration-test/results/emulator-qol-restore-native-tm` in the workspace. Final native layout/animation reruns are under
+`emulator-qol-restore-native-tm-final` (original assets/animation) and
+`emulator-qol-restore-native-tm-verified` (native layout/actions). Earlier
+harness failures sampled the green frame rather than the cream panel or tried
+to run a field-script helper inside the case; these are not counted as passes.
