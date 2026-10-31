@@ -177,7 +177,7 @@ void AddBagItemIconSprite(u16 itemId, u8 id)
         {
             spriteIds[id] = spriteId;
             gSprites[spriteId].x2 = IsPokeGlassSessionActive() ? 40 : 24;
-            gSprites[spriteId].y2 = IsPokeGlassSessionActive() ? 125 : 140;
+            gSprites[spriteId].y2 = IsPokeGlassSessionActive() ? 129 : 140;
         }
     }
 }
