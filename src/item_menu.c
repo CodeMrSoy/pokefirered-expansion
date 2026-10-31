@@ -1043,7 +1043,7 @@ static void LoadBagItemListBuffers(u8 pocketId)
 static void BagListMenuGetItemNameColored(u8 *dest, u16 itemId)
 {
     u8* end;
-    if (itemId == ITEM_TM_CASE || itemId == ITEM_BERRY_POUCH)
+    if (itemId == ITEM_POKEGLASS || itemId == ITEM_TM_CASE || itemId == ITEM_BERRY_POUCH)
         StringCopy(dest, sListItemTextColor_TmCase_BerryPouch);
     else
         StringCopy(dest, sListItemTextColor_RegularItem);
