@@ -15,13 +15,17 @@ def sprite():
   p=m.symbols['gSprites']+i*68
   if struct.unpack('<h',m.read(p+0x20,2))[0]==44:return p
  raise AssertionError('Missing SD card sprite')
-p=sprite();case=np.asarray(m.screen)[46:56,25:64].copy();frames=[];offsets=[];tiles=[]
+p=sprite();case=np.asarray(m.screen)[48:56,25:64].copy();frames=[];offsets=[];tiles=[]
+front_mask=np.zeros((160,240),bool)
+for x in range(34,54):front_mask[47-(x-34)*7//20:56,x]=True
+front=np.asarray(m.screen)[front_mask].copy()
 m.keys.add(5)
 for frame in range(28):
  m.run(1)
  if frame==0:m.keys.clear()
  frames.append(m.screen.copy());offsets.append(struct.unpack('<h',m.read(p+0x26,2))[0]);tiles.append(struct.unpack('<H',m.read(p+4,2))[0]&1023)
- assert np.array_equal(case,np.asarray(m.screen)[46:56,25:64]),('Case moved or card escaped slot',frame)
+ assert np.array_equal(case,np.asarray(m.screen)[48:56,25:64]),('Case moved or card escaped slot',frame)
+ assert np.array_equal(front,np.asarray(m.screen)[front_mask]),('Card drew over angled front lip',frame)
 assert max(offsets)==20 and offsets[-1]==0 and len(set(tiles))==6,(offsets,tiles)
 assert any(not np.array_equal(np.asarray(frames[0])[28:46,32:59],np.asarray(f)[28:46,32:59]) for f in frames[1:])
 frames[0].save(m.d/'tm-sd-card-scroll.gif',save_all=True,append_images=frames[1:],duration=34,loop=0)

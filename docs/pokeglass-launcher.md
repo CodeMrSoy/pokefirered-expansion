@@ -85,7 +85,7 @@ For the current overhaul's executed checks and limitations, see
 
 The TM Case tile opens a glass-styled case within the tablet border. It uses
 the same translucent panels, cyan rules and small type as Bag and the other
-apps. The animated SD card and square TM case sit beside type, power, accuracy and PP; the right
+apps. The animated SD card and angled TM case sit beside type, power, accuracy and PP; the right
 panel holds five rows with quantities. A full move title and a wrapped two-line
 description replace the old cream-paper case layout. Action dialogs use the
 same cyan borders. Outside a PokéGlass session the original case is retained. B returns to the selected tile on page two. The normal Bag case and
@@ -120,8 +120,8 @@ continues to check a real learned move and flash save/reset/Continue.
 
 Inside PokéGlass, TMs use SD cards with a clipped corner, gold contacts, a label
 and a body tinted by move type. The launcher icon also uses an SD card. The
-case reuses the original gold shell artwork and gray rim, squared around an
-SD-width opening. It stays visible beneath the card: changing selection slides the old card
+case reuses the original gold shell artwork and gray rim, with a raised
+opening, shaded side face and beveled front in a three-quarter view. It stays visible beneath the card: changing selection slides the old card
 into the slot, changes its type color while concealed, then raises the new one.
 CLOSE leaves the slot empty. Rapid scrolling uses the native swap state machine.
 Six generated positions crop the moving card at the slot, keeping it out of the
@@ -140,3 +140,15 @@ tilemap. Its original palette and front ribbing are reused; the source PNG is
 unchanged. Final animation, layout and real teaching/Continue evidence is in
 `emulator-qol-tm-sd-square`. The earlier repeated-session resource suite passed
 with all eight sessions returning to the same allocation baseline.
+
+
+### Case depth refinement
+
+The case retains a rectangular SD opening while restoring the original's
+three-quarter perspective. A raised back rim, recessed opening, darker side,
+and textured gold front give the case thickness. The original palette and shell
+texture remain the source. Each card frame clips against the angled front lip,
+so insertion stays behind the case instead of crossing its shaded front.
+The animation regression checks that lip pixel by pixel during all six positions.
+Evidence for this refinement is under `emulator-qol-tm-sd-depth` and
+`emulator-qol-tm-sd-depth-final`. Persistent EWRAM is unchanged.
