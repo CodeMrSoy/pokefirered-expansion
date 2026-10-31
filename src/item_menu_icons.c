@@ -122,7 +122,7 @@ const struct SpriteTemplate gItemIconSpriteTemplate = {
 
 void AddBagVisualSprite(u8 bagPocketId)
 {
-    gBagMenu->spriteIds[ITEMMENUSPRITE_BAG] = CreateSprite(&sSpriteTemplate_Bag, 40, 68, 0);
+    gBagMenu->spriteIds[ITEMMENUSPRITE_BAG] = CreateSprite(&sSpriteTemplate_Bag, IsPokeGlassSessionActive() ? 44 : 40, 68, 0);
     SetBagVisualPocketId(bagPocketId);
 }
 
@@ -176,8 +176,8 @@ void AddBagItemIconSprite(u16 itemId, u8 id)
         if (spriteId != MAX_SPRITES)
         {
             spriteIds[id] = spriteId;
-            gSprites[spriteId].x2 = 24;
-            gSprites[spriteId].y2 = IsPokeGlassSessionActive() ? 130 : 140;
+            gSprites[spriteId].x2 = IsPokeGlassSessionActive() ? 32 : 24;
+            gSprites[spriteId].y2 = IsPokeGlassSessionActive() ? 125 : 140;
         }
     }
 }
@@ -195,17 +195,17 @@ void RemoveBagItemIconSprite(u8 id)
 
 void CreateItemMenuSwapLine(void)
 {
-    CreateSwapLineSprites(&gBagMenu->spriteIds[ITEMMENUSPRITE_SWAP_LINE], ITEMMENU_SWAP_LINE_LENGTH);
+    CreateSwapLineSprites(&gBagMenu->spriteIds[ITEMMENUSPRITE_SWAP_LINE], IsPokeGlassSessionActive() ? ITEMMENU_SWAP_LINE_LENGTH - 1 : ITEMMENU_SWAP_LINE_LENGTH);
 }
 
 void SetItemMenuSwapLineInvisibility(bool8 invisible)
 {
-    SetSwapLineSpritesInvisibility(&gBagMenu->spriteIds[ITEMMENUSPRITE_SWAP_LINE], ITEMMENU_SWAP_LINE_LENGTH, invisible);
+    SetSwapLineSpritesInvisibility(&gBagMenu->spriteIds[ITEMMENUSPRITE_SWAP_LINE], IsPokeGlassSessionActive() ? ITEMMENU_SWAP_LINE_LENGTH - 1 : ITEMMENU_SWAP_LINE_LENGTH, invisible);
 }
 
 void UpdateItemMenuSwapLinePos(u16 y)
 {
-    UpdateSwapLineSpritesPos(&gBagMenu->spriteIds[ITEMMENUSPRITE_SWAP_LINE], ITEMMENU_SWAP_LINE_LENGTH, 0, y + 6);
+    UpdateSwapLineSpritesPos(&gBagMenu->spriteIds[ITEMMENUSPRITE_SWAP_LINE], IsPokeGlassSessionActive() ? ITEMMENU_SWAP_LINE_LENGTH - 1 : ITEMMENU_SWAP_LINE_LENGTH, IsPokeGlassSessionActive() ? 8 : 0, y + (IsPokeGlassSessionActive() ? 30 : 6));
 }
 
 

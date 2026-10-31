@@ -51,6 +51,10 @@ def cycle():
     m.press(5,30);m.press(0,100);assert hub()
     assert heap_state() == before, ('Field Kit retained resources',before,heap_state())
     m.press(7,30);m.press(7,30);assert byte('sHubCursor') == 0
+    m.press(5,30);m.press(7,30);m.press(7,30);assert byte('sHubCursor') == 5
+    m.press(8,180);assert ready('Task_BagMenu_HandleInput')
+    m.press(7,90);m.press(6,90);m.press(0,180);assert hub()
+    m.press(4,30);m.press(6,30);m.press(6,30);assert byte('sHubCursor') == 0
     m.press(0, 100)
     assert byte('sGlobalScriptContextStatus') == 2
     assert not byte('sLockFieldControls')

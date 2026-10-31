@@ -1,7 +1,6 @@
 #include "global.h"
 #include "poke_glass.h"
 #include "field_tools.h"
-#include "poke_glass.h"
 #include "gflib.h"
 #include "battle.h"
 #include "battle_controllers.h"
@@ -197,6 +196,7 @@ static void CancelSell(u8 taskId);
 // pokefirered functions
 static void BagListMenuGetItemNameColored(u8 *dest, u16 itemId);
 static void PrintPocketName(void);
+static struct WindowTemplate GlassBagWindow(u8 windowType);
 static void GoToTMCase_Give(void);
 static void GoToBerryPouch_Give(void);
 static void ReturnToBagMenuFromSubmenu_Give(void);
@@ -892,7 +892,7 @@ static bool8 SetupBagMenu(void)
             SetHelpContext(HELPCONTEXT_BAG);
         BeginNormalPaletteFade(PALETTES_ALL, 0, 16, 0, RGB_BLACK);
         gPaletteFade.bufferTransferDisabled = FALSE;
-        if (IsPokeGlassSessionActive()) DrawPokeGlassNativeOverlay(TRUE);
+        if (IsPokeGlassSessionActive()) DrawPokeGlassBagFrame();
         gMain.state++;
         break;
     default:
@@ -909,6 +909,12 @@ static void BagMenu_InitBGs(void)
     memset(gBagMenu->tilemapBuffer, 0, sizeof(gBagMenu->tilemapBuffer));
     ResetBgsAndClearDma3BusyFlags(FALSE);
     InitBgsFromTemplates(0, sBgTemplates_ItemMenu, NELEMS(sBgTemplates_ItemMenu));
+    if (IsPokeGlassSessionActive())
+    {
+        struct BgTemplate glass = sBgTemplates_ItemMenu[1];
+        glass.charBaseIndex = 1;
+        InitBgFromTemplate(&glass);
+    }
     SetBgTilemapBuffer(1, gBagMenu->tilemapBuffer);
     ResetAllBgsCoordinates();
     ScheduleBgCopyTilemapToVram(1);
@@ -1024,6 +1030,14 @@ static void LoadBagItemListBuffers(u8 pocketId)
     gMultiuseListMenuTemplate.items = sListBuffer1->subBuffers;
     gMultiuseListMenuTemplate.totalItems = gBagMenu->numItemStacks[pocketId];
     gMultiuseListMenuTemplate.maxShowed = gBagMenu->numShownItems[pocketId];
+    if (IsPokeGlassSessionActive())
+    {
+        gMultiuseListMenuTemplate.fontId = FONT_SMALL;
+        gMultiuseListMenuTemplate.itemVerticalPadding = 0;
+        gMultiuseListMenuTemplate.upText_Y = 0;
+        gMultiuseListMenuTemplate.cursorPal = 8;
+        gMultiuseListMenuTemplate.cursorShadowPal = 4;
+    }
 }
 
 static void BagListMenuGetItemNameColored(u8 *dest, u16 itemId)
@@ -1034,8 +1048,18 @@ static void BagListMenuGetItemNameColored(u8 *dest, u16 itemId)
     else
         StringCopy(dest, sListItemTextColor_RegularItem);
     
-    end = StringAppend(dest, GetItemName(itemId));
-    PrependFontIdToFit(dest, end, FONT_NARROW, 61);
+    if (IsPokeGlassSessionActive())
+    {
+        u8 name[ITEM_NAME_LENGTH + 1];
+        CopyItemName(itemId, name);
+        FitPokeGlassText(name, FONT_SMALL, 80);
+        StringAppend(dest, name);
+    }
+    else
+    {
+        end = StringAppend(dest, GetItemName(itemId));
+        PrependFontIdToFit(dest, end, FONT_NARROW, 61);
+    }
 }
 
 static void BagMenu_MoveCursorCallback(s32 itemIndex, bool8 onInit, struct ListMenu *list)
@@ -1082,12 +1106,12 @@ static void BagMenu_ItemPrintCallback(u8 windowId, u32 itemIndex, u8 y)
     {
         ConvertIntToDecimalStringN(gStringVar1, itemQuantity, STR_CONV_MODE_RIGHT_ALIGN, MAX_ITEM_DIGITS);
         StringExpandPlaceholders(gStringVar4, gText_xVar1);
-        BagMenu_Print(windowId, FONT_SMALL, gStringVar4, IsPokeGlassSessionActive() ? 102 : 110, y, 0, 0, TEXT_SKIP_DRAW, 1);
+        BagMenu_Print(windowId, FONT_SMALL, gStringVar4, IsPokeGlassSessionActive() ? 92 : 110, y, 0, 0, TEXT_SKIP_DRAW, 1);
     }
     else
     {
         if (RegisteredItemSlot(itemId) >= 0)
-            BlitBitmapToWindow(windowId, sRegisteredDirectionGfx[RegisteredItemSlot(itemId)], 112, y, 24, 16);
+            BlitBitmapToWindow(windowId, sRegisteredDirectionGfx[RegisteredItemSlot(itemId)], IsPokeGlassSessionActive() ? 96 : 112, y, 24, 16);
     }
 }
 
@@ -1137,9 +1161,9 @@ static void CreatePocketScrollArrowPair_QuantitySelect(void)
     gBagMenu->contextMenuSelectedItem = 1;
     gBagMenu->pocketScrollArrowsTask = AddScrollIndicatorArrowPairParameterized(
         SCROLL_ARROW_UP,
-        212,
-        120,
-        152,
+        IsPokeGlassSessionActive() ? 224 : 212,
+        IsPokeGlassSessionActive() ? 110 : 120,
+        IsPokeGlassSessionActive() ? 130 : 152,
         2,
         TAG_POCKET_SCROLL_ARROW,
         TAG_POCKET_SCROLL_ARROW,
@@ -1152,9 +1176,9 @@ static void CreatePocketScrollArrowPair(void)
     if (gBagMenu->pocketScrollArrowsTask == TASK_NONE)
         gBagMenu->pocketScrollArrowsTask = AddScrollIndicatorArrowPairParameterized(
             SCROLL_ARROW_UP,
-            160,
-            8,
-            104,
+            IsPokeGlassSessionActive() ? 224 : 160,
+            IsPokeGlassSessionActive() ? 40 : 8,
+            IsPokeGlassSessionActive() ? 92 : 104,
             gBagMenu->numItemStacks[gBagPosition.pocket] - gBagMenu->numShownItems[gBagPosition.pocket],
             TAG_POCKET_SCROLL_ARROW,
             TAG_POCKET_SCROLL_ARROW,
@@ -1174,7 +1198,11 @@ static void BagDestroyPocketScrollArrowPair(void)
 static void CreatePocketSwitchArrowPair(void)
 {
     if (gBagMenu->pocketSwitchMode != SWITCHMODE_PC && gBagMenu->pocketSwitchArrowsTask == TASK_NONE)
-        gBagMenu->pocketSwitchArrowsTask = AddScrollIndicatorArrowPair(&sBagScrollArrowsTemplate, &gBagPosition.pocket);
+    {
+        struct ScrollArrowsTemplate arrows = sBagScrollArrowsTemplate;
+        if (IsPokeGlassSessionActive()) { arrows.firstX = 16; arrows.secondX = 76; }
+        gBagMenu->pocketSwitchArrowsTask = AddScrollIndicatorArrowPair(&arrows, &gBagPosition.pocket);
+    }
 }
 
 static void DestroyPocketSwitchArrowPair(void)
@@ -1235,8 +1263,8 @@ void UpdatePocketItemList(enum Pocket pocketId)
     if (!gBagMenu->hideCloseBagText)
         gBagMenu->numItemStacks[pocketId]++;
 
-    if (gBagMenu->numItemStacks[pocketId] > MAX_ITEMS_SHOWN)
-        gBagMenu->numShownItems[pocketId] = MAX_ITEMS_SHOWN;
+    if (gBagMenu->numItemStacks[pocketId] > (IsPokeGlassSessionActive() ? 5 : MAX_ITEMS_SHOWN))
+        gBagMenu->numShownItems[pocketId] = IsPokeGlassSessionActive() ? 5 : MAX_ITEMS_SHOWN;
     else
         gBagMenu->numShownItems[pocketId] = gBagMenu->numItemStacks[pocketId];
 }
@@ -1272,7 +1300,7 @@ void DisplayItemMessage(u8 taskId, u8 fontId, const u8 *str, void (*callback)(u8
     s16 *data = gTasks[taskId].data;
     tMsgWindowId = AddItemMessageWindow(ITEMWIN_MESSAGE);
     FillWindowPixelBuffer(tMsgWindowId, PIXEL_FILL(1));
-    DisplayMessageAndContinueTask(taskId, tMsgWindowId, 0x06D, 13, fontId, GetPlayerTextSpeedDelay(), str, callback);
+    DisplayMessageAndContinueTask(taskId, tMsgWindowId, 0x06D, 13, IsPokeGlassSessionActive() ? FONT_SMALL : fontId, GetPlayerTextSpeedDelay(), str, callback);
     ScheduleBgCopyTilemapToVram(sContextMenuWindowTemplates[ITEMWIN_MESSAGE].bg);
 }
 
@@ -1404,6 +1432,7 @@ static void OpenSortMenu(u8 taskId)
 
 static void ReturnToItemList(u8 taskId)
 {
+    if (IsPokeGlassSessionActive()) PrintPocketName();
     CreatePocketScrollArrowPair();
     CreatePocketSwitchArrowPair();
     gTasks[taskId].func = Task_BagMenu_HandleInput;
@@ -1448,8 +1477,11 @@ static void SwitchBagPocket(u8 taskId, s16 deltaBagPocketId, bool16 skipEraseLis
         RemoveBagItemIconSprite(gBagMenu->itemIconSlot ^ 1);
         BagDestroyPocketScrollArrowPair();
     }
-    FillBgTilemapBufferRect_Palette0(1, 0x02D, 11, 1, 18, 12);
-    ScheduleBgCopyTilemapToVram(1);
+    if (!IsPokeGlassSessionActive())
+    {
+        FillBgTilemapBufferRect_Palette0(1, 0x02D, 11, 1, 18, 12);
+        ScheduleBgCopyTilemapToVram(1);
+    }
     SetBagVisualPocketId(gBagPosition.pocket + deltaBagPocketId);
     SetTaskFuncWithFollowupFunc(taskId, Task_SwitchBagPocket, gTasks[taskId].func);
 }
@@ -1500,6 +1532,7 @@ static void Task_SwitchBagPocket(u8 taskId)
 // row of 0 is the bottom row in the list, up to LIST_TILES_HEIGHT at the top
 static void DrawItemListBgRow(u8 row)
 {
+    if (IsPokeGlassSessionActive()) return;
     CopyToBgTilemapBufferRect(1, &sItemListTilemap[(LIST_TILES_HEIGHT - row) * LIST_TILES_WIDTH], 11, 1 + LIST_TILES_HEIGHT - row, LIST_TILES_WIDTH, 1);
     ScheduleBgCopyTilemapToVram(1);
 }
@@ -1696,8 +1729,10 @@ static void PrintContextMenuItems(u8 windowId)
     u32 letterSpacing = GetFontAttribute(FONT_NORMAL, FONTATTR_LETTER_SPACING);
     u32 lineHeight = GetFontAttribute(FONT_NORMAL, FONTATTR_MAX_LETTER_HEIGHT) + 2;
 
-    PrintMenuActionTexts(windowId, FONT_NORMAL, left, 2, letterSpacing, lineHeight, gBagMenu->contextMenuNumItems, sItemMenuActions, gBagMenu->contextMenuItemsPtr);
-    InitMenuNormal(windowId, FONT_NORMAL, 0, 2, lineHeight, gBagMenu->contextMenuNumItems, 0);
+    u8 font = IsPokeGlassSessionActive() ? FONT_SMALL : FONT_NORMAL;
+    if (IsPokeGlassSessionActive()) { lineHeight = 13; letterSpacing = 0; }
+    PrintMenuActionTexts(windowId, font, left, 2, letterSpacing, lineHeight, gBagMenu->contextMenuNumItems, sItemMenuActions, gBagMenu->contextMenuItemsPtr);
+    InitMenuNormal(windowId, font, 0, 2, lineHeight, gBagMenu->contextMenuNumItems, 0);
 }
 
 static void Task_ItemContext_Normal(u8 taskId)
@@ -2934,10 +2969,40 @@ static void Task_Bag_TeachyTvTMs(u8 taskId)
 static void PrintPocketName(void)
 {
     const u8 *str = gPocketNamesStringsTable[gBagPosition.pocket];
-    u32 x = (72 - GetStringWidth(FONT_NORMAL_COPY_1, str, 0)) / 2;
-
     FillWindowPixelBuffer(WIN_POCKET_NAME, PIXEL_FILL(0));
-    AddTextPrinterParameterized3(WIN_POCKET_NAME, FONT_NORMAL_COPY_1, x, 1, sFontColorTable[COLORID_NORMAL], 0, str);
+    if (IsPokeGlassSessionActive())
+    {
+        static const u8 colors[] = {0, 8, 4};
+        u8 number[8];
+        AddTextPrinterParameterized3(WIN_POCKET_NAME, FONT_SMALL, 0, 0, colors, TEXT_SKIP_DRAW, COMPOUND_STRING("BAG"));
+        AddTextPrinterParameterized3(WIN_POCKET_NAME, FONT_SMALL, 80, 0, colors, TEXT_SKIP_DRAW, str);
+        ConvertIntToDecimalStringN(number, gBagMenu->numItemStacks[gBagPosition.pocket] - 1, STR_CONV_MODE_LEFT_ALIGN, 3);
+        AddTextPrinterParameterized3(WIN_POCKET_NAME, FONT_SMALL, 208 - GetStringWidth(FONT_SMALL, number, 0), 0, colors, TEXT_SKIP_DRAW, number);
+        CopyWindowToVram(WIN_POCKET_NAME, COPYWIN_FULL);
+    }
+    else
+    {
+        u32 x = (72 - GetStringWidth(FONT_NORMAL_COPY_1, str, 0)) / 2;
+        AddTextPrinterParameterized3(WIN_POCKET_NAME, FONT_NORMAL_COPY_1, x, 1, sFontColorTable[COLORID_NORMAL], 0, str);
+    }
+}
+
+static void LoadGlassBagBorders(void)
+{
+    u8 ALIGNED(4) tiles[9 * 32] = {0};
+    u8 tile, x, y;
+    for (tile = 0; tile < 9; tile++)
+        for (y = 0; y < 8; y++)
+            for (x = 0; x < 8; x++)
+            {
+                u8 row = tile / 3, col = tile % 3;
+                bool8 line = (row == 0 && y == 7 && (col == 1 || (col == 0 ? x == 7 : x == 0)))
+                    || (row == 2 && y == 0 && (col == 1 || (col == 0 ? x == 7 : x == 0)))
+                    || (row == 1 && ((col == 0 && x == 7) || (col == 2 && x == 0)));
+                tiles[tile * 32 + y * 4 + x / 2] |= (line ? 6 : 4) << ((x & 1) * 4);
+            }
+    CpuCopy16(tiles, (void *)(VRAM + 0x64 * 32), sizeof(tiles));
+    CpuCopy16(tiles, (void *)(VRAM + 0x81 * 32), sizeof(tiles));
 }
 
 static void LoadBagMenuTextWindows(void)
@@ -2948,12 +3013,20 @@ static void LoadBagMenuTextWindows(void)
     {
         struct WindowTemplate windows[ARRAY_COUNT(sDefaultBagWindows)];
         memcpy(windows, sDefaultBagWindows, sizeof(windows));
-        windows[WIN_ITEM_LIST].tilemapTop = 2;
-        windows[WIN_ITEM_LIST].width = 17;
-        windows[WIN_DESCRIPTION].width = 23;
-        windows[WIN_DESCRIPTION].height = 4;
+        windows[WIN_ITEM_LIST].tilemapLeft = 12;
+        windows[WIN_ITEM_LIST].tilemapTop = 4;
+        windows[WIN_ITEM_LIST].width = 16;
+        windows[WIN_ITEM_LIST].height = 8;
+        windows[WIN_ITEM_LIST].baseBlock = 0x90;
+        windows[WIN_DESCRIPTION].tilemapLeft = 7;
+        windows[WIN_DESCRIPTION].tilemapTop = 13;
+        windows[WIN_DESCRIPTION].width = 20;
+        windows[WIN_DESCRIPTION].height = 5;
+        windows[WIN_DESCRIPTION].baseBlock = 0x120;
         windows[WIN_POCKET_NAME].tilemapLeft = 2;
         windows[WIN_POCKET_NAME].tilemapTop = 2;
+        windows[WIN_POCKET_NAME].width = 26;
+        windows[WIN_POCKET_NAME].baseBlock = 0x190;
         InitWindows(windows);
     }
     else if (gBagPosition.location != ITEMMENULOCATION_ITEMPC)
@@ -2966,6 +3039,11 @@ static void LoadBagMenuTextWindows(void)
     LoadMessageBoxGfx(0, 0x6D, BG_PLTT_ID(13));
     LoadStdWindowGfx(0, 0x81, BG_PLTT_ID(12));
     LoadPalette(sBagWindowPalF, BG_PLTT_ID(15), sizeof(sBagWindowPalF));
+    if (IsPokeGlassSessionActive())
+    {
+        LoadGlassBagBorders();
+        for (i = 12; i <= 15; i++) LoadPokeGlassMenuPalette(i);
+    }
     for (i = 0; i <= WIN_POCKET_NAME; i++)
     {
         FillWindowPixelBuffer(i, PIXEL_FILL(0));
@@ -2976,7 +3054,42 @@ static void LoadBagMenuTextWindows(void)
 
 static void BagMenu_Print(u8 windowId, u8 fontId, const u8 * str, u8 x, u8 y, u8 letterSpacing, u8 lineSpacing, u8 speed, u8 colorIdx)
 {
-    AddTextPrinterParameterized4(windowId, fontId, x, y, letterSpacing, lineSpacing, sFontColorTable[colorIdx], speed, str);
+    if (IsPokeGlassSessionActive())
+    {
+        static const u8 colors[] = {0, 8, 4};
+        AddTextPrinterParameterized4(windowId, FONT_SMALL, x + (windowId > WIN_POCKET_NAME ? 3 : 0), windowId == WIN_DESCRIPTION ? 0 : y, 0, 0, colors, speed, str);
+    }
+    else AddTextPrinterParameterized4(windowId, fontId, x, y, letterSpacing, lineSpacing, sFontColorTable[colorIdx], speed, str);
+}
+
+static struct WindowTemplate GlassBagWindow(u8 windowType)
+{
+    struct WindowTemplate window = sContextMenuWindowTemplates[windowType];
+    u16 base = 0x200;
+    u8 i;
+    bool8 overlap;
+    if (!IsPokeGlassSessionActive()) return window;
+    if (windowType >= ITEMWIN_1x1)
+        window.height = (gBagMenu->contextMenuNumItems * 13 + 12) / 8;
+    if (windowType == ITEMWIN_SELECTIONTEXT || windowType == ITEMWIN_ASKTOSS || windowType == ITEMWIN_ASKTOSS_QUANTITY)
+    { window.tilemapLeft = 2; window.width = 17; }
+    if (windowType == ITEMWIN_MESSAGE || windowType == ITEMWIN_TOSSED)
+    { window.tilemapLeft = 2; window.tilemapTop = 12; window.width = 26; window.height = 5; }
+    window.tilemapLeft = max(2, min(window.tilemapLeft, 27 - window.width));
+    window.tilemapTop = max(2, min(window.tilemapTop, 17 - window.height));
+    do
+    {
+        overlap = FALSE;
+        for (i = 0; i < WINDOWS_MAX; i++)
+        {
+            struct WindowTemplate *other = &gWindows[i].window;
+            if (other->bg == 0 && gWindows[i].tileData && base < other->baseBlock + other->width * other->height
+                && base + window.width * window.height > other->baseBlock)
+            { base = other->baseBlock + other->width * other->height; overlap = TRUE; break; }
+        }
+    } while (overlap);
+    window.baseBlock = base;
+    return window;
 }
 
 static u8 BagMenu_AddWindow(u8 windowType)
@@ -2984,12 +3097,7 @@ static u8 BagMenu_AddWindow(u8 windowType)
     u8 *windowId = &gBagMenu->windowIds[windowType];
     if (*windowId == WINDOW_NONE)
     {
-        struct WindowTemplate template = sContextMenuWindowTemplates[windowType];
-        if (IsPokeGlassSessionActive())
-        {
-            template.tilemapLeft = max(2, min(template.tilemapLeft, 28 - template.width));
-            template.tilemapTop = max(2, min(template.tilemapTop, 18 - template.height));
-        }
+        struct WindowTemplate template = GlassBagWindow(windowType);
         *windowId = AddWindow(&template);
         switch (windowType)
         {
@@ -3026,7 +3134,10 @@ static u8 AddItemMessageWindow(u8 windowType)
 {
     u8 *windowId = &gBagMenu->windowIds[windowType];
     if (*windowId == WINDOW_NONE)
-        *windowId = AddWindow(&sContextMenuWindowTemplates[windowType]);
+    {
+        struct WindowTemplate window = GlassBagWindow(windowType);
+        *windowId = AddWindow(&window);
+    }
     return *windowId;
 }
 
@@ -3046,7 +3157,8 @@ static void RemoveItemMessageWindow(u8 windowType)
 
 void BagMenu_YesNo(u8 taskId, u8 windowType, const struct YesNoFuncTable *funcTable)
 {
-    CreateYesNoMenuWithCallbacks(taskId, &sContextMenuWindowTemplates[windowType], FONT_NORMAL, 0, 2, 0x064, 14, funcTable);
+    struct WindowTemplate window = GlassBagWindow(windowType);
+    CreateYesNoMenuWithCallbacks(taskId, &window, IsPokeGlassSessionActive() ? FONT_SMALL : FONT_NORMAL, 0, 2, 0x064, 14, funcTable);
 }
 
 static void DisplayCurrentMoneyWindow(void)

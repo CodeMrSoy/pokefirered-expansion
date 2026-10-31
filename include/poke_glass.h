@@ -14,6 +14,8 @@ void VBlankCB_PokeGlassReturn(void);
 void PreservePokeGlassCoverPalette(void);
 void EndPokeGlassSession(void);
 void DrawPokeGlassFrame(u8 bg);
+void DrawPokeGlassBagFrame(void);
+void LoadPokeGlassMenuPalette(u8 slot);
 void DrawPokeGlassNativeOverlay(bool8 bag);
 void DrawPokeGlassCaseOverlay(void);
 void SetPokeGlassBlend(bool8 field);

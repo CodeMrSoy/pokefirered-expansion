@@ -506,6 +506,50 @@ void DrawPokeGlassFrame(u8 bg)
     ScheduleBgCopyTilemapToVram(bg);
 }
 
+void LoadPokeGlassMenuPalette(u8 slot)
+{
+    u16 palette[16];
+    CpuCopy16(sPalette, palette, sizeof(palette));
+    // Native menu printers use 1/2/3 for background/foreground/shadow.
+    palette[1] = palette[4];
+    palette[2] = palette[8];
+    palette[3] = palette[4];
+    LoadPalette(palette, BG_PLTT_ID(slot), sizeof(palette));
+}
+
+static void DrawGlassBagPanel(u8 left, u8 top, u8 width, u8 height)
+{
+    u8 x, y;
+    for (y = 0; y < height; y++)
+        for (x = 0; x < width; x++)
+        {
+            u8 edge = (y == 0 ? 1 : y == height - 1 ? 2 : 0) * 3
+                + (x == 0 ? 1 : x == width - 1 ? 2 : 0);
+            FillBgTilemapBufferRect(1, 0x170 + edge, left + x, top + y, 1, 1, 11);
+        }
+}
+
+void DrawPokeGlassBagFrame(void)
+{
+    u8 edge, x, y;
+    u8 ALIGNED(4) tiles[9 * 32] = {0};
+    DrawPokeGlassFrame(1);
+    LoadPokeGlassBackdrop();
+    for (edge = 0; edge < 9; edge++)
+        for (y = 0; y < 8; y++)
+            for (x = 0; x < 8; x++)
+            {
+                bool8 line = (edge % 3 == 1 && x == 0) || (edge % 3 == 2 && x == 7)
+                    || (edge / 3 == 1 && y == 0) || (edge / 3 == 2 && y == 7);
+                tiles[edge * 32 + y * 4 + x / 2] |= (line ? 6 : 4) << ((x & 1) * 4);
+            }
+    CpuCopy16(tiles, (void *)(VRAM + 0x6E00), sizeof(tiles));
+    DrawGlassBagPanel(11, 4, 17, 9);
+    DrawGlassBagPanel(2, 13, 26, 5);
+    ScheduleBgCopyTilemapToVram(1);
+    SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(14, 4));
+}
+
 // Native Bag/Map keep their original input and item/map logic. Only their
 // outside pixels are covered by the same tablet bezel as embedded apps.
 static void DrawPokeGlassNativeLayer(u8 layer, u8 mapBase)
