@@ -119,6 +119,7 @@ EventScript_PokeGlassMenu::
 	case 9, EventScript_PokeGlassSystemApp
 	case 10, EventScript_PokeGlassSystemApp
 	case 11, EventScript_PokeGlassSystemApp
+	case 12, EventScript_PokeGlassSystemApp
 	case SCR_MENU_CANCEL, EventScript_PokeGlassClose
 	end
 

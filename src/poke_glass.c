@@ -5,6 +5,7 @@
 #include "field_move.h"
 #include "avatar.h"
 #include "item_menu.h"
+#include "tm_case.h"
 #include "trainer_card.h"
 #include "option_menu.h"
 #include "debug.h"
@@ -286,7 +287,7 @@ static EWRAM_DATA u16 sHubPalette[32] = {0};
 static const u8 sHubTitle[] = _("POKéGLASS");
 static const u8 sHubLabels[][16] = {
     _("Pokédex"), _("Party"), _("Storage"), _("Stats"), _("Map"), _("Bag"),
-    _("Trainer Card"), _("Options"), _("Save"), _("Field Kit"), _("DexNav"), _("Retire")
+    _("Trainer Card"), _("Options"), _("Save"), _("Field Kit"), _("DexNav"), _("Retire"), _("TM Case")
 };
 static const struct WindowTemplate sHubTemplate = {
     .bg = 0, .tilemapLeft = 0, .tilemapTop = 0,
@@ -433,6 +434,16 @@ static void DrawHubIcon(u8 app, u16 x, u16 y)
         HubRect(8, x + 11, y + 11, 8, 2);
         HubRect(8, x + 7, y + 15, 3, 3);
         break;
+    case 12: // TM Case: a disc with a central opening.
+        HubRect(8, x + 8, y + 1, 8, 2);
+        HubRect(8, x + 4, y + 3, 16, 3);
+        HubRect(8, x + 2, y + 6, 20, 12);
+        HubRect(8, x + 4, y + 18, 16, 3);
+        HubRect(8, x + 8, y + 21, 8, 2);
+        HubRect(5, x + 6, y + 7, 12, 10);
+        HubRect(8, x + 9, y + 9, 6, 6);
+        HubRect(4, x + 11, y + 11, 2, 2);
+        break;
     case 11: // Retire: exit door.
         HubRect(8, x + 2, y + 1, 13, 22);
         HubRect(5, x + 5, y + 4, 8, 17);
@@ -443,7 +454,15 @@ static void DrawHubIcon(u8 app, u16 x, u16 y)
 }
 
 // Stable script IDs, arranged in two rows on each phone-style page.
-static const u8 sHubPages[2][6] = {{0, 1, 2, 4, 3, 5}, {6, 9, 8, 7, 10, 11}};
+static const u8 sHubPages[2][6] = {{0, 1, 2, 4, 3, 5}, {6, 9, 8, 7, 12, 11}};
+
+// The final utility slot shows Safari Retire during a Safari session, and
+// retains the optional DexNav outside Safari when that feature is enabled.
+static u8 HubAppAt(u8 page, u8 slot)
+{
+    if (page == 1 && slot == 5 && !GetSafariZoneFlag()) return 10;
+    return sHubPages[page][slot];
+}
 
 bool8 CanUsePokeGlass(void)
 {
@@ -459,7 +478,7 @@ static bool8 HubAppAvailable(u8 app)
         return FALSE;
     if (IsUpdateLinkStateCBActive() || InUnionRoom())
         return app == 1 || app == 5 || app == 6 || app == 7;
-    if (app == 9) return TRUE;
+    if (app == 9 || app == 12) return TRUE;
     if (app == 10) return DEXNAV_ENABLED && DN_FLAG_DEXNAV_GET != 0 && FlagGet(DN_FLAG_DEXNAV_GET);
     if (app == 11) return GetSafariZoneFlag();
     if (app == 8) return !GetSafariZoneFlag() && !IsUpdateLinkStateCBActive() && !InUnionRoom();
@@ -470,14 +489,14 @@ static u8 HubSlot(void)
 {
     u8 i;
     for (i = 0; i < 6; i++)
-        if (sHubPages[sHubCursor >= 6][i] == sHubCursor) return i;
+        if (HubAppAt(sHubCursor >= 6, i) == sHubCursor) return i;
     return 0;
 }
 
 static void DrawHubApp(u8 slot)
 {
     static const u8 textColors[] = {0, 8, 4};
-    u8 app = sHubPages[sHubCursor >= 6][slot];
+    u8 app = HubAppAt(sHubCursor >= 6, slot);
     u16 x = 12 + (slot % 3) * 74, y = 35 + (slot / 3) * 50;
     bool8 selected = app == sHubCursor;
     if (!HubAppAvailable(app)) return;
@@ -780,6 +799,7 @@ static void DrawHub(void)
         _("Your collected exploration tools."),
         _("Find nearby wild POKéMON."),
         _("Leave the SAFARI session."),
+        _("Browse TMs and teach your team."),
     };
     u8 i;
     DrawTabletShell((u8 *)GetWindowAttribute(sHubWindow, WINDOW_TILE_DATA));
@@ -897,17 +917,17 @@ static void Task_PokeGlassHub(u8 taskId)
             // Sparse pages still open when a whole row is unavailable.
             for (attempts = 0; attempts < 6; attempts++)
             {
-                if (HubAppAvailable(sHubPages[page][slot])) break;
+                if (HubAppAvailable(HubAppAt(page, slot))) break;
                 slot = (slot + direction + 6) % 6;
             }
-            sHubCursor = sHubPages[page][slot];
+            sHubCursor = HubAppAt(page, slot);
         }
         else if (JOY_NEW(DPAD_UP | DPAD_DOWN))
         {
             if (JOY_NEW(DPAD_UP) && slot >= 3) slot -= 3;
             else if (JOY_NEW(DPAD_DOWN) && slot < 3) slot += 3;
-            if (HubAppAvailable(sHubPages[page][slot]))
-                sHubCursor = sHubPages[page][slot];
+            if (HubAppAvailable(HubAppAt(page, slot)))
+                sHubCursor = HubAppAt(page, slot);
         }
         if (oldCursor != sHubCursor)
         {
@@ -1732,6 +1752,10 @@ void OpenPokeGlassSystemApp(void)
     case 10:
         CleanupOverworldWindowsAndTilemaps();
         OpenDexNavFromPokeGlass();
+        break;
+    case 12:
+        CleanupOverworldWindowsAndTilemaps();
+        InitTMCase(TMCASE_FIELD, CB2_ReturnToFieldContinueScript, FALSE);
         break;
     case 11:
         SafariZoneRetirePrompt();

@@ -33,6 +33,8 @@ def ready(name):
  if task(name) is None or fade():return False
  if name=='Task_HandleChooseMonInput' and byte('sReturnCoverActive'):return False
  if name in ('Task_PokeGlassStats','Task_PokeGlassPokedex'):return data(name,0)>=2
+ if name=='Task_HandleListInput':
+  return struct.unpack('<I',m.read(m.symbols['gMain']+4,4))[0] != (m.symbols['CB2_SetUpTMCaseUI_Blocking']|1)
  if name=='Task_TrainerCard':
   p=struct.unpack('<I',m.read(m.symbols['sTrainerCardDataPtr'],4))[0]
   return m.read(p,1)[0]==10
@@ -88,9 +90,10 @@ apps=[('pokedex',0,'Task_PokeGlassPokedex',True),('party',1,'Task_HandleChooseMo
  ('bag',5,'Task_BagMenu_HandleInput',False),('trainer-card',6,'Task_TrainerCard',False),('options',7,'Task_OptionMenu',False),
  ('save',8,'task50_save_game',False)]
 apps.append(('field-kit',9,'Task_PokeGlassFieldKit',True))
+apps.append(('tm-case',12,'Task_HandleListInput',False))
 for label,app,taskname,embedded in apps:
  restore(launcher)
- paths={0:[],1:[7],2:[7,7],3:[5,7],4:[5],5:[5,7,7],6:[7,7,7],7:[7,7,7,5],8:[7,7,7,7,7],9:[7,7,7,7]}
+ paths={0:[],1:[7],2:[7,7],3:[5,7],4:[5],5:[5,7,7],6:[7,7,7],7:[7,7,7,5],8:[7,7,7,7,7],9:[7,7,7,7],12:[5,6]}
  for key in paths[app]:m.press(key,30)
  assert byte('sHubCursor')==app,(label,byte('sHubCursor'))
  if label=='save':

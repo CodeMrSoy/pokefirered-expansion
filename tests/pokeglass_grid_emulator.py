@@ -44,6 +44,7 @@ move(5, 5); app('Task_BagMenu_HandleInput', 'bag')
 move(6, 3); app('Task_PokeGlassStats', 'stats')
 move(6, 4); app('Task_RegionMap', 'map')
 # Left beyond the lower row enters page two, skipping unused slots.
+move(6, 12); app('Task_HandleListInput', 'tm-case')
 move(6, 7)
 m.snap('phone-page-two')
 app('Task_OptionMenu', 'options')

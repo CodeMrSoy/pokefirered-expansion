@@ -12,11 +12,13 @@ selected.
 | Page | Top row | Bottom row |
 | --- | --- | --- |
 | 1 | Pokédex, Party, Storage | Map, Stats, Bag |
-| 2 | Trainer Card, Field Kit, Save | Options, DexNav, Retire |
+| 2 | Trainer Card, Field Kit, Save | Options, TM Case, utility slot |
 
-Field Kit is always available and shows owned and missing field tools.
-DexNav appears only if it is enabled and unlocked. Retire appears during a
-Safari session; Save is unavailable during Safari and link sessions. Hidden
+Field Kit is always available and shows owned and missing field tools. TM Case
+is available even with no TMs, and uses the normal teaching and item rules.
+The final utility slot shows Retire during Safari; outside Safari it shows
+DexNav if that optional feature is enabled and unlocked. Save is unavailable
+during Safari and link sessions. Hidden
 slots are skipped, including when a whole row is empty. Link and Union Room
 sessions retain only Party, Bag, Trainer Card and Options.
 
@@ -78,3 +80,19 @@ conditions allow. Missing tools remain visible without being usable.
 
 For the current overhaul's executed checks and limitations, see
 [pokeglass-overhaul-qa.md](pokeglass-overhaul-qa.md).
+
+## TM Case app
+
+The TM Case tile opens the existing native case directly within the tablet
+border. B returns to the selected tile on page two. The normal Bag case and
+registered-item entry remain available, with their own return callbacks.
+Teaching or cancelling the Pokémon choice reopens the case; closing that case
+returns to PokéGlass. No new save fields or persistent EWRAM buffers are added.
+
+`tests/pokeglass_tm_app_emulator.py` checks empty access without a physical case,
+a real compatible Pokémon learning a TM, cancellation without consumption,
+normal TM consumption, repeated launch/return, and flash save/reset/Continue.
+The grid, transition, Bag and repeated-session allocation suites also include
+the new app. Evidence is under `v2-integration-test/results/emulator-qol-tm-app-*`
+in the workspace. The transition fixture waits for native setup/fade-in before
+pressing B; creation of its input task alone is too early.
