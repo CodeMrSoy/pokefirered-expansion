@@ -12,7 +12,7 @@ static void DrawGlassFieldKit(u8 taskId)
         bool8 collected = FieldTool_IsOwned(i);
         if (collected) owned++;
         HubRect(i == d[0] ? 5 : 4, 84, 31 + i * 12, 140, 12);
-        StatsText(88, 31 + i * 12, GetItemName(FieldTool_GetItem(i)));
+        StatsTextFit(88, 31 + i * 12, 119, GetItemName(FieldTool_GetItem(i)));
         StatsText(211, 31 + i * 12, collected ? COMPOUND_STRING("+") : COMPOUND_STRING("-"));
     }
     StatsNumber(204, 14, owned);

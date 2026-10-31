@@ -140,7 +140,7 @@ static void DrawGlassStorage(u8 taskId)
         egg = GetMonData(&mon, MON_DATA_IS_EGG);
         GetMonData(&mon, MON_DATA_NICKNAME, text);
         StringGet_Nickname(text);
-        StatsText(16, 14, text);
+        StatsTextFit(16, 14, 145, text);
         if (!egg)
         {
             StatsText(169, 14, COMPOUND_STRING("Lv."));
@@ -188,13 +188,13 @@ static void DrawGlassStorage(u8 taskId)
             if (item == ITEM_NONE) break;
             HubRect(index == d[10] ? 6 : 4, 17, 32 + row * 11, 190, 11);
             CopyItemName(item, text);
-            StatsText(22, 32 + row * 11, text);
+            StatsTextFit(22, 32 + row * 11, 181, text);
         }
         StatsText(18, 113, COMPOUND_STRING("A:Give  B:Cancel"));
         goto copy;
     }
     StatsText(16, 14, COMPOUND_STRING("PARTY"));
-    StatsText(80, 14, gPokemonStoragePtr->boxNames[d[0]]);
+    StatsTextFit(80, 14, 84, gPokemonStoragePtr->boxNames[d[0]]);
     StatsNumber(211, 14, d[0] + 1);
     StatsText(212, 14, COMPOUND_STRING("/6"));
     StatsText(170, 14, COMPOUND_STRING("L/R"));
@@ -207,7 +207,7 @@ static void DrawGlassStorage(u8 taskId)
         GlassStoragePosition(row, &x, &y);
         HubRect(d[2] == row ? 6 : source ? 9 : 3, x - 12, y - 10, 24, 20);
         HubRect(d[2] == row ? 5 : 4, x - 11, y - 9, 22, 18);
-        if (source) StatsText(x - 11, y - 10, COMPOUND_STRING(">"));
+        if (source) StatsText(x - 9, y - 8, COMPOUND_STRING(">"));
     }
     HubRect(6, 70, 29, 1, 100);
     if (d[7] == 1)

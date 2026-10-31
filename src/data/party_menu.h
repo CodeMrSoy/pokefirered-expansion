@@ -416,7 +416,7 @@ static const struct WindowTemplate sPokeGlassPartyMenuWindowTemplate[] =
     { .bg = 0, .tilemapLeft = 15, .tilemapTop = 7, .width = 13, .height = 4, .paletteNum = 6, .baseBlock = 0xff },
     { .bg = 0, .tilemapLeft = 2, .tilemapTop = 11, .width = 13, .height = 4, .paletteNum = 7, .baseBlock = 0x133 },
     { .bg = 0, .tilemapLeft = 15, .tilemapTop = 11, .width = 13, .height = 4, .paletteNum = 8, .baseBlock = 0x167 },
-    { .bg = 2, .tilemapLeft = 3, .tilemapTop = 12, .width = 24, .height = 4, .paletteNum = 14, .baseBlock = 0x1d1 },
+    { .bg = 2, .tilemapLeft = 3, .tilemapTop = 12, .width = 24, .height = 4, .paletteNum = 14, .baseBlock = 0x1e0 },
     DUMMY_WIN_TEMPLATE,
 };
 static const struct WindowTemplate sPokeGlassPartyHintTemplate =

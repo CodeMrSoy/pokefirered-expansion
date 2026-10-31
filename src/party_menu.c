@@ -2928,6 +2928,14 @@ static void DisplayPartyPokemonDescriptionText(u8 stringId, struct PartyMenuBox 
         AddTextPrinterParameterized3(menuBox->windowId, FONT_NORMAL_COPY_1, menuBox->infoRects->descTextLeft, menuBox->infoRects->descTextTop, sFontColorTable[0], 0, sDescriptionStringTable[stringId]);
 }
 
+static void SetPokeGlassCancelVisible(bool8 visible)
+{
+    if (gPartyMenu.layout != PARTY_LAYOUT_POKEGLASS || sPokeGlassCancelWindow == WINDOW_NONE) return;
+    if (visible) PutWindowTilemap(sPokeGlassCancelWindow);
+    else ClearWindowTilemap(sPokeGlassCancelWindow);
+    ScheduleBgCopyTilemapToVram(0);
+}
+
 static void PartyMenuRemoveWindow(u8 *windowId)
 {
     if (*windowId != WINDOW_NONE)
@@ -2935,6 +2943,7 @@ static void PartyMenuRemoveWindow(u8 *windowId)
         ClearStdWindowAndFrameToTransparent(*windowId, FALSE);
         RemoveWindow(*windowId);
         *windowId = WINDOW_NONE;
+        if (windowId == &sPartyMenuInternal->windowId[0]) SetPokeGlassCancelVisible(TRUE);
         ScheduleBgCopyTilemapToVram(2);
     }
 }
@@ -2949,7 +2958,12 @@ void DisplayPartyMenuStdMessage(u32 stringId)
     if (stringId != PARTY_MSG_NONE)
     {
         if (gPartyMenu.layout == PARTY_LAYOUT_POKEGLASS)
-            *windowPtr = AddWindow(&sPokeGlassPartyHintTemplate);
+        {
+            struct WindowTemplate hint = sPokeGlassPartyHintTemplate;
+            if (stringId == PARTY_MSG_DO_WHAT_WITH_MON || stringId == PARTY_MSG_DO_WHAT_WITH_ITEM || stringId == PARTY_MSG_DO_WHAT_WITH_MAIL)
+                hint.width = 11;
+            *windowPtr = AddWindow(&hint);
+        }
         else switch (stringId)
         {
         case PARTY_MSG_DO_WHAT_WITH_MON:
@@ -2985,7 +2999,12 @@ void DisplayPartyMenuStdMessage(u32 stringId)
         {
             static const u8 colors[] = {0, 8, 4};
             FillWindowPixelBuffer(*windowPtr, PIXEL_FILL(0));
+            if (stringId == PARTY_MSG_DO_WHAT_WITH_MON) StringCopy(gStringVar4, COMPOUND_STRING("Choose an action."));
+            else if (stringId == PARTY_MSG_DO_WHAT_WITH_ITEM) StringCopy(gStringVar4, COMPOUND_STRING("Item actions."));
+            else if (stringId == PARTY_MSG_DO_WHAT_WITH_MAIL) StringCopy(gStringVar4, COMPOUND_STRING("Mail actions."));
+            FitPokeGlassText(gStringVar4, FONT_SMALL, GetWindowAttribute(*windowPtr, WINDOW_WIDTH) * 8 - 4);
             AddTextPrinterParameterized3(*windowPtr, FONT_SMALL, 0, 1, colors, TEXT_SKIP_DRAW, gStringVar4);
+            SetPokeGlassCancelVisible(sPartyMenuInternal->windowId[0] == WINDOW_NONE);
             PutWindowTilemap(*windowPtr);
             CopyWindowToVram(*windowPtr, COPYWIN_FULL);
         }
@@ -3048,10 +3067,13 @@ static u8 DisplaySelectionWindow(u8 windowType)
     }
     if (gPartyMenu.layout == PARTY_LAYOUT_POKEGLASS)
     {
-        window.baseBlock = 0x211;
+        window.baseBlock = 0x278;
+        if (windowType == SELECTWINDOW_ACTIONS)
+            window.height = (sPartyMenuInternal->numActions * 12 + 7) / 8;
         window.tilemapLeft = min(window.tilemapLeft, 27 - window.width);
-        window.tilemapTop = min(window.tilemapTop, 16 - window.height);
+        window.tilemapTop = max(2, 15 - window.height);
     }
+    SetPokeGlassCancelVisible(FALSE);
     sPartyMenuInternal->windowId[0] = AddWindow(&window);
     DrawStdFrameWithCustomTileAndPalette(sPartyMenuInternal->windowId[0], FALSE, 0x4F, 13);
     if (windowType == SELECTWINDOW_MOVES)
@@ -3067,9 +3089,15 @@ static u8 DisplaySelectionWindow(u8 windowType)
         else
             text = sCursorOptions[sPartyMenuInternal->actions[i]].text;
         
-        AddTextPrinterParameterized4(sPartyMenuInternal->windowId[0], FONT_NORMAL, cursorDimension, (i * 16) + 2, fontAttribute, 0, sFontColorTable[fontColorsId], 0, text);
+        if (gPartyMenu.layout == PARTY_LAYOUT_POKEGLASS)
+            AddTextPrinterParameterized4(sPartyMenuInternal->windowId[0], FONT_SMALL, cursorDimension, i * 12 + 1, 0, 0, sFontColorTable[fontColorsId], 0, text);
+        else
+            AddTextPrinterParameterized4(sPartyMenuInternal->windowId[0], FONT_NORMAL, cursorDimension, (i * 16) + 2, fontAttribute, 0, sFontColorTable[fontColorsId], 0, text);
     }
-    InitMenuInUpperLeftCorner(sPartyMenuInternal->windowId[0], sPartyMenuInternal->numActions, 0, TRUE);
+    if (gPartyMenu.layout == PARTY_LAYOUT_POKEGLASS)
+        InitMenuNormal(sPartyMenuInternal->windowId[0], FONT_SMALL, 0, 1, 12, sPartyMenuInternal->numActions, 0);
+    else
+        InitMenuInUpperLeftCorner(sPartyMenuInternal->windowId[0], sPartyMenuInternal->numActions, 0, TRUE);
     ScheduleBgCopyTilemapToVram(2);
     return sPartyMenuInternal->windowId[0];
 }
@@ -3091,11 +3119,12 @@ static u8 CreateLevelUpStatsWindow(void)
     struct WindowTemplate window = sLevelUpStatsWindowTemplate;
     if (gPartyMenu.layout == PARTY_LAYOUT_POKEGLASS)
     {
-        window.baseBlock = 0x211;
+        window.baseBlock = 0x278;
         window.tilemapLeft = 16;
         window.tilemapTop = 4;
         window.height = 12; // Six 15-pixel stat rows need more than 88 pixels.
     }
+    SetPokeGlassCancelVisible(FALSE);
     sPartyMenuInternal->windowId[0] = AddWindow(&window);
     DrawStdFrameWithCustomTileAndPalette(sPartyMenuInternal->windowId[0], FALSE, 0x4F, 13);
     return sPartyMenuInternal->windowId[0];
@@ -3144,27 +3173,42 @@ static void ToggleFieldMoveDescriptionWindow(u8 action)
             ClearWindowTilemap(ptr->windowId[2]);
             RemoveWindow(ptr->windowId[2]);
             ptr->windowId[2] = WINDOW_NONE;
+            if (gPartyMenu.layout == PARTY_LAYOUT_POKEGLASS)
+                DisplayPartyMenuStdMessage(PARTY_MSG_DO_WHAT_WITH_MON);
             ScheduleBgCopyTilemapToVram(2);
         }
     }
     else
     {
+        if (gPartyMenu.layout == PARTY_LAYOUT_POKEGLASS && ptr->windowId[1] != WINDOW_NONE)
+            PartyMenuRemoveWindow(&ptr->windowId[1]);
         if (ptr->windowId[2] == WINDOW_NONE)
         {
             struct WindowTemplate window = sFieldMoveDescriptionWindowTemplate;
             if (gPartyMenu.layout == PARTY_LAYOUT_POKEGLASS)
             {
-                window.baseBlock = 0x2bc;
+                window.baseBlock = 0x320;
                 window.tilemapLeft = 3;
-                window.tilemapTop = 12;
+                window.tilemapTop = 16;
                 window.width = 24;
-                window.height = 4;
+                window.height = 2;
             }
             ptr->windowId[2] = AddWindow(&window);
         }
         DrawHelpMessageWindowTilesById(ptr->windowId[2]);
         letterSpacing = GetFontAttribute(FONT_NORMAL, FONTATTR_LETTER_SPACING);
-        AddTextPrinterParameterized4(ptr->windowId[2], FONT_NORMAL, 3, 6, letterSpacing, 0, sFontColorTable[5], 0, gFieldMovesInfo[action - CURSOR_OPTION_FIELD_MOVES].description);
+        if (gPartyMenu.layout == PARTY_LAYOUT_POKEGLASS)
+        {
+            u8 description[256], i;
+            StringCopyN(description, gFieldMovesInfo[action - CURSOR_OPTION_FIELD_MOVES].description, sizeof(description) - 1);
+            description[sizeof(description) - 1] = EOS;
+            for (i = 0; description[i] != EOS; i++)
+                if (description[i] == CHAR_NEWLINE) description[i] = CHAR_SPACE;
+            FitPokeGlassText(description, FONT_SMALL, 186);
+            AddTextPrinterParameterized4(ptr->windowId[2], FONT_SMALL, 3, 1, 0, 0, sFontColorTable[5], 0, description);
+        }
+        else
+            AddTextPrinterParameterized4(ptr->windowId[2], FONT_NORMAL, 3, 6, letterSpacing, 0, sFontColorTable[5], 0, gFieldMovesInfo[action - CURSOR_OPTION_FIELD_MOVES].description);
         PutWindowTilemap(ptr->windowId[2]);
         ScheduleBgCopyTilemapToVram(2);
     }

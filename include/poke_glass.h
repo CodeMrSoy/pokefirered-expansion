@@ -1,6 +1,7 @@
 #ifndef GUARD_POKE_GLASS_H
 #define GUARD_POKE_GLASS_H
 
+void FitPokeGlassText(u8 *text, u8 font, u16 width);
 bool8 IsPokeGlassActive(void);
 bool8 IsPokeGlassSessionActive(void);
 bool8 CanUsePokeGlass(void);

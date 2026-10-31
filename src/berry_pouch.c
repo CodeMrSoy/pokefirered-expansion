@@ -720,8 +720,9 @@ static void GetBerryNameAndIndexForMenu(u8 * dest, u16 itemId)
     ConvertIntToDecimalStringN(gStringVar1, itemId - FIRST_BERRY_INDEX + 1, STR_CONV_MODE_LEADING_ZEROS, 2);
     StringAppend(gStringVar4, gStringVar1);
     CopyItemName(itemId, gStringVar1);
+    if (IsPokeGlassSessionActive()) FitPokeGlassText(gStringVar1, FONT_SMALL, 64);
     StringAppend(gStringVar4, sText_Space);
-    StringAppend(gStringVar4, gText_FontNormal);
+    StringAppend(gStringVar4, IsPokeGlassSessionActive() ? gText_FontSmall : gText_FontNormal);
     StringAppend(gStringVar4, gStringVar1);
     StringCopy(dest, gStringVar4);
 }

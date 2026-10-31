@@ -690,8 +690,10 @@ static void GetTMNumberAndMoveString(u8 * dest, u16 itemId)
         StringAppend(gStringVar4, gStringVar1);
     }
     StringAppend(gStringVar4, sText_SingleSpace);
-    StringAppend(gStringVar4, gText_FontNormal);
-    StringAppend(gStringVar4, gMovesInfo[ItemIdToBattleMoveId(itemId)].name);
+    StringAppend(gStringVar4, IsPokeGlassSessionActive() ? gText_FontSmall : gText_FontNormal);
+    StringCopy(gStringVar1, gMovesInfo[ItemIdToBattleMoveId(itemId)].name);
+    if (IsPokeGlassSessionActive()) FitPokeGlassText(gStringVar1, FONT_SMALL, 80);
+    StringAppend(gStringVar4, gStringVar1);
     StringCopy(dest, gStringVar4);
 }
 

@@ -966,10 +966,61 @@ static const u8 sStatsDash[] = _("-");
 static const u8 sStatsLevel[] = _("Lv.");
 static const u8 sStatsTitles[][16] = {_("STATS 1/3"), _("PROFILE 2/3"), _("TRAINING 3/3")};
 
-static void StatsText(u16 x, u16 y, const u8 *text)
+// Plain labels are fitted before adding any font/color control codes.
+void FitPokeGlassText(u8 *text, u8 font, u16 width)
+{
+    u32 length;
+    u16 dots = GetStringWidth(font, COMPOUND_STRING("..."), 0);
+    if (GetStringWidth(font, text, 0) <= width) return;
+    length = StringLength(text);
+    while (length && GetStringWidth(font, text, 0) + dots > width)
+        text[--length] = EOS;
+    if (dots <= width) StringAppend(text, COMPOUND_STRING("..."));
+}
+
+// All embedded text has explicit room inside the glass or its own panel.
+static void StatsTextFit(u16 x, u16 y, u16 width, const u8 *text)
 {
     static const u8 colors[] = {0, 8, 4};
-    AddTextPrinterParameterized3(sHubWindow, FONT_SMALL, x, y, colors, TEXT_SKIP_DRAW, text);
+    u8 fitted[256];
+    StringCopyN(fitted, text, sizeof(fitted) - 1);
+    fitted[sizeof(fitted) - 1] = EOS;
+    StripExtCtrlCodes(fitted);
+    FitPokeGlassText(fitted, FONT_SMALL, width);
+    AddTextPrinterParameterized3(sHubWindow, FONT_SMALL, x, y, colors, TEXT_SKIP_DRAW, fitted);
+}
+
+static void StatsText(u16 x, u16 y, const u8 *text)
+{
+    StatsTextFit(x, y, x < 228 ? 228 - x : 0, text);
+}
+
+static void StatsParagraph(u16 x, u16 y, u16 width, const u8 *text)
+{
+    u8 line[256];
+    u16 count, split, row;
+    for (row = 0; *text != EOS && row < 2; row++)
+    {
+        count = split = 0;
+        while (text[count] != EOS && text[count] != CHAR_NEWLINE && count < sizeof(line) - 2)
+        {
+            line[count] = text[count];
+            line[count + 1] = EOS;
+            if (GetStringWidth(FONT_SMALL, line, 0) > width) break;
+            if (text[count] == CHAR_SPACE) split = count;
+            count++;
+        }
+        if (text[count] != EOS && text[count] != CHAR_NEWLINE && split) count = split;
+        line[count] = EOS;
+        text += count;
+        while (*text == CHAR_SPACE || *text == CHAR_NEWLINE) text++;
+        // The final line uses the same bounded ellipsis as other fields.
+        if (row == 1 && *text != EOS)
+        {
+            StringAppend(line, COMPOUND_STRING("..."));
+        }
+        StatsTextFit(x, y + row * 12, width, line);
+    }
 }
 
 static void StatsNumber(u16 right, u16 y, u16 value)
@@ -1008,17 +1059,17 @@ static void DrawStatsPage(void)
     SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(14, 4));
     HubRect(4, 12, 12, 216, 136);
     StatsText(16, 14, nickname);
-    StatsText(155, 14, sStatsTitles[sStatsView]);
+    StatsTextFit(147, 14, 77, sStatsTitles[sStatsView]);
     if (!isEgg)
     {
         StatsText(17, 29, sStatsLevel);
         StatsNumber(52, 29, GetMonData(mon, MON_DATA_LEVEL));
     }
     StatsNumber(71, 29, sStatsPartySlot + 1);
-    StatsText(72, 29, COMPOUND_STRING("/"));
+    StatsText(72, 28, COMPOUND_STRING("/"));
     StatsNumber(87, 29, gPlayerPartyCount);
-    HubRect(6, 90, 32, 134, 84);
-    HubRect(4, 91, 33, 132, 82);
+    HubRect(6, 90, 32, 134, sStatsView == 1 ? 76 : 84);
+    HubRect(4, 91, 33, 132, sStatsView == 1 ? 74 : 82);
     if (!sStatsView)
     {
         StatsText(147, 33, sStatsValueHeader);
@@ -1054,13 +1105,13 @@ static void DrawStatsPage(void)
         if (!isEgg)
         {
             u16 species = GetMonData(mon, MON_DATA_SPECIES);
-            StatsText(98, 99, gTypesInfo[gSpeciesInfo[species].types[0]].name);
+            StatsText(98, 92, gTypesInfo[gSpeciesInfo[species].types[0]].name);
             if (gSpeciesInfo[species].types[0] != gSpeciesInfo[species].types[1])
-                StatsText(158, 99, gTypesInfo[gSpeciesInfo[species].types[1]].name);
+                StatsText(158, 92, gTypesInfo[gSpeciesInfo[species].types[1]].name);
         }
         StatsText(16, 109, sStatsAbility);
         StatsText(76, 109, isEgg ? sStatsEggAbility : gAbilitiesInfo[GetMonAbility(mon)].name);
-        if (!isEgg) StatsText(16, 122, gAbilitiesInfo[GetMonAbility(mon)].description);
+        if (!isEgg) StatsParagraph(16, 122, 208, gAbilitiesInfo[GetMonAbility(mon)].description);
     }
     else
     {
@@ -1350,30 +1401,30 @@ static void DrawGlassDexPage(void)
     HubRect(4, 12, 12, 216, 136);
     if (sGlassDex->view == 0)
     {
-        StatsText(17, 16, COMPOUND_STRING("POKéDEX"));
-        StatsText(88, 16, COMPOUND_STRING("Seen"));
-        StatsNumber(141, 16, sGlassDex->seen);
-        StatsText(151, 16, COMPOUND_STRING("Caught"));
-        StatsNumber(207, 16, sGlassDex->caught);
-        StatsText(72, 29, sGlassDex->filter ? COMPOUND_STRING("Caught") : COMPOUND_STRING("Seen"));
-        StatsText(18, 29, sGlassDex->alphabetical ? COMPOUND_STRING("A-Z") : COMPOUND_STRING("No."));
-        HubRect(6, 16, 39, 118, 80);
+        StatsText(17, 14, COMPOUND_STRING("POKéDEX"));
+        StatsText(88, 14, COMPOUND_STRING("Seen"));
+        StatsNumber(141, 14, sGlassDex->seen);
+        StatsText(151, 14, COMPOUND_STRING("Caught"));
+        StatsNumber(220, 14, sGlassDex->caught);
+        StatsText(72, 28, sGlassDex->filter ? COMPOUND_STRING("Caught") : COMPOUND_STRING("Seen"));
+        StatsText(18, 28, sGlassDex->alphabetical ? COMPOUND_STRING("A-Z") : COMPOUND_STRING("No."));
+        HubRect(6, 16, 41, 118, 81);
         for (i = 0; i < GLASS_DEX_ROWS; i++)
         {
-            u16 entry = first + i, y = 40 + i * 13;
+            u16 entry = first + i, y = 43 + i * 13;
             HubRect(entry == sGlassDex->cursor ? 5 : 4, 17, y, 116, 13);
             if (entry < sGlassDex->count)
             {
                 u16 mon = sGlassDex->species[entry];
                 StatsNumber(39, y, SpeciesToNationalPokedexNum(mon));
-                StatsText(46, y, gSpeciesInfo[mon].speciesName);
+                StatsTextFit(46, y, 78, gSpeciesInfo[mon].speciesName);
                 if (GetSetPokedexFlag(SpeciesToNationalPokedexNum(mon), FLAG_GET_CAUGHT))
                     HubRect(8, 128, y + 4, 3, 3);
             }
         }
         if (species != SPECIES_NONE)
         {
-            StatsText(139, 29, gSpeciesInfo[species].speciesName);
+            StatsTextFit(139, 28, 85, gSpeciesInfo[species].speciesName);
             StatsText(156, 108, caught ? COMPOUND_STRING("Caught") : COMPOUND_STRING("Seen"));
             DrawGlassDexPortrait(species, 179, 78);
         }
@@ -1383,16 +1434,16 @@ static void DrawGlassDexPage(void)
             StatsText(129, 57, COMPOUND_STRING("No entries yet."));
             StatsText(129, 70, COMPOUND_STRING("Keep exploring!"));
         }
-        StatsText(16, 121, COMPOUND_STRING("A Info  L/R Page  B Back"));
-        StatsText(16, 134, COMPOUND_STRING("START Filter   SELECT Sort"));
+        StatsText(16, 124, COMPOUND_STRING("A Info  L/R Page  B Back"));
+        StatsText(16, 137, COMPOUND_STRING("START Filter   SELECT Sort"));
     }
     else if (sGlassDex->view == 1)
     {
-        StatsText(18, 16, gSpeciesInfo[species].speciesName);
+        StatsTextFit(18, 16, 109, gSpeciesInfo[species].speciesName);
         StatsText(142, 16, COMPOUND_STRING("No."));
         StatsNumber(187, 16, SpeciesToNationalPokedexNum(species));
         DrawGlassDexPortrait(species, 66, 65);
-        StatsText(98, 32, caught ? gSpeciesInfo[species].categoryName : COMPOUND_STRING("Seen only"));
+        StatsTextFit(98, 32, 126, caught ? gSpeciesInfo[species].categoryName : COMPOUND_STRING("Seen only"));
         if (caught)
         {
             StatsText(98, 44, gTypesInfo[gSpeciesInfo[species].types[0]].name);
@@ -1403,26 +1454,26 @@ static void DrawGlassDexPage(void)
         }
         else
             StatsText(98, 50, COMPOUND_STRING("Data incomplete"));
-        StatsText(98, 83, COMPOUND_STRING("Habitat"));
-        HubRect(6, 18, 94, 189, 1);
+        StatsText(98, 84, COMPOUND_STRING("Habitat"));
+        HubRect(6, 18, 97, 206, 1);
         if (sGlassDex->areaCount != 0)
         {
             u8 name[64];
             GetMapName(name, sGlassDex->areas[sGlassDex->areaPage], 0);
-            StatsText(18, 96, name);
-            StatsNumber(177, 83, sGlassDex->areaPage + 1);
-            StatsText(181, 83, COMPOUND_STRING("/"));
-            StatsNumber(207, 83, sGlassDex->areaCount);
+            StatsText(18, 100, name);
+            StatsNumber(177, 84, sGlassDex->areaPage + 1);
+            StatsText(181, 84, COMPOUND_STRING("/"));
+            StatsNumber(220, 84, sGlassDex->areaCount);
         }
         else
-            StatsText(18, 96, COMPOUND_STRING("No wild habitat recorded."));
+            StatsText(18, 100, COMPOUND_STRING("No wild habitat recorded."));
         StatsText(18, 114, COMPOUND_STRING("A All  L/R Place  SELECT Cry  B"));
     }
     else
     {
         u8 name[64];
         DestroyGlassDexPortrait();
-        StatsText(18, 16, gSpeciesInfo[species].speciesName);
+        StatsTextFit(18, 16, 109, gSpeciesInfo[species].speciesName);
         StatsText(133, 16, COMPOUND_STRING("HABITAT"));
         for (i = 0; i < GLASS_DEX_ROWS && sGlassDex->areaPage * GLASS_DEX_ROWS + i < sGlassDex->areaCount; i++)
         {
