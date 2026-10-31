@@ -434,15 +434,17 @@ static void DrawHubIcon(u8 app, u16 x, u16 y)
         HubRect(8, x + 11, y + 11, 8, 2);
         HubRect(8, x + 7, y + 15, 3, 3);
         break;
-    case 12: // TM Case: a disc with a central opening.
-        HubRect(8, x + 8, y + 1, 8, 2);
-        HubRect(8, x + 4, y + 3, 16, 3);
-        HubRect(8, x + 2, y + 6, 20, 12);
-        HubRect(8, x + 4, y + 18, 16, 3);
-        HubRect(8, x + 8, y + 21, 8, 2);
-        HubRect(5, x + 6, y + 7, 12, 10);
-        HubRect(8, x + 9, y + 9, 6, 6);
-        HubRect(4, x + 11, y + 11, 2, 2);
+    case 12: // TM Case: an SD card with a clipped corner and contacts.
+        HubRect(8, x + 4, y + 1, 13, 2);
+        HubRect(8, x + 4, y + 3, 16, 2);
+        HubRect(8, x + 4, y + 5, 18, 18);
+        HubRect(5, x + 6, y + 5, 14, 16);
+        HubRect(8, x + 7, y + 5, 2, 5);
+        HubRect(8, x + 11, y + 5, 2, 5);
+        HubRect(8, x + 15, y + 5, 2, 5);
+        HubRect(8, x + 7, y + 13, 12, 7);
+        HubRect(5, x + 9, y + 15, 8, 1);
+        HubRect(5, x + 11, y + 17, 5, 1);
         break;
     case 11: // Retire: exit door.
         HubRect(8, x + 2, y + 1, 13, 22);

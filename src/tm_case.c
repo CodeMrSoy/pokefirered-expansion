@@ -63,6 +63,8 @@ enum {
 };
 
 // Base position for TM/HM disc sprite
+#include "data/poke_glass_tm_cards.h"
+
 #define DISC_BASE_X 41
 #define DISC_BASE_Y 46
 
@@ -171,6 +173,8 @@ static void PrintPlayersMoney(void);
 static void HandleCreateYesNoMenu(u8 taskId, const struct YesNoFuncTable * ptrs);
 static u8 AddContextMenu(u8 * windowId, u8 windowIndex);
 static void RemoveContextMenu(u8 * windowId);
+static void UpdateGlassCard(struct Sprite *sprite);
+static void DrawGlassCardCase(void);
 static u8 CreateDiscSprite(u16 itemId);
 static void SetDiscSpriteAnim(struct Sprite *sprite, u8 tmIdx);
 static void TintDiscpriteByType(u8 type);
@@ -380,6 +384,12 @@ static const struct CompressedSpriteSheet sSpriteSheet_Disc = {
     .tag = TAG_DISC
 };
 
+static const struct SpriteSheet sSpriteSheet_GlassCard = {
+    .data = sGlassTMCardGfx,
+    .size = sizeof(sGlassTMCardGfx),
+    .tag = TAG_DISC
+};
+
 static const struct SpriteTemplate sSpriteTemplate_Disc = {
     .tileTag = TAG_DISC,
     .paletteTag = TAG_DISC,
@@ -557,7 +567,11 @@ static bool8 DoSetUpTMCaseUI(void)
         gMain.state++;
         break;
     default:
-        if (IsPokeGlassSessionActive()) DrawPokeGlassTMFrame();
+        if (IsPokeGlassSessionActive())
+        {
+            DrawPokeGlassTMFrame();
+            DrawGlassCardCase();
+        }
         SetVBlankCallback(VBlankCB_Idle);
         SetMainCallback2(CB2_Idle);
         return TRUE;
@@ -605,7 +619,7 @@ static bool8 HandleLoadTMCaseGraphicsAndPalettes(void)
 {
     if (IsPokeGlassSessionActive())
     {
-        LoadCompressedSpriteSheet(&sSpriteSheet_Disc);
+        LoadSpriteSheet(&sSpriteSheet_GlassCard);
         return TRUE;
     }
     switch (sTMCaseDynamicResources->seqId)
@@ -1784,6 +1798,7 @@ static u8 CreateDiscSprite(u16 itemId)
 
 static void SetDiscSpriteAnim(struct Sprite *sprite, u8 tmIdx)
 {
+    if (IsPokeGlassSessionActive()) return;
     if (tmIdx >= NUM_TECHNICAL_MACHINES)
         StartSpriteAnim(sprite, ANIM_HM);
     else
@@ -1799,6 +1814,11 @@ static void TintDiscpriteByType(u8 type)
     u32 palTypeOffset = sTMSpritePaletteOffsetByType[type] % (NUM_TYPES_PER_PALETTE * PLTT_SIZE_4BPP);
 
     LoadPalette(&gTMCaseDiscTypes_Pal[palTypeIndex][palTypeOffset], OBJ_PLTT_OFFSET + palOffset, PLTT_SIZE_4BPP);
+    if (IsPokeGlassSessionActive())
+    {
+        static const u16 contacts[] = {RGB(31, 25, 8), RGB(21, 13, 3), RGB(3, 6, 9)};
+        LoadPalette(contacts, OBJ_PLTT_OFFSET + palOffset + 9, sizeof(contacts));
+    }
     if (sTMCaseStaticResources.menuType == TMCASE_POKEDUDE)
         BlendPalettes(1 << (16 + palOffset), 4, RGB_BLACK);
 }
@@ -1808,9 +1828,8 @@ static void SetDiscSpritePosition(struct Sprite *sprite, u8 tmIdx)
     s32 x, y;
     if (IsPokeGlassSessionActive())
     {
-        sprite->x = 44; sprite->y = 44; sprite->oam.priority = 0;
-        sprite->invisible = tmIdx == DISC_HIDDEN;
         if (tmIdx == DISC_HIDDEN) sprite->y2 = DISC_CASE_DISTANCE;
+        UpdateGlassCard(sprite);
         return;
     }
     if (tmIdx == DISC_HIDDEN)
@@ -1845,6 +1864,7 @@ static void SwapDisc(u8 spriteId, u16 itemId)
 
 static void SpriteCB_SwapDisc(struct Sprite *sprite)
 {
+    u8 step = IsPokeGlassSessionActive() ? 4 : DISC_Y_MOVE;
     switch (sprite->sState)
     {
     case 0:
@@ -1865,7 +1885,7 @@ static void SpriteCB_SwapDisc(struct Sprite *sprite)
         }
         else
         {
-            sprite->y2 += DISC_Y_MOVE;
+            sprite->y2 += step;
         }
         break;
     case 1:
@@ -1873,7 +1893,33 @@ static void SpriteCB_SwapDisc(struct Sprite *sprite)
         if (sprite->y2 <= 0)
             sprite->callback = SpriteCallbackDummy;
         else
-            sprite->y2 -= DISC_Y_MOVE;
+            sprite->y2 -= step;
     }
-    if (IsPokeGlassSessionActive()) sprite->invisible = sprite->y2 > 0;
+    if (IsPokeGlassSessionActive()) UpdateGlassCard(sprite);
+}
+
+// Each frame clips the descending card at the physical case slot. Keeping the
+// logical y2 offset preserves the native swap state machine and rapid scrolling.
+static void UpdateGlassCard(struct Sprite *sprite)
+{
+    u8 frame = min(sprite->y2 / 4, 5);
+    sprite->x = 44;
+    sprite->y = 40 - sprite->y2;
+    sprite->oam.priority = 0;
+    sprite->animPaused = TRUE;
+    sprite->animBeginning = FALSE;
+    sprite->oam.tileNum = GetSpriteTileStartByTag(TAG_DISC) + frame * 16;
+    sprite->invisible = frame == 5;
+}
+
+static void DrawGlassCardCase(void)
+{
+    u8 x, y;
+    // BG1's tile 0x160 ends before the panel tiles at 0x170 (VRAM 0x6E00).
+    CpuCopy16(sGlassTMCardCaseGfx, (void *)(VRAM + 0x6C00), sizeof(sGlassTMCardCaseGfx));
+    LoadPalette(sGlassTMCasePalette, BG_PLTT_ID(12), sizeof(sGlassTMCasePalette));
+    for (y = 0; y < 3; y++)
+        for (x = 0; x < 5; x++)
+            FillBgTilemapBufferRect(1, 0x160 + y * 5 + x, 3 + x, 4 + y, 1, 1, 12);
+    ScheduleBgCopyTilemapToVram(1);
 }
