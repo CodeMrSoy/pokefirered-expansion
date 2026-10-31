@@ -1,4 +1,5 @@
 #include "global.h"
+#include "poke_glass.h"
 #include "malloc.h"
 #include "bg.h"
 #include "decompress.h"
@@ -583,6 +584,7 @@ static bool8 RunBerryPouchInit(void)
         gMain.state++;
         break;
     default:
+        if (IsPokeGlassSessionActive()) DrawPokeGlassCaseOverlay();
         SetVBlankCallback(VBlankCB_BerryPouchIdle);
         SetMainCallback2(CB2_BerryPouchIdle);
         return TRUE;
@@ -638,6 +640,9 @@ static bool8 BerryPouchLoadGfx(void)
         if (FreeTempTileDataBuffersIfPossible() != TRUE)
         {
             DecompressDataWithHeaderWram(gBerryPouchBg1Tilemap, sResources->bg1TilemapBuffer);
+            if (IsPokeGlassSessionActive())
+                CpuCopy16(sResources->bg1TilemapBuffer + 16 * 64,
+                    sResources->bg1TilemapBuffer + 14 * 64, 4 * 64);
             sResources->data[0]++;
         }
         break;
@@ -674,7 +679,7 @@ static bool8 AllocateListMenuBuffers(void)
 static void SetUpListMenuTemplate(void)
 {
     u16 i;
-    struct BagPocket *pocket = &gBagPockets[POCKET_BERRIES - 1];
+    struct BagPocket *pocket = &gBagPockets[POCKET_BERRIES];
     for (i = 0; i < sResources->listMenuNumItems; i++)
     {
         GetBerryNameAndIndexForMenu(&sListMenuStrbuf[i * 27], pocket->itemSlots[i].itemId);
@@ -695,6 +700,8 @@ static void SetUpListMenuTemplate(void)
     gMultiuseListMenuTemplate.lettersSpacing = 0;
     gMultiuseListMenuTemplate.itemVerticalPadding = 2;
     gMultiuseListMenuTemplate.upText_Y = 2;
+    if (IsPokeGlassSessionActive() && sResources->listMenuMaxShowed > 6)
+        sResources->listMenuMaxShowed = 6;
     gMultiuseListMenuTemplate.maxShowed = sResources->listMenuMaxShowed;
     gMultiuseListMenuTemplate.fontId = FONT_NORMAL;
     gMultiuseListMenuTemplate.cursorPal = 2;
@@ -740,7 +747,7 @@ static void CreateBerryPouchItemIcon(u16 item, u8 iconSlot)
         {
             *spriteIdPtr = spriteId;
             gSprites[spriteId].x2 = 24;
-            gSprites[spriteId].y2 = 147;
+            gSprites[spriteId].y2 = IsPokeGlassSessionActive() ? 130 : 147;
         }
     }
 }
@@ -781,7 +788,7 @@ static void BerryPouchItemPrintFunc(u8 windowId, u32 itemId, u8 y)
         itemQuantity = GetBagItemQuantity(POCKET_BERRIES, itemId);
         ConvertIntToDecimalStringN(gStringVar1, itemQuantity, STR_CONV_MODE_RIGHT_ALIGN, MAX_ITEM_DIGITS);
         StringExpandPlaceholders(gStringVar4, gText_xVar1);
-        BerryPouchPrint(windowId, FONT_SMALL, gStringVar4, 110, y, 0, 0, 0xFF, 1);
+        BerryPouchPrint(windowId, FONT_SMALL, gStringVar4, IsPokeGlassSessionActive() ? 102 : 110, y, 0, 0, 0xFF, 1);
     }
 }
 
@@ -815,7 +822,7 @@ static void PrintSelectedBerryDescription(s32 itemIdx)
     else
         str = gText_TheBerryPouchWillBePutAway;
     FillWindowPixelBuffer(1, PIXEL_FILL(0));
-    BerryPouchPrint(1, FONT_NORMAL, str, 0, 2, 2, 0, 0, 0);
+    BerryPouchPrint(1, IsPokeGlassSessionActive() ? FONT_SMALL : FONT_NORMAL, str, 0, 2, IsPokeGlassSessionActive() ? 0 : 2, 0, 0, 0);
 }
 
 static void SetDescriptionWindowBorderPalette(s32 pal)
@@ -827,9 +834,9 @@ static void SetDescriptionWindowBorderPalette(s32 pal)
 static void CreateScrollIndicatorArrows_BerryPouchList(void)
 {
     if (sStaticCnt.type != BERRYPOUCH_FROMBERRYCRUSH)
-        sResources->indicatorTaskId = AddScrollIndicatorArrowPairParameterized(2, 160, 8, 120, sResources->listMenuNumItems - sResources->listMenuMaxShowed + 1, 110, 110, &sStaticCnt.listMenuScrollOffset);
+        sResources->indicatorTaskId = AddScrollIndicatorArrowPairParameterized(2, 160, IsPokeGlassSessionActive() ? 20 : 8, IsPokeGlassSessionActive() ? 108 : 120, sResources->listMenuNumItems - sResources->listMenuMaxShowed + 1, 110, 110, &sStaticCnt.listMenuScrollOffset);
     else
-        sResources->indicatorTaskId = AddScrollIndicatorArrowPairParameterized(2, 160, 8, 120, sResources->listMenuNumItems - sResources->listMenuMaxShowed, 110, 110, &sStaticCnt.listMenuScrollOffset);
+        sResources->indicatorTaskId = AddScrollIndicatorArrowPairParameterized(2, 160, IsPokeGlassSessionActive() ? 20 : 8, IsPokeGlassSessionActive() ? 108 : 120, sResources->listMenuNumItems - sResources->listMenuMaxShowed, 110, 110, &sStaticCnt.listMenuScrollOffset);
 }
 
 static void CreateScrollIndicatorArrows_TossQuantity(void)
@@ -1511,7 +1518,20 @@ static void Task_SellBerries_WaitButton(u8 taskId)
 static void BerryPouchInitWindows(void)
 {
     u8 i;
-    InitWindows(sWindowTemplates_Main);
+    if (IsPokeGlassSessionActive())
+    {
+        struct WindowTemplate windows[ARRAY_COUNT(sWindowTemplates_Main)];
+        memcpy(windows, sWindowTemplates_Main, sizeof(windows));
+        windows[0].tilemapTop = 2;
+        windows[0].width = 17;
+        windows[0].height = 12;
+        windows[1].tilemapTop = 14;
+        windows[1].width = 23;
+        windows[2].tilemapTop = 2;
+        windows[2].tilemapLeft = 2;
+        InitWindows(windows);
+    }
+    else InitWindows(sWindowTemplates_Main);
     DeactivateAllTextPrinters();
     LoadUserWindowBorderGfx(0, 0x001, BG_PLTT_ID(14));
     LoadMessageBoxGfx(0, 0x013, BG_PLTT_ID(13));

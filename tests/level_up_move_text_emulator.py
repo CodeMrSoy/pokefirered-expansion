@@ -21,7 +21,8 @@ def wait(name):
 fixture=b''
 for species,level in [(54,14),(179,10)]:
  fixture+=b'\x23'+struct.pack('<I',(m.symbols['ScrCmd_createmon']|1)+0x2000000)+struct.pack('<BBHHI',0,6,species,level,0)
-fixture+=b'\x29'+struct.pack('<H',0x820)+b'\x44'+struct.pack('<HH',102,5)+b'\x02'
+fixture+=b'\x29'+struct.pack('<H',0x820)+b'\x44'+struct.pack('<HH',102,5)
+fixture+=b'\x29'+struct.pack('<H',0x829)+b'\x44'+struct.pack('<HH',717,1)+b'\x02'
 m.inject(fixture)
 size=m.lib.retro_serialize_size();state=m.c.create_string_buffer(size);assert m.lib.retro_serialize(state,size)
 for slot,newmove in [(0,50),(1,178)]:

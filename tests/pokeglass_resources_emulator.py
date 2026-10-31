@@ -34,13 +34,23 @@ def cycle():
         m.press(8, 100)
         assert ready(taskname), taskname
         if app == 2:
-            assert heap_state() == before, ('Storage allocated a second screen', before, heap_state())
+            assert struct.unpack('<I',m.read(m.symbols['sGlassStorageIcons'],4))[0] != 0
         m.press(0, 100)
         assert hub()
+        if app == 2:
+            assert heap_state() == before, ('Storage retained its sprite view',before,heap_state())
+            assert m.read(m.symbols['sGlassStorageIcons'],4) == bytes(4)
     # Restore the remembered launcher cursor for the next real session.
     m.press(4, 30)
     m.press(6, 30)
     assert byte('sHubCursor') == 0
+    m.press(6,30);m.press(6,30)
+    assert byte('sHubCursor') == 9
+    before = heap_state()
+    m.press(8,100);assert ready('Task_PokeGlassFieldKit')
+    m.press(5,30);m.press(0,100);assert hub()
+    assert heap_state() == before, ('Field Kit retained resources',before,heap_state())
+    m.press(7,30);m.press(7,30);assert byte('sHubCursor') == 0
     m.press(0, 100)
     assert byte('sGlobalScriptContextStatus') == 2
     assert not byte('sLockFieldControls')

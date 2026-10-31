@@ -12,15 +12,16 @@ selected.
 | Page | Top row | Bottom row |
 | --- | --- | --- |
 | 1 | Pokédex, Party, Storage | Map, Stats, Bag |
-| 2 | Trainer Card, Options, Save | Debug, DexNav, Retire |
+| 2 | Trainer Card, Field Kit, Save | Options, DexNav, Retire |
 
-Debug follows the existing development-build setting (`make DEVELOPMENT=1`).
+Field Kit is always available and shows owned and missing field tools.
 DexNav appears only if it is enabled and unlocked. Retire appears during a
 Safari session; Save is unavailable during Safari and link sessions. Hidden
 slots are skipped, including when a whole row is empty. Link and Union Room
 sessions retain only Party, Bag, Trainer Card and Options.
 
-Bag, Trainer Card, Options and Debug use their existing game screens. Save
+Bag, Trainer Card and Options use their existing game screens. Bag, its TM and
+Berry cases, Party and Town Map use the shared tablet border. Save
 uses the existing confirmation/overwrite flow and flash-save implementation.
 The Pokédex and storage unlock restrictions remain in their script handlers.
 Storage now opens the [embedded six-box management app](pokeglass-storage.md),
@@ -30,8 +31,8 @@ Party and Stats require at least one Pokémon.
 The wardrobe app, preview screen and outfit-changing task have been removed.
 The new-game character selection still chooses the appearance saved with the
 player. Existing saves retain their current appearance. The legacy wardrobe
-special is a no-op so old script references cannot change outfits. Debug tools
-are development tools and are not part of the normal outfit selection flow.
+special is a no-op so old script references cannot change outfits. Field Kit uses the existing field-tool ownership, badge checks and callbacks;
+the Bag's Field Item Case remains available.
 
 ## Validation
 
@@ -58,3 +59,22 @@ space. Embedded apps share the larger window; native app returns use the same
 frame geometry. Storage uses a slightly darker glass tint for dense text.
 The frame and its native-app tiles are generated together by
 `tools/compile_pokeglass_frame.py`.
+
+## App presentation
+
+The launcher shows a description for the selected app. Pokédex uses a wider
+six-entry list with Seen/Caught filters, alphabetical sorting, portraits, cries
+and habitat paging. Party has six wider cards with Pokémon icons and readable
+HP, level, status and nickname fields.
+
+Stats has three SELECT-switched pages: values/EVs/IVs, profile (types, nature,
+ability and item), and training (experience, next level, friendship and totals).
+L/R changes party member. Eggs conceal their stat data. Summary retains its
+identity and moves pages; left/right skips its redundant Skills page.
+
+Field Kit lists the seven permanent field tools. Owned tools show their icon
+and can be used through the established field callbacks when badge and field
+conditions allow. Missing tools remain visible without being usable.
+
+For the current overhaul's executed checks and limitations, see
+[pokeglass-overhaul-qa.md](pokeglass-overhaul-qa.md).

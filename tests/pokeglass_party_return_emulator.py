@@ -15,8 +15,12 @@ size = m.lib.retro_serialize_size()
 field = m.c.create_string_buffer(size)
 assert m.lib.retro_serialize(field, size)
 mask = np.zeros((160, 240), dtype=bool)
-mask[10:150, 12:228] = True
-mask[23:136, 20:220] = False
+# Test the physical bezel; rounded outside corners reveal the field backdrop.
+mask[:10,10:230] = True
+mask[150:,10:230] = True
+mask[10:150,:10] = True
+mask[10:150,230:] = True
+mask[10:150, 10:230] = False
 
 def callback():
     return struct.unpack('<I', m.read(m.symbols['gMain'] + 4, 4))[0]
@@ -49,6 +53,10 @@ for name, count, warp in [('bedroom-one', 1, None), ('bedroom-six', 6, None),
             if frame == 1:
                 m.keys.clear()
             current = np.asarray(m.screen).copy()
+            if not np.array_equal(current[mask], base[mask]):
+                ys,xs=np.where(mask & np.any(current!=base,axis=2))
+                print('Bezel differences',[(int(x),int(y),base[y,x].tolist(),current[y,x].tolist()) for x,y in zip(xs[:20],ys[:20])],flush=True)
+                m.Image.fromarray(base).save(m.d/'party-return-before.png');m.snap('party-return-bezel-error')
             assert np.array_equal(current[mask], base[mask]), (name, cycle, frame, 'Bezel changed')
             assert len(np.unique(current.reshape(-1, 3), axis=0)) > 8, (name, cycle, frame, 'Blank frame')
             if flag('sReturnCoverActive'):

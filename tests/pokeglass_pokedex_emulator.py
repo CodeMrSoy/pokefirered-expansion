@@ -25,8 +25,8 @@ class GlassDex(c.Structure):
                 ('alphabetical', c.c_uint8)]
 
 shell_mask = np.zeros((160, 240), dtype=bool)
-shell_mask[10:150, 12:228] = True
-shell_mask[23:136, 20:220] = False
+shell_mask[:, :] = True
+shell_mask[10:150, 10:230] = False
 hub_shell = None
 
 def data():

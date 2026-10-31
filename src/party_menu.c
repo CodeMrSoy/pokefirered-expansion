@@ -2482,6 +2482,20 @@ static void LoadPartyMenuWindows(void)
         LoadPokeGlassBackdrop();
         for (i = 3; i <= 8; i++)
             LoadPalette(sPokeGlassPartyPalette, BG_PLTT_ID(i), PLTT_SIZE_4BPP);
+        {
+            static const struct WindowTemplate title = {.bg = 0, .tilemapLeft = 2, .tilemapTop = 1,
+                .width = 26, .height = 2, .paletteNum = 11, .baseBlock = 0x240};
+            static const u8 colors[] = {0, 8, 4};
+            u8 window = AddWindow(&title);
+            if (window != WINDOW_NONE)
+            {
+                FillWindowPixelBuffer(window, PIXEL_FILL(0));
+                AddTextPrinterParameterized3(window, FONT_SMALL, 0, 3, colors, TEXT_SKIP_DRAW, COMPOUND_STRING("PARTY"));
+                AddTextPrinterParameterized3(window, FONT_SMALL, 124, 3, colors, TEXT_SKIP_DRAW, COMPOUND_STRING("Team overview"));
+                PutWindowTilemap(window);
+                CopyWindowToVram(window, COPYWIN_FULL);
+            }
+        }
         sPokeGlassCancelWindow = WINDOW_NONE;
     }
 }
@@ -2590,9 +2604,9 @@ static void BlitBitmapToPartyWindow_PokeGlass(u8 windowId, u8 x, u8 y, u8 width,
 {
     if (width == 0 && height == 0)
     {
-        FillWindowPixelBuffer(windowId, PIXEL_FILL(5));
-        FillWindowPixelRect(windowId, PIXEL_FILL(4), 1, 1, 94, 30);
-        FillWindowPixelRect(windowId, PIXEL_FILL(5), 2, 2, 92, 28);
+        FillWindowPixelBuffer(windowId, PIXEL_FILL(12));
+        FillWindowPixelRect(windowId, PIXEL_FILL(4), 1, 1, 102, 30);
+        FillWindowPixelRect(windowId, PIXEL_FILL(5), 2, 2, 100, 28);
     }
     else
         FillWindowPixelRect(windowId, PIXEL_FILL(5), x * 8, y * 8, width * 8, height * 8);

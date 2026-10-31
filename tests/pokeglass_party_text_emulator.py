@@ -40,7 +40,7 @@ def pixels(slot):
  win=m.read(boxes+slot*16+8,1)[0]
  # GetWindowAttribute TILE_DATA is 7 in this engine.
  ptr=native('GetWindowAttribute',win,7)
- return m.read(ptr,96*32//2)
+ return m.read(ptr,104*32//2)
 def refresh(slot):native('DisplayPartyPokemonDataForPokeGlass',slot)
 def canonical(slot):native('RenderPartyMenuBox',slot);return pixels(slot)
 original_first=m.read(m.symbols['gPlayerParty'],100)
@@ -57,10 +57,10 @@ for slot,level,maxhp in ((0,10,100),(1,100,714)):
   updated=pixels(slot);fresh=canonical(slot)
 
   def decode(raw):
-   a=np.zeros((32,96),dtype=np.uint8)
+   a=np.zeros((32,104),dtype=np.uint8)
    for y in range(32):
-    for x in range(96):
-     pos=(y//8*12+x//8)*32+(y%8)*4+(x%8)//2
+    for x in range(104):
+     pos=(y//8*13+x//8)*32+(y%8)*4+(x%8)//2
      a[y,x]=(raw[pos]>>((x%2)*4))&15
    return a
   aa,bb=decode(updated),decode(fresh)
@@ -75,7 +75,7 @@ encoded=bytes([0xd1])*12+b'\xff' # W in the FireRed character map.
 m.write(value_addr,encoded);native('SetMonData',m.symbols['gPlayerParty']+200,fields['MON_DATA_NICKNAME'],value_addr)
 native('RenderPartyMenuBox',2);m.snap('party-text-long-nickname')
 after_name=decode(pixels(2))
-assert np.array_equal(before_name[1:12,85:94], after_name[1:12,85:94]), 'Nickname overwrote gender column'
+assert np.array_equal(before_name[1:12,94:102], after_name[1:12,94:102]), 'Nickname overwrote gender column'
 # Genuine item-use animation and two-page stat popup at the 9 -> 10 boundary.
 setfield(0,'MON_DATA_LEVEL',9)
 # Reset EXP consistently through a fresh copy of a level-nine party member.

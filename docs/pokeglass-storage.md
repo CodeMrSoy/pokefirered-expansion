@@ -2,16 +2,16 @@
 
 Storage is an embedded full-screen tablet app. It uses the launcher's existing window and
 tile buffer instead of loading the native PC menu and its storage-screen data.
-Six boxes provide 180 slots. Party and box slots appear side by side; six box
-entries are visible per page, across five pages. The 240×160 frame uses a slightly thicker red-and-white
-edge bezel around 220×140 pixels of translucent glass, with wider columns and
-14-pixel row spacing.
+Six boxes provide 180 slots. All 30 slots of the selected box appear as animated
+Pokémon icon sprites in a 6×5 grid, beside six party slots in two columns. The
+red-and-white tablet bezel surrounds translucent glass. Selected and occupied
+slots are outlined; L/R and the current box number remain visible.
 
 ## Controls
 
-- D-pad: choose a row or switch between party and box.
+- D-pad: navigate slots, crossing between the party and box at their edges.
 - L/R: previous/next box, wrapping through six boxes.
-- Start: next page in the current box, wrapping after page five.
+- Start: inspect the selected Pokémon: level, types, nature, item, ability and moves.
 - A: select a Pokémon, then place it in an empty slot or swap it with another.
 - B: cancel a selected move; otherwise return to the launcher.
 - Select: take a held item, or choose an eligible Bag item to give to an empty-handed Pokémon.
@@ -28,9 +28,10 @@ items to Eggs use the existing restrictions rather than creating orphaned Mail.
 
 The active `PokemonStorage` is six boxes. Its ASLR allocation drops from 34,272
 to 14,992 bytes: **19,280 bytes of permanent EWRAM reclaimed**. The general heap
-size is unchanged. Opening Storage does not allocate another screen, box cache,
-or moving-Pokémon buffer; the selection is a few task fields and moves use
-temporary stack records.
+size is unchanged. Opening Storage reuses the shared screen buffer. A temporary roughly 256-byte
+view caches 36 icon IDs/species/personalities; icon sprites and their palettes
+are released on exit. The persistent cost of the view pointer is four EWRAM
+bytes. Moves use temporary stack records and retain no duplicate box buffer.
 
 Flash still uses the established fourteen-box layout and nine storage sectors.
 Serialization writes six live boxes at their original offsets, zeroes the eight

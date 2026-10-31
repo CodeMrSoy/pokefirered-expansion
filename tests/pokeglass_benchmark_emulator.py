@@ -87,11 +87,10 @@ apps=[('pokedex',0,'Task_PokeGlassPokedex',True),('party',1,'Task_HandleChooseMo
  ('storage',2,'Task_PokeGlassStorage',True),('stats',3,'Task_PokeGlassStats',True),('map',4,'Task_RegionMap',False),
  ('bag',5,'Task_BagMenu_HandleInput',False),('trainer-card',6,'Task_TrainerCard',False),('options',7,'Task_OptionMenu',False),
  ('save',8,'task50_save_game',False)]
-if 'DebugTask_HandleMenuInput_Main' in m.symbols:
- apps.append(('debug',9,'DebugTask_HandleMenuInput_Main',False))
+apps.append(('field-kit',9,'Task_PokeGlassFieldKit',True))
 for label,app,taskname,embedded in apps:
  restore(launcher)
- paths={0:[],1:[7],2:[7,7],3:[5,7],4:[5],5:[5,7,7],6:[7,7,7],7:[7,7,7,7],8:[7,7,7,7,7],9:[7,7,7,5]}
+ paths={0:[],1:[7],2:[7,7],3:[5,7],4:[5],5:[5,7,7],6:[7,7,7],7:[7,7,7,5],8:[7,7,7,7,7],9:[7,7,7,7]}
  for key in paths[app]:m.press(key,30)
  assert byte('sHubCursor')==app,(label,byte('sHubCursor'))
  if label=='save':

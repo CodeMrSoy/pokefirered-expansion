@@ -1,4 +1,5 @@
 #include "global.h"
+#include "poke_glass.h"
 #include "graphics.h"
 #include "item_icon.h"
 #include "item_menu.h"
@@ -176,7 +177,7 @@ void AddBagItemIconSprite(u16 itemId, u8 id)
         {
             spriteIds[id] = spriteId;
             gSprites[spriteId].x2 = 24;
-            gSprites[spriteId].y2 = 140;
+            gSprites[spriteId].y2 = IsPokeGlassSessionActive() ? 130 : 140;
         }
     }
 }

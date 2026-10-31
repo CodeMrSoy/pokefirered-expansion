@@ -1,4 +1,5 @@
 #include "global.h"
+#include "poke_glass.h"
 #include "field_tools.h"
 #include "tm_case.h"
 #include "gflib.h"
@@ -555,6 +556,7 @@ static bool8 DoSetUpTMCaseUI(void)
         gMain.state++;
         break;
     default:
+        if (IsPokeGlassSessionActive()) DrawPokeGlassCaseOverlay();
         SetVBlankCallback(VBlankCB_Idle);
         SetMainCallback2(CB2_Idle);
         return TRUE;
@@ -727,7 +729,7 @@ static void List_ItemPrintFunc(u8 windowId, u32 itemIndex, u8 y)
             {
                 StringCopy(gStringVar4, gText_EmptyString3);
             }
-            TMCase_Print(windowId, FONT_SMALL, gStringVar4, 126, y, 0, 0, TEXT_SKIP_DRAW, COLOR_DARK);
+            TMCase_Print(windowId, FONT_SMALL, gStringVar4, IsPokeGlassSessionActive() ? 118 : 126, y, 0, 0, TEXT_SKIP_DRAW, COLOR_DARK);
         }
         else
         {
@@ -1488,7 +1490,22 @@ static void InitWindowTemplatesAndPals(void)
 {
     u8 i;
 
-    InitWindows(sWindowTemplates);
+    if (IsPokeGlassSessionActive())
+    {
+        struct WindowTemplate windows[ARRAY_COUNT(sWindowTemplates)];
+        memcpy(windows, sWindowTemplates, sizeof(windows));
+        windows[WIN_LIST].tilemapTop = 2;
+        windows[WIN_LIST].width = 18;
+        windows[WIN_DESCRIPTION].width = 16;
+        windows[WIN_DESCRIPTION].height = 6;
+        for (i = 0; i < ARRAY_COUNT(windows) - 1; i++)
+        {
+            windows[i].tilemapLeft = max(2, min(windows[i].tilemapLeft, 28 - windows[i].width));
+            windows[i].tilemapTop = max(2, min(windows[i].tilemapTop, 18 - windows[i].height));
+        }
+        InitWindows(windows);
+    }
+    else InitWindows(sWindowTemplates);
     DeactivateAllTextPrinters();
     LoadUserWindowBorderGfx(0, 0x5B, BG_PLTT_ID(14));
     LoadMessageBoxGfx(0, 0x64, BG_PLTT_ID(11));
@@ -1510,6 +1527,8 @@ static void InitWindowTemplatesAndPals(void)
 
 static void TMCase_Print(u8 windowId, u8 fontId, const u8 * str, u8 x, u8 y, u8 letterSpacing, u8 lineSpacing, u8 speed, u8 colorIdx)
 {
+    if (IsPokeGlassSessionActive() && windowId == WIN_DESCRIPTION)
+    { fontId = FONT_SMALL; letterSpacing = 0; }
     AddTextPrinterParameterized4(windowId, fontId, x, y, letterSpacing, lineSpacing, sTextColors[colorIdx], speed, str);
 }
 

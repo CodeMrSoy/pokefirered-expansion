@@ -478,6 +478,12 @@ void FieldItemCase_Return(bool32 use, u16 item)
 {
     if (use)
     {
+        if (IsPokeGlassSessionActive())
+        {
+            EndPokeGlassSession();
+            ScriptContext_Init();
+            UnlockPlayerFieldControls();
+        }
         gSpecialVar_ItemId = item;
         sItemUseOnFieldCB = ItemUseOnFieldCB_FieldTool;
         gFieldCallback = FieldCB_UseItemOnField;
@@ -489,7 +495,7 @@ void FieldItemCase_Return(bool32 use, u16 item)
         SetMainCallback2(CB2_ReturnToField);
     }
     else
-        GoToBagMenu(ITEMMENULOCATION_LAST, POCKET_KEY_ITEMS, CB2_ReturnToField);
+        GoToBagMenu(ITEMMENULOCATION_LAST, POCKET_KEY_ITEMS, IsPokeGlassSessionActive() ? CB2_ReturnToFieldContinueScript : CB2_ReturnToField);
 }
 
 void ItemUseOutOfBattle_FieldTool(u8 taskId)

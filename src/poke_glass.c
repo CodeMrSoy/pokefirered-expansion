@@ -1,6 +1,8 @@
 #include <stdlib.h>
 #include "global.h"
 #include "quantum_cleanup.h"
+#include "field_tools.h"
+#include "field_move.h"
 #include "avatar.h"
 #include "item_menu.h"
 #include "trainer_card.h"
@@ -16,6 +18,7 @@
 #include "menu.h"
 #include "poke_glass.h"
 #include "pokemon.h"
+#include "move.h"
 #include "item.h"
 #include "mail.h"
 #include "pokemon_icon.h"
@@ -276,13 +279,14 @@ static EWRAM_DATA bool8 sTabletActive = FALSE;
 static EWRAM_DATA bool8 sTabletNative = FALSE;
 
 bool8 IsPokeGlassActive(void) { return sTabletActive; }
+bool8 IsPokeGlassSessionActive(void) { return sLauncherSession; }
 static EWRAM_DATA u8 sHubCursor = 0;
 static EWRAM_DATA u16 sHubBlend[8] = {0};
 static EWRAM_DATA u16 sHubPalette[32] = {0};
 static const u8 sHubTitle[] = _("POKéGLASS");
 static const u8 sHubLabels[][16] = {
     _("Pokédex"), _("Party"), _("Storage"), _("Stats"), _("Map"), _("Bag"),
-    _("Trainer Card"), _("Options"), _("Save"), _("Debug"), _("DexNav"), _("Retire")
+    _("Trainer Card"), _("Options"), _("Save"), _("Field Kit"), _("DexNav"), _("Retire")
 };
 static const struct WindowTemplate sHubTemplate = {
     .bg = 0, .tilemapLeft = 0, .tilemapTop = 0,
@@ -412,13 +416,12 @@ static void DrawHubIcon(u8 app, u16 x, u16 y)
         HubRect(8, x + 13, y + 2, 3, 5);
         HubRect(5, x + 6, y + 14, 12, 8);
         break;
-    case 9: // Debug: bug.
-        HubRect(8, x + 7, y + 5, 10, 16);
-        HubRect(8, x + 9, y + 1, 6, 3);
-        HubRect(5, x + 11, y + 7, 2, 12);
-        HubRect(8, x + 2, y + 7, 20, 2);
-        HubRect(8, x + 2, y + 13, 20, 2);
-        HubRect(8, x + 2, y + 19, 20, 2);
+    case 9: // Field Kit: a compact equipment case.
+        HubRect(8, x + 8, y + 1, 9, 4);
+        HubRect(8, x + 2, y + 5, 22, 17);
+        HubRect(5, x + 4, y + 7, 18, 13);
+        HubRect(8, x + 7, y + 12, 12, 3);
+        HubRect(8, x + 11, y + 9, 4, 9);
         break;
     case 10: // DexNav: radar.
         HubRect(8, x + 2, y + 2, 20, 20);
@@ -437,7 +440,7 @@ static void DrawHubIcon(u8 app, u16 x, u16 y)
 }
 
 // Stable script IDs, arranged in two rows on each phone-style page.
-static const u8 sHubPages[2][6] = {{0, 1, 2, 4, 3, 5}, {6, 7, 8, 9, 10, 11}};
+static const u8 sHubPages[2][6] = {{0, 1, 2, 4, 3, 5}, {6, 9, 8, 7, 10, 11}};
 
 bool8 CanUsePokeGlass(void)
 {
@@ -453,7 +456,7 @@ static bool8 HubAppAvailable(u8 app)
         return FALSE;
     if (IsUpdateLinkStateCBActive() || InUnionRoom())
         return app == 1 || app == 5 || app == 6 || app == 7;
-    if (app == 9) return DEBUG_OVERWORLD_MENU == TRUE;
+    if (app == 9) return TRUE;
     if (app == 10) return DEXNAV_ENABLED && DN_FLAG_DEXNAV_GET != 0 && FlagGet(DN_FLAG_DEXNAV_GET);
     if (app == 11) return GetSafariZoneFlag();
     if (app == 8) return !GetSafariZoneFlag() && !IsUpdateLinkStateCBActive() && !InUnionRoom();
@@ -475,8 +478,8 @@ static void DrawHubApp(u8 slot)
     u16 x = 12 + (slot % 3) * 74, y = 35 + (slot / 3) * 50;
     bool8 selected = app == sHubCursor;
     if (!HubAppAvailable(app)) return;
-    HubRect(selected ? 8 : 6, x, y, 68, 46);
-    HubRect(selected ? 5 : 4, x + 2, y + 2, 64, 42);
+    HubRect(selected ? 10 : 14, x, y, 68, 46);
+    HubRect(4, x + 2, y + 2, 64, 42);
     DrawHubIcon(app, x + 22, y + 4);
     AddTextPrinterParameterized3(sHubWindow, FONT_SMALL,
         x + (68 - GetStringWidth(FONT_SMALL, sHubLabels[app], 0)) / 2,
@@ -495,9 +498,45 @@ void DrawPokeGlassFrame(u8 bg)
 {
     FillBgTilemapBufferRect(bg, 0x180, 0, 0, 32, 32, 11);
     LoadPalette(sPalette, BG_PLTT_ID(11), sizeof(sPalette));
-    CpuCopy16(sTabletFrameTiles, (void *)(VRAM + 0x7000), sizeof(sTabletFrameTiles));
-    CopyToBgTilemapBufferRect_ChangePalette(bg, sTabletFrameMap, 0, 0, 30, 20, 11);
+    CpuCopy16(sTabletGlassFrameTiles, (void *)(VRAM + 0x7000), sizeof(sTabletGlassFrameTiles));
+    CopyToBgTilemapBufferRect_ChangePalette(bg, sTabletGlassFrameMap, 0, 0, 30, 20, 11);
     ScheduleBgCopyTilemapToVram(bg);
+}
+
+// Native Bag/Map keep their original input and item/map logic. Only their
+// outside pixels are covered by the same tablet bezel as embedded apps.
+static void DrawPokeGlassNativeLayer(u8 layer, u8 mapBase)
+{
+    u16 map[32 * 32] = {0};
+    u16 x, y;
+    u8 palette = layer == 3 ? 9 : 11;
+    struct BgTemplate bg = {.bg = layer, .charBaseIndex = 1,
+        .mapBaseIndex = mapBase, .priority = 0};
+    if (!IsPokeGlassSessionActive()) return;
+    InitBgFromTemplate(&bg);
+    LoadPalette(sPalette, BG_PLTT_ID(palette), sizeof(sPalette));
+    CpuCopy16(sTabletFrameTiles, (void *)(VRAM + 0x7000), sizeof(sTabletFrameTiles));
+    for (y = 0; y < 20; y++)
+        for (x = 0; x < 30; x++)
+            map[y * 32 + x] = sTabletFrameMap[y * 30 + x] | (palette << 12);
+    CpuCopy16(map, (void *)(VRAM + bg.mapBaseIndex * 0x800), sizeof(map));
+    ShowBg(bg.bg);
+    SetGpuReg(REG_OFFSET_WIN1H, WIN_RANGE(10, 230));
+    SetGpuReg(REG_OFFSET_WIN1V, WIN_RANGE(10, 150));
+    SetGpuReg(REG_OFFSET_WININ, WININ_WIN1_BG_ALL | WININ_WIN1_OBJ);
+    SetGpuReg(REG_OFFSET_WINOUT, (1u << layer));
+    ClearGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON | DISPCNT_OBJWIN_ON);
+    SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN1_ON);
+}
+
+void DrawPokeGlassNativeOverlay(bool8 bag)
+{
+    DrawPokeGlassNativeLayer(bag ? 2 : 1, bag ? 29 : 15);
+}
+
+void DrawPokeGlassCaseOverlay(void)
+{
+    DrawPokeGlassNativeLayer(3, 28);
 }
 
 // A compact, opaque tablet cover survives the field's VRAM/heap reset. Its
@@ -681,6 +720,20 @@ void VBlankCB_PokeGlassReturn(void)
 static void DrawHub(void)
 {
     static const u8 textColors[] = {0, 8, 4};
+    static const u8 descriptions[][48] = {
+        _("Species, habitats and discovery."),
+        _("Your team, moves and held items."),
+        _("Organize boxes and your party."),
+        _("Stats, training, nature and ability."),
+        _("Towns, routes and destinations."),
+        _("Items, key items and field case."),
+        _("Your identity and progress."),
+        _("Sound, text and controls."),
+        _("Save your adventure."),
+        _("Your collected exploration tools."),
+        _("Find nearby wild POKéMON."),
+        _("Leave the SAFARI session."),
+    };
     u8 i;
     DrawTabletShell((u8 *)GetWindowAttribute(sHubWindow, WINDOW_TILE_DATA));
     AddTextPrinterParameterized3(sHubWindow, FONT_SMALL, 83, 14, textColors, TEXT_SKIP_DRAW, sHubTitle);
@@ -690,9 +743,11 @@ static void DrawHub(void)
     HubRect(4, 192, 21, 14, 5);
     HubRect(6, 193, 22, 10, 3);
     for (i = 0; i < 6; i++) DrawHubApp(i);
+    SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(14, 4));
+    AddTextPrinterParameterized3(sHubWindow, FONT_SMALL, 16, 132, textColors, TEXT_SKIP_DRAW, descriptions[sHubCursor]);
     // Two page dots and edge arrows keep horizontal paging discoverable.
-    HubRect(sHubCursor < 6 ? 8 : 6, 110, 140, 4, 3);
-    HubRect(sHubCursor >= 6 ? 8 : 6, 120, 140, 4, 3);
+    HubRect(sHubCursor < 6 ? 8 : 6, 110, 146, 4, 2);
+    HubRect(sHubCursor >= 6 ? 8 : 6, 120, 146, 4, 2);
     AddTextPrinterParameterized3(sHubWindow, FONT_SMALL, 15, 17, textColors, TEXT_SKIP_DRAW, COMPOUND_STRING("{LEFT_ARROW}"));
     AddTextPrinterParameterized3(sHubWindow, FONT_SMALL, 35, 17, textColors, TEXT_SKIP_DRAW, COMPOUND_STRING("{RIGHT_ARROW}"));
     PutWindowTilemap(sHubWindow);
@@ -889,6 +944,7 @@ void ShowPokeGlassHub(bool8 ignoreBPress)
 
 #define TAG_POKEGLASS_STATS_MON 0xD10F
 static EWRAM_DATA u8 sStatsPartySlot = 0;
+static EWRAM_DATA u8 sStatsView = 0;
 static EWRAM_DATA u16 sStatsMonSprite = 0;
 static const u8 sStatsLabels[6][12] = {
     _("HP"), _("Attack"), _("Defense"), _("Sp. Atk"), _("Sp. Def"), _("Speed")
@@ -908,6 +964,7 @@ static const u8 sStatsAbility[] = _("Ability:");
 static const u8 sStatsEggAbility[] = _("Unknown");
 static const u8 sStatsDash[] = _("-");
 static const u8 sStatsLevel[] = _("Lv.");
+static const u8 sStatsTitles[][16] = {_("STATS 1/3"), _("PROFILE 2/3"), _("TRAINING 3/3")};
 
 static void StatsText(u16 x, u16 y, const u8 *text)
 {
@@ -923,6 +980,7 @@ static void StatsNumber(u16 right, u16 y, u16 value)
 }
 
 #include "poke_glass_storage.inc"
+#include "poke_glass_field_kit.inc"
 
 static void DestroyStatsMonSprite(void)
 {
@@ -943,48 +1001,92 @@ static void DrawStatsPage(void)
     static const u8 raisedColors[] = {0, 10, 9};
     static const u8 loweredColors[] = {0, 6, 4};
     bool8 isEgg = GetMonData(mon, MON_DATA_IS_EGG);
-    static const u8 rightEdges[] = {160, 185, 207};
+    static const u8 rightEdges[] = {172, 198, 221};
     DrawTabletShell((u8 *)GetWindowAttribute(sHubWindow, WINDOW_TILE_DATA));
     GetMonData(mon, MON_DATA_NICKNAME, nickname);
     StringGet_Nickname(nickname);
-    StatsText(17, 16, nickname);
+    SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(14, 4));
+    HubRect(4, 12, 12, 216, 136);
+    StatsText(16, 14, nickname);
+    StatsText(155, 14, sStatsTitles[sStatsView]);
     if (!isEgg)
     {
         StatsText(17, 29, sStatsLevel);
         StatsNumber(52, 29, GetMonData(mon, MON_DATA_LEVEL));
     }
-    StatsNumber(76, 29, sStatsPartySlot + 1);
-    // Clear column headings and thin rules keep all six rows on one page.
-    HubRect(6, 90, 16, 120, 84);
-    HubRect(4, 91, 17, 118, 82);
-    StatsText(137, 18, sStatsValueHeader);
-    StatsText(173, 18, sStatsEVHeader);
-    StatsText(195, 18, sStatsIVHeader);
-    HubRect(6, 92, 31, 116, 1);
-    for (row = 0; row < 6; row++)
+    StatsNumber(71, 29, sStatsPartySlot + 1);
+    StatsText(72, 29, COMPOUND_STRING("/"));
+    StatsNumber(87, 29, gPlayerPartyCount);
+    HubRect(6, 90, 32, 134, 84);
+    HubRect(4, 91, 33, 132, 82);
+    if (!sStatsView)
     {
-        u16 y = 33 + row * 11;
-        HubRect((row & 1) ? 4 : 5, 92, y, 116, 11);
-        if (!isEgg && row != 0 && gNaturesInfo[nature].statUp != gNaturesInfo[nature].statDown
-            && (statIds[row] == gNaturesInfo[nature].statUp || statIds[row] == gNaturesInfo[nature].statDown))
-            AddTextPrinterParameterized3(sHubWindow, FONT_SMALL, 94, y,
-                statIds[row] == gNaturesInfo[nature].statUp ? raisedColors : loweredColors,
-                TEXT_SKIP_DRAW, sStatsLabels[row]);
-        else
-            StatsText(94, y, sStatsLabels[row]);
-        for (column = 0; column < 3; column++)
+        StatsText(147, 33, sStatsValueHeader);
+        StatsText(185, 33, sStatsEVHeader);
+        StatsText(210, 33, sStatsIVHeader);
+        HubRect(6, 92, 45, 130, 1);
+        for (row = 0; row < 6; row++)
         {
-            if (isEgg)
-                StatsText(rightEdges[column] - 4, y, sStatsDash);
-            else
-                StatsNumber(rightEdges[column], y, GetMonData(mon, sStatsFields[row][column]));
+            u16 y = 47 + row * 11;
+            HubRect((row & 1) ? 4 : 5, 92, y, 130, 11);
+            if (!isEgg && row && gNaturesInfo[nature].statUp != gNaturesInfo[nature].statDown
+                && (statIds[row] == gNaturesInfo[nature].statUp || statIds[row] == gNaturesInfo[nature].statDown))
+                AddTextPrinterParameterized3(sHubWindow, FONT_SMALL, 95, y,
+                    statIds[row] == gNaturesInfo[nature].statUp ? raisedColors : loweredColors,
+                    TEXT_SKIP_DRAW, sStatsLabels[row]);
+            else StatsText(95, y, sStatsLabels[row]);
+            for (column = 0; column < 3; column++)
+            {
+                if (isEgg) StatsText(rightEdges[column] - 4, y, sStatsDash);
+                else StatsNumber(rightEdges[column], y, GetMonData(mon, sStatsFields[row][column]));
+            }
         }
+        StatsText(16, 118, sStatsAbility);
+        StatsText(76, 118, isEgg ? sStatsEggAbility : gAbilitiesInfo[GetMonAbility(mon)].name);
+        StatsText(16, 136, COMPOUND_STRING("L/R:Member SELECT:Page B:Back"));
     }
-    HubRect(6, 17, 101, 190, 1);
-    StatsText(18, 102, sStatsAbility);
-    StatsText(64, 102, isEgg ? sStatsEggAbility : gAbilitiesInfo[GetMonAbility(mon)].name);
-    if (!isEgg)
-        StatsText(18, 114, gAbilitiesInfo[GetMonAbility(mon)].description);
+    else if (sStatsView == 1)
+    {
+        StatsText(98, 36, COMPOUND_STRING("Nature"));
+        StatsText(98, 49, isEgg ? sStatsDash : gNaturesInfo[nature].name);
+        StatsText(98, 67, COMPOUND_STRING("Held item"));
+        StatsText(98, 80, isEgg ? sStatsDash : GetMonData(mon, MON_DATA_HELD_ITEM) == ITEM_NONE ? COMPOUND_STRING("None") : GetItemName(GetMonData(mon, MON_DATA_HELD_ITEM)));
+        if (!isEgg)
+        {
+            u16 species = GetMonData(mon, MON_DATA_SPECIES);
+            StatsText(98, 99, gTypesInfo[gSpeciesInfo[species].types[0]].name);
+            if (gSpeciesInfo[species].types[0] != gSpeciesInfo[species].types[1])
+                StatsText(158, 99, gTypesInfo[gSpeciesInfo[species].types[1]].name);
+        }
+        StatsText(16, 109, sStatsAbility);
+        StatsText(76, 109, isEgg ? sStatsEggAbility : gAbilitiesInfo[GetMonAbility(mon)].name);
+        if (!isEgg) StatsText(16, 122, gAbilitiesInfo[GetMonAbility(mon)].description);
+    }
+    else
+    {
+        u32 exp = GetMonData(mon, MON_DATA_EXP), next = 0;
+        u16 evs = 0, ivs = 0;
+        u8 number[12], level = GetMonData(mon, MON_DATA_LEVEL);
+        if (!isEgg && level < MAX_LEVEL)
+            next = gExperienceTables[gSpeciesInfo[GetMonData(mon, MON_DATA_SPECIES)].growthRate][level + 1] - exp;
+        StatsText(98, 36, COMPOUND_STRING("Experience"));
+        ConvertIntToDecimalStringN(number, isEgg ? 0 : exp, STR_CONV_MODE_LEFT_ALIGN, 10);
+        StatsText(218 - GetStringWidth(FONT_SMALL, number, 0), 49, isEgg ? sStatsDash : number);
+        StatsText(98, 67, COMPOUND_STRING("To next level"));
+        ConvertIntToDecimalStringN(number, next, STR_CONV_MODE_LEFT_ALIGN, 10);
+        StatsText(218 - GetStringWidth(FONT_SMALL, number, 0), 80, isEgg ? sStatsDash : number);
+        StatsText(98, 99, COMPOUND_STRING("Friendship"));
+        if (!isEgg) StatsNumber(218, 99, GetMonData(mon, MON_DATA_FRIENDSHIP));
+        for (row = 0; row < 6; row++)
+        {
+            evs += GetMonData(mon, sStatsFields[row][1]);
+            ivs += GetMonData(mon, sStatsFields[row][2]);
+        }
+        StatsText(16, 118, COMPOUND_STRING("Total EV"));
+        StatsText(124, 118, COMPOUND_STRING("Total IV"));
+        if (!isEgg) { StatsNumber(101, 118, evs); StatsNumber(221, 118, ivs); }
+        StatsText(16, 136, COMPOUND_STRING("L/R:Member SELECT:Page B:Back"));
+    }
     PutWindowTilemap(sHubWindow);
     CopyWindowToVram(sHubWindow, COPYWIN_FULL);
     // Reuse the portrait buffer and OBJ tiles when changing party members.
@@ -1033,15 +1135,22 @@ static void Task_PokeGlassStats(u8 taskId)
     {
         PlaySE(SE_SELECT);
         DestroyStatsMonSprite();
+        SetPokeGlassBlend(TRUE);
         CloseHub();
         gTasks[taskId].data[2] = 0;
         gTasks[taskId].data[3] = FALSE;
         gTasks[taskId].func = Task_CloseTablet;
         return;
     }
-    if (JOY_NEW(DPAD_LEFT))
+    if (JOY_NEW(SELECT_BUTTON))
+    {
+        sStatsView = (sStatsView + 1) % 3;
+        DrawStatsPage();
+        return;
+    }
+    if (JOY_NEW(DPAD_LEFT | L_BUTTON))
         sStatsPartySlot = sStatsPartySlot == 0 ? gPlayerPartyCount - 1 : sStatsPartySlot - 1;
-    else if (JOY_NEW(DPAD_RIGHT))
+    else if (JOY_NEW(DPAD_RIGHT | R_BUTTON))
         sStatsPartySlot = (sStatsPartySlot + 1) % gPlayerPartyCount;
     if (previous != sStatsPartySlot)
     {
@@ -1062,6 +1171,7 @@ void ShowPokeGlassStats(void)
         return;
     if (sStatsPartySlot >= gPlayerPartyCount)
         sStatsPartySlot = 0;
+    sStatsView = 0;
     sStatsMonSprite = 0xFFFF;
     DrawStatsPage();
     taskId = CreateTask(Task_PokeGlassStats, 80);
@@ -1236,34 +1346,36 @@ static void DrawGlassDexPage(void)
     u16 i, first = sGlassDex->cursor / GLASS_DEX_ROWS * GLASS_DEX_ROWS;
     bool8 caught = species != SPECIES_NONE && GetSetPokedexFlag(SpeciesToNationalPokedexNum(species), FLAG_GET_CAUGHT);
     DrawTabletShell((u8 *)GetWindowAttribute(sHubWindow, WINDOW_TILE_DATA));
+    SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(14, 4));
+    HubRect(4, 12, 12, 216, 136);
     if (sGlassDex->view == 0)
     {
         StatsText(17, 16, COMPOUND_STRING("POKéDEX"));
         StatsText(88, 16, COMPOUND_STRING("Seen"));
         StatsNumber(141, 16, sGlassDex->seen);
-        StatsText(151, 16, COMPOUND_STRING("Own"));
+        StatsText(151, 16, COMPOUND_STRING("Caught"));
         StatsNumber(207, 16, sGlassDex->caught);
         StatsText(72, 29, sGlassDex->filter ? COMPOUND_STRING("Caught") : COMPOUND_STRING("Seen"));
         StatsText(18, 29, sGlassDex->alphabetical ? COMPOUND_STRING("A-Z") : COMPOUND_STRING("No."));
-        HubRect(6, 17, 39, 103, 66);
+        HubRect(6, 16, 39, 118, 80);
         for (i = 0; i < GLASS_DEX_ROWS; i++)
         {
-            u16 entry = first + i, y = 40 + i * 11;
-            HubRect(entry == sGlassDex->cursor ? 5 : 4, 18, y, 101, 11);
+            u16 entry = first + i, y = 40 + i * 13;
+            HubRect(entry == sGlassDex->cursor ? 5 : 4, 17, y, 116, 13);
             if (entry < sGlassDex->count)
             {
                 u16 mon = sGlassDex->species[entry];
                 StatsNumber(39, y, SpeciesToNationalPokedexNum(mon));
                 StatsText(46, y, gSpeciesInfo[mon].speciesName);
                 if (GetSetPokedexFlag(SpeciesToNationalPokedexNum(mon), FLAG_GET_CAUGHT))
-                    HubRect(8, 113, y + 4, 3, 3);
+                    HubRect(8, 128, y + 4, 3, 3);
             }
         }
         if (species != SPECIES_NONE)
         {
-            StatsText(129, 29, gSpeciesInfo[species].speciesName);
-            StatsText(144, 100, caught ? COMPOUND_STRING("Caught") : COMPOUND_STRING("Seen"));
-            DrawGlassDexPortrait(species, 173, 81);
+            StatsText(139, 29, gSpeciesInfo[species].speciesName);
+            StatsText(156, 108, caught ? COMPOUND_STRING("Caught") : COMPOUND_STRING("Seen"));
+            DrawGlassDexPortrait(species, 179, 78);
         }
         else
         {
@@ -1271,8 +1383,8 @@ static void DrawGlassDexPage(void)
             StatsText(129, 57, COMPOUND_STRING("No entries yet."));
             StatsText(129, 70, COMPOUND_STRING("Keep exploring!"));
         }
-        StatsText(19, 106, COMPOUND_STRING("A Info  L/R Page  B Back"));
-        StatsText(19, 116, COMPOUND_STRING("START Filter   SELECT Sort"));
+        StatsText(16, 121, COMPOUND_STRING("A Info  L/R Page  B Back"));
+        StatsText(16, 134, COMPOUND_STRING("START Filter   SELECT Sort"));
     }
     else if (sGlassDex->view == 1)
     {
@@ -1349,6 +1461,7 @@ static void Task_PokeGlassPokedex(u8 taskId)
             DestroyGlassDexPortrait();
             Free(sGlassDex);
             sGlassDex = NULL;
+            SetPokeGlassBlend(TRUE);
             CloseHub();
             gTasks[taskId].data[2] = 0;
             gTasks[taskId].data[3] = FALSE;
@@ -1478,9 +1591,20 @@ static void CloseTabletForNativeApp(void)
     sHubWindow = WINDOW_NONE;
 }
 
+static void UseGlassFieldTool(u16 item)
+{
+    CloseTabletForNativeApp();
+    EndPokeGlassSession();
+    ScriptContext_Init();
+    UnlockPlayerFieldControls();
+    CleanupOverworldWindowsAndTilemaps();
+    FieldItemCase_Return(TRUE, item);
+}
+
 void OpenPokeGlassSystemApp(void)
 {
     u16 app = gSpecialVar_Result;
+    if (app == 9) { ShowGlassFieldKit(); return; }
     CloseTabletForNativeApp();
     switch (app)
     {

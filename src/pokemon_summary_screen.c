@@ -1377,6 +1377,7 @@ static void Task_InputHandler_Info(u8 taskId)
                     sMonSummaryScreen->pageFlipDirection = 1;
                     PokeSum_RemoveWindows(sMonSummaryScreen->curPageIndex);
                     sMonSummaryScreen->curPageIndex++;
+                    if (sMonSummaryScreen->curPageIndex == PSS_PAGE_SKILLS) sMonSummaryScreen->curPageIndex++;
                     sMonSummaryScreen->state3270 = PSS_STATE3270_FLIPPAGES;
                 }
                 return;
@@ -1395,6 +1396,7 @@ static void Task_InputHandler_Info(u8 taskId)
                     sMonSummaryScreen->pageFlipDirection = 0;
                     PokeSum_RemoveWindows(sMonSummaryScreen->curPageIndex);
                     sMonSummaryScreen->curPageIndex--;
+                    if (sMonSummaryScreen->curPageIndex == PSS_PAGE_SKILLS) sMonSummaryScreen->curPageIndex--;
                     sMonSummaryScreen->state3270 = PSS_STATE3270_FLIPPAGES;
                 }
                 return;
@@ -3895,7 +3897,7 @@ void SetPokemonSummaryScreenMode(u8 mode)
 
 void SetPokemonSummaryScreenStartPage(u8 page)
 {
-    sSummaryScreenStartPage = (page <= PSS_PAGE_MOVES) ? page : PSS_PAGE_INFO;
+    sSummaryScreenStartPage = (page <= PSS_PAGE_MOVES && page != PSS_PAGE_SKILLS) ? page : PSS_PAGE_INFO;
 }
 
 static bool32 IsMultiBattlePartner(void)

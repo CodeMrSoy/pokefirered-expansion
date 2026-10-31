@@ -44,16 +44,11 @@ move(5, 5); app('Task_BagMenu_HandleInput', 'bag')
 move(6, 3); app('Task_PokeGlassStats', 'stats')
 move(6, 4); app('Task_RegionMap', 'map')
 # Left beyond the lower row enters page two, skipping unused slots.
-development = 'Debug_ShowMainMenu' in m.symbols
-move(6, 9 if development else 8)
+move(6, 7)
 m.snap('phone-page-two')
-if development:
-    app('DebugTask_HandleMenuInput_Main', 'debug')
-    move(4, 6)
-else:
-    move(6, 7);move(6, 6)
-app('Task_TrainerCard', 'trainer-card')
-move(7, 7); app('Task_OptionMenu', 'options')
+app('Task_OptionMenu', 'options')
+move(4, 6); app('Task_TrainerCard', 'trainer-card')
+move(7, 9); app('Task_PokeGlassFieldKit', 'field-kit')
 move(7, 8)
 # Cancel Save and return to the same page/tile.
 m.press(8);wait_task('task50_save_game');m.run(120);m.snap('phone-save-prompt')

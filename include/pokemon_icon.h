@@ -4,7 +4,8 @@
 #include "global.h"
 
 // extern const u8 *const gMonIconTable[];
-extern const struct SpritePalette gMonIconPaletteTable[];
+#define MON_ICON_PALETTE_COUNT 6
+extern const struct SpritePalette gMonIconPaletteTable[MON_ICON_PALETTE_COUNT];
 extern const u16 gMonIconPalettes[][16];
 // extern const u8 gMonIconPaletteIndices[];
 

@@ -1052,6 +1052,7 @@ static void CB2_OpenRegionMap(void)
     default:
         BeginNormalPaletteFade(PALETTES_ALL, 0, IsPokeGlassActive() ? 0 : 16, 0, RGB_BLACK);
         CreateMainMapTask();
+        if (IsPokeGlassSessionActive() && sRegionMap->type == REGIONMAP_TYPE_NORMAL) DrawPokeGlassNativeOverlay(FALSE);
         SetRegionMapVBlankCB();
         break;
     }
@@ -1333,7 +1334,15 @@ static void InitRegionMapBgs(void)
     ChangeBgY(2, 0, 0);
     ChangeBgX(3, 0, 0);
     ChangeBgY(3, 0, 0);
-    InitWindows(sRegionMapWindowTemplates);
+    if (IsPokeGlassSessionActive() && sRegionMap->type == REGIONMAP_TYPE_NORMAL)
+    {
+        struct WindowTemplate windows[ARRAY_COUNT(sRegionMapWindowTemplates)];
+        memcpy(windows, sRegionMapWindowTemplates, sizeof(windows));
+        windows[WIN_TOPBAR_LEFT].tilemapTop = 1;
+        windows[WIN_TOPBAR_RIGHT].tilemapTop = 1;
+        InitWindows(windows);
+    }
+    else InitWindows(sRegionMapWindowTemplates);
     DeactivateAllTextPrinters();
     SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_MODE_0 | DISPCNT_OBJ_1D_MAP | DISPCNT_WIN0_ON | DISPCNT_WIN1_ON);
     SetBgTilemapBuffers();
@@ -3810,7 +3819,7 @@ static void PrintTopBarTextLeft(const u8 *str)
         FillWindowPixelBuffer(WIN_TOPBAR_LEFT, PIXEL_FILL(0));
     else
         FillWindowPixelBuffer(WIN_TOPBAR_LEFT, PIXEL_FILL(15));
-    AddTextPrinterParameterized3(WIN_TOPBAR_LEFT, FONT_SMALL, 0, 0, sTextColors, 0, str);
+    AddTextPrinterParameterized3(WIN_TOPBAR_LEFT, FONT_SMALL, 0, IsPokeGlassSessionActive() ? 3 : 0, sTextColors, 0, str);
     CopyWindowToVram(WIN_TOPBAR_LEFT, COPYWIN_GFX);
 }
 
@@ -3820,7 +3829,7 @@ static void PrintTopBarTextRight(const u8 *str)
         FillWindowPixelBuffer(WIN_TOPBAR_RIGHT, PIXEL_FILL(0));
     else
         FillWindowPixelBuffer(WIN_TOPBAR_RIGHT, PIXEL_FILL(15));
-    AddTextPrinterParameterized3(WIN_TOPBAR_RIGHT, FONT_SMALL, 0, 0, sTextColors, 0, str);
+    AddTextPrinterParameterized3(WIN_TOPBAR_RIGHT, FONT_SMALL, 0, IsPokeGlassSessionActive() ? 3 : 0, sTextColors, 0, str);
     CopyWindowToVram(WIN_TOPBAR_RIGHT, COPYWIN_FULL);
 }
 
