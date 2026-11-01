@@ -607,12 +607,18 @@ static void DrawPokeGlassNativeLayer(u8 layer, u8 mapBase)
             map[y * 32 + x] = sTabletFrameMap[y * 30 + x] | (palette << 12);
     CpuCopy16(map, (void *)(VRAM + bg.mapBaseIndex * 0x800), sizeof(map));
     ShowBg(bg.bg);
+    SetPokeGlassNativeViewport(layer);
+}
+
+void SetPokeGlassNativeViewport(u8 layer)
+{
     SetGpuReg(REG_OFFSET_WIN1H, WIN_RANGE(10, 230));
     SetGpuReg(REG_OFFSET_WIN1V, WIN_RANGE(10, 150));
     SetGpuReg(REG_OFFSET_WININ, WININ_WIN1_BG_ALL | WININ_WIN1_OBJ);
     SetGpuReg(REG_OFFSET_WINOUT, (1u << layer));
     ClearGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON | DISPCNT_OBJWIN_ON);
     SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN1_ON);
+    SetGpuReg(REG_OFFSET_BLDCNT, 0);
 }
 
 void DrawPokeGlassNativeOverlay(bool8 bag)
@@ -646,6 +652,26 @@ static EWRAM_DATA u8 *sPendingCoverTiles = NULL;
 static EWRAM_DATA u16 *sPendingCoverMap = NULL;
 static EWRAM_DATA u16 *sPendingBackdropMap = NULL;
 static EWRAM_DATA u16 sPendingCoverCount = 0;
+// Native screens fade through black. Keep partial VRAM uploads and the field
+// reconstruction hidden until the destination has submitted its complete UI.
+static EWRAM_DATA u8 sNativeTransitionStage = 0;
+
+void BeginPokeGlassNativeTransition(void)
+{
+    if (IsPokeGlassSessionActive() && !IsPokeGlassActive())
+        sNativeTransitionStage = 1;
+}
+
+void FinishPokeGlassNativeTransition(void)
+{
+    if (sNativeTransitionStage == 1)
+        sNativeTransitionStage = 2;
+}
+
+bool8 IsPokeGlassNativeTransitionActive(void)
+{
+    return sNativeTransitionStage != 0;
+}
 
 bool8 IsPokeGlassReturnActive(void)
 {
@@ -733,6 +759,11 @@ void FinishPokeGlassAppLoad(void)
 
 void PreservePokeGlassCoverPalette(void)
 {
+    if (sNativeTransitionStage)
+    {
+        *(vu16 *)PLTT = RGB_BLACK;
+        return;
+    }
     if (!sReturnCoverActive) return;
     *(vu16 *)PLTT = RGB_BLACK;
     CpuCopy16(sReturnCoverPalette, (void *)(PLTT + 13 * 32), 64);
@@ -745,6 +776,24 @@ void VBlankCB_PokeGlassReturn(void)
     // A long DMA transfer can finish on a visible scanline. Continue showing
     // the old cover until a genuine VBlank can commit the complete handoff.
     if (REG_VCOUNT < 160 || REG_VCOUNT > 225) return;
+    if (sNativeTransitionStage)
+    {
+        if (sNativeTransitionStage >= 2 && WaitDma3Request(-1) == 0
+            && sNativeTransitionStage++ >= 3)
+        {
+            *(vu16 *)PLTT = gPlttBufferFaded[0];
+            REG_DISPCNT = GetGpuReg(REG_OFFSET_DISPCNT);
+            REG_BLDCNT = GetGpuReg(REG_OFFSET_BLDCNT);
+            sNativeTransitionStage = 0;
+        }
+        else
+        {
+            *(vu16 *)PLTT = RGB_BLACK;
+            REG_DISPCNT = 0;
+            REG_BLDCNT = 0;
+        }
+        return;
+    }
     if (sReturnCoverPending)
     {
         u16 first = sCoverEntering ? 88 : RETURN_COVER_FIRST_TILE;
@@ -887,6 +936,11 @@ static void Task_CloseTablet(u8 taskId)
             BeginPokeGlassAppLoad();
             sHubWindow = WINDOW_NONE;
         }
+        else if (gTasks[taskId].data[4])
+        {
+            // Commit black before the script starts replacing native VRAM.
+            sNativeTransitionStage = 1;
+        }
         DestroyTask(taskId);
         ScriptContext_Enable();
         return;
@@ -966,6 +1020,8 @@ static void Task_PokeGlassHub(u8 taskId)
     CloseHub();
     gTasks[taskId].data[2] = 0;
     gTasks[taskId].data[3] = FALSE;
+    gTasks[taskId].data[4] = gSpecialVar_Result == 4 || gSpecialVar_Result == 5
+        || gSpecialVar_Result == 6 || gSpecialVar_Result == 7 || gSpecialVar_Result == 12;
     gTasks[taskId].func = Task_CloseTablet;
     if (gSpecialVar_Result == SCR_MENU_CANCEL)
         ReleasePokeGlassBackdrop();
@@ -1016,6 +1072,7 @@ void ShowPokeGlassHub(bool8 ignoreBPress)
         for (sHubCursor = 0; sHubCursor < ARRAY_COUNT(sHubLabels); sHubCursor++)
             if (HubAppAvailable(sHubCursor)) break;
     DrawHub();
+    FinishPokeGlassNativeTransition();
     taskId = CreateTask(Task_PokeGlassHub, 80);
     if (taskId == TASK_NONE)
     {
@@ -1066,15 +1123,20 @@ void FitPokeGlassText(u8 *text, u8 font, u16 width)
 }
 
 // All embedded text has explicit room inside the glass or its own panel.
-static void StatsTextFit(u16 x, u16 y, u16 width, const u8 *text)
+static void StatsTextFitColors(u16 x, u16 y, u16 width, const u8 *text, const u8 *colors)
 {
-    static const u8 colors[] = {0, 8, 4};
     u8 fitted[256];
     StringCopyN(fitted, text, sizeof(fitted) - 1);
     fitted[sizeof(fitted) - 1] = EOS;
     StripExtCtrlCodes(fitted);
     FitPokeGlassText(fitted, FONT_SMALL, width);
     AddTextPrinterParameterized3(sHubWindow, FONT_SMALL, x, y, colors, TEXT_SKIP_DRAW, fitted);
+}
+
+static void StatsTextFit(u16 x, u16 y, u16 width, const u8 *text)
+{
+    static const u8 colors[] = {0, 8, 4};
+    StatsTextFitColors(x, y, width, text, colors);
 }
 
 static void StatsText(u16 x, u16 y, const u8 *text)
@@ -1727,6 +1789,7 @@ static void CloseTabletForNativeApp(void)
     sTabletActive = FALSE;
     sTabletNative = FALSE;
     sHubWindow = WINDOW_NONE;
+    BeginPokeGlassNativeTransition();
 }
 
 static void UseGlassFieldTool(u16 item)
@@ -1744,6 +1807,9 @@ void OpenPokeGlassSystemApp(void)
     u16 app = gSpecialVar_Result;
     if (app == 9) { ShowGlassFieldKit(); return; }
     CloseTabletForNativeApp();
+    // Save and field-only actions do not replace VRAM with a native screen.
+    if (app != 5 && app != 6 && app != 7 && app != 12)
+        sNativeTransitionStage = 0;
     switch (app)
     {
     case 5:
@@ -1809,6 +1875,7 @@ void PreparePokeGlassReturn(void)
 
 void EndPokeGlassSession(void)
 {
+    sNativeTransitionStage = 0;
     sLauncherSession = FALSE;
     sTabletActive = FALSE;
     sTabletNative = FALSE;

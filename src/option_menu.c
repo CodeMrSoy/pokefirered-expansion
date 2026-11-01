@@ -1,4 +1,5 @@
 #include "global.h"
+#include "poke_glass.h"
 #include "gflib.h"
 #include "scanline_effect.h"
 #include "menu.h"
@@ -360,6 +361,7 @@ static void Task_OptionMenu(u8 taskId)
     case 0:
         BeginNormalPaletteFade(PALETTES_ALL, 0, 0x10, 0, RGB_BLACK);
         OptionMenu_SetVBlankCallback();
+        FinishPokeGlassNativeTransition();
         sOptionMenuPtr->loadState++;
         break;
     case 1:

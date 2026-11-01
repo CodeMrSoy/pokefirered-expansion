@@ -1,5 +1,44 @@
 # PokéGlass performance and UI QA
 
+## Transition follow-up (2026-11-01)
+
+The tablet icon now rises over 12 frames, lights over eight, and pauses lit for
+ten. The emulator observes 32 frames of icon animation (about 0.54 seconds).
+The complete Start-to-launcher transition is 77 frames / 1.289 seconds, compared
+with 55 frames / 0.921 seconds before this follow-up.
+
+Native Map, Bag, Trainer Card, Options and TM Case handoffs keep partial graphics
+uploads and field reconstruction hidden behind black until their destination
+has finished drawing and DMA has drained. They retain their native fades.
+Bag/TM frame palettes load before the fade begins, avoiding a partially lit
+frame or temporary black labels. Embedded Pokédex, Party, Storage, Stats and
+Field Kit retain their uninterrupted tablet bezel and have no blank frames.
+
+The map's native name/dungeon boxes reuse WIN1, which also clips the tablet
+viewport. Normal Town Map rendering now reapplies the tablet window and removes
+native name-box darkening after these updates. Region pickers and dungeon
+previews retain their own window effects while active. First-open map rendering,
+cursor movement, Kanto/Vidra round trips and repeated reopenings now use the same
+viewport. The returned Kanto tilemap and atlas graphics match the initial ones.
+
+`pokeglass_benchmark_emulator.py` captures every standard app's entry/return and
+checks embedded bezel stability, blank frames and native overworld flashes.
+`pokeglass_map_transition_emulator.py` checks the actual icon duration, affine
+matrix cleanup, map windows, real region switches and three reopenings. Both
+passed against the release ROM. Final frame captures and timings are in the
+workspace's `qol-pokeglass-preview/transitions-final/`; the baseline is retained
+in `transitions-before/`. Native fades still include black frames by design.
+EWRAM remains 238,828 bytes and IWRAM remains 27,573 bytes. Physical hardware and
+live multiplayer were not tested. Earlier timings below describe the previous
+optimization pass.
+
+The same ROM also passed launcher/save, native Town Map/PC operations, glass Bag
+pockets/actions, TM app teaching/consumption/Continue, Field Kit discovery,
+eight repeated resource-cleanup sessions, and twelve frame-by-frame Party
+returns across bedroom, Viridian and Cerulean fixtures. These nine suites are
+recorded under the workspace result groups `emulator-transition-final`,
+`emulator-map-transitions` and `emulator-transition-resources`.
+
 Measured in mGBA/libretro at 59.7275 emulated frames per second. Timings run from button input until the destination accepts input, including its animation/fade and a three-frame readiness guard. They are game-frame measurements, not a benchmark of the host computer or physical hardware. The baseline is V2 `de8c441c` before this change. QOL and V2 standard builds produced matching final transition timings in the test bedroom.
 
 ## Transition times

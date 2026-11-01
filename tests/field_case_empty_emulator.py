@@ -1,4 +1,4 @@
-"""Missing tools remain recognizable, grey, selectable, and unusable; registration retains Bag frame."""
+"""Missing tools are black silhouettes, selectable and unusable; registration retains Bag frame."""
 import os,struct,pathlib,subprocess
 import quantum_qol_emulator as m
 source=(m.root/'tests/avatar_wardrobe_emulator.py').read_text()
@@ -12,7 +12,7 @@ for i in range(7):
  sid=m.read(m.symbols['sCasePreview'],1)[0];assert sid<64
  attr=struct.unpack('<H',m.read(m.symbols['gSprites']+sid*68+4,2))[0]
  colors=struct.unpack('<16H',m.read(m.symbols['gPlttBufferFaded']+(0x100+(attr>>12)*16)*2,32))
- assert all(c&31==(c>>5)&31==(c>>10)&31 for c in colors),'Missing preview not grayscale'
+ assert not any(colors),'Missing preview is not a black silhouette'
  m.press(8,30)
  assert struct.unpack('<I',m.read(m.symbols['gMain']+4,4))[0]==(m.symbols['CB2_FieldItemCase']|1),'Uncollected tool launched'
  if i==0:m.snap('empty-case')
@@ -34,4 +34,4 @@ assert any(m.read(m.symbols['gTasks']+i*40+4,1)!=b'\0' and struct.unpack('<I',m.
 m.press(7,120)
 m.snap('registered-right')
 assert struct.unpack('<H',m.read(right_slot,2))[0]==831,'Direction was not registered'
-print('PASS all seven missing names/previews displayed, grayscale previews, action locks, empty-case default, framed direction prompt, cancel and right registration',flush=True)
+print('PASS all seven missing names/previews displayed, black silhouettes, action locks, empty-case default, framed direction prompt, cancel and right registration',flush=True)

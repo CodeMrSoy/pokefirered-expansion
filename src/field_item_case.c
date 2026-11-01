@@ -42,35 +42,24 @@ static void CaseDestroyPreview(void)
 static void CaseDraw(bool32 missingBadge)
 {
     u32 i;
-    u16 item = FieldTool_GetItem(sCaseSelection);
     bool32 owned = FieldTool_IsOwned(sCaseSelection);
     FillWindowPixelBuffer(sCaseWindow, PIXEL_FILL(1));
     CaseText(COMPOUND_STRING("FIELD ITEM CASE"), 5, 0, FONT_NORMAL);
     for (i = 0; i < 7; i++)
     {
+        // These seven field moves have badge predicates; ownership controls
+        // the preview silhouette independently of the name's badge color.
         AddTextPrinterParameterized3(sCaseWindow, FONT_SMALL, 91, 24 + i * 12,
-            FieldTool_IsOwned(i) ? sColors : sDisabledColors, TEXT_SKIP_DRAW,
+            gFieldMovesInfo[i].isUnlockedFunc() ? sColors : sDisabledColors, TEXT_SKIP_DRAW,
             GetItemName(FieldTool_GetItem(i)));
         if (i == sCaseSelection)
             CaseText(COMPOUND_STRING(">"), 80, 24 + i * 12, FONT_SMALL);
     }
     CaseText(sDescriptions[sCaseSelection], 4, 111, FONT_SMALL);
-    CaseText(missingBadge ? COMPOUND_STRING("A GYM BADGE is needed.   B: Back") :
+    CaseText((missingBadge || (owned && !FieldMove_IsUnlocked(sCaseSelection))) ? COMPOUND_STRING("A GYM BADGE is needed.   B: Back") :
         owned ? COMPOUND_STRING("A: Use tool                 B: Back") : COMPOUND_STRING("Tool not collected.         B: Back"), 4, 127, FONT_SMALL);
     CaseDestroyPreview();
-    sCasePreview = FieldTool_CreateLargeSprite(item, CASE_PREVIEW_TAG, 49, 72);
-    if (!owned && sCasePreview != MAX_SPRITES)
-    {
-        u16 colors[16];
-        u16 offset = 0x100 + gSprites[sCasePreview].oam.paletteNum * 16;
-        for (i = 0; i < 16; i++)
-        {
-            u16 c = gPlttBufferUnfaded[offset + i];
-            u16 gray = (((c & 31) * 3 + ((c >> 5) & 31) * 6 + ((c >> 10) & 31)) / 10 + 21) / 2;
-            colors[i] = RGB(gray, gray, gray);
-        }
-        LoadPalette(colors, offset, sizeof(colors));
-    }
+    sCasePreview = FieldTool_CreateCaseSprite(sCaseSelection, CASE_PREVIEW_TAG, 49, 72);
     CopyWindowToVram(sCaseWindow, COPYWIN_FULL);
 }
 static void CaseClose(bool32 use)

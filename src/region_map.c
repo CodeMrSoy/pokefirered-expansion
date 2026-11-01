@@ -1050,9 +1050,9 @@ static void CB2_OpenRegionMap(void)
             SetBg0andBg3Hidden(TRUE);
         break;
     default:
+        if (IsPokeGlassSessionActive() && sRegionMap->type == REGIONMAP_TYPE_NORMAL) DrawPokeGlassNativeOverlay(FALSE);
         BeginNormalPaletteFade(PALETTES_ALL, 0, IsPokeGlassActive() ? 0 : 16, 0, RGB_BLACK);
         CreateMainMapTask();
-        if (IsPokeGlassSessionActive() && sRegionMap->type == REGIONMAP_TYPE_NORMAL) DrawPokeGlassNativeOverlay(FALSE);
         SetRegionMapVBlankCB();
         break;
     }
@@ -1165,6 +1165,7 @@ static void Task_RegionMap(u8 taskId)
             SetMapCursorInvisibility(FALSE);
             SetFlyIconInvisibility(GetSelectedRegionMap(), NELEMS(sMapIcons->flyIcons), FALSE);
             SetDungeonIconInvisibility(GetSelectedRegionMap(), NELEMS(sMapIcons->dungeonIcons), FALSE);
+            FinishPokeGlassNativeTransition();
         }
         sRegionMap->mainState++;
         break;
@@ -1295,6 +1296,12 @@ static void FreeRegionMapForFlyMap(void)
 static void CB2_RegionMap(void)
 {
     RunTasks();
+    // Native name boxes reuse WIN1. Restore the tablet viewport after these
+    // updates, on first open as well as after movement or a page switch.
+    if (IsPokeGlassSessionActive() && sRegionMap != NULL
+        && sRegionMap->type == REGIONMAP_TYPE_NORMAL
+        && sSwitchMapMenu == NULL && sDungeonMapPreview == NULL)
+        SetPokeGlassNativeViewport(1);
     AnimateSprites();
     BuildOamBuffer();
     UpdatePaletteFade();

@@ -570,6 +570,10 @@ static u16 BlendPokeGlassIntroColor(u16 start, u16 end, u8 step, u8 maxSteps)
     return RGB(r, g, b);
 }
 
+#define POKEGLASS_RAISE_FRAMES 12
+#define POKEGLASS_LIGHT_FRAMES 8
+#define POKEGLASS_LIT_HOLD_FRAMES 10
+
 static void Task_PokeGlassIntro(u8 taskId)
 {
     struct Task *task = &gTasks[taskId];
@@ -579,11 +583,12 @@ static void Task_PokeGlassIntro(u8 taskId)
     switch (task->data[1])
     {
     case 0: // Raise and enlarge the tablet into view.
-        if (step < 4)
+        if (step < POKEGLASS_RAISE_FRAMES)
         {
-            sprite->y -= 18;
+            sprite->y = 152 - (step + 1) * 72 / POKEGLASS_RAISE_FRAMES;
             // OAM scaling uses an inverse fixed-point value: 0x300 starts at one-third size.
-            SetOamMatrixRotationScaling(sprite->oam.matrixNum, 0x300 - step * 0xAA, 0x300 - step * 0xAA, 0);
+            s16 scale = 0x300 - (step + 1) * 0x200 / POKEGLASS_RAISE_FRAMES;
+            SetOamMatrixRotationScaling(sprite->oam.matrixNum, scale, scale, 0);
             task->data[2]++;
         }
         else
@@ -595,14 +600,14 @@ static void Task_PokeGlassIntro(u8 taskId)
         }
         break;
     case 1: // Light the supplied tablet artwork without changing its shell colors.
-        if (step < 4)
+        if (step < POKEGLASS_LIGHT_FRAMES)
         {
             u16 palette[16];
             u8 i;
             u8 paletteNum = IndexOfSpritePaletteTag(TAG_POKEGLASS_INTRO_PAL);
 
             for (i = 0; i < ARRAY_COUNT(palette); i++)
-                palette[i] = BlendPokeGlassIntroColor(sPokeGlassIntroPaletteOff[i], sPokeGlassIntroPaletteOn[i], step + 1, 4);
+                palette[i] = BlendPokeGlassIntroColor(sPokeGlassIntroPaletteOff[i], sPokeGlassIntroPaletteOn[i], step + 1, POKEGLASS_LIGHT_FRAMES);
             LoadPalette(palette, OBJ_PLTT_ID(paletteNum), sizeof(palette));
             task->data[2]++;
         }
@@ -612,7 +617,9 @@ static void Task_PokeGlassIntro(u8 taskId)
             task->data[2] = 0;
         }
         break;
-    case 2: // Open the launcher as soon as the display is lit.
+    case 2: // Give the lit tablet a short, readable pause before the launcher.
+        if (task->data[2]++ < POKEGLASS_LIT_HOLD_FRAMES)
+            break;
         FreeOamMatrix(sprite->oam.matrixNum);
         DestroySprite(sprite);
         FreeSpriteTilesByTag(TAG_POKEGLASS_INTRO_GFX);

@@ -882,6 +882,7 @@ static bool8 SetupBagMenu(void)
         gMain.state++;
         break;
     case 19:
+        if (IsPokeGlassSessionActive()) DrawPokeGlassBagFrame();
         BlendPalettes(PALETTES_ALL, 16, 0);
         gMain.state++;
         break;
@@ -892,12 +893,12 @@ static bool8 SetupBagMenu(void)
             SetHelpContext(HELPCONTEXT_BAG);
         BeginNormalPaletteFade(PALETTES_ALL, 0, 16, 0, RGB_BLACK);
         gPaletteFade.bufferTransferDisabled = FALSE;
-        if (IsPokeGlassSessionActive()) DrawPokeGlassBagFrame();
         gMain.state++;
         break;
     default:
         SetVBlankCallback(VBlankCB_BagMenuRun);
         SetMainCallback2(CB2_BagMenuRun);
+        FinishPokeGlassNativeTransition();
         return TRUE;
     }
     return FALSE;
