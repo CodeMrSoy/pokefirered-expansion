@@ -26,7 +26,6 @@ static void DrawGlassFieldKit(u8 taskId)
         : !FieldTool_IsOwned(d[0]) ? COMPOUND_STRING("Find this tool on your journey.")
         : !FieldMove_IsUnlocked(d[0]) ? COMPOUND_STRING("Earn the GYM BADGE to use this tool.")
         : COMPOUND_STRING("Ready for your next expedition."));
-    StatsText(16, 136, COMPOUND_STRING("A:Use  Up/Down:Tool  B:Back"));
     if (d[3] < MAX_SPRITES) DestroySpriteAndFreeResources(&gSprites[d[3]]);
     d[3] = FieldTool_CreateCaseSprite(d[0], 0xD133, 46, 72);
     PutWindowTilemap(sHubWindow);

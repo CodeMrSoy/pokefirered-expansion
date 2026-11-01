@@ -7,6 +7,7 @@ setup = pathlib.Path(__file__).with_name('avatar_wardrobe_emulator.py')
 exec(compile(setup.read_text().split("fixture = b'\\x23'")[0], str(setup), 'exec'))
 m.d = m.d / 'map-transitions'
 m.d.mkdir(exist_ok=True)
+native('FlagSet', 0x4e1)
 m.inject(b'\x29' + struct.pack('<H', 0x829) + b'\x44' + struct.pack('<HH', 717, 1) + b'\x02')
 
 

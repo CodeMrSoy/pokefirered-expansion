@@ -56,8 +56,10 @@ static void CaseDraw(bool32 missingBadge)
             CaseText(COMPOUND_STRING(">"), 80, 24 + i * 12, FONT_SMALL);
     }
     CaseText(sDescriptions[sCaseSelection], 4, 111, FONT_SMALL);
-    CaseText((missingBadge || (owned && !FieldMove_IsUnlocked(sCaseSelection))) ? COMPOUND_STRING("A GYM BADGE is needed.   B: Back") :
-        owned ? COMPOUND_STRING("A: Use tool                 B: Back") : COMPOUND_STRING("Tool not collected.         B: Back"), 4, 127, FONT_SMALL);
+    if (missingBadge || (owned && !FieldMove_IsUnlocked(sCaseSelection)))
+        CaseText(COMPOUND_STRING("A GYM BADGE is needed."), 4, 127, FONT_SMALL);
+    else if (!owned)
+        CaseText(COMPOUND_STRING("Tool not collected."), 4, 127, FONT_SMALL);
     CaseDestroyPreview();
     sCasePreview = FieldTool_CreateCaseSprite(sCaseSelection, CASE_PREVIEW_TAG, 49, 72);
     CopyWindowToVram(sCaseWindow, COPYWIN_FULL);

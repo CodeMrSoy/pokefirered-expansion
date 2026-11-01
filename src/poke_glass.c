@@ -35,6 +35,7 @@
 #include "pokedex_screen.h"
 #include "battle_main.h"
 #include "wild_encounter.h"
+#include "randomizer.h"
 #include "overworld.h"
 #include "region_map.h"
 #include "constants/characters.h"
@@ -1088,7 +1089,6 @@ void ShowPokeGlassHub(bool8 ignoreBPress)
 
 #define TAG_POKEGLASS_STATS_MON 0xD10F
 static EWRAM_DATA u8 sStatsPartySlot = 0;
-static EWRAM_DATA u8 sStatsView = 0;
 static EWRAM_DATA u16 sStatsMonSprite = 0;
 static const u8 sStatsLabels[6][12] = {
     _("HP"), _("Attack"), _("Defense"), _("Sp. Atk"), _("Sp. Def"), _("Speed")
@@ -1108,7 +1108,6 @@ static const u8 sStatsAbility[] = _("Ability:");
 static const u8 sStatsEggAbility[] = _("Unknown");
 static const u8 sStatsDash[] = _("-");
 static const u8 sStatsLevel[] = _("Lv.");
-static const u8 sStatsTitles[][16] = {_("STATS 1/3"), _("PROFILE 2/3"), _("TRAINING 3/3")};
 
 // Plain labels are fitted before adding any font/color control codes.
 void FitPokeGlassText(u8 *text, u8 font, u16 width)
@@ -1195,6 +1194,7 @@ static void DrawStatsPage(void)
     struct Pokemon *mon = &gPlayerParty[sStatsPartySlot];
     u8 nickname[POKEMON_NAME_LENGTH + 1];
     u8 row, column;
+    u16 evs = 0, ivs = 0;
     u8 paletteSlot;
     u8 nature = GetMonData(mon, MON_DATA_HIDDEN_NATURE);
     static const u8 statIds[] = {STAT_HP, STAT_ATK, STAT_DEF, STAT_SPATK, STAT_SPDEF, STAT_SPEED};
@@ -1208,7 +1208,7 @@ static void DrawStatsPage(void)
     SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(14, 4));
     HubRect(4, 12, 12, 216, 136);
     StatsText(16, 14, nickname);
-    StatsTextFit(147, 14, 77, sStatsTitles[sStatsView]);
+    StatsText(189, 14, COMPOUND_STRING("STATS"));
     if (!isEgg)
     {
         StatsText(17, 29, sStatsLevel);
@@ -1217,76 +1217,36 @@ static void DrawStatsPage(void)
     StatsNumber(71, 29, sStatsPartySlot + 1);
     StatsText(72, 28, COMPOUND_STRING("/"));
     StatsNumber(87, 29, gPlayerPartyCount);
-    HubRect(6, 90, 32, 134, sStatsView == 1 ? 76 : 84);
-    HubRect(4, 91, 33, 132, sStatsView == 1 ? 74 : 82);
-    if (!sStatsView)
+    HubRect(6, 90, 29, 134, 78);
+    HubRect(4, 91, 30, 132, 76);
+    StatsText(147, 30, sStatsValueHeader);
+    StatsText(185, 30, sStatsEVHeader);
+    StatsText(210, 30, sStatsIVHeader);
+    HubRect(6, 92, 41, 130, 1);
+    for (row = 0; row < 6; row++)
     {
-        StatsText(147, 33, sStatsValueHeader);
-        StatsText(185, 33, sStatsEVHeader);
-        StatsText(210, 33, sStatsIVHeader);
-        HubRect(6, 92, 45, 130, 1);
-        for (row = 0; row < 6; row++)
+        u16 y = 42 + row * 10;
+        HubRect((row & 1) ? 4 : 5, 92, y, 130, 10);
+        if (!isEgg && row && gNaturesInfo[nature].statUp != gNaturesInfo[nature].statDown
+            && (statIds[row] == gNaturesInfo[nature].statUp || statIds[row] == gNaturesInfo[nature].statDown))
+            AddTextPrinterParameterized3(sHubWindow, FONT_SMALL, 95, y,
+                statIds[row] == gNaturesInfo[nature].statUp ? raisedColors : loweredColors,
+                TEXT_SKIP_DRAW, sStatsLabels[row]);
+        else StatsText(95, y, sStatsLabels[row]);
+        for (column = 0; column < 3; column++)
         {
-            u16 y = 47 + row * 11;
-            HubRect((row & 1) ? 4 : 5, 92, y, 130, 11);
-            if (!isEgg && row && gNaturesInfo[nature].statUp != gNaturesInfo[nature].statDown
-                && (statIds[row] == gNaturesInfo[nature].statUp || statIds[row] == gNaturesInfo[nature].statDown))
-                AddTextPrinterParameterized3(sHubWindow, FONT_SMALL, 95, y,
-                    statIds[row] == gNaturesInfo[nature].statUp ? raisedColors : loweredColors,
-                    TEXT_SKIP_DRAW, sStatsLabels[row]);
-            else StatsText(95, y, sStatsLabels[row]);
-            for (column = 0; column < 3; column++)
-            {
-                if (isEgg) StatsText(rightEdges[column] - 4, y, sStatsDash);
-                else StatsNumber(rightEdges[column], y, GetMonData(mon, sStatsFields[row][column]));
-            }
+            if (isEgg) StatsText(rightEdges[column] - 4, y, sStatsDash);
+            else StatsNumber(rightEdges[column], y, GetMonData(mon, sStatsFields[row][column]));
         }
-        StatsText(16, 118, sStatsAbility);
-        StatsText(76, 118, isEgg ? sStatsEggAbility : gAbilitiesInfo[GetMonAbility(mon)].name);
-        StatsText(16, 136, COMPOUND_STRING("L/R:Member SELECT:Page B:Back"));
+        evs += GetMonData(mon, sStatsFields[row][1]);
+        ivs += GetMonData(mon, sStatsFields[row][2]);
     }
-    else if (sStatsView == 1)
-    {
-        StatsText(98, 36, COMPOUND_STRING("Nature"));
-        StatsText(98, 49, isEgg ? sStatsDash : gNaturesInfo[nature].name);
-        StatsText(98, 67, COMPOUND_STRING("Held item"));
-        StatsText(98, 80, isEgg ? sStatsDash : GetMonData(mon, MON_DATA_HELD_ITEM) == ITEM_NONE ? COMPOUND_STRING("None") : GetItemName(GetMonData(mon, MON_DATA_HELD_ITEM)));
-        if (!isEgg)
-        {
-            u16 species = GetMonData(mon, MON_DATA_SPECIES);
-            StatsText(98, 92, gTypesInfo[gSpeciesInfo[species].types[0]].name);
-            if (gSpeciesInfo[species].types[0] != gSpeciesInfo[species].types[1])
-                StatsText(158, 92, gTypesInfo[gSpeciesInfo[species].types[1]].name);
-        }
-        StatsText(16, 109, sStatsAbility);
-        StatsText(76, 109, isEgg ? sStatsEggAbility : gAbilitiesInfo[GetMonAbility(mon)].name);
-        if (!isEgg) StatsParagraph(16, 122, 208, gAbilitiesInfo[GetMonAbility(mon)].description);
-    }
-    else
-    {
-        u32 exp = GetMonData(mon, MON_DATA_EXP), next = 0;
-        u16 evs = 0, ivs = 0;
-        u8 number[12], level = GetMonData(mon, MON_DATA_LEVEL);
-        if (!isEgg && level < MAX_LEVEL)
-            next = gExperienceTables[gSpeciesInfo[GetMonData(mon, MON_DATA_SPECIES)].growthRate][level + 1] - exp;
-        StatsText(98, 36, COMPOUND_STRING("Experience"));
-        ConvertIntToDecimalStringN(number, isEgg ? 0 : exp, STR_CONV_MODE_LEFT_ALIGN, 10);
-        StatsText(218 - GetStringWidth(FONT_SMALL, number, 0), 49, isEgg ? sStatsDash : number);
-        StatsText(98, 67, COMPOUND_STRING("To next level"));
-        ConvertIntToDecimalStringN(number, next, STR_CONV_MODE_LEFT_ALIGN, 10);
-        StatsText(218 - GetStringWidth(FONT_SMALL, number, 0), 80, isEgg ? sStatsDash : number);
-        StatsText(98, 99, COMPOUND_STRING("Friendship"));
-        if (!isEgg) StatsNumber(218, 99, GetMonData(mon, MON_DATA_FRIENDSHIP));
-        for (row = 0; row < 6; row++)
-        {
-            evs += GetMonData(mon, sStatsFields[row][1]);
-            ivs += GetMonData(mon, sStatsFields[row][2]);
-        }
-        StatsText(16, 118, COMPOUND_STRING("Total EV"));
-        StatsText(124, 118, COMPOUND_STRING("Total IV"));
-        if (!isEgg) { StatsNumber(101, 118, evs); StatsNumber(221, 118, ivs); }
-        StatsText(16, 136, COMPOUND_STRING("L/R:Member SELECT:Page B:Back"));
-    }
+    StatsText(16, 101, COMPOUND_STRING("EV"));
+    StatsText(51, 101, COMPOUND_STRING("IV"));
+    if (!isEgg) { StatsNumber(47, 101, evs); StatsNumber(85, 101, ivs); }
+    StatsText(16, 113, sStatsAbility);
+    StatsTextFit(58, 113, 166, isEgg ? sStatsEggAbility : gAbilitiesInfo[GetMonAbility(mon)].name);
+    if (!isEgg) StatsParagraph(16, 125, 208, gAbilitiesInfo[GetMonAbility(mon)].description);
     PutWindowTilemap(sHubWindow);
     CopyWindowToVram(sHubWindow, COPYWIN_FULL);
     // Reuse the portrait buffer and OBJ tiles when changing party members.
@@ -1311,7 +1271,7 @@ static void DrawStatsPage(void)
         return;
     sStatsMonSprite = CreateMonPicSprite(GetMonData(mon, MON_DATA_SPECIES_OR_EGG),
         GetMonData(mon, MON_DATA_IS_SHINY), GetMonData(mon, MON_DATA_PERSONALITY),
-        TRUE, 60, 76, paletteSlot, TAG_NONE);
+        TRUE, 49, 68, paletteSlot, TAG_NONE);
     if (sStatsMonSprite < MAX_SPRITES)
         gSprites[sStatsMonSprite].oam.priority = 0;
     else
@@ -1342,12 +1302,6 @@ static void Task_PokeGlassStats(u8 taskId)
         gTasks[taskId].func = Task_CloseTablet;
         return;
     }
-    if (JOY_NEW(SELECT_BUTTON))
-    {
-        sStatsView = (sStatsView + 1) % 3;
-        DrawStatsPage();
-        return;
-    }
     if (JOY_NEW(DPAD_LEFT | L_BUTTON))
         sStatsPartySlot = sStatsPartySlot == 0 ? gPlayerPartyCount - 1 : sStatsPartySlot - 1;
     else if (JOY_NEW(DPAD_RIGHT | R_BUTTON))
@@ -1371,7 +1325,6 @@ void ShowPokeGlassStats(void)
         return;
     if (sStatsPartySlot >= gPlayerPartyCount)
         sStatsPartySlot = 0;
-    sStatsView = 0;
     sStatsMonSprite = 0xFFFF;
     DrawStatsPage();
     taskId = CreateTask(Task_PokeGlassStats, 80);
@@ -1408,6 +1361,11 @@ struct GlassDex
     u8 filter; // Seen or caught.
     u8 alphabetical;
     u16 speciesByDex[NATIONAL_DEX_COUNT + 1];
+    u8 typeWindows[2];
+    u16 areaSpecies;
+    u16 areaHeader;
+    bool8 areaLoading;
+    u8 areaSeason, areaTime, areaMethod, areaSlot;
 };
 
 static EWRAM_DATA struct GlassDex *sGlassDex = NULL;
@@ -1459,45 +1417,101 @@ static void BuildGlassDexList(void)
         qsort(sGlassDex->species, sGlassDex->count, sizeof(sGlassDex->species[0]), CompareGlassDexSpecies);
 }
 
-static bool8 GlassDexEncounterHasSpecies(const struct WildPokemonInfo *info, u8 count, u16 species)
+static const struct WildPokemonInfo *GlassDexEncounterInfo(const struct WildPokemonHeader *header, u8 season, u8 time, u8 method)
 {
-    u8 i;
-    if (info == NULL)
-        return FALSE;
-    for (i = 0; i < count; i++)
-        if (SpeciesToNationalPokedexNum(info->wildPokemon[i].species) == SpeciesToNationalPokedexNum(species))
-            return TRUE;
-    return FALSE;
+    const struct WildEncounterTypes *encounters = &header->encounterTypes[season][time];
+    switch (method)
+    {
+    case WILD_AREA_LAND: return encounters->landMonsInfo;
+    case WILD_AREA_WATER: return encounters->waterMonsInfo;
+    case WILD_AREA_ROCKS: return encounters->rockSmashMonsInfo;
+    case WILD_AREA_FISHING: return encounters->fishingMonsInfo;
+    default: return encounters->hiddenMonsInfo;
+    }
+}
+
+static void AdvanceGlassDexAreaHeader(void)
+{
+    sGlassDex->areaHeader++;
+    sGlassDex->areaSeason = sGlassDex->areaTime = sGlassDex->areaMethod = sGlassDex->areaSlot = 0;
 }
 
 static void BuildGlassDexAreas(u16 species)
 {
-    u16 i, area, j;
-    u8 season, time;
-    sGlassDex->areaCount = sGlassDex->areaPage = 0;
-    for (i = 0; gWildMonHeaders[i].mapGroup != 0xFF; i++)
+    if (sGlassDex->areaSpecies == species) return;
+    sGlassDex->areaSpecies = species;
+    sGlassDex->areaHeader = sGlassDex->areaCount = sGlassDex->areaPage = 0;
+    sGlassDex->areaLoading = TRUE;
+    sGlassDex->areaSeason = sGlassDex->areaTime = sGlassDex->areaMethod = sGlassDex->areaSlot = 0;
+}
+
+static void StepGlassDexAreas(void)
+{
+    static const u8 counts[] = {LAND_WILD_COUNT, WATER_WILD_COUNT, ROCK_WILD_COUNT, FISH_WILD_COUNT, HIDDEN_WILD_COUNT};
+    u16 start = REG_VCOUNT, target = SpeciesToNationalPokedexNum(sGlassDex->areaSpecies);
+    u32 frame = gMain.vblankCounter1;
+    u8 slots = 0;
+#if RANDOMIZER_AVAILABLE == TRUE
+    bool8 randomized = GetRandomizerSeed() != 0 && RandomizerFeatureEnabled(RANDOMIZE_WILD_MON);
+#endif
+    // Bound work by both slot count and scanlines. A large encounter table
+    // cannot consume the next input sample or expose a half-drawn info page.
+    while (slots < 32)
     {
-        const struct WildPokemonHeader *header = &gWildMonHeaders[i];
-        bool8 found = FALSE;
-        for (season = 0; season < NELEMS(header->encounterTypes); season++)
-            for (time = 0; time < NELEMS(header->encounterTypes[0]); time++)
-            {
-                const struct WildEncounterTypes *encounters = &header->encounterTypes[season][time];
-                if (GlassDexEncounterHasSpecies(encounters->landMonsInfo, LAND_WILD_COUNT, species)
-                 || GlassDexEncounterHasSpecies(encounters->waterMonsInfo, WATER_WILD_COUNT, species)
-                 || GlassDexEncounterHasSpecies(encounters->rockSmashMonsInfo, ROCK_WILD_COUNT, species)
-                 || GlassDexEncounterHasSpecies(encounters->fishingMonsInfo, FISH_WILD_COUNT, species)
-                 || GlassDexEncounterHasSpecies(encounters->hiddenMonsInfo, HIDDEN_WILD_COUNT, species))
-                    found = TRUE;
-            }
-        if (!found)
-            continue;
+        const struct WildPokemonHeader *header = &gWildMonHeaders[sGlassDex->areaHeader];
+        const struct WildPokemonInfo *info;
+        u16 area, j, encounter, now = REG_VCOUNT;
+        u8 previous, current;
+        if (gMain.vblankCounter1 != frame || (now >= start ? now - start : 228 - start + now) >= 96) return;
+        if (header->mapGroup == 0xFF)
+        {
+            sGlassDex->areaLoading = FALSE;
+            return;
+        }
         area = Overworld_GetMapHeaderByGroupAndId(header->mapGroup, header->mapNum)->regionMapSectionId;
-        if (area >= MAPSEC_COUNT)
-            continue;
         for (j = 0; j < sGlassDex->areaCount && sGlassDex->areas[j] != area; j++);
-        if (j == sGlassDex->areaCount && j < MAPSEC_COUNT)
+        if (area >= MAPSEC_COUNT || j < sGlassDex->areaCount)
+        {
+            AdvanceGlassDexAreaHeader();
+            continue;
+        }
+        info = GlassDexEncounterInfo(header, sGlassDex->areaSeason, sGlassDex->areaTime, sGlassDex->areaMethod);
+        current = sGlassDex->areaSeason * NELEMS(header->encounterTypes[0]) + sGlassDex->areaTime;
+        if (info != NULL && sGlassDex->areaSlot == 0)
+            for (previous = 0; previous < current; previous++)
+                if (GlassDexEncounterInfo(header, previous / NELEMS(header->encounterTypes[0]),
+                    previous % NELEMS(header->encounterTypes[0]), sGlassDex->areaMethod) == info)
+                {
+                    info = NULL;
+                    break;
+                }
+        if (info == NULL || sGlassDex->areaSlot >= counts[sGlassDex->areaMethod])
+        {
+            sGlassDex->areaSlot = 0;
+            if (++sGlassDex->areaMethod == 5)
+            {
+                sGlassDex->areaMethod = 0;
+                if (++sGlassDex->areaTime == NELEMS(header->encounterTypes[0]))
+                {
+                    sGlassDex->areaTime = 0;
+                    if (++sGlassDex->areaSeason == NELEMS(header->encounterTypes)) AdvanceGlassDexAreaHeader();
+                }
+            }
+            continue;
+        }
+        encounter = info->wildPokemon[sGlassDex->areaSlot].species;
+#if RANDOMIZER_AVAILABLE == TRUE
+        if (randomized)
+            encounter = RandomizeWildEncounter(encounter, header->mapNum, header->mapGroup,
+                sGlassDex->areaMethod, sGlassDex->areaSlot);
+#endif
+        sGlassDex->areaSlot++;
+        slots++;
+        if (SpeciesToNationalPokedexNum(encounter) == target)
+        {
             sGlassDex->areas[sGlassDex->areaCount++] = area;
+            AdvanceGlassDexAreaHeader();
+        }
     }
 }
 
@@ -1540,11 +1554,52 @@ static void GlassDexMeasurement(u16 x, u16 y, const u8 *label, u16 value, const 
     StatsText(x, y, text);
 }
 
+static void ClearGlassDexTypeBadges(void)
+{
+    u8 i;
+    for (i = 0; i < 2; i++)
+    {
+        if (sGlassDex->typeWindows[i] != WINDOW_NONE)
+            RemoveWindow(sGlassDex->typeWindows[i]);
+        sGlassDex->typeWindows[i] = WINDOW_NONE;
+    }
+}
+
+static void DrawGlassDexTypeBadge(u16 species, u8 slot)
+{
+    // Use the Summary screen's actual badge art and palette. Its separate
+    // windows follow the full tablet buffer without replacing glass colors.
+    struct WindowTemplate window = {.bg = 0, .tilemapLeft = 12 + slot * 5,
+        .tilemapTop = 5, .width = 4, .height = 2, .paletteNum = 14,
+        .baseBlock = 0x290 + slot * 8};
+    u8 id = AddWindow(&window);
+    u8 *pixels;
+    u16 i, palette[16];
+    sGlassDex->typeWindows[slot] = id;
+    if (id == WINDOW_NONE) return;
+    ListMenuLoadStdPalAt(BG_PLTT_ID(14), 1);
+    // Color 10 is unused by the native type badges. Use it for the glass
+    // backing: BG color zero is transparent and would expose the raw field
+    // instead of the glass wherever this window replaces the tablet tiles.
+    CpuCopy16(&gPlttBufferUnfaded[BG_PLTT_ID(14)], palette, sizeof(palette));
+    palette[10] = sPalette[4];
+    LoadPalette(palette, BG_PLTT_ID(14), sizeof(palette));
+    FillWindowPixelBuffer(id, PIXEL_FILL(0));
+    BlitMenuInfoIcon(id, gSpeciesInfo[species].types[slot] + 1, 0, 2);
+    pixels = (u8 *)GetWindowAttribute(id, WINDOW_TILE_DATA);
+    for (i = 0; i < 4 * 2 * 32; i++)
+    {
+        if (!(pixels[i] & 0x0F)) pixels[i] |= 10;
+        if (!(pixels[i] & 0xF0)) pixels[i] |= 10 << 4;
+    }
+}
+
 static void DrawGlassDexPage(void)
 {
     u16 species = sGlassDex->count ? sGlassDex->species[sGlassDex->cursor] : SPECIES_NONE;
     u16 i, first = sGlassDex->cursor / GLASS_DEX_ROWS * GLASS_DEX_ROWS;
     bool8 caught = species != SPECIES_NONE && GetSetPokedexFlag(SpeciesToNationalPokedexNum(species), FLAG_GET_CAUGHT);
+    ClearGlassDexTypeBadges();
     DrawTabletShell((u8 *)GetWindowAttribute(sHubWindow, WINDOW_TILE_DATA));
     SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(14, 4));
     HubRect(4, 12, 12, 216, 136);
@@ -1583,8 +1638,12 @@ static void DrawGlassDexPage(void)
             StatsText(129, 57, COMPOUND_STRING("No entries yet."));
             StatsText(129, 70, COMPOUND_STRING("Keep exploring!"));
         }
-        StatsText(16, 124, COMPOUND_STRING("A Info  L/R Page  B Back"));
-        StatsText(16, 137, COMPOUND_STRING("START Filter   SELECT Sort"));
+        if (species != SPECIES_NONE)
+        {
+            u16 ability = GetSpeciesAbilityWithRandomizerCheck(species, 0, FALSE);
+            StatsText(16, 127, sStatsAbility);
+            StatsTextFit(58, 127, 166, gAbilitiesInfo[ability].name);
+        }
     }
     else if (sGlassDex->view == 1)
     {
@@ -1592,31 +1651,22 @@ static void DrawGlassDexPage(void)
         StatsText(142, 16, COMPOUND_STRING("No."));
         StatsNumber(187, 16, SpeciesToNationalPokedexNum(species));
         DrawGlassDexPortrait(species, 66, 65);
-        StatsTextFit(98, 32, 126, caught ? gSpeciesInfo[species].categoryName : COMPOUND_STRING("Seen only"));
+        StatsTextFit(98, 28, 126, caught ? gSpeciesInfo[species].categoryName : COMPOUND_STRING("Seen only"));
+        DrawGlassDexTypeBadge(species, 0);
+        if (gSpeciesInfo[species].types[1] != gSpeciesInfo[species].types[0])
+            DrawGlassDexTypeBadge(species, 1);
         if (caught)
         {
-            StatsText(98, 44, gTypesInfo[gSpeciesInfo[species].types[0]].name);
-            if (gSpeciesInfo[species].types[1] != gSpeciesInfo[species].types[0])
-                StatsText(152, 44, gTypesInfo[gSpeciesInfo[species].types[1]].name);
             GlassDexMeasurement(98, 58, COMPOUND_STRING("Height "), gSpeciesInfo[species].height, COMPOUND_STRING(" m"));
             GlassDexMeasurement(98, 71, COMPOUND_STRING("Weight "), gSpeciesInfo[species].weight, COMPOUND_STRING(" kg"));
         }
-        else
-            StatsText(98, 50, COMPOUND_STRING("Data incomplete"));
-        StatsText(98, 84, COMPOUND_STRING("Habitat"));
-        HubRect(6, 18, 97, 206, 1);
-        if (sGlassDex->areaCount != 0)
         {
-            u8 name[64];
-            GetMapName(name, sGlassDex->areas[sGlassDex->areaPage], 0);
-            StatsText(18, 100, name);
-            StatsNumber(177, 84, sGlassDex->areaPage + 1);
-            StatsText(181, 84, COMPOUND_STRING("/"));
-            StatsNumber(220, 84, sGlassDex->areaCount);
+            u16 ability = GetSpeciesAbilityWithRandomizerCheck(species, 0, FALSE);
+            StatsText(16, 102, sStatsAbility);
+            StatsTextFit(58, 102, 166, gAbilitiesInfo[ability].name);
+            StatsParagraph(16, 116, 208, gAbilitiesInfo[ability].description);
         }
-        else
-            StatsText(18, 100, COMPOUND_STRING("No wild habitat recorded."));
-        StatsText(18, 114, COMPOUND_STRING("A All  L/R Place  SELECT Cry  B"));
+        StatsText(201, 16, COMPOUND_STRING("1/2"));
     }
     else
     {
@@ -1624,20 +1674,33 @@ static void DrawGlassDexPage(void)
         DestroyGlassDexPortrait();
         StatsTextFit(18, 16, 109, gSpeciesInfo[species].speciesName);
         StatsText(133, 16, COMPOUND_STRING("HABITAT"));
-        for (i = 0; i < GLASS_DEX_ROWS && sGlassDex->areaPage * GLASS_DEX_ROWS + i < sGlassDex->areaCount; i++)
+        StatsText(201, 16, COMPOUND_STRING("2/2"));
+        for (i = 0; i < 8 && sGlassDex->areaPage * 8 + i < sGlassDex->areaCount; i++)
         {
-            GetMapName(name, sGlassDex->areas[sGlassDex->areaPage * GLASS_DEX_ROWS + i], 0);
-            StatsText(25, 33 + i * 12, name);
+            GetMapName(name, sGlassDex->areas[sGlassDex->areaPage * 8 + i], 0);
+            StatsTextFit(25, 33 + i * 12, 190, name);
         }
-        if (sGlassDex->areaCount == 0)
+        if (sGlassDex->areaCount == 0 && !sGlassDex->areaLoading)
         {
             StatsText(25, 54, COMPOUND_STRING("No wild habitat recorded."));
             StatsText(25, 69, COMPOUND_STRING("May be evolved, traded, or gifted."));
         }
-        StatsText(25, 114, COMPOUND_STRING("L/R Page   B Entry"));
+        if (sGlassDex->areaLoading) StatsText(25, 133, COMPOUND_STRING("Searching habitats..."));
+        if (sGlassDex->areaCount > 8)
+        {
+            StatsNumber(191, 133, sGlassDex->areaPage + 1);
+            StatsText(196, 133, COMPOUND_STRING("/"));
+            StatsNumber(220, 133, (sGlassDex->areaCount + 7) / 8);
+        }
     }
     PutWindowTilemap(sHubWindow);
     CopyWindowToVram(sHubWindow, COPYWIN_FULL);
+    for (i = 0; i < 2; i++)
+        if (sGlassDex->typeWindows[i] != WINDOW_NONE)
+        {
+            PutWindowTilemap(sGlassDex->typeWindows[i]);
+            CopyWindowToVram(sGlassDex->typeWindows[i], COPYWIN_FULL);
+        }
 }
 
 static void Task_PokeGlassPokedex(u8 taskId)
@@ -1652,7 +1715,7 @@ static void Task_PokeGlassPokedex(u8 taskId)
     {
         if (sGlassDex->view != 0)
         {
-            sGlassDex->view--;
+            sGlassDex->view = 0;
             sGlassDex->areaPage = 0;
             DrawGlassDexPage();
         }
@@ -1670,45 +1733,49 @@ static void Task_PokeGlassPokedex(u8 taskId)
         PlaySE(SE_SELECT);
         return;
     }
+    // Work within a frame budget, keeping A/B and page changes responsive.
+    // Duplicate time tables and already-known map sections are skipped.
+    if (sGlassDex->view != 0 && sGlassDex->areaLoading)
+    {
+        u16 previous = sGlassDex->areaCount;
+        StepGlassDexAreas();
+        if (sGlassDex->view == 2 && (previous != sGlassDex->areaCount || !sGlassDex->areaLoading))
+            DrawGlassDexPage();
+    }
     if (JOY_NEW(SELECT_BUTTON) && sGlassDex->view == 1)
     {
         PlayCry_Normal(sGlassDex->species[sGlassDex->cursor], 0);
         return;
     }
-    if (sGlassDex->view == 2)
-    {
-        u8 pages = (sGlassDex->areaCount + GLASS_DEX_ROWS - 1) / GLASS_DEX_ROWS;
-        if (pages > 1 && JOY_NEW(L_BUTTON | R_BUTTON | DPAD_LEFT | DPAD_RIGHT))
-        {
-            sGlassDex->areaPage = JOY_NEW(L_BUTTON | DPAD_LEFT)
-                ? (sGlassDex->areaPage + pages - 1) % pages : (sGlassDex->areaPage + 1) % pages;
-            DrawGlassDexPage();
-        }
-        return;
-    }
-    if (sGlassDex->view == 1)
+    if (sGlassDex->view != 0)
     {
         if (JOY_NEW(A_BUTTON))
         {
+            sGlassDex->view = sGlassDex->view == 1 ? 2 : 1;
             sGlassDex->areaPage = 0;
-            sGlassDex->view = 2;
             DrawGlassDexPage();
         }
-        else if (sGlassDex->areaCount > 1 && JOY_NEW(L_BUTTON | R_BUTTON | DPAD_LEFT | DPAD_RIGHT))
+        else if (sGlassDex->view == 2)
         {
-            sGlassDex->areaPage = JOY_NEW(L_BUTTON | DPAD_LEFT)
-                ? (sGlassDex->areaPage + sGlassDex->areaCount - 1) % sGlassDex->areaCount
-                : (sGlassDex->areaPage + 1) % sGlassDex->areaCount;
-            DrawGlassDexPage();
+            u16 pages = (sGlassDex->areaCount + 7) / 8;
+            if (pages > 1 && JOY_REPEAT(DPAD_UP | DPAD_DOWN))
+            {
+                sGlassDex->areaPage = JOY_REPEAT(DPAD_UP)
+                    ? (sGlassDex->areaPage + pages - 1) % pages : (sGlassDex->areaPage + 1) % pages;
+                DrawGlassDexPage();
+            }
         }
         return;
     }
-    if (JOY_NEW(START_BUTTON | SELECT_BUTTON))
+    if (JOY_NEW(DPAD_LEFT | DPAD_RIGHT))
     {
-        if (JOY_NEW(START_BUTTON))
-            sGlassDex->filter ^= 1;
-        else
-            sGlassDex->alphabetical ^= 1;
+        sGlassDex->filter = JOY_NEW(DPAD_RIGHT) ? 1 : 0;
+        BuildGlassDexList();
+        DrawGlassDexPage();
+    }
+    else if (JOY_NEW(SELECT_BUTTON))
+    {
+        sGlassDex->alphabetical ^= 1;
         BuildGlassDexList();
         DrawGlassDexPage();
     }
@@ -1724,9 +1791,9 @@ static void Task_PokeGlassPokedex(u8 taskId)
             sGlassDex->cursor = (sGlassDex->cursor + sGlassDex->count - 1) % sGlassDex->count;
         else if (JOY_REPEAT(DPAD_DOWN))
             sGlassDex->cursor = (sGlassDex->cursor + 1) % sGlassDex->count;
-        else if (JOY_NEW(L_BUTTON | DPAD_LEFT))
+        else if (JOY_NEW(L_BUTTON))
             sGlassDex->cursor = sGlassDex->cursor > GLASS_DEX_ROWS ? sGlassDex->cursor - GLASS_DEX_ROWS : 0;
-        else if (JOY_NEW(R_BUTTON | DPAD_RIGHT))
+        else if (JOY_NEW(R_BUTTON))
             sGlassDex->cursor = min(sGlassDex->cursor + GLASS_DEX_ROWS, sGlassDex->count - 1);
         if (oldCursor != sGlassDex->cursor)
         {
@@ -1748,6 +1815,7 @@ void ShowPokeGlassPokedex(void)
         return;
     }
     sGlassDex->sprite = 0xFFFF;
+    sGlassDex->typeWindows[0] = sGlassDex->typeWindows[1] = WINDOW_NONE;
     BuildGlassDexSpeciesIndex();
     if (!OpenTabletWindow())
     {

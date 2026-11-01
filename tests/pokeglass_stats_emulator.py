@@ -52,7 +52,7 @@ def pic_count():
 assert slot() == 0
 assert pic_count() == 1
 m.snap('stats-values')
-m.press(2,30);assert m.read(m.symbols['sStatsView'],1)==b'\x01';m.snap('stats-profile');m.press(2,30);assert m.read(m.symbols['sStatsView'],1)==b'\x02';m.snap('stats-training');m.press(2,30)
+before_select=m.screen.tobytes();m.press(2,30);assert m.screen.tobytes()==before_select, 'Stats still has hidden pages'
 assert m.read(m.symbols['gPlayerParty'],300)==original
 # Inspect actual window pixels: label glyphs must carry nature colors.
 def window_pixels():
@@ -62,7 +62,7 @@ def window_pixels():
     data = m.read(ptr, 30 * 20 * 32)
     return lambda x,y: (data[((y//8)*30+x//8)*32+(y%8)*4+(x%8)//2] >> ((x%2)*4)) & 15
 px = window_pixels()
-for y, color in ((58,10),(102,6)):
+for y, color in ((52,10),(92,6)):
     assert any(px(x,yy)==color for x in range(94,132) for yy in range(y,y+11)), ('missing nature label color',y,color)
 print('PASS raised Attack red, lowered Speed blue; field palettes 0..12 preserved')
 m.press(7, 20); assert slot() == 1; m.snap('stats-second')

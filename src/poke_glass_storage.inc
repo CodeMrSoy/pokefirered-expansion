@@ -165,7 +165,6 @@ static void DrawGlassStorage(u8 taskId)
             }
         }
         else StatsText(88, 61, COMPOUND_STRING("An Egg. Keep it safe."));
-        StatsText(16, 136, COMPOUND_STRING("A/B:Back"));
         goto copy;
     }
     if (d[9] == 2)
@@ -176,7 +175,6 @@ static void DrawGlassStorage(u8 taskId)
         StatsText(18, 20, COMPOUND_STRING("Release POKéMON?"));
         StatsText(18, 43, text);
         StatsText(18, 65, COMPOUND_STRING("This cannot be undone."));
-        StatsText(18, 113, COMPOUND_STRING("A:Release  B:Keep"));
         goto copy;
     }
     if (d[9] == 1)
@@ -190,14 +188,12 @@ static void DrawGlassStorage(u8 taskId)
             CopyItemName(item, text);
             StatsTextFit(22, 32 + row * 11, 181, text);
         }
-        StatsText(18, 113, COMPOUND_STRING("A:Give  B:Cancel"));
         goto copy;
     }
     StatsText(16, 14, COMPOUND_STRING("PARTY"));
     StatsTextFit(80, 14, 84, gPokemonStoragePtr->boxNames[d[0]]);
     StatsNumber(211, 14, d[0] + 1);
     StatsText(212, 14, COMPOUND_STRING("/6"));
-    StatsText(170, 14, COMPOUND_STRING("L/R"));
     for (row = 0; row < PARTY_SIZE + IN_BOX_COUNT; row++)
     {
         s16 x, y;
@@ -222,10 +218,6 @@ static void DrawGlassStorage(u8 taskId)
         StatsText(14, 138, COMPOUND_STRING("Held item given."));
     else if (d[7] == 6)
         StatsText(14, 138, COMPOUND_STRING("Eggs cannot be released."));
-    else if (d[6])
-        StatsText(14, 138, COMPOUND_STRING("A:Place SELECT:Release B:Cancel"));
-    else
-        StatsText(14, 138, COMPOUND_STRING("A:Move SELECT:Item START:Info"));
 
 copy:
     UpdateGlassStorageIcons(taskId);

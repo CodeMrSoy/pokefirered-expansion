@@ -1001,6 +1001,9 @@ static void InitRegionMapType(void)
     // until merged with a campaign that supplies Vidra's map sections.
 #ifndef QUANTUM_MAPSEC_START
     sRegionMap->permissions[MAPPERM_HAS_SWITCH_BUTTON] = FALSE;
+#else
+    if (!FlagGet(FLAG_QUANTUM_ARRIVED) && PokeGlassPlayerRegion() != REGIONMAP_QUANTUM)
+        sRegionMap->permissions[MAPPERM_HAS_SWITCH_BUTTON] = FALSE;
 #endif
     sRegionMap->playersRegion = PokeGlassPlayerRegion();
     sRegionMap->selectedRegion = sRegionMap->playersRegion;
@@ -3822,6 +3825,12 @@ u8 *GetMapNameGeneric_(u8 *dest, u16 mapsec)
 
 static void PrintTopBarTextLeft(const u8 *str)
 {
+    if (IsPokeGlassSessionActive() && sRegionMap->type == REGIONMAP_TYPE_NORMAL)
+    {
+        ClearWindowTilemap(WIN_TOPBAR_LEFT);
+        CopyWindowToVram(WIN_TOPBAR_LEFT, COPYWIN_MAP);
+        return;
+    }
     if (sRegionMap->permissions[MAPPERM_HAS_OPEN_ANIM] == TRUE)
         FillWindowPixelBuffer(WIN_TOPBAR_LEFT, PIXEL_FILL(0));
     else
@@ -3832,6 +3841,12 @@ static void PrintTopBarTextLeft(const u8 *str)
 
 static void PrintTopBarTextRight(const u8 *str)
 {
+    if (IsPokeGlassSessionActive() && sRegionMap->type == REGIONMAP_TYPE_NORMAL)
+    {
+        ClearWindowTilemap(WIN_TOPBAR_RIGHT);
+        CopyWindowToVram(WIN_TOPBAR_RIGHT, COPYWIN_MAP);
+        return;
+    }
     if (sRegionMap->permissions[MAPPERM_HAS_OPEN_ANIM] == TRUE)
         FillWindowPixelBuffer(WIN_TOPBAR_RIGHT, PIXEL_FILL(0));
     else
@@ -3842,6 +3857,8 @@ static void PrintTopBarTextRight(const u8 *str)
 
 static void ClearOrDrawTopBar(bool8 clear)
 {
+    if (IsPokeGlassSessionActive() && sRegionMap->type == REGIONMAP_TYPE_NORMAL)
+        clear = TRUE;
     if (!clear)
     {
         PutWindowTilemap(WIN_TOPBAR_LEFT);

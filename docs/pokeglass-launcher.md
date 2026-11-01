@@ -69,14 +69,20 @@ six-entry list with Seen/Caught filters, alphabetical sorting, portraits, cries
 and habitat paging. Party has six wider cards with Pokémon icons and readable
 HP, level, status and nickname fields.
 
-Stats has three SELECT-switched pages: values/EVs/IVs, profile (types, nature,
-ability and item), and training (experience, next level, friendship and totals).
-L/R changes party member. Eggs conceal their stat data. Summary retains its
+Stats has one page with values, individual EVs/IVs, EV/IV totals and the actual
+Pokémon's ability name/description. Red and blue labels convey nature effects;
+the redundant nature/profile/training pages have been removed. L/R changes
+party member. Eggs conceal their stat data. Summary retains its
 identity and moves pages; left/right skips its redundant Skills page.
 
 Field Kit lists the seven permanent field tools. Owned tools show their icon
 and can be used through the established field callbacks when badge and field
 conditions allow. Missing tools remain visible without being usable.
+
+Pokédex, Stats, Storage, Field Kit/native Field Item Case and the PokéGlass map
+omit navigation instructions. Status messages, badge/ownership locks and
+destructive-action confirmation prompts remain. Vidra's map becomes selectable
+after arrival in Vidra; unrelated legacy island flags cannot reveal it.
 
 For the current overhaul's executed checks and limitations, see
 [pokeglass-overhaul-qa.md](pokeglass-overhaul-qa.md).
