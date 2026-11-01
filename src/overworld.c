@@ -1870,6 +1870,7 @@ void CB2_ReturnToFieldWithOpenMenu(void)
 
 void CB2_ReturnToFieldContinueScript(void)
 {
+    BeginPokeGlassNativeTransition();
     ReleasePokeGlassBackdrop();
     FieldClearVBlankHBlankCallbacks();
     gFieldCallback = FieldCB_ContinueScript;

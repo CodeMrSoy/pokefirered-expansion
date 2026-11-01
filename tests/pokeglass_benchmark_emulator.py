@@ -28,9 +28,9 @@ def data(name,index):
  i=task(name)
  return struct.unpack('<h',m.read(m.symbols['gTasks']+i*40+8+2*index,2))[0] if i is not None else -1
 def fade():return bool(m.read(m.symbols['gPaletteFade']+17,1)[0]&128)
-def hub():return task('Task_PokeGlassHub') is not None and data('Task_PokeGlassHub',1)>=2 and not byte('sReturnCoverActive') and not fade()
+def hub():return task('Task_PokeGlassHub') is not None and data('Task_PokeGlassHub',1)>=2 and not byte('sReturnCoverActive') and not byte('sNativeTransitionStage') and not fade()
 def ready(name):
- if task(name) is None or fade():return False
+ if task(name) is None or fade() or byte('sNativeTransitionStage'):return False
  if name=='Task_HandleChooseMonInput' and byte('sReturnCoverActive'):return False
  if name in ('Task_PokeGlassStats','Task_PokeGlassPokedex'):return data(name,0)>=2
  if name=='Task_HandleListInput':
@@ -45,7 +45,7 @@ def ready(name):
 shell=np.zeros((160,240),bool);shell[:,:]=True;shell[10:150,10:230]=False
 results=[]
 def trace(label,key,predicate,embedded=False,reference=None,maximum=900):
- frames=[];black=[];changed=[];stages=[];last=None;streak=0
+ frames=[];black=[];changed=[];field_flashes=[];stages=[];last=None;streak=0
  m.keys.add(key)
  for n in range(1,maximum+1):
   m.run(1)
@@ -53,6 +53,11 @@ def trace(label,key,predicate,embedded=False,reference=None,maximum=900):
   frame=m.screen.copy();arr=np.asarray(frame)
   frames.append(frame)
   if arr.max()<8:black.append(n)
+  # Native menus may fade through black, but must never reveal the field
+  # reconstruction between the app and launcher. Compare actual field pixels.
+  if not embedded and not label.startswith(('tablet-', 'save-')):
+   matches=np.all(arr[24:136,24:216]==field_reference[24:136,24:216],axis=2)
+   if matches.mean()>0.5:field_flashes.append(n)
   if reference is not None and not np.array_equal(arr[shell],reference[shell]):
    changed.append(n)
    frame.save(out/(label+'-fault-'+str(n)+'.png'))
@@ -76,13 +81,16 @@ def trace(label,key,predicate,embedded=False,reference=None,maximum=900):
  for i,p in enumerate(picks):
   x=i%3*240;y=i//3*180;sheet.paste(frames[p],(x,y+20));draw.text((x+4,y+3),f'{label}: frame {p+1}',fill='white')
  sheet.save(out/(label+'-frames.png'))
- row=dict(transition=label,frames=n,seconds=round(n/59.7275,3),black_frames=black,shell_changed_frames=changed,stages=stages)
+ row=dict(transition=label,frames=n,seconds=round(n/59.7275,3),black_frames=black,shell_changed_frames=changed,field_flash_frames=field_flashes,stages=stages)
  results.append(row);print(json.dumps(row),flush=True)
  if embedded and not os.environ.get('PGQA_RECORD_ONLY'):
   assert not black,(label,'black frame',black)
   assert not changed,(label,'shell changed',changed)
+ if not os.environ.get('PGQA_RECORD_ONLY'):
+  assert not field_flashes,(label,'field appeared during native handoff',field_flashes)
  return n
 field=save()
+field_reference=np.asarray(m.screen).copy()
 trace('tablet-open',3,hub)
 base=np.asarray(m.screen).copy();launcher=save()
 apps=[('pokedex',0,'Task_PokeGlassPokedex',True),('party',1,'Task_HandleChooseMonInput',True),

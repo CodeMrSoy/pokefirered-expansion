@@ -1,6 +1,7 @@
 #include "global.h"
 #include "field_tools.h"
 #include "sprite.h"
+#include "palette.h"
 #include "event_data.h"
 #include "constants/flags.h"
 #include "field_effect.h"
@@ -94,6 +95,19 @@ u8 FieldTool_CreateLargeSprite(u16 item, u16 tag, s16 x, s16 y)
     {
         FreeSpriteTilesByTag(tag);
         FreeSpritePaletteByTag(tag);
+    }
+    return spriteId;
+}
+
+// Both case interfaces conceal an uncollected tool without changing its shape
+// or transparent pixels. Each preview owns its palette, so cut-ins stay colored.
+u8 FieldTool_CreateCaseSprite(enum FieldMove fieldMove, u16 tag, s16 x, s16 y)
+{
+    u8 spriteId = FieldTool_CreateLargeSprite(FieldTool_GetItem(fieldMove), tag, x, y);
+    if (spriteId != MAX_SPRITES && !FieldTool_IsOwned(fieldMove))
+    {
+        const u16 black[16] = {0};
+        LoadPalette(black, OBJ_PLTT_ID(gSprites[spriteId].oam.paletteNum), sizeof(black));
     }
     return spriteId;
 }

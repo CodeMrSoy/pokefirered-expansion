@@ -83,7 +83,7 @@ m.press(8,60)
 sid=m.read(m.symbols['sCasePreview'],1)[0];assert sid<64
 attr2=struct.unpack('<H',m.read(m.symbols['gSprites']+sid*68+4,2))[0]
 colors=struct.unpack('<16H',m.read(m.symbols['gPlttBufferFaded']+(0x100+(attr2>>12)*16)*2,32))
-assert all(c&31==(c>>5)&31==(c>>10)&31 for c in colors),'Missing tool preview is not greyed'
+assert not any(colors),'Missing tool preview is not a black silhouette'
 assert struct.unpack('<I',m.read(m.symbols['gMain']+4,4))[0]==(m.symbols['CB2_FieldItemCase']|1)
 m.snap('case-not-collected');m.press(0,240)
 assert native('AddBagItem',687,1)==1

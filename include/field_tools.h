@@ -8,6 +8,7 @@
 #define FIELD_TOOL_ICON_TAG 0xD130
 
 u8 FieldTool_CreateLargeSprite(u16 item, u16 tag, s16 x, s16 y);
+u8 FieldTool_CreateCaseSprite(enum FieldMove fieldMove, u16 tag, s16 x, s16 y);
 u16 FieldTool_GetItem(enum FieldMove fieldMove);
 enum FieldMove FieldTool_GetMove(u16 item);
 bool32 FieldTool_IsOwned(enum FieldMove fieldMove);

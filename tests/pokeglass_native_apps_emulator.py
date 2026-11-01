@@ -20,7 +20,7 @@ p=struct.unpack('<I',m.read(m.symbols['sRegionMap'],4))[0]
 type_offset=19*2+5*600*2+3*0x800*2
 assert m.read(p+type_offset,1)==b'\0','Map app opened Fly instead of Town Map'
 has_vidra = (m.root/'data/maps/Havora_NorthQuadrant/map.json').exists()
-assert m.read(p+type_offset+1,1)==bytes([int(has_vidra)]),'Unexpected region-switch permission'
+assert m.read(p+type_offset+1,1)==b'\0','Vidra exposed before arrival'
 assert m.read(p+type_offset+5,1)==b'\0','Map not on Kanto'
 m.snap('native-town-map')
 for key in [10,11,2,2]:m.press(key,20)

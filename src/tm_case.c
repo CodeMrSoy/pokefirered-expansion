@@ -551,6 +551,7 @@ static bool8 DoSetUpTMCaseUI(void)
         gMain.state++;
         break;
     case 17:
+        if (IsPokeGlassSessionActive()) { DrawPokeGlassTMFrame(); DrawOriginalGlassCase(); }
         BlendPalettes(PALETTES_ALL, 16, 0);
         gMain.state++;
         break;
@@ -559,9 +560,9 @@ static bool8 DoSetUpTMCaseUI(void)
         gMain.state++;
         break;
     default:
-        if (IsPokeGlassSessionActive()) { DrawPokeGlassTMFrame(); DrawOriginalGlassCase(); }
         SetVBlankCallback(VBlankCB_Idle);
         SetMainCallback2(CB2_Idle);
+        FinishPokeGlassNativeTransition();
         return TRUE;
     }
 

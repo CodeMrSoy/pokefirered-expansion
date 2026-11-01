@@ -67,8 +67,8 @@ tool_prefix = os.environ.get('ARM_NM', 'arm-none-eabi-nm').removesuffix('nm')
 def native(name, *args):
     assembly = ['.syntax unified', '.thumb', '.thumb_func', '_start:', 'push {r4, lr}']
     assembly += [f'ldr r{i}, arg{i}' for i in range(len(args))]
-    assembly += ['ldr r3, function', 'bl invoke', 'ldr r3, result', 'str r0, [r3]',
-                 'movs r0, #1', 'pop {r4, pc}', 'invoke:', 'bx r3', '.align 2',
+    assembly += ['ldr r4, function', 'bl invoke', 'ldr r3, result', 'str r0, [r3]',
+                 'movs r0, #1', 'pop {r4, pc}', 'invoke:', 'bx r4', '.align 2',
                  f'function: .word {m.symbols[name] | 1}', f'result: .word {result_addr}']
     assembly += [f'arg{i}: .word {arg}' for i, arg in enumerate(args)]
     (native_dir / 'call.s').write_text('\n'.join(assembly) + '\n')

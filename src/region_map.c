@@ -1001,6 +1001,9 @@ static void InitRegionMapType(void)
     // until merged with a campaign that supplies Vidra's map sections.
 #ifndef QUANTUM_MAPSEC_START
     sRegionMap->permissions[MAPPERM_HAS_SWITCH_BUTTON] = FALSE;
+#else
+    if (!FlagGet(FLAG_QUANTUM_ARRIVED) && PokeGlassPlayerRegion() != REGIONMAP_QUANTUM)
+        sRegionMap->permissions[MAPPERM_HAS_SWITCH_BUTTON] = FALSE;
 #endif
     sRegionMap->playersRegion = PokeGlassPlayerRegion();
     sRegionMap->selectedRegion = sRegionMap->playersRegion;
@@ -1050,9 +1053,9 @@ static void CB2_OpenRegionMap(void)
             SetBg0andBg3Hidden(TRUE);
         break;
     default:
+        if (IsPokeGlassSessionActive() && sRegionMap->type == REGIONMAP_TYPE_NORMAL) DrawPokeGlassNativeOverlay(FALSE);
         BeginNormalPaletteFade(PALETTES_ALL, 0, IsPokeGlassActive() ? 0 : 16, 0, RGB_BLACK);
         CreateMainMapTask();
-        if (IsPokeGlassSessionActive() && sRegionMap->type == REGIONMAP_TYPE_NORMAL) DrawPokeGlassNativeOverlay(FALSE);
         SetRegionMapVBlankCB();
         break;
     }
@@ -1165,6 +1168,7 @@ static void Task_RegionMap(u8 taskId)
             SetMapCursorInvisibility(FALSE);
             SetFlyIconInvisibility(GetSelectedRegionMap(), NELEMS(sMapIcons->flyIcons), FALSE);
             SetDungeonIconInvisibility(GetSelectedRegionMap(), NELEMS(sMapIcons->dungeonIcons), FALSE);
+            FinishPokeGlassNativeTransition();
         }
         sRegionMap->mainState++;
         break;
@@ -1295,6 +1299,12 @@ static void FreeRegionMapForFlyMap(void)
 static void CB2_RegionMap(void)
 {
     RunTasks();
+    // Native name boxes reuse WIN1. Restore the tablet viewport after these
+    // updates, on first open as well as after movement or a page switch.
+    if (IsPokeGlassSessionActive() && sRegionMap != NULL
+        && sRegionMap->type == REGIONMAP_TYPE_NORMAL
+        && sSwitchMapMenu == NULL && sDungeonMapPreview == NULL)
+        SetPokeGlassNativeViewport(1);
     AnimateSprites();
     BuildOamBuffer();
     UpdatePaletteFade();
@@ -3815,6 +3825,12 @@ u8 *GetMapNameGeneric_(u8 *dest, u16 mapsec)
 
 static void PrintTopBarTextLeft(const u8 *str)
 {
+    if (IsPokeGlassSessionActive() && sRegionMap->type == REGIONMAP_TYPE_NORMAL)
+    {
+        ClearWindowTilemap(WIN_TOPBAR_LEFT);
+        CopyWindowToVram(WIN_TOPBAR_LEFT, COPYWIN_MAP);
+        return;
+    }
     if (sRegionMap->permissions[MAPPERM_HAS_OPEN_ANIM] == TRUE)
         FillWindowPixelBuffer(WIN_TOPBAR_LEFT, PIXEL_FILL(0));
     else
@@ -3825,6 +3841,12 @@ static void PrintTopBarTextLeft(const u8 *str)
 
 static void PrintTopBarTextRight(const u8 *str)
 {
+    if (IsPokeGlassSessionActive() && sRegionMap->type == REGIONMAP_TYPE_NORMAL)
+    {
+        ClearWindowTilemap(WIN_TOPBAR_RIGHT);
+        CopyWindowToVram(WIN_TOPBAR_RIGHT, COPYWIN_MAP);
+        return;
+    }
     if (sRegionMap->permissions[MAPPERM_HAS_OPEN_ANIM] == TRUE)
         FillWindowPixelBuffer(WIN_TOPBAR_RIGHT, PIXEL_FILL(0));
     else
@@ -3835,6 +3857,8 @@ static void PrintTopBarTextRight(const u8 *str)
 
 static void ClearOrDrawTopBar(bool8 clear)
 {
+    if (IsPokeGlassSessionActive() && sRegionMap->type == REGIONMAP_TYPE_NORMAL)
+        clear = TRUE;
     if (!clear)
     {
         PutWindowTilemap(WIN_TOPBAR_LEFT);

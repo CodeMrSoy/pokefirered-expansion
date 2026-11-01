@@ -36,6 +36,9 @@ void InitGpuRegManager(void)
 
 static void CopyBufferedValueToGpuReg(u8 regOffset)
 {
+    if (IsPokeGlassNativeTransitionActive()
+        && (regOffset == REG_OFFSET_DISPCNT || regOffset == REG_OFFSET_BLDCNT))
+        return;
     // Keep the cover visible even when a large DMA queue extends past VBlank.
     // Its final handoff publishes these buffered registers together.
     if (IsPokeGlassReturnActive() && (regOffset == REG_OFFSET_DISPCNT

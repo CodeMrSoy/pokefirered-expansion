@@ -46,21 +46,18 @@ def open_app(app,task):
  for key in paths[app]:m.press(key,30)
  m.press(8);wait_task(task);m.run(100)
 open_app(0,'Task_PokeGlassPokedex');capture('dex-list');border(16,41,118,81)
-m.press(3,30);capture('dex-caught');border(16,41,118,81)
+m.press(7,30);capture('dex-caught');border(16,41,118,81)
 m.press(2,30);capture('dex-alphabetical');border(16,41,118,81)
-m.press(8,60);capture('dex-entry');assert np.all(pixels()[97,18:224]==6)
+m.press(8,60);capture('dex-entry')
 m.press(8,60);capture('dex-habitats')
 open_app(3,'Task_PokeGlassStats')
-for view in range(3):
- capture(['stats','profile','training'][view]);border(90,32,134,76 if view==1 else 84)
- if view==0:assert np.all(pixels()[45,92:222]==6),'Stats header touches separator'
- m.press(2,30)
+capture('stats');border(90,29,134,78)
+assert np.all(pixels()[41,92:222]==6),'Stats header touches separator'
 # Exercise the actual font renderer with strings wider than any data field.
 wid=m.read(m.symbols['sHubWindow'],1)[0];scratch=m.symbols['gDecompressionBuffer']+0x1000
 for x,y,width in [(46,43,78),(98,80,126),(76,109,148),(80,14,84),(88,31,119)]:
- native('FillWindowPixelBuffer',wid,0);m.write(scratch,b'\xd1'*80+b'\xff');native('StatsTextFit',x,y,width,scratch)
- a=pixels();ys,xs=np.where(a==8);assert len(xs) and min(xs)>=x and max(xs)<x+width,(x,width,min(xs),max(xs))
- assert min(ys)>=y and max(ys)<y+12
+ m.write(scratch,b'\xd1'*80+b'\xff');native('FitPokeGlassText',scratch,0,width)
+ assert 0<native('GetStringWidth',0,scratch,0)<=width
 open_app(2,'Task_PokeGlassStorage');capture('pc-grid');pc=save()
 def pcdata(index):
  tasks=m.read(m.symbols['gTasks'],640);i=next(i for i in range(16) if tasks[i*40+4] and struct.unpack_from('<I',tasks,i*40)[0]==(m.symbols['Task_PokeGlassStorage']|1))

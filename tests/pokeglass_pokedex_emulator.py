@@ -22,7 +22,9 @@ class GlassDex(c.Structure):
                 ('count', c.c_uint16), ('cursor', c.c_uint16), ('seen', c.c_uint16),
                 ('caught', c.c_uint16), ('sprite', c.c_uint16), ('areaCount', c.c_uint16),
                 ('areaPage', c.c_uint8), ('view', c.c_uint8), ('filter', c.c_uint8),
-                ('alphabetical', c.c_uint8)]
+                ('alphabetical', c.c_uint8),
+                ('speciesByDex', c.c_uint16*(count+1)), ('typeWindows', c.c_uint8*2),
+                ('areaSpecies',c.c_uint16), ('areaHeader',c.c_uint16), ('areaLoading',c.c_uint8)]
 
 shell_mask = np.zeros((160, 240), dtype=bool)
 shell_mask[:, :] = True
@@ -59,7 +61,7 @@ assert data().count == data().seen == data().caught == 0
 m.snap('tablet-dex-empty')
 m.press(8)
 assert data().view == 0
-m.press(3)  # Empty caught filter.
+m.press(7)  # Right selects the caught filter.
 assert data().filter == 1 and data().count == 0
 m.press(0)
 assert m.read(m.symbols['sGlassDex'], 4) == b'\x00' * 4
@@ -85,7 +87,7 @@ assert data().view == 1
 m.press(8)  # A: complete habitat list.
 assert data().view == 2
 m.snap('tablet-dex-habitat')
-m.press(0)
+m.press(8)
 assert data().view == 1
 m.press(0)
 assert data().view == 0
@@ -98,18 +100,17 @@ m.press(0)
 for _ in range(2):
     m.press(5, 20)
 m.press(8)
-assert data().view == 1 and data().areaCount > 1
-first_area = data().areas[0]
+assert data().view == 1
+for _ in range(1000):
+    if not data().areaLoading:break
+    m.run(1)
+assert data().areaCount > 1
 m.snap('tablet-dex-pikachu-location')
-m.press(11)
-assert data().areaPage == 1 and data().areas[1] != first_area
-m.snap('tablet-dex-pikachu-second-location')
-m.press(10)
-assert data().areaPage == 0
 m.press(8)
-assert data().view == 2 and data().areaCount > 0, 'Pikachu should have wild habitat locations'
+assert data().view == 2 and data().areaCount > 0
 m.snap('tablet-dex-pikachu-habitat')
-m.press(0)
+m.press(8)
+assert data().view == 1
 m.press(0)
 for _ in range(2):
     m.press(4, 20)
@@ -122,7 +123,7 @@ m.press(8)
 assert data().species[data().cursor] == expected_species[-1]
 m.snap('tablet-dex-gen9-entry')
 m.press(0)
-m.press(3)
+m.press(7)
 assert data().filter == 1 and data().count == len(caught)
 m.snap('tablet-dex-caught')
 m.press(2)
@@ -161,4 +162,4 @@ assert m.read(m.symbols['gEmptyPokedexText'], 1) == b'\xff'
 if 'GetSpeciesPokedexDescription' in m.symbols:
     for species in expected_species:
         assert native('GetSpeciesPokedexDescription', species) == m.symbols['gEmptyPokedexText']
-print('Tablet Dex filters/sort, inline habitat paging, shared shell, empty legacy descriptions, cleanup, and save/reload passed')
+print('Tablet Dex filters/sort, A-toggled info/habitat pages, shared shell, empty legacy descriptions, cleanup, and save/reload passed')

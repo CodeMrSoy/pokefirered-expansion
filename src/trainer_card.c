@@ -1,4 +1,5 @@
 #include "global.h"
+#include "poke_glass.h"
 #include "avatar.h"
 #include "decompress.h"
 #include "gflib.h"
@@ -542,6 +543,7 @@ static void Task_TrainerCard(u8 taskId)
         }
         BeginNormalPaletteFade(PALETTES_ALL, 0, 16, 0, RGB_BLACK);
         SetVBlankCallback(VBlankCB_TrainerCard);
+        FinishPokeGlassNativeTransition();
         sTrainerCardDataPtr->mainState++;
         break;
     case 8:
