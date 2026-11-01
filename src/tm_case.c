@@ -1085,6 +1085,11 @@ static void Action_Use(u8 taskId)
     ClearStdWindowAndFrameToTransparent(WIN_SELECTED_MSG, FALSE);
     ClearWindowTilemap(WIN_SELECTED_MSG);
     PutWindowTilemap(WIN_LIST);
+    if (IsPokeGlassSessionActive())
+    {
+        PutWindowTilemap(WIN_MOVE_INFO_LABELS);
+        PutWindowTilemap(WIN_MOVE_INFO);
+    }
     ScheduleBgCopyTilemapToVram(0);
     ScheduleBgCopyTilemapToVram(1);
     if (CalculatePlayerPartyCount() == 0)
@@ -1554,7 +1559,7 @@ static void InitWindowTemplatesAndPals(void)
         struct WindowTemplate windows[] = {
             {0,12,4,16,8,15,0x90}, {0,3,14,24,4,15,0x110},
             {0,2,14,26,4,15,0x170}, {0,2,2,26,2,15,0x1D8},
-            {0,2,10,9,4,15,0x20C}, {0,2,12,9,2,15,0x239},
+            {0,2,10,9,2,15,0x20C}, {0,2,12,9,2,15,0x239},
             {0,2,14,26,4,15,0x253}, {0,15,9,12,4,15,0x2BB},
             {0,2,2,8,3,15,0x2EB}, DUMMY_WIN_TEMPLATE
         };
@@ -1603,7 +1608,21 @@ static void TMCase_SetWindowBorder1(u8 windowId)
 
 static void TMCase_SetWindowBorder2(u8 windowId)
 {
-    DrawStdFrameWithCustomTileAndPalette(windowId, FALSE, 0x78, 13);
+    if (IsPokeGlassSessionActive())
+    {
+        u16 width = GetWindowAttribute(windowId, WINDOW_WIDTH) * 8;
+        u16 height = GetWindowAttribute(windowId, WINDOW_HEIGHT) * 8;
+        // Frame the lower panel internally. An outside tile row would replace
+        // the bottom stat row on BG0, even with transparent border pixels.
+        FillWindowPixelBuffer(windowId, PIXEL_FILL(4));
+        FillWindowPixelRect(windowId, PIXEL_FILL(6), 0, 0, width, 1);
+        FillWindowPixelRect(windowId, PIXEL_FILL(6), 0, height - 1, width, 1);
+        FillWindowPixelRect(windowId, PIXEL_FILL(6), 0, 0, 1, height);
+        FillWindowPixelRect(windowId, PIXEL_FILL(6), width - 1, 0, 1, height);
+        PutWindowTilemap(windowId);
+        CopyWindowToVram(windowId, COPYWIN_FULL);
+    }
+    else DrawStdFrameWithCustomTileAndPalette(windowId, FALSE, 0x78, 13);
 }
 
 static void PrintMessageWithFollowupTask(u8 taskId, u8 fontId, const u8 * str, TaskFunc func)
@@ -1638,9 +1657,9 @@ static void DrawMoveInfoLabels(void)
     if (IsPokeGlassSessionActive())
     {
         FillWindowPixelBuffer(WIN_MOVE_INFO_LABELS, 0);
-        TMCase_Print(WIN_MOVE_INFO_LABELS, FONT_SMALL, COMPOUND_STRING("Pow"), 0, 6, 0, 0, TEXT_SKIP_DRAW, COLOR_LIGHT);
-        TMCase_Print(WIN_MOVE_INFO_LABELS, FONT_SMALL, COMPOUND_STRING("Acc"), 26, 6, 0, 0, TEXT_SKIP_DRAW, COLOR_LIGHT);
-        TMCase_Print(WIN_MOVE_INFO_LABELS, FONT_SMALL, COMPOUND_STRING("PP"), 52, 6, 0, 0, TEXT_SKIP_DRAW, COLOR_LIGHT);
+        TMCase_Print(WIN_MOVE_INFO_LABELS, FONT_SMALL, COMPOUND_STRING("Pow"), 0, 3, 0, 0, TEXT_SKIP_DRAW, COLOR_LIGHT);
+        TMCase_Print(WIN_MOVE_INFO_LABELS, FONT_SMALL, COMPOUND_STRING("Acc"), 26, 3, 0, 0, TEXT_SKIP_DRAW, COLOR_LIGHT);
+        TMCase_Print(WIN_MOVE_INFO_LABELS, FONT_SMALL, COMPOUND_STRING("PP"), 52, 3, 0, 0, TEXT_SKIP_DRAW, COLOR_LIGHT);
         CopyWindowToVram(WIN_MOVE_INFO_LABELS, COPYWIN_GFX);
         return;
     }
@@ -1681,7 +1700,7 @@ static void PrintMoveInfo(u16 itemId)
             u16 value = i == 0 ? gMovesInfo[move].power : i == 1 ? gMovesInfo[move].accuracy : gMovesInfo[move].pp;
             if (itemId == ITEM_NONE || (i == 0 && value < 2) || (i == 1 && !value)) StringCopy(number, COMPOUND_STRING("-"));
             else ConvertIntToDecimalStringN(number, value, STR_CONV_MODE_LEFT_ALIGN, 3);
-            TMCase_Print(WIN_MOVE_INFO, FONT_SMALL, number, i * 26 + (24 - GetStringWidth(FONT_SMALL, number, 0)) / 2, 2, 0, 0, TEXT_SKIP_DRAW, COLOR_LIGHT);
+            TMCase_Print(WIN_MOVE_INFO, FONT_SMALL, number, i * 26 + (24 - GetStringWidth(FONT_SMALL, number, 0)) / 2, 0, 0, 0, TEXT_SKIP_DRAW, COLOR_LIGHT);
         }
         CopyWindowToVram(WIN_TITLE, COPYWIN_FULL);
         CopyWindowToVram(WIN_MOVE_INFO_LABELS, COPYWIN_FULL);

@@ -124,3 +124,13 @@ teaching/save/reset/Continue), `emulator-qol-glass-original-case-final`
 (exact original assets, glass layout/actions, Bag, eight-session cleanup), and
 `emulator-qol-glass-original-case-palettes` (final original assets and both
 palette banks) in the workspace's `v2-integration-test/results/` directory.
+
+
+The stat labels and values use adjacent 16-pixel windows, so their tilemaps do
+not cover each other. Text has room for its complete glyph height. Lower action
+and error panels draw their cyan borders inside the panel rather than over the
+stat row. Selecting Use restores the stat tilemaps before a no-Pokémon error.
+The layout regression compares every expected stat foreground pixel with the
+actual screen on the list, in action/error panels, and after returning. Evidence
+for this clipping fix is under `emulator-qol-tm-stats-clipping-final`; the earlier
+run caught the error-screen cleanup clearing part of the values.
