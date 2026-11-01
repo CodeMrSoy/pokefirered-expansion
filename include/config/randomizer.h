@@ -28,6 +28,9 @@
 
 #define RANDOMIZER_MAX_TM           ITEM_TM50
 
+// Minimum natural catch rate for randomized encounters on the pre-Pewter maps.
+#define RANDOMIZER_EARLY_MIN_CATCH_RATE 120
+
 // Vars and features
 
 // These features allow you to force enable or disable individual randomization

@@ -14,6 +14,7 @@
 #include "constants/abilities.h"
 #include "constants/moves.h"
 #include "constants/opponents.h"
+#include "constants/maps.h"
 #include "data/randomizer/ability_whitelist.h"
 #include "constants/abilities.h"
 
@@ -917,6 +918,73 @@ u16 RandomizeMon(enum RandomizerReason reason, enum RandomizerSpeciesMode mode, 
     }
 }
 
+// Geographic protection stays stable when revisiting the opening routes.
+static bool32 IsEarlyCatchMap(u8 mapNum, u8 mapGroup)
+{
+    u16 map = ((u16)mapGroup << 8) | mapNum;
+
+    switch (map)
+    {
+    case MAP_PALLET_TOWN:
+    case MAP_VIRIDIAN_CITY:
+    case MAP_PEWTER_CITY:
+    case MAP_ROUTE1:
+    case MAP_ROUTE2:
+    case MAP_ROUTE22:
+    case MAP_VIRIDIAN_FOREST:
+        return TRUE;
+    default:
+        return FALSE;
+    }
+}
+
+static bool32 IsEarlyCatchSpecies(u16 species)
+{
+    return species <= RANDOMIZER_MAX_MON && IsSpeciesPermitted(species)
+        && !IsRandomizerLegendary(species)
+        && gSpeciesInfo[species].catchRate >= RANDOMIZER_EARLY_MIN_CATCH_RATE;
+}
+
+// Prefer the selected mode's compatible species. If that pool is empty,
+// catchability takes priority over BST/evolution/legend-aware constraints.
+static u16 RandomizeEarlyCatchSpecies(u16 originalSpecies, u16 result, u32 seed)
+{
+    u16 species, count = 0, index;
+    bool32 matchMode;
+
+    if (IsEarlyCatchSpecies(result))
+        return result;
+
+    for (species = 1; species <= RANDOMIZER_MAX_MON; species++)
+        if (IsEarlyCatchSpecies(species) && IsRandomizationPossible(originalSpecies, species))
+            count++;
+
+    matchMode = count != 0;
+    if (!matchMode)
+        for (species = 1; species <= RANDOMIZER_MAX_MON; species++)
+            if (IsEarlyCatchSpecies(species))
+                count++;
+
+    // The normal data contains many eligible species, including Rattata.
+    // Avoid a zero-sized PRNG range if a custom species configuration empties it.
+    if (count == 0)
+        return SPECIES_RATTATA;
+
+    index = RandomizerRandRange(RANDOMIZER_REASON_WILD_ENCOUNTER, seed, originalSpecies, count);
+    for (species = 1; species <= RANDOMIZER_MAX_MON; species++)
+    {
+        if (IsEarlyCatchSpecies(species)
+            && (!matchMode || IsRandomizationPossible(originalSpecies, species)))
+        {
+            if (index == 0)
+                return species;
+            index--;
+        }
+    }
+
+    return SPECIES_RATTATA;
+}
+
 u16 RandomizeWildEncounter(u16 species, u8 mapNum, u8 mapGroup, enum WildPokemonArea area, u8 slot)
 {
     if (RandomizerFeatureEnabled(RANDOMIZE_WILD_MON))
@@ -925,12 +993,16 @@ u16 RandomizeWildEncounter(u16 species, u8 mapNum, u8 mapGroup, enum WildPokemon
         // This means a distinct species can appear in each encounter slot.
         MgbaPrintf(MGBA_LOG_DEBUG, "RWEnc: Randomizing!");
         u32 seed;
+        u16 result;
         seed = ((u32)mapGroup) << 24;
         seed |= ((u32)mapNum) << 16;
         seed |= ((u32)area) << 8;
         seed |= slot;
 
-        return RandomizeMon(RANDOMIZER_REASON_WILD_ENCOUNTER, GetRandomizerOption(RANDOMIZER_OPTION_SPECIES_MODE), seed, species);
+        result = RandomizeMon(RANDOMIZER_REASON_WILD_ENCOUNTER, GetRandomizerOption(RANDOMIZER_OPTION_SPECIES_MODE), seed, species);
+        if (IsEarlyCatchMap(mapNum, mapGroup))
+            result = RandomizeEarlyCatchSpecies(species, result, seed);
+        return result;
     }
     
     MgbaPrintf(MGBA_LOG_DEBUG, "RWEnc: Seed 0x%08X Species %d", GetRandomizerSeed(), species);
