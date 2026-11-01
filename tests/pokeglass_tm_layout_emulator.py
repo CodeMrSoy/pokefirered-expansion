@@ -1,4 +1,4 @@
-"""Native TM layout: dense list, scrolling, stat updates, actions and VRAM bounds."""
+"""Glass UI around the original TM case: dense list, scrolling, stat updates, actions and VRAM bounds."""
 import pathlib, struct
 import numpy as np
 setup=pathlib.Path(__file__).with_name('avatar_wardrobe_emulator.py')
@@ -16,15 +16,18 @@ def windows():
    assert end<=0x370,('Tablet tile overwrite',i,start,end)
    for j,a,b in ranges:assert end<=a or start>=b,('Overlapping graphics',i,j)
    ranges.append((i,start,end))
-windows();m.snap('tm-native-dense')
-panel=np.asarray(m.screen)[16:80,90:220]
-assert ((panel[:,:,0]>220)&(panel[:,:,1]>220)&(panel[:,:,2]>130)).sum()>1000,'Native cream panel missing'
+windows();m.snap('tm-glass-original-dense')
+panel=np.asarray(m.screen)[40:95,190:215]
+assert ((panel[:,:,2]>panel[:,:,0])&(panel[:,:,0]<110)).sum()>500,'Glass list panel missing'
 for _ in range(16):m.press(5,25)
-m.snap('tm-native-protect');windows()
+m.snap('tm-glass-original-protect');windows()
 for _ in range(16):m.press(4,25)
-m.press(8,60);wait_task('Task_ContextMenu_HandleInput');windows();m.snap('tm-native-context')
-m.press(0,90);wait_task('Task_HandleListInput');m.snap('tm-native-context-return')
-m.press(8,60);wait_task('Task_ContextMenu_HandleInput');m.press(8,90);m.snap('tm-native-no-party');windows()
+m.press(8,60);wait_task('Task_ContextMenu_HandleInput');windows();m.snap('tm-glass-original-context')
+for base in (0x5B,0x78):
+ data=m.read(0x06000000+base*32,9*32)
+ assert all((v&15) in (4,6) and (v>>4) in (4,6) for v in data),'Glass action border replaced'
+m.press(0,90);wait_task('Task_HandleListInput');m.snap('tm-glass-original-context-return')
+m.press(8,60);wait_task('Task_ContextMenu_HandleInput');m.press(8,90);m.snap('tm-glass-original-no-party');windows()
 m.press(8,90);wait_task('Task_HandleListInput');m.press(0,180);wait_task('Task_PokeGlassHub');m.press(0,90)
 assert m.read(m.symbols['sLockFieldControls'],1)==b'\x00'
-print('PASS dense TM list, scrolling, Protect stat update, native action frames, context cancel, no-party error, disjoint VRAM and field return',flush=True)
+print('PASS dense TM list, scrolling, Protect stat update, glass action frames, context cancel, no-party error, disjoint VRAM and field return',flush=True)

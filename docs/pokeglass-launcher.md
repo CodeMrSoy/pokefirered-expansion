@@ -83,35 +83,44 @@ For the current overhaul's executed checks and limitations, see
 
 ## TM Case app
 
-The TM Case tile opens the regular case inside the PokéGlass tablet border,
-using the original gold case picture, type-colored discs, native list/stat
-panels, and the original insertion/ejection animation. The launcher icon is a
-disc again. B returns to the selected TM Case tile on page two. Trainer Card,
-Save and Options remain the final three apps.
+TM Case keeps the original gold case picture, type-colored discs and native
+insertion/ejection animation. Its surrounding UI matches the other PokéGlass
+apps: translucent field backdrop, cyan panel rules, compact light text and
+matching context/error menus. The selected move and type share the header;
+Power (Pow), Accuracy (Acc) and PP sit beneath the case in three columns. The
+right panel holds the move list and quantities; descriptions wrap into the
+lower panel. The launcher still uses a disc icon. Trainer Card, Save and Options
+remain the final three apps.
 
-The Bag and registered-item routes remain available with their existing return
-callbacks. Teaching and cancelling the Pokémon choice return to the case;
-closing it returns to PokéGlass. Native TM consumption and flash saves are
-unchanged. No SD-card artwork is loaded by the active TM screen. The experimental
-art and its generator remain saved as unused assets for future reference.
+The original case pixels come from the native TM case tilemap and artwork.
+`tools/compile_pokeglass_native_tm_case.py` removes only the surrounding old
+screen background and encodes those pixels in
+`src/data/poke_glass_native_tm_case.h`. The original male/female palette bank
+is loaded directly from the native assets. The case and disc share an eight-pixel
+horizontal shift to fit the bezel; native vertical positions and 0/10/20-pixel
+swap offsets are retained. The native case layer stays in front of the sinking
+disc. Empty/CLOSE hides it only after insertion finishes.
 
-The native case implementation is restored from the direct-app baseline
-`b611c0a0`; later launcher ordering, Bag styling and other apps are retained. The regular
-list starts at its original top row so a full list and CLOSE fit above the lower
-panel border inside the tablet.
-`tests/pokeglass_tm_case_emulator.py` compares the loaded disc graphics with the
-original compressed ROM asset and checks the gold case, native 0/10/20-pixel
-swap offsets, CLOSE/reopen, rapid scrolling and field return.
-`tests/pokeglass_tm_layout_emulator.py` covers the regular list, scrolling,
-context and no-party message, and window tile bounds.
-`tests/pokeglass_tm_app_emulator.py` checks empty access, compatible teaching,
-cancellation, real TM consumption, repeated entry and flash save/reset/Continue.
-The previous `pokeglass_tm_cards_emulator.py` path now delegates to the regular
-case regression for compatibility with older suite commands.
+Bag and registered-item routes keep their callbacks. Teaching/cancelling the
+Pokémon choice returns to the case; B returns to its selected launcher tile.
+Outside a PokéGlass session, the original regular UI remains. No experimental
+SD-card art is loaded. Saved experiments remain as unused reference assets.
 
-Build and emulator evidence for this restoration is saved under
-`v2-integration-test/results/emulator-qol-restore-native-tm` in the workspace. Final native layout/animation reruns are under
-`emulator-qol-restore-native-tm-final` (original assets/animation) and
-`emulator-qol-restore-native-tm-verified` (native layout/actions). Earlier
-harness failures sampled the green frame rather than the cream panel or tried
-to run a field-script helper inside the case; these are not counted as passes.
+The case uses BG2 art tiles at 0xCC20..0xD080 and a transparent tile at 0xCC00,
+separate from text/panel/frame tiles, the captured field and the BG2 tilemap at
+0xE800. No persistent EWRAM or new heap allocation is needed. Build usage is
+238,828 bytes EWRAM; the local build log records the final ROM size.
+
+`tests/pokeglass_tm_case_emulator.py` compares the disc data with the original
+ROM asset, compares every opaque case pixel and both palettes with the native
+assets, and checks native animation, CLOSE/reopen, rapid scrolling and return.
+`tests/pokeglass_tm_layout_emulator.py` covers glass panels and action borders,
+a dense list, scrolling, context/no-party handling and disjoint window graphics.
+The teaching/Continue, Bag actions and repeated-session suites cover the normal
+callbacks, item consumption and resource cleanup.
+
+Evidence is saved under `emulator-qol-glass-original-case` (animation and real
+teaching/save/reset/Continue), `emulator-qol-glass-original-case-final`
+(exact original assets, glass layout/actions, Bag, eight-session cleanup), and
+`emulator-qol-glass-original-case-palettes` (final original assets and both
+palette banks) in the workspace's `v2-integration-test/results/` directory.
