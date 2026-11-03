@@ -169,6 +169,14 @@ void CapturePokeGlassBackdrop(void)
                 {
                     u32 sx = (x + scrollX) & widthMask;
                     u16 tile = map[row + (sx >> 8) * 1024 + ((sx & 255) >> 3)];
+                    // Field tilesets use palettes 0-12. The remaining slots
+                    // belong to text/windows, which must not be baked into
+                    // the glass scenery even when they share a field BG.
+                    if ((tile >> 12) >= 13)
+                    {
+                        x += 8 - (sx & 7) < 240 - x ? 8 - (sx & 7) : 240 - x;
+                        continue;
+                    }
                     u32 py = tile & 0x800 ? 7 - (sy & 7) : sy & 7;
                     u32 count = 8 - (sx & 7), px = sx & 7;
                     const u8 *gfx = tiles + (tile & 1023) * 32 + py * 4;
