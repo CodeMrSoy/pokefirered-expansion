@@ -1259,7 +1259,8 @@ void ShowPokemonSummaryScreen(struct Pokemon * party, u8 cursorPos, u8 lastIdx, 
     sMonSummaryScreen->loadBgGfxStep = 0;
     sMonSummaryScreen->spriteCreationStep = 0;
 
-    sMonSummaryScreen->whichBgLayerToTranslate = (sMonSummaryScreen->curPageIndex == PSS_PAGE_SKILLS);
+    sMonSummaryScreen->whichBgLayerToTranslate = (sMonSummaryScreen->curPageIndex == PSS_PAGE_SKILLS
+        || sMonSummaryScreen->curPageIndex == PSS_PAGE_MOVES);
     sMonSummaryScreen->skillsPageBgNum = 2;
     sMonSummaryScreen->infoAndMovesPageBgNum = 1;
     sMonSummaryScreen->flippingPages = FALSE;
@@ -2083,34 +2084,23 @@ static void PokeSum_UpdateBgPriorityForPageFlip(u8 setBg0Priority, u8 keepBg1Bg2
 
 static void PokeSum_CopyNewBgTilemapBeforePageFlip_2(void)
 {
-    u8 newPage;
+    // The visible pages no longer have consecutive enum values: Info skips
+    // Skills. Load the actual destination into the incoming slide layer.
+    u8 bg = sMonSummaryScreen->whichBgLayerToTranslate ? 2 : 1;
 
-    if (sMonSummaryScreen->pageFlipDirection == 1)
-        newPage = sMonSummaryScreen->curPageIndex - 1;
-    else
-        newPage = sMonSummaryScreen->curPageIndex + 1;
-
-    switch (newPage)
+    switch (sMonSummaryScreen->curPageIndex)
     {
     case PSS_PAGE_INFO:
-        CopyToBgTilemapBuffer(sMonSummaryScreen->infoAndMovesPageBgNum, gSummaryScreen_PageSkills_Tilemap, 0, 0);
+        CopyToBgTilemapBuffer(bg, sMonSummaryScreen->isEgg ? gSummaryScreen_PageEgg_Tilemap : gSummaryScreen_PageInfo_Tilemap, 0, 0);
         break;
     case PSS_PAGE_SKILLS:
-        if (sMonSummaryScreen->pageFlipDirection == 1)
-            CopyToBgTilemapBuffer(sMonSummaryScreen->skillsPageBgNum, gSummaryScreen_PageMoves_Tilemap, 0, 0);
-        else
-            CopyToBgTilemapBuffer(sMonSummaryScreen->skillsPageBgNum, gSummaryScreen_PageInfo_Tilemap, 0, 0);
-
+        CopyToBgTilemapBuffer(bg, gSummaryScreen_PageSkills_Tilemap, 0, 0);
         break;
     case PSS_PAGE_MOVES:
-        if (sMonSummaryScreen->pageFlipDirection == 1)
-            CopyToBgTilemapBuffer(sMonSummaryScreen->infoAndMovesPageBgNum, gSummaryScreen_PageMovesInfo_Tilemap, 0, 0);
-        else
-            CopyToBgTilemapBuffer(sMonSummaryScreen->infoAndMovesPageBgNum, gSummaryScreen_PageSkills_Tilemap, 0, 0);
-
+        CopyToBgTilemapBuffer(bg, gSummaryScreen_PageMoves_Tilemap, 0, 0);
         break;
     case PSS_PAGE_MOVES_INFO:
-        CopyToBgTilemapBuffer(sMonSummaryScreen->skillsPageBgNum, gSummaryScreen_PageMoves_Tilemap, 0, 0);
+        CopyToBgTilemapBuffer(bg, gSummaryScreen_PageMovesInfo_Tilemap, 0, 0);
         break;
     }
 }
@@ -2199,6 +2189,11 @@ static void CB2_SetUpPSS(void)
             {
                 CopyToBgTilemapBuffer(sMonSummaryScreen->skillsPageBgNum, gSummaryScreen_PageMoves_Tilemap, 0, 0);
                 CopyToBgTilemapBuffer(sMonSummaryScreen->infoAndMovesPageBgNum, gSummaryScreen_PageMovesInfo_Tilemap, 0, 0);
+            }
+            else if (sMonSummaryScreen->curPageIndex == PSS_PAGE_MOVES)
+            {
+                CopyToBgTilemapBuffer(sMonSummaryScreen->skillsPageBgNum, gSummaryScreen_PageInfo_Tilemap, 0, 0);
+                CopyToBgTilemapBuffer(sMonSummaryScreen->infoAndMovesPageBgNum, gSummaryScreen_PageMoves_Tilemap, 0, 0);
             }
             else
             {
@@ -2798,7 +2793,8 @@ static void PokeSum_Setup_InitGpu(void)
     // Skills normally becomes the foreground after a page flip. Direct entry
     // must set that layer order, scroll offset, and page-flip parity before
     // its first frame is shown.
-    if (sMonSummaryScreen->curPageIndex == PSS_PAGE_SKILLS)
+    if (sMonSummaryScreen->curPageIndex == PSS_PAGE_SKILLS
+     || sMonSummaryScreen->curPageIndex == PSS_PAGE_MOVES)
     {
         SetBgAttribute(1, BG_ATTR_PRIORITY, 1);
         SetBgAttribute(2, BG_ATTR_PRIORITY, 2);
