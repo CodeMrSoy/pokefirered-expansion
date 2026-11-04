@@ -58,6 +58,13 @@ void ReleasePokeGlassBackdrop(void)
     sFieldBackdrop = NULL;
 }
 
+void InvalidatePokeGlassBackdropForHeapReset(void)
+{
+    // The reset reclaims every allocation, even during a launcher session.
+    // Never let a later window reuse this memory through a stale pointer.
+    sFieldBackdrop = NULL;
+}
+
 // Capture only for screens that replace the field's VRAM. Walk tile rows,
 // rather than resolving three tilemaps independently for every screen pixel.
 static u8 ClosestBackdropColor(u16 color)
@@ -134,13 +141,19 @@ static void CaptureBackdropSprites(u32 *counts)
 
 void CapturePokeGlassBackdrop(void)
 {
-    u8 *pixels = AllocZeroed(240 * 160);
+    u8 *pixels;
     u32 counts[512] = {0};
     u8 remap[256];
     u32 x, y, i, j;
     s32 priority, bg;
     u16 display = GetGpuReg(REG_OFFSET_DISPCNT);
     const u8 *vram = (const u8 *)VRAM;
+    // Native app returns can leave tablet/window graphics in field VRAM.
+    // Keep the original field snapshot for the entire launcher visit instead
+    // of capturing those graphics back into the scenery on the next app.
+    if (sFieldBackdrop != NULL && IsPokeGlassSessionActive())
+        return;
+    pixels = AllocZeroed(240 * 160);
     if (pixels == NULL) return;
     if (sFieldBackdrop == NULL) sFieldBackdrop = Alloc(240 * 160 / 2);
     if (sFieldBackdrop == NULL) { Free(pixels); return; }
@@ -1069,9 +1082,9 @@ static bool8 OpenTabletWindow(void)
 void ShowPokeGlassHub(bool8 ignoreBPress)
 {
     u8 taskId;
-    if (!sTabletActive && (sFieldBackdrop == NULL
-     || sBackdropX != gSaveBlock1Ptr->pos.x || sBackdropY != gSaveBlock1Ptr->pos.y
-     || sBackdropGroup != gSaveBlock1Ptr->location.mapGroup || sBackdropMap != gSaveBlock1Ptr->location.mapNum))
+    if (sFieldBackdrop == NULL || (!sTabletActive && (
+        sBackdropX != gSaveBlock1Ptr->pos.x || sBackdropY != gSaveBlock1Ptr->pos.y
+     || sBackdropGroup != gSaveBlock1Ptr->location.mapGroup || sBackdropMap != gSaveBlock1Ptr->location.mapNum)))
         CapturePokeGlassBackdrop();
     if (!OpenTabletWindow())
         return;
@@ -1943,6 +1956,9 @@ void ShowPokeGlassMap(void)
 void PreparePokeGlassReturn(void)
 {
     if (!sTabletActive || !sTabletNative) return;
+    // The field is rebuilt now, and the heap reset invalidated its old cache.
+    // Capture before OpenTabletWindow installs any new tablet graphics.
+    if (sFieldBackdrop == NULL) CapturePokeGlassBackdrop();
     if (!OpenTabletWindow()) return;
     DrawTabletShell((u8 *)GetWindowAttribute(sHubWindow, WINDOW_TILE_DATA));
     PutWindowTilemap(sHubWindow);

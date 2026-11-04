@@ -2279,7 +2279,7 @@ static void DoMapLoadLoop(u8 *state)
 
 static void MoveSaveBlocks_ResetHeap_(void)
 {
-    ReleasePokeGlassBackdrop();
+    InvalidatePokeGlassBackdropForHeapReset();
     MoveSaveBlocks_ResetHeap();
 }
 

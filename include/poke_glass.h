@@ -28,6 +28,7 @@ void SetPokeGlassBlend(bool8 field);
 void CapturePokeGlassBackdrop(void);
 void LoadPokeGlassBackdrop(void);
 void ReleasePokeGlassBackdrop(void);
+void InvalidatePokeGlassBackdropForHeapReset(void);
 void ShowPokeGlassHub(bool8 ignoreBPress);
 void ShowPokeGlassStats(void);
 void ShowPokeGlassStorage(void);

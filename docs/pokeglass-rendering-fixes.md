@@ -43,3 +43,29 @@ Workspace logs are under `v2-integration-test/results/` with names ending in
 `20261104`. Early backdrop-test attempts placed the overlay off-screen because
 of camera scrolling; the final test accounts for that scroll and correctly
 fails before the fix.
+
+## Follow-up: stale heap allocation behind the Bag
+
+The capture-palette filter alone did not resolve the player's remaining text
+fragments. Repeated real Party/Stats/Pokédex/Bag visits reproduced entire UI
+fragments in the Bag scenery. The captured bytes in VRAM matched the cached
+bytes, ruling out a later Bag upload overwriting them in this reproduction.
+
+Returning to the overworld relocates save blocks using `gHeap`, then resets the
+allocator. `ReleasePokeGlassBackdrop` intentionally retained the snapshot during
+a launcher session, leaving its pointer aimed at an allocation that no longer
+existed. New window allocations could reuse that memory.
+
+The overworld heap-reset boundary now explicitly invalidates the snapshot.
+Party return captures the rebuilt field before installing the tablet window;
+other native returns capture it when reopening the hub. An existing valid
+snapshot is reused between apps rather than recapturing UI graphics. This adds
+no persistent buffers or EWRAM/IWRAM usage.
+
+`tests/pokeglass_backdrop_session_emulator.py` exercises three complete cycles
+of Party, Stats, Pokédex, Map and Bag. It checks the snapshot allocation's live
+heap header and separation from every active window buffer, checks Bag VRAM
+against the snapshot, and verifies release on close and fresh capture on a
+different map. The current published ROM fails this regression after the first
+Party return. The fixed ROM passes all fifteen visits, and its Bag screenshots
+were visually checked after repeated cycles.
