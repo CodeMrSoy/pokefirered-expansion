@@ -1,7 +1,7 @@
 {
   "id": "MAP_HAVORA_WEAVER_HOUSE",
   "name": "Havora_WeaverHouse",
-  "layout": "LAYOUT_HOUSE3",
+  "layout": "LAYOUT_HOUSE2",
   "music": "MUS_SEVII_123",
   "region_map_section": "MAPSEC_HAVORA_CITY",
   "requires_flash": false,
@@ -45,20 +45,6 @@
     }
   ],
   "warp_events": [
-    {
-      "x": 4,
-      "y": 7,
-      "elevation": 0,
-      "dest_map": "MAP_HAVORA_MARKET",
-      "dest_warp_id": "1"
-    },
-    {
-      "x": 4,
-      "y": 7,
-      "elevation": 0,
-      "dest_map": "MAP_HAVORA_MARKET",
-      "dest_warp_id": "1"
-    },
     {
       "x": 4,
       "y": 7,

@@ -1,7 +1,7 @@
 {
   "id": "MAP_HAVORA_FISHER_HOUSE",
   "name": "Havora_FisherHouse",
-  "layout": "LAYOUT_HOUSE3",
+  "layout": "LAYOUT_HOUSE2",
   "music": "MUS_SEVII_123",
   "region_map_section": "MAPSEC_HAVORA_CITY",
   "requires_flash": false,
@@ -59,20 +59,6 @@
     }
   ],
   "warp_events": [
-    {
-      "x": 4,
-      "y": 7,
-      "elevation": 0,
-      "dest_map": "MAP_HAVORA_MARKET",
-      "dest_warp_id": "2"
-    },
-    {
-      "x": 4,
-      "y": 7,
-      "elevation": 0,
-      "dest_map": "MAP_HAVORA_MARKET",
-      "dest_warp_id": "2"
-    },
     {
       "x": 4,
       "y": 7,
