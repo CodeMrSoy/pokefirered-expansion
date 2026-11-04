@@ -49,7 +49,7 @@ CinnabarIsland_Gym_EventScript_Blaine::
 	famechecker FAMECHECKER_BLAINE, FCPICKSTATE_COLORED, UpdatePickStateFromSpecialVar8005
 	trainerbattle_single TRAINER_LEADER_BLAINE, CinnabarIsland_Gym_Text_BlaineIntro, CinnabarIsland_Gym_Text_BlaineDefeat, CinnabarIsland_Gym_EventScript_DefeatedBlaine, NO_MUSIC
 	goto_if_unset FLAG_GOT_TM38_FROM_BLAINE, CinnabarIsland_Gym_EventScript_GiveTM38
-	msgbox CinnabarIsland_Gym_Text_BlainePostBattle
+	gymtmmsg CinnabarIsland_Gym_Text_BlainePostBattle, ITEM_TM38, TRAINER_LEADER_BLAINE
 	release
 	end
 
@@ -66,11 +66,12 @@ CinnabarIsland_Gym_EventScript_DefeatedBlaine::
 
 CinnabarIsland_Gym_EventScript_GiveTM38::
 	msgbox CinnabarIsland_Gym_Text_ExplainVolcanoBadge
-	checkitemspace ITEM_TM38
+	preparegymtm ITEM_TM38, TRAINER_LEADER_BLAINE
+	checkitemspace VAR_0x8008
 	goto_if_eq VAR_RESULT, FALSE, CinnabarIsland_Gym_EventScript_NoRoomForTM38
-	giveitem_msg CinnabarIsland_Gym_Text_ReceivedTM38FromBlaine, ITEM_TM38
+	givegymtm CinnabarIsland_Gym_Text_ReceivedTM38FromBlaine
 	setflag FLAG_GOT_TM38_FROM_BLAINE
-	msgbox CinnabarIsland_Gym_Text_FireBlastIsUltimateFireMove
+	gymtmmsg CinnabarIsland_Gym_Text_FireBlastIsUltimateFireMove, ITEM_TM38, TRAINER_LEADER_BLAINE
 	release
 	end
 

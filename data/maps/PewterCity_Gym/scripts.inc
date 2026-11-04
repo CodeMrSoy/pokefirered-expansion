@@ -22,11 +22,12 @@ PewterCity_Gym_EventScript_DefeatedBrock::
 
 PewterCity_Gym_EventScript_GiveTM39::
 	msgbox PewterCity_Gym_Text_TakeThisWithYou
-	checkitemspace ITEM_TM39
+	preparegymtm ITEM_TM39, TRAINER_LEADER_BROCK
+	checkitemspace VAR_0x8008
 	goto_if_eq VAR_RESULT, FALSE, PewterCity_Gym_EventScript_NoRoomForTM39
-	giveitem_msg PewterCity_Gym_Text_ReceivedTM39FromBrock, ITEM_TM39
+	givegymtm PewterCity_Gym_Text_ReceivedTM39FromBrock
 	setflag FLAG_GOT_TM39_FROM_BROCK
-	msgbox PewterCity_Gym_Text_ExplainTM39
+	gymtmmsg PewterCity_Gym_Text_ExplainTM39, ITEM_TM39, TRAINER_LEADER_BROCK
 	release
 	end
 

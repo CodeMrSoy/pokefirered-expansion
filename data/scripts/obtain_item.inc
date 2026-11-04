@@ -257,3 +257,7 @@ EventScript_NoCaseForHiddenCoins::
 	setvar VAR_RESULT, 0
 	releaseall
 	end
+
+Text_RandomizedGymTMAdvice::
+	.string "Try the move in {STR_VAR_1}.\n"
+	.string "Your TM CASE has its details.$"

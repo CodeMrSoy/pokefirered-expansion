@@ -2042,7 +2042,13 @@ u8 CreateNPCTrainerPartyFromTrainer(struct Pokemon *party, const struct Trainer 
             CreateMon(&party[i], species, partyData[monIndex].lvl, 0, TRUE, personalityValue, otIdType, fixedOtId);
             SetMonData(&party[i], MON_DATA_HELD_ITEM, &partyData[monIndex].heldItem);
 
-            CustomTrainerPartyAssignMoves(&party[i], &partyData[monIndex]);
+            // CreateMon already chose level-appropriate moves from this species'
+            // current (possibly randomized) learnset. Do not overwrite them with
+            // the original trainer's authored moves in a randomized party.
+            #if RANDOMIZER_AVAILABLE
+            if (!RandomizerTrainerUsesLearnset(seed))
+            #endif
+                CustomTrainerPartyAssignMoves(&party[i], &partyData[monIndex]);
             SetMonData(&party[i], MON_DATA_IVS, &(partyData[monIndex].iv));
             if (partyData[monIndex].ev != NULL)
             {
