@@ -1039,6 +1039,26 @@ bool32 IsRandomizationPossible(u16 originalSpecies, u16 targetSpecies)
     return TRUE;
 }
 
+// Keep gifts stable per leader, including full-Bag retries and save/reload.
+// 0x8008 is the selected TM; 0x8009 starts as the trainer ID and returns the mode.
+void RandomizeGymTM_NativeCall(struct ScriptContext *ctx)
+{
+    u16 trainerId = gSpecialVar_0x8009;
+    gSpecialVar_0x8009 = RandomizerFeatureEnabled(RANDOMIZE_FIELD_ITEMS);
+    if (gSpecialVar_0x8009)
+        gSpecialVar_0x8008 = RandomizeFoundItem(gSpecialVar_0x8008, 0, 0, trainerId);
+}
+
+bool32 RandomizerTrainerUsesLearnset(u16 trainerId)
+{
+    // These crews intentionally teach fixed partner interactions.
+    if (trainerId >= TRAINER_HAVORA_DOCK_CREW && trainerId <= TRAINER_HAVORA_FIRST_MATE)
+        return FALSE;
+
+    return RandomizerFeatureEnabled(RANDOMIZE_TRAINER_MON)
+        || RandomizerFeatureEnabled(RANDOMIZE_LEARNSET);
+}
+
 u16 RandomizeTrainerMon(u16 trainerId, u8 slot, u8 totalMons, u16 species)
 {
     if (RandomizerFeatureEnabled(RANDOMIZE_TRAINER_MON))

@@ -25,11 +25,12 @@ ViridianCity_Gym_EventScript_DefeatedGiovanni::
 
 ViridianCity_Gym_EventScript_GiveTM26::
 	msgbox ViridianCity_Gym_Text_ExplainEarthBadgeTakeThis
-	checkitemspace ITEM_TM26
+	preparegymtm ITEM_TM26, TRAINER_LEADER_GIOVANNI
+	checkitemspace VAR_0x8008
 	goto_if_eq VAR_RESULT, FALSE, ViridianCity_Gym_EventScript_NoRoomForTM26
-	giveitem_msg ViridianCity_Gym_Text_ReceivedTM26FromGiovanni, ITEM_TM26
+	givegymtm ViridianCity_Gym_Text_ReceivedTM26FromGiovanni
 	setflag FLAG_GOT_TM26_FROM_GIOVANNI
-	msgbox ViridianCity_Gym_Text_ExplainTM26
+	gymtmmsg ViridianCity_Gym_Text_ExplainTM26, ITEM_TM26, TRAINER_LEADER_GIOVANNI
 	release
 	end
 

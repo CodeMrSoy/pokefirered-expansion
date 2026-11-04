@@ -227,11 +227,12 @@ VermilionCity_Gym_EventScript_ShowOaksAide::
 
 VermilionCity_Gym_EventScript_GiveTM34::
 	msgbox VermilionCity_Gym_Text_ExplainThunderBadgeTakeThis
-	checkitemspace ITEM_TM34
+	preparegymtm ITEM_TM34, TRAINER_LEADER_LT_SURGE
+	checkitemspace VAR_0x8008
 	goto_if_eq VAR_RESULT, FALSE, VermilionCity_Gym_EventScript_NoRoomForTM34
-	giveitem_msg VermilionCity_Gym_Text_ReceivedTM34FromLtSurge, ITEM_TM34
+	givegymtm VermilionCity_Gym_Text_ReceivedTM34FromLtSurge
 	setflag FLAG_GOT_TM34_FROM_SURGE
-	msgbox VermilionCity_Gym_Text_ExplainTM34
+	gymtmmsg VermilionCity_Gym_Text_ExplainTM34, ITEM_TM34, TRAINER_LEADER_LT_SURGE
 	release
 	end
 

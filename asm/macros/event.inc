@@ -2335,3 +2335,37 @@
 	.2byte \wait
 	.endm
 
+
+
+	@ Resolve a Gym TM before checking space. 0x8008 survives receipt messages.
+	.macro preparegymtm item:req, trainer:req
+	setvar VAR_0x8008, \item
+	setvar VAR_0x8009, \trainer
+#if RANDOMIZER_AVAILABLE == TRUE
+	callnative RandomizeGymTM_NativeCall
+#else
+	setvar VAR_0x8009, FALSE
+#endif
+	.endm
+
+	@ Randomized receipts use the actual item name and description.
+	.macro givegymtm msg:req
+	goto_if_eq VAR_0x8009, TRUE, .Lgymtm_random\@
+	giveitem_msg \msg, VAR_0x8008
+	goto .Lgymtm_given\@
+.Lgymtm_random\@:
+	giveitem VAR_0x8008
+.Lgymtm_given\@:
+	.endm
+
+	@ Avoid describing the vanilla move after giving a different TM.
+	.macro gymtmmsg text:req, item:req, trainer:req
+	preparegymtm \item, \trainer
+	goto_if_eq VAR_0x8009, TRUE, .Lgymtm_advice\@
+	msgbox \text
+	goto .Lgymtm_explained\@
+.Lgymtm_advice\@:
+	bufferitemname STR_VAR_1, VAR_0x8008
+	msgbox Text_RandomizedGymTMAdvice
+.Lgymtm_explained\@:
+	.endm
