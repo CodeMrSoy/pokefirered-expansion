@@ -4396,8 +4396,8 @@
     {
       "id": "LAYOUT_CORVALA_TOWN",
       "name": "Corvala_Town_Layout",
-      "width": 56,
-      "height": 60,
+      "width": 80,
+      "height": 64,
       "border_width": 2,
       "border_height": 2,
       "primary_tileset": "gTileset_General",

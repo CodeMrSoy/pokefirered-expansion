@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Check actual packed GBA tiles, palette budgets, warp behavior and preview fidelity."""
 from pathlib import Path
+from collections import deque
 import struct,json,sys
 from PIL import Image,ImageChops
 R=Path(__file__).resolve().parents[2];sys.path.insert(0,str(R/'tools/havora'))
@@ -29,12 +30,19 @@ assert ImageChops.difference(out,ref).getbbox() is None,'preview does not match 
 m=json.loads((R/'data/maps/Corvala_Town/map.json').read_text());door=m['warp_events'][0]
 assert [door['x'],door['y']]==manifest['landmarks']['center_door']
 assert blocks[door['y']*w+door['x']]&1023==0x62
-assert len(set(manifest['walkable_cells_by_tide']))==3
+assert door['elevation']==3 and door['dest_map']=='MAP_CORVALA_TOWN_POKEMON_CENTER_1_F'
+interior=json.loads((R/'data/maps/Corvala_Town_PokemonCenter_1F/map.json').read_text())
+assert interior['warp_events'][int(door['dest_warp_id'])]['dest_map']=='MAP_CORVALA_TOWN'
+assert all(v['dest_warp_id']=='0' for v in interior['warp_events'] if v['dest_map']=='MAP_CORVALA_TOWN')
 print('PASS: packed tile references, palette precision, tile budget, Center door and exact preview fidelity.')
 
 # Primary references must remain live animated graphics, not copies in static secondary slots.
 layout=next(l for l in json.loads((R/'data/layouts/layouts.json').read_text())['layouts'] if l['id']=='LAYOUT_CORVALA_TOWN')
 assert layout['primary_tileset']=='gTileset_General'
+assert [layout['width'],layout['height']]==[w,h]==[80,64]
+assert layout['secondary_tileset']=='gTileset_Corvala'
+assert (w+15)*(h+14)<=0x2800,'engine virtual map buffer exceeded'
+assert (d/'metatile_attributes.bin').stat().st_size==manifest['metatiles']*4
 headers=(R/'src/data/tilesets/headers.h').read_text().split('const struct Tileset gTileset_General =',1)[1].split('};',1)[0]
 assert '.callback = InitTilesetAnim_General' in headers
 shore_ids=set(manifest['shoreline']['generated_metatiles'])
@@ -53,12 +61,67 @@ for name,source in manifest['house_sources'].items():
  assert source['wall_start_row'] in [3,4]
 print('PASS: native material references and current house entrances validated.')
 
-# Authoring-state files preserve route changes for a future runtime controller.
+# Recompute reachability from the installed binary, not recorded generator counts.
+def flood(data,width,height,start):
+ assert not data[start[1]*width+start[0]]&0xc00
+ seen={start};q=deque(seen)
+ while q:
+  x,y=q.popleft()
+  for xx,yy in [(x-1,y),(x+1,y),(x,y-1),(x,y+1)]:
+   if 0<=xx<width and 0<=yy<height and (xx,yy) not in seen and not data[yy*width+xx]&0xc00 and data[yy*width+xx]>>12==3:
+    seen.add((xx,yy));q.append((xx,yy))
+ return seen
+seen=flood(blocks,w,h,tuple(manifest['landmarks']['west_exit']))
+for name,p in manifest['landmarks'].items():assert tuple(p) in seen,('unreachable landmark',name,p)
+for name,x,y in manifest['buildings']:
+ if name in manifest['house_doors']:
+  column=manifest['house_doors'][name]
+  assert (x+column,y+6) in seen,('house approach',name,x,y)
+  assert (x+column,y+5) in seen,('house door',name,x,y)
+assert all(blocks[y*w+x]>>12==3 for x,y in seen),'unexpected walking elevation'
+assert len(seen)==manifest['walkable_cells']
+heal=json.loads((R/'src/data/heal_locations.json').read_text())
+landing=next(v for v in heal['heal_locations'] if v['id']=='HEAL_LOCATION_QUANTUM_COASTAL_CITY')
+assert landing['map']=='MAP_CORVALA_TOWN' and (landing['x'],landing['y'])==(door['x'],door['y']+1)
+assert (landing['x'],landing['y']) in seen,'Fly landing is not reachable'
+assert blocks[22*w+65]&1023==0xa1 and blocks[23*w+65]&1023==0xa9
+assert blocks[23*w+65]&0xc00,'unfinished cave doorway must remain blocked'
+assert manifest['geography']['deck_cells']<manifest['geography']['previous_deck_cells']*.25
+print('PASS: actual LOW collision/elevation routes, seven house approaches, cave and lighthouse access.')
+
+# Verify reciprocal directions, offsets and *walkable* seam cells on both maps.
+layouts=json.loads((R/'data/layouts/layouts.json').read_text())['layouts']
+opposite={'left':'right','right':'left'}
+for c in m['connections']:
+ other_name={'MAP_VIDRA_COASTAL_ROAD':'Vidra_CoastalRoad','MAP_VIDRA_HARBOR_ROAD':'Vidra_HarborRoad'}[c['map']]
+ other=json.loads((R/f'data/maps/{other_name}/map.json').read_text())
+ reciprocal=next(v for v in other['connections'] if v['map']=='MAP_CORVALA_TOWN')
+ assert reciprocal['direction']==opposite[c['direction']] and reciprocal['offset']==-c['offset']
+ ol=next(v for v in layouts if v['id']==other['layout']);ow,oh=ol['width'],ol['height']
+ ob=struct.unpack('<'+'H'*ow*oh,(R/ol['blockdata_filepath']).read_bytes())
+ ox=ow-1 if c['direction']=='left' else 0;tx=0 if c['direction']=='left' else w-1
+ crossed=0
+ for oy in [11,12]:
+  ty=oy+c['offset'];a=blocks[ty*w+tx];b=ob[oy*ow+ox]
+  assert (tx,ty) in seen and not (a|b)&0xc00,(other_name,'blocked seam',ty,oy)
+  assert a>>12==b>>12==3
+  other_seen=flood(ob,ow,oh,(ox,oy))
+  goal=(11,0) if other_name=='Vidra_CoastalRoad' else (23,11)
+  assert goal in other_seen,(other_name,'route onward severed')
+  crossed+=1
+ assert crossed==2
+print('PASS: west Coastal Road/Eldervale route and east Harbor Road route remain reciprocal and walkable.')
+primary_attrs=struct.unpack('<640I',(R/'data/tilesets/primary/general/metatile_attributes.bin').read_bytes())
+assert (primary_attrs[0x12b]>>9)&2,'native sea lacks water terrain'
+sea=[v for v in blocks if v&1023==0x12b]
+assert sea and all(v>>12==1 and not v&0xc00 for v in sea),'Surf requires elevation 1, collision 0 water'
+print('PASS: native Surf-compatible water elevations, collision and terrain flags.')
+
+# Only LOW is current. Retain earlier experiments without claiming revised tides.
 assert (R/'tools/corvala/tide_states/low.bin').read_bytes()==raw
-assert [a['cave_approach'] for a in manifest['tidal_access']]==[True,False,False]
-assert [a['reef_walk'] for a in manifest['tidal_access']]==[True,False,False]
-assert [a['pool_lookout'] for a in manifest['tidal_access']]==[True,True,False]
-state_bytes=[(R/f'tools/corvala/tide_states/{n}.bin').read_bytes() for n in ['low','mid','high']]
-assert len(set(state_bytes))==3 and all(len(b)==w*h*2 for b in state_bytes)
-assert manifest['geography']['deck_cells']<manifest['geography']['previous_deck_cells']*.8
-print('PASS: three distinct authoring states, planned tidal access, reduced deck footprint.')
+for n in ['low','mid','high']:
+ assert (R/f'tools/corvala/tide_states/legacy_56x60/{n}.bin').stat().st_size==56*60*2
+assert not manifest['tide_states']['runtime_switching']
+assert not (R/'tools/corvala/tide_states/mid.bin').exists()
+assert not (R/'tools/corvala/tide_states/high.bin').exists()
+print('PASS: installed LOW matches authoring output; old tide experiments preserved separately.')

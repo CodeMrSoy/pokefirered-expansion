@@ -16,6 +16,12 @@ This 1280 × 1024 image (80 × 64 cells at 16 pixels) records the revised visual
 
 ## Implementation status
 
-The image is the next layout target. This commit does not alter map binaries, dimensions, collisions, warps, tilesets, or tide states. The current game map still loads its existing low-tide layout. Runtime tide changes, safe transitions, Dive access, and the Gym interior remain unfinished.
+The reference above remains a design mockup. The playable LOW map has now been
+rebuilt at 80 × 64 cells in `geography.py` and `build_map.py`, with the existing
+Nordic house pixels, native animated surf and a compact native cave frame.
+See [low-tide-implementation.md](low-tide-implementation.md) for the installed
+map preview, authoring workflow, route changes and verification limits.
 
-Translate this layout into engine-compatible tiles and walkable terrain before deriving mid- and high-tide maps. The mockup does not establish runtime collision or animation correctness; those require implementation checks and in-game verification.
+MID/HIGH redesign, runtime tide changes, safe transitions, Dive access, house
+interiors and the cave Gym remain unfinished. Earlier 56 × 60 tide experiments
+are preserved under `tools/corvala/tide_states/legacy_56x60/`.

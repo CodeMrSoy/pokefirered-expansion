@@ -15,21 +15,21 @@
   "battle_scene": "MAP_BATTLE_SCENE_NORMAL",
   "connections": [
     {
-      "map": "MAP_VIDRA_HARBOR_ROAD",
-      "offset": 0,
-      "direction": "right"
+      "map": "MAP_VIDRA_COASTAL_ROAD",
+      "offset": 15,
+      "direction": "left"
     },
     {
-      "map": "MAP_VIDRA_COASTAL_ROAD",
-      "offset": 0,
-      "direction": "up"
+      "map": "MAP_VIDRA_HARBOR_ROAD",
+      "offset": 16,
+      "direction": "right"
     }
   ],
   "object_events": [],
   "warp_events": [
     {
-      "x": 28,
-      "y": 18,
+      "x": 26,
+      "y": 21,
       "elevation": 3,
       "dest_map": "MAP_CORVALA_TOWN_POKEMON_CENTER_1_F",
       "dest_warp_id": "1"

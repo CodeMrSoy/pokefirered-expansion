@@ -21,7 +21,7 @@
     },
     {
       "map": "MAP_CORVALA_TOWN",
-      "offset": 0,
+      "offset": -16,
       "direction": "left"
     }
   ],

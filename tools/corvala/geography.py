@@ -1,68 +1,105 @@
-"""Corvala: west village, east cliff/cave, south tidal reefs.
-
-Height bands are artwork/navigation authoring data: 0=low-only, 1=mid-exposed,
-2=always dry. The game still loads LOW until a runtime tide controller is added.
-"""
+"""80 x 64 LOW-tide plan; native 16px cells, maintained with build_map.py."""
 import math
-W,H=56,60
-def rect(x,y,w,h):return {(xx,yy) for yy in range(y,y+h) for xx in range(x,x+w)}
+from PIL import Image, ImageDraw
+W, H = 80, 64
+
+def rect(x,y,w,h):
+ return {(xx,yy) for yy in range(y,y+h) for xx in range(x,x+w)
+         if 0<=xx<W and 0<=yy<H}
+
+def polygon(points):
+ im=Image.new('1',(W,H));ImageDraw.Draw(im).polygon(points,fill=1)
+ return {(x,y) for y in range(H) for x in range(W) if im.getpixel((x,y))}
+
 def blob(cx,cy,rx,ry,seed=0):
  out=set()
  for y in range(max(0,int(cy-ry-2)),min(H,int(cy+ry+3))):
   for x in range(max(0,int(cx-rx-2)),min(W,int(cx+rx+3))):
-   angle=math.atan2((y-cy)/ry,(x-cx)/rx);r=1+.12*math.sin(angle*3+seed)+.07*math.cos(angle*5-seed)
-   if ((x-cx)/rx)**2+((y-cy)/ry)**2<r*r:out.add((x,y))
+   angle=math.atan2((y-cy)/ry,(x-cx)/rx)
+   radius=1+.07*math.sin(angle*3+seed)+.04*math.cos(angle*5-seed)
+   if ((x-cx)/rx)**2+((y-cy)/ry)**2<radius**2:out.add((x,y))
  return out
+
 def path(points,width=2):
  out=set()
  for (ax,ay),(bx,by) in zip(points,points[1:]):
-  count=max(abs(bx-ax),abs(by-ay))
-  for i in range(count+1):
-   x=round(ax+(bx-ax)*i/max(1,count));y=round(ay+(by-ay)*i/max(1,count));out|=rect(x,y,width,width)
+  steps=max(abs(bx-ax),abs(by-ay))
+  for i in range(steps+1):
+   out|=rect(round(ax+(bx-ax)*i/max(1,steps)),round(ay+(by-ay)*i/max(1,steps)),width,width)
  return out
-buildings=[('lodge',6,4),('house_green',4,21),('house_blue',14,17),('center',25,14),('house_green',32,21),('house_gold',37,29),('house_green',17,33),('house_gold',27,33),('lighthouse',49,34)]
-platform_rects=[(3,21,9,8),(13,17,9,8),(24,14,8,7),(31,21,9,8),(36,29,9,8),(16,33,9,8),(26,33,9,8),(42,40,10,4),(44,54,9,5)]
-decks=set().union(*(rect(*r) for r in platform_rects))
-bridge_rects=[(11,20,3,8),(9,26,10,3),(17,23,3,6),(19,23,11,3),(27,20,3,10),(28,26,8,3),(24,24,3,17),(22,39,8,3),(33,27,3,11),(33,35,8,3),(38,35,3,5),(39,37,10,3),(47,38,3,19)]
-bridge_rects=[(x,y,2 if w==3 else w,2 if h==3 else h) for x,y,w,h in bridge_rects]
-decks|=set().union(*(rect(*r) for r in bridge_rects))
-# A permanent exposed path connects the two existing map seams and cliff-side landing.
-permanent=path([(10,0),(10,2),(16,2),(16,12),(25,12)],3)
-permanent|=path([(53,11),(53,42),(48,42)],3)|rect(51,10,5,3)
-# Prominent eastern headland: irregular west face and tapering southern spur.
-cliffs=set()
-for y in range(36):
- left=39+([0,0,1,2,1,1,2,3,3,4,3,4][y%12] if y<18 else 4+(y-18)//5)
- cliffs|=rect(left,y,W-left,1)
-# Northern bluff and western rock stacks frame, rather than close off, the bay.
-cliffs|=set().union(*(blob(*r) for r in [(8,6,12,8,1),(28,3,13,6,2),(1,22,3,12,3)]))
-# Isolated stone base supports the lighthouse above the waterline.
-lighthouse=blob(52,39,5,5,4)
-heights={p:2 for p in permanent|lighthouse}
-# Narrow, irregular upper beaches; the lagoon itself remains water even at LOW.
-upper=blob(8,22,7,12,2)|blob(22,17,10,5,3)|blob(35,27,6,6,4)
-for p in upper:heights.setdefault(p,1)
-low=blob(9,31,7,8,1)|blob(23,27,9,5,2)|blob(34,35,5,5,3)
-for p in low:heights.setdefault(p,0)
-# Uneven reef shelves merge into the coast; no rectangular coral allotments.
-reefs=set().union(*(blob(*r) for r in [(7,41,6,5,0),(12,43,5,4,1),(6,47,4,3,2),(15,52,6,3,3),(21,50,6,4,1),(27,46,5,5,4),(35,52,4,3,2),(39,47,3,4,5)]))
-for x,y in reefs:heights.setdefault((x,y),1 if (x*7+y*3)%13<3 else 0)
-# Low-tide walking route threads the pools and a reef shelf.
-reef_route=path([(9,33),(9,39),(13,44),(19,47),(23,47)],2)
-for p in reef_route:heights[p]=0
-# A higher pool lookout stays exposed at MID, but floods at HIGH.
-mid_route=path([(8,28),(7,33),(7,35)],2)
-for p in mid_route:heights[p]=1
-# Cave threshold is cut into the eastern headland, approached only at LOW tide.
-cave_origin=(46,17);cave_approach=(47,20)
-cave_route=path([(39,27),(41,25),(44,23),(47,20)],2)
-for p in cave_route:heights[p]=0
-cave_court=rect(46,20,4,3)
-for p in cave_court:heights[p]=0
-cliffs-=cave_route|cave_court
-# Pools interrupt the sand; use native shallow-water behavior when exposed.
-pools=blob(8,33,2,2,0)|blob(19,27,3,2,1)|blob(13,40,2,2,2)|blob(31,35,2,2,3)
-pools-=reef_route|mid_route|cave_route
-for p in pools:heights.pop(p,None)
-landmarks={'center_door':[28,18],'north_exit':[11,0],'east_exit':[55,11],'lighthouse_approach':[49,42],'arrival_pier':[48,56]}
-tidal_goals={'cave_approach':list(cave_approach),'reef_walk':[23,47],'pool_lookout':[7,35]}
+
+# Northern escarpment and eastern headland form a stepped horseshoe.
+north=polygon([(0,0),(79,0),(79,14),(76,14),(75,16),(72,17),
+ (66,17),(63,16),(60,15),(57,12),(54,10),(50,10),(47,11),(44,12),
+ (42,14),(40,16),(37,16),(36,14),(31,14),(29,13),(25,13),
+ (23,11),(22,9),(18,8),(14,8),(11,9),(9,12),(7,13),(5,12),
+ (3,10),(0,9)])
+east=polygon([(57,14),(62,15),(66,17),(72,17),(76,15),(79,14),
+ (79,32),(77,34),(75,35),(72,36),(69,36),(67,35),(64,35),
+ (63,33),(60,33),(59,30),(57,29),(57,26),(54,26),(53,24),
+ (51,24),(50,22),(46,22),(44,20),(42,18),(42,16),(46,14),(51,13)])
+bluff=polygon([(9,10),(13,9),(19,9),(21,10),(22,12),(23,14),
+ (23,18),(21,20),(18,20),(16,21),(11,21),(9,20),(8,17),(8,13)])
+cliffs=north|east|bluff
+terrace=polygon([(0,0),(79,0),(79,5),(74,5),(72,6),(65,6),
+ (61,5),(54,5),(51,4),(45,4),(42,5),(35,5),(31,4),(27,4),
+ (25,5),(20,5),(17,6),(13,6),(10,7),(5,7),(3,6),(0,6)])
+
+beach=(blob(20,29,19,13,1)|blob(22,37,13,10,2)
+       |blob(43,30,17,9,3)|blob(60,26,11,8,4))-cliffs
+pools=blob(29,29,3,3,1)|blob(36,21,4,2,2)|blob(14,32,3,2,3)
+lagoon=polygon([(38,19),(41,18),(44,19),(46,21),(51,23),(55,24),
+ (54,26),(51,27),(47,26),(44,25),(41,24),(39,23),(37,22)])
+beach-=pools|lagoon
+# Coastal Road joins the west; Harbor Road still joins the east.
+west_route=path([(0,26),(6,26),(10,28)],3)
+east_route=path([(55,28),(60,29),(70,29),(74,27),(79,27)],2)
+beach|=west_route|east_route
+cliffs-=east_route
+
+buildings=[('lodge',12,9),('center',23,18),('house_blue',8,24),
+ ('house_green',19,23),('house_gold',30,25),('house_green',38,31),
+ ('house_green',12,36),('house_gold',24,37),('lighthouse',67,37)]
+for name,x,y in buildings:
+ if name in ['lighthouse','lodge']:continue
+ beach|=rect(x,y,7 if name!='center' else 6,7)
+ pools-=rect(x,y,7,7);cliffs-=rect(x,y,7,7)
+
+grass=(blob(12,25,7,6,1)|blob(16,39,5,4,2)|blob(13,15,7,5,3)
+       |blob(39,5,6,2,4)|blob(66,11,6,3,5)|blob(74,29,4,3,6))
+grass&=beach|cliffs
+# Smaller coastal turf patches leave the exposed northern rock readable.
+grass|=(blob(8,4,7,2,2)|blob(30,7,5,2,3)|blob(54,7,5,2,1))&cliffs
+stairs=rect(20,17,2,6)
+# Each house gets a short landing rather than an unattached wooden rectangle.
+decks=(rect(8,30,7,1)|rect(19,29,7,1)|rect(30,31,7,1)
+       |rect(38,37,7,1)|rect(12,42,7,1)|rect(24,43,7,1))
+lighthouse_island=blob(69,42,5,5,1)
+decks|=rect(65,43,8,3)|rect(67,46,2,8)|rect(64,54,8,3)
+beach|=lighthouse_island
+reefs=(blob(11,47,7,3,1)|blob(20,51,7,3,2)|blob(32,53,9,3,3)
+       |blob(43,55,6,3,4)|blob(51,50,6,3,5)|blob(59,51,5,3,6))
+reef_route=path([(22,44),(22,47),(28,50),(36,52),(44,53),
+                 (51,50),(58,50),(62,47),(67,45)],2)
+beach|=reefs|reef_route
+cave_origin=(65,23);cave_approach=(65,24)
+cave_court=rect(63,24,6,6)
+beach|=cave_court;cliffs-=cave_court
+palms=[(6,21),(10,16),(28,9),(39,11),(49,19),(58,13),
+ (70,17),(75,22),(55,29),(6,30),(21,31),(9,36),
+ (20,41),(31,40),(45,35),(70,40)]
+rocks=[(3,5),(17,3),(34,4),(48,3),(61,6),(73,7),(53,18),
+ (59,24),(6,35),(47,36),(28,44),(10,45),(40,48),
+ (54,44),(73,44),(59,57),(25,58)]
+# Short, worn village paths: sand still separates the houses and tide pools.
+village_paths=(path([(0,26),(6,26),(6,30),(17,30),(17,33),(29,33),
+                     (35,33),(35,35),(41,35)],2)
+ |path([(22,22),(26,22),(28,24),(28,32)],2)
+ |path([(17,33),(18,35),(18,42),(25,43)],2))
+lamps=[(17,21),(30,22),(9,30),(28,34),(36,36),(65,44)]
+reef_gardens=[(10,47,5,2),(20,51,5,2),(32,53,6,2),
+              (44,55,4,2),(52,50,4,2),(59,51,3,2)]
+landmarks={'center_door':[26,21],'west_exit':[0,26],
+ 'east_exit':[79,27],'lighthouse_approach':[68,44],
+ 'arrival_pier':[68,55],'cave_approach':list(cave_approach),
+ 'reef_walk':[44,53]}

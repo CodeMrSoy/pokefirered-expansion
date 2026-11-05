@@ -10,6 +10,14 @@ PALETTES=[
 ['000000','383838','584030','785038','986840','b88858','d0a870','e8c890','886030','b08040','d0a850','e8c870','b0c8b8','d8d8b8','182c38','f0e0b0'],
 ['000000','286880','408898','68b0b0','90d0c0','584878','886898','b088c0','d8b0d8','985078','c87098','e8a0b8','887050','b09868','d8c088','d8e8c8']]
 PALETTES=[[tuple((int(c[i:i+2],16)>>3)<<3 for i in (0,2,4)) for c in bank] for bank in PALETTES]
+# Coastal turf is lighter than the old dark woodland palette. Sand-colored
+# outer tufts soften its edge without changing any shared General colors.
+PALETTES[1][6]=(224,200,144)
+PALETTES[1][7]=(248,224,152)
+PALETTES[1][10]=(88,128,80)
+PALETTES[1][11]=(112,152,96)
+PALETTES[1][12]=(144,176,120)
+PALETTES[1][13]=(176,192,144)
 def im(w=16,h=16,c=0):return Image.new('P',(w,h),c)
 def water(shallow=False,variant=0):
  a=im(c=5 if shallow else 3);d=ImageDraw.Draw(a)
@@ -81,9 +89,9 @@ def stairs():
 def lighthouse():
  a=im(48,112);d=ImageDraw.Draw(a)
  d.ellipse((5,93,43,108),fill=2);d.ellipse((8,89,40,103),fill=12,outline=1)
- d.polygon([(16,35),(31,35),(35,94),(12,94)],fill=13,outline=1)
- d.polygon([(16,35),(21,35),(19,92),(13,94)],fill=12)
- for y in [47,64,80]:d.line((16,y,31,y),fill=12)
+ d.polygon([(15,35),(32,35),(38,94),(9,94)],fill=13,outline=1)
+ d.polygon([(15,35),(21,35),(18,92),(10,94)],fill=12)
+ for y in [47,64,80]:d.line((14,y,33,y),fill=12,width=2)
  for y in [45,65]:d.rectangle((22,y,26,y+7),fill=14)
  d.rectangle((12,25,35,36),fill=2);d.rectangle((15,15,32,28),fill=12,outline=1)
  for x in [18,25]:d.rectangle((x,17,x+3,25),fill=10)
@@ -155,4 +163,22 @@ def lamp():
  d.rectangle((7,9,9,29),fill=2);d.line((7,11,7,28),fill=6);d.rectangle((5,29,11,31),fill=3)
  d.rectangle((4,3,12,11),fill=2);d.rectangle((6,5,10,9),fill=15);d.line((8,4,8,10),fill=5)
  d.polygon([(3,3),(8,0),(13,3)],fill=8);d.point((7,6),fill=13)
+ return a
+
+def palm():
+ """Sparse coastal palm, indexed at native scale; bank 8, zero transparent."""
+ a=im(32,48);d=ImageDraw.Draw(a)
+ d.ellipse((9,40,26,45),fill=8)
+ d.polygon([(15,40),(18,19),(20,17),(20,29),(18,41),(22,43),(13,43)],fill=3)
+ d.line((18,22,16,40),fill=6,width=2)
+ for y in [25,30,35]:d.line((17,y,19,y+1),fill=2)
+ fronds=[[(18,17),(10,8),(4,10),(0,19),(7,13),(13,14)],
+         [(18,17),(17,5),(23,2),(28,5),(22,6),(20,14)],
+         [(18,17),(26,9),(31,13),(31,21),(27,15),(23,15)],
+         [(18,17),(9,17),(4,24),(3,31),(9,23),(14,20)],
+         [(18,17),(23,20),(28,27),(29,33),(29,23),(24,16)]]
+ for points in fronds:d.polygon(points,fill=9,outline=8)
+ for end in [(4,12),(21,5),(29,14),(6,25),(27,25)]:
+  d.line((18,17,*end),fill=11)
+ d.ellipse((16,16,20,20),fill=4);d.point((17,16),fill=7)
  return a

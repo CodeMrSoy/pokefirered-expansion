@@ -16,8 +16,8 @@
   "connections": [
     {
       "map": "MAP_CORVALA_TOWN",
-      "offset": 0,
-      "direction": "down"
+      "offset": -15,
+      "direction": "right"
     },
     {
       "map": "MAP_ELDERVALE_VILLAGE",
