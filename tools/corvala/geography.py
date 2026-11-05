@@ -46,8 +46,9 @@ terrace=polygon([(0,0),(79,0),(79,5),(74,5),(72,6),(65,6),
  (25,5),(20,5),(17,6),(13,6),(10,7),(5,7),(3,6),(0,6)])
 
 beach=(blob(20,29,19,13,1)|blob(22,37,13,10,2)
-       |blob(43,30,17,9,3)|blob(60,26,11,8,4))-cliffs
-pools=blob(29,29,3,3,1)|blob(36,21,4,2,2)|blob(14,32,3,2,3)
+       |blob(43,30,17,9,3)|blob(60,26,11,8,4)
+       |blob(39,38,9,6,4))-cliffs
+pools=blob(6,35,2,2,1)|blob(36,38,2,2,2)|blob(29,46,3,1.5,3)
 lagoon=polygon([(38,19),(41,18),(44,19),(46,21),(51,23),(55,24),
  (54,26),(51,27),(47,26),(44,25),(41,24),(39,23),(37,22)])
 beach-=pools|lagoon
@@ -58,22 +59,25 @@ beach|=west_route|east_route
 cliffs-=east_route
 
 buildings=[('lodge',12,9),('center',23,18),('house_blue',8,24),
- ('house_green',19,23),('house_gold',30,25),('house_green',38,31),
- ('house_green',12,36),('house_gold',24,37),('lighthouse',67,37)]
+ ('house_green',20,24),('house_gold',32,24),('house_green',40,35),
+ ('house_green',10,36),('house_gold',24,36),('lighthouse',67,37)]
 for name,x,y in buildings:
  if name in ['lighthouse','lodge']:continue
  beach|=rect(x,y,7 if name!='center' else 6,7)
  pools-=rect(x,y,7,7);cliffs-=rect(x,y,7,7)
 
-grass=(blob(12,25,7,6,1)|blob(16,39,5,4,2)|blob(13,15,7,5,3)
-       |blob(39,5,6,2,4)|blob(66,11,6,3,5)|blob(74,29,4,3,6))
+grass=(polygon([(4,24),(8,21),(17,22),(20,20),(30,21),(39,24),
+                (40,33),(46,34),(47,42),(33,44),(28,47),
+                (10,45),(4,39)])
+       |blob(13,15,7,5,3)|blob(39,5,6,2,4)
+       |blob(66,11,6,3,5)|blob(74,29,4,3,6))
 grass&=beach|cliffs
 # Smaller coastal turf patches leave the exposed northern rock readable.
 grass|=(blob(8,4,7,2,2)|blob(30,7,5,2,3)|blob(54,7,5,2,1))&cliffs
 stairs=rect(20,17,2,6)
 # Each house gets a short landing rather than an unattached wooden rectangle.
-decks=(rect(8,30,7,1)|rect(19,29,7,1)|rect(30,31,7,1)
-       |rect(38,37,7,1)|rect(12,42,7,1)|rect(24,43,7,1))
+decks=set().union(*(rect(x+2,y+6,3,1) for name,x,y in buildings
+                    if name.startswith('house_')))
 lighthouse_island=blob(69,42,5,5,1)
 decks|=rect(65,43,8,3)|rect(67,46,2,8)|rect(64,54,8,3)
 beach|=lighthouse_island
@@ -83,20 +87,26 @@ reef_route=path([(22,44),(22,47),(28,50),(36,52),(44,53),
                  (51,50),(58,50),(62,47),(67,45)],2)
 beach|=reefs|reef_route
 cave_origin=(65,23);cave_approach=(65,24)
-cave_court=rect(63,24,6,6)
+cave_court=polygon([(64,24),(66,24),(68,26),(68,28),(65,30),
+                    (61,30),(61,28),(63,26)])
 beach|=cave_court;cliffs-=cave_court
 palms=[(6,21),(10,16),(28,9),(39,11),(49,19),(58,13),
- (70,17),(75,22),(55,29),(6,30),(21,31),(9,36),
- (20,41),(31,40),(45,35),(70,40)]
+ (70,17),(75,22),(55,29),(4,29),(18,35),(17,38),
+ (20,41),(31,36),(47,34),(70,40)]
 rocks=[(3,5),(17,3),(34,4),(48,3),(61,6),(73,7),(53,18),
  (59,24),(6,35),(47,36),(28,44),(10,45),(40,48),
  (54,44),(73,44),(59,57),(25,58)]
 # Short, worn village paths: sand still separates the houses and tide pools.
-village_paths=(path([(0,26),(6,26),(6,30),(17,30),(17,33),(29,33),
-                     (35,33),(35,35),(41,35)],2)
- |path([(22,22),(26,22),(28,24),(28,32)],2)
- |path([(17,33),(18,35),(18,42),(25,43)],2))
-lamps=[(17,21),(30,22),(9,30),(28,34),(36,36),(65,44)]
+village_paths=(path([(0,26),(5,26),(5,32),(38,32)],3)
+ |path([(26,22),(26,32)],2)
+ |path([(23,33),(23,43),(43,43),(43,41)],2)
+ |path([(13,43),(23,43)],2))
+for name,x,y in buildings:
+ if name.startswith('house_'):
+  village_paths|=path([(x+3,y+6),(x+3,32 if y==24 else 43)],2)
+lamps=[(17,29),(30,29),(8,34),(28,34),(37,43),(65,44)]
+flowerbeds=[(8,22),(17,24),(29,24),(38,29),(10,34),(30,40),(45,42)]
+sea_rocks=[(48,40),(58,44),(36,46),(59,57)]
 reef_gardens=[(10,47,5,2),(20,51,5,2),(32,53,6,2),
               (44,55,4,2),(52,50,4,2),(59,51,3,2)]
 landmarks={'center_door':[26,21],'west_exit':[0,26],

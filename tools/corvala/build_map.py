@@ -28,6 +28,15 @@ def write(path,data):
 def save_image(im,path):
  buffer=BytesIO();im.save(buffer,format='PNG');write(path,buffer.getvalue())
 T=[bytes(64)];lookup={T[0]:(0,0)};M=[];attrs=[];ml={};pixels={};kit={}
+# Exact native 8px patterns can reference the existing primary sheet directly.
+# Negative local IDs deliberately become primary IDs after adding 640 in reg.
+primary_source=Image.open(R/'data/tilesets/primary/general/tiles.png')
+for tid in range(640):
+ patch=primary_source.crop((tid%16*8,tid//16*8,tid%16*8+8,tid//16*8+8))
+ for f,flip in [(0,patch),(1024,patch.transpose(Image.Transpose.FLIP_LEFT_RIGHT)),
+                (2048,patch.transpose(Image.Transpose.FLIP_TOP_BOTTOM)),
+                (3072,patch.transpose(Image.Transpose.FLIP_LEFT_RIGHT).transpose(Image.Transpose.FLIP_TOP_BOTTOM))]:
+  lookup.setdefault(flip.tobytes(),(tid-640,f))
 # Deduplicate all four reflected orientations across banks, preserving each bank.
 def reg(im,bank,behavior=0):
  desc=[]
@@ -40,7 +49,8 @@ def reg(im,bank,behavior=0):
  k=tuple(desc)+(behavior,)
  if k not in ml:
   ml[k]=640+len(M);M.append(desc+[640]*4);attrs.append(behavior)
-  p=im.copy();p.putpalette(sum((list(c) for c in A.PALETTES[bank-7]),[])+[0]*720);pixels[ml[k]]=p.convert('RGB')
+  colors=primary_palettes[bank] if bank<7 else A.PALETTES[bank-7]
+  p=im.copy();p.putpalette(sum((list(c) for c in colors),[])+[0]*720);pixels[ml[k]]=p.convert('RGB')
  return ml[k]
 def asset(im,bank,bg=None):
  rows=[]
@@ -61,8 +71,8 @@ def native_meta(desc,behavior,preview):
 shoreline=NativeShore(R,native,native_meta)
 kit['sea']=[0x12b,0x12b]
 kit['shallow']=[native_meta(shoreline.descriptors(0x12b),0x17,native[0x12b])]*2
-kit['sand']=SAND;kit['grass']=reg(A.grass(),8)
-kit['rock_top']=0x1f7
+kit['sand']=SAND;kit['grass']=0x008
+kit['rock_top']=0x071
 # Match the native ocean beneath small reef/rock props without recoloring any primary palette.
 A.PALETTES[5][3]=(72,120,216)
 kit['cliff']=[0x71,0x71,0x71,0x79]
@@ -105,7 +115,8 @@ def bottom_preview(base):
 def overlay(im,bank,base):
  raw=reg(im,bank);desc=definitions(base)[:4]+M[raw-640][:4]
  out=bottom_preview(base);colored=im.copy()
- colored.putpalette(sum((list(c) for c in A.PALETTES[bank-7]),[])+[0]*720)
+ colors=primary_palettes[bank] if bank<7 else A.PALETTES[bank-7]
+ colored.putpalette(sum((list(c) for c in colors),[])+[0]*720)
  out.paste(colored.convert('RGB'),(0,0),Image.frombytes('L',im.size,im.tobytes()).point(lambda v:255 if v else 0))
  return native_meta(desc,0,out)
 # Composite each placed house over its actual terrain. Packing a second,
@@ -126,6 +137,52 @@ rails={}
 def edge(mask):
  if mask not in rails:rails[mask]=reg(A.deckedge(mask),9)
  return rails[mask]
+
+cliff_art={}
+def cliff_overlay(mid,base):
+ # Native General cliff art uses palette 1 for rock and palette 0 for the
+ # surrounding grass. Remove only that background, retaining the actual
+ # FireRed cliff silhouette and coloring over this coast's sand or ocean.
+ if mid not in cliff_art:
+  colors=primary_palettes[1];lookup_color={c:i for i,c in enumerate(colors) if i}
+  im=Image.new('P',(16,16))
+  im.putdata([lookup_color.get(c,0) for c in native[mid].getdata()])
+  cliff_art[mid]=im
+ return overlay(cliff_art[mid],1,base)
+
+def cliff_shape(region,x,y):
+ n,e,s,w=[0<=x+dx<W and 0<=y+dy<H and (x+dx,y+dy) not in region
+          for dx,dy in [(0,-1),(1,0),(0,1),(-1,0)]]
+ if n:return 0x68 if w else 0x6a if e else 0x69
+ if s:return 0x78 if w else 0x7a if e else 0x79
+ if w:return 0x70
+ if e:return 0x72
+ return 0x71
+
+grass_art={}
+def grass_edge(mask,base):
+ if mask not in grass_art:
+  colors=primary_palettes[0];lookup_color={c:i for i,c in enumerate(colors) if i}
+  im=Image.new('P',(16,16));im.putdata([lookup_color.get(c,0) for c in native[0x008].getdata()])
+  for py in range(16):
+   for px in range(16):
+    distances=[py,15-px,15-py,px]
+    if any(mask&(1<<i) and distances[i] < 2+(px+py)%2 for i in range(4)):
+     im.putpixel((px,py),0)
+  grass_art[mask]=im
+ return overlay(grass_art[mask],0,base)
+
+path_art={}
+def village_path(mid):
+ # Retain FireRed's actual worn-path edge geometry and speckle pattern, but
+ # use Corvala's warm sand ramp rather than the native pale-mint path colors.
+ if mid not in path_art:
+  colors={c for _,c in native[0xc6].getcolors()}
+  light=max(colors,key=lambda c:sum(c))
+  im=Image.new('P',(16,16))
+  im.putdata([7 if c==light else 6 if c in colors else 0 for c in native[mid].getdata()])
+  path_art[mid]=im
+ return overlay(path_art[mid],8,kit['grass'])
 
 def build_low():
  # Native Surf requires clear collision bits and elevation 1 water adjacent to
@@ -149,13 +206,14 @@ def build_low():
      mid=overlay(im,9,g[y+yy][x+xx]&1023)
     if name in house_shapes or name=='lighthouse':kit[name][yy][xx]=mid
     put(x+xx,y+yy,mid,blocks)
- # Sandy rock plateaus, with two-cell faces and a separate northern terrace.
+ # Complete rock contours, using the same cap/side/foot families as One Island.
  for region in [G.cliffs,G.terrace]:
   for x,y in sorted(region):
-   depth=sum((x,y+dy) in region for dy in [1,2])
-   top=kit['grass'] if (x,y) in G.grass else kit['rock_top']
-   mid=top if depth==2 else kit['cliff'][0 if depth else 3]
-   put(x,y,mid,not (region is G.cliffs and (x,y) in G.bluff and depth==2))
+   shape=cliff_shape(region,x,y)
+   bluff=region is G.cliffs and (x,y) in G.bluff and shape==0x71
+   if shape==0x71:mid=kit['grass'] if (x,y) in G.grass else kit['rock_top']
+   else:mid=cliff_overlay(shape,SAND if (x,y) in G.beach else 0x12b)
+   put(x,y,mid,not bluff)
  for x,y in sorted(G.beach-G.cliffs):put(x,y,kit['grass'] if (x,y) in G.grass else SAND)
  for x,y in sorted(G.pools-G.cliffs-G.beach):put(x,y,kit['shallow'][0])
  for x,y in sorted(G.lagoon):put(x,y,0x12b,elevation=1)
@@ -165,20 +223,14 @@ def build_low():
   mask=sum(1<<i for i,(dx,dy) in enumerate([(0,-1),(1,0),(0,1),(-1,0)])
            if (x+dx,y+dy) not in G.grass)
   if not mask:continue
-  land=A.grass();edge_color=7 if (x,y) in G.cliffs else 6
-  for py in range(16):
-   for px in range(16):
-    dist=[py,15-px,15-py,px]
-    if any(mask&(1<<i) and dist[i] < (1+(px+py)%3) for i in range(4)):
-     land.putpixel((px,py),edge_color)
-  put(x,y,reg(land,8),bool(g[y][x]&0xc00))
- # Sparse stone impressions guide the central village without paving the beach.
+  put(x,y,grass_edge(mask,kit['rock_top'] if (x,y) in G.cliffs else SAND),bool(g[y][x]&0xc00))
+ # The native town-path family makes a readable central promenade, as in
+ # Three Island; native sand continues through the beach and tide paths.
  for x,y in sorted(G.village_paths-G.cliffs-G.pools-G.decks):
-  if g[y][x]&1023 not in (SAND,kit['grass']):continue
-  paving=A.im();d=ImageDraw.Draw(paving)
-  for px,py in [(3,5),(10,11)]:
-   d.line((px,py,px+3,py),fill=5);d.line((px+1,py+1,px+4,py+1),fill=7)
-  put(x,y,overlay(paving,8,g[y][x]&1023))
+  if (x,y) not in G.grass:continue
+  n,e,s,w=[(x+dx,y+dy) not in G.village_paths for dx,dy in [(0,-1),(1,0),(0,1),(-1,0)]]
+  mid=(0xbd if w else 0xbf if e else 0xbe) if n else (0xcd if w else 0xcf if e else 0xce) if s else 0xc5 if w else 0xc7 if e else 0xc6
+  put(x,y,village_path(mid))
  # Native coral pixels have transparent surrounds over the sand or animated sea.
  for x,y in sorted(G.reefs-G.reef_route):
   if not any(((x-cx)/rx)**2+((y-cy)/ry)**2<.8 for cx,cy,rx,ry in G.reef_gardens):continue
@@ -214,6 +266,13 @@ def build_low():
   if (x,y) in G.east_route|G.west_route|G.reef_route|G.decks:continue
   im=A.rock();im.putdata([0 if v==3 else v for v in im.getdata()])
   put(x,y,overlay(im,12,g[y][x]&1023),True)
+ for x,y in G.flowerbeds:
+  for dx in range(2):
+   if (x+dx,y) in G.grass and (x+dx,y) not in G.village_paths:
+    put(x+dx,y,0x004)
+ for x,y in G.sea_rocks:
+  for dx,mid in enumerate([0x1cb,0x1cc]):
+   if g[y][x+dx]&1023 in kit['sea']:put(x+dx,y,mid,True,elevation=1)
  # Paired lanterns give the service square and lighthouse landing a human scale.
  lamp=A.lamp()
  for x,y in G.lamps:
@@ -238,6 +297,25 @@ def build_low():
  return g
 
 g=build_low()
+# Foreground-only intermediate definitions are useful while composing, but
+# should not consume editor metatiles if no placed map or kit references them.
+used={v&1023 for row in g for v in row}
+def collect(value):
+ if isinstance(value,int):used.add(value)
+ elif isinstance(value,list):
+  for entry in value:collect(entry)
+for value in kit.values():collect(value)
+keep=[i for i in range(len(M)) if i+640 in used]
+remap={i+640:j+640 for j,i in enumerate(keep)}
+M=[M[i] for i in keep];attrs=[attrs[i] for i in keep]
+pixels={remap[k]:v for k,v in pixels.items() if k in remap}
+def mapped(value):
+ if isinstance(value,int):return remap.get(value,value)
+ if isinstance(value,list):return [mapped(v) for v in value]
+ return value
+kit={k:mapped(v) for k,v in kit.items()}
+shoreline.cache={k:remap[v] for k,v in shoreline.cache.items() if v in remap}
+g=[[(v&~1023)|remap.get(v&1023,v&1023) for v in row] for row in g]
 assert len(T)<=384,(len(T),'tile budget exceeded')
 assert len(M)<=384,(len(M),'metatile budget exceeded')
 # Always emit the candidate for visual review, even if navigation rejects it.
