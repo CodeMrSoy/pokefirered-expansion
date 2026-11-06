@@ -303,4 +303,23 @@
 #define METATILE_RSCave_CrackedFloor                     0x22F
 #define METATILE_RSCave_CrackedFloor_Hole                0x206
 
+// Corvala cave-cove kit. Previous experimental IDs retired.
+#define METATILE_Corvala_SandUnderside                  0x29B
+#define METATILE_Corvala_SandPilings                    0x29C
+#define METATILE_Corvala_WaterUnderside                 0x29D
+#define METATILE_Corvala_WaterPilings                   0x29E
+#define METATILE_Corvala_Stairs                         0x2B1
+#define METATILE_Corvala_StoneStairsLeft                0x34A
+#define METATILE_Corvala_StoneStairsRight               0x34B
+#define METATILE_Corvala_GymSign                        0x34C
+#define METATILE_Corvala_DeckA                          0x299
+#define METATILE_Corvala_DeckB                          0x29A
+#define METATILE_Corvala_Coral0                         0x34D
+#define METATILE_Corvala_Coral1                         0x34E
+#define METATILE_Corvala_Coral2                         0x34F
+#define METATILE_Corvala_Coral3                         0x350
+#define METATILE_Corvala_Coral4                         0x351
+#define METATILE_Corvala_Coral5                         0x352
+#define METATILE_Corvala_Coral6                         0x353
+
 #endif // GUARD_METATILE_LABELS_H

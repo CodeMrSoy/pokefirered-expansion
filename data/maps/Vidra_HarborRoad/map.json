@@ -18,11 +18,6 @@
       "map": "MAP_HAVORA_WEST_QUADRANT",
       "offset": -60,
       "direction": "right"
-    },
-    {
-      "map": "MAP_CORVALA_TOWN",
-      "offset": -16,
-      "direction": "left"
     }
   ],
   "object_events": [],

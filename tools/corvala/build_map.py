@@ -11,6 +11,8 @@ from io import BytesIO
 from PIL import Image, ImageDraw
 import art as A
 R=Path(__file__).resolve().parents[2];sys.path.insert(0,str(R/'tools/havora'))
+if (R/'tools/corvala/manual-layout.json').exists():
+ raise SystemExit('Legacy Corvala generator is retired. Use Porymap or explicitly run build_cove.py for the current cave-cove design.')
 from render import atlas
 from native_reference import install
 from shoreline import NativeShore, SAND

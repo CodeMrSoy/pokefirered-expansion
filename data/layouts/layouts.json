@@ -4396,7 +4396,7 @@
     {
       "id": "LAYOUT_CORVALA_TOWN",
       "name": "Corvala_Town_Layout",
-      "width": 80,
+      "width": 64,
       "height": 64,
       "border_width": 2,
       "border_height": 2,
@@ -4596,6 +4596,30 @@
       "secondary_tileset": "gTileset_HavoraGym",
       "border_filepath": "data/layouts/Havora_Gym/border.bin",
       "blockdata_filepath": "data/layouts/Havora_Gym/map.bin"
+    },
+    {
+      "id": "LAYOUT_CORVALA_ENTRANCE_CAVE",
+      "name": "Corvala_EntranceCave_Layout",
+      "width": 30,
+      "height": 20,
+      "border_width": 2,
+      "border_height": 2,
+      "primary_tileset": "gTileset_General",
+      "secondary_tileset": "gTileset_Cave",
+      "border_filepath": "data/layouts/Corvala_EntranceCave/border.bin",
+      "blockdata_filepath": "data/layouts/Corvala_EntranceCave/map.bin"
+    },
+    {
+      "id": "LAYOUT_CORVALA_TIDAL_GYM",
+      "name": "Corvala_TidalGym_Layout",
+      "width": 28,
+      "height": 24,
+      "border_width": 2,
+      "border_height": 2,
+      "primary_tileset": "gTileset_General",
+      "secondary_tileset": "gTileset_Cave",
+      "border_filepath": "data/layouts/Corvala_TidalGym/border.bin",
+      "blockdata_filepath": "data/layouts/Corvala_TidalGym/map.bin"
     }
   ]
 }

@@ -601,7 +601,15 @@
   "gMapGroup_Corvala": [
     "Corvala_Town",
     "Corvala_Town_PokemonCenter_1F",
-    "Corvala_Town_PokemonCenter_2F"
+    "Corvala_Town_PokemonCenter_2F",
+    "Corvala_Mart",
+    "Corvala_House1",
+    "Corvala_House2",
+    "Corvala_EntranceCave",
+    "Corvala_TidalGym",
+    "Corvala_House3",
+    "Corvala_House4",
+    "Corvala_House5"
   ],
   "gMapGroup_Eldervale": [
     "Eldervale_Village",

@@ -15,18 +15,21 @@
   "battle_scene": "MAP_BATTLE_SCENE_NORMAL",
   "connections": [
     {
-      "map": "MAP_CORVALA_TOWN",
-      "offset": -15,
-      "direction": "right"
-    },
-    {
       "map": "MAP_ELDERVALE_VILLAGE",
       "offset": 0,
       "direction": "up"
     }
   ],
   "object_events": [],
-  "warp_events": [],
+  "warp_events": [
+    {
+      "x": 20,
+      "y": 9,
+      "elevation": 3,
+      "dest_map": "MAP_CORVALA_ENTRANCE_CAVE",
+      "dest_warp_id": "0"
+    }
+  ],
   "coord_events": [],
   "bg_events": []
 }

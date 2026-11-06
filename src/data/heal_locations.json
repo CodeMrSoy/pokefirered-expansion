@@ -171,8 +171,8 @@
     {
       "id": "HEAL_LOCATION_QUANTUM_COASTAL_CITY",
       "map": "MAP_CORVALA_TOWN",
-      "x": 26,
-      "y": 22,
+      "x": 31,
+      "y": 26,
       "respawn_map": "MAP_CORVALA_TOWN_POKEMON_CENTER_1_F",
       "respawn_npc": "LOCALID_QUANTUM_COASTAL_CITY_NURSE"
     },

@@ -18,6 +18,12 @@ PALETTES[1][10]=(88,128,80)
 PALETTES[1][11]=(112,152,96)
 PALETTES[1][12]=(144,176,120)
 PALETTES[1][13]=(176,192,144)
+# Window glass is independent of each house's roof colors.
+for bank in (2,3,4):
+ PALETTES[bank][12]=(64,104,144)
+ PALETTES[bank][13]=(112,168,192)
+ PALETTES[bank][14]=(24,40,56)
+ PALETTES[bank][15]=(192,224,232)
 def im(w=16,h=16,c=0):return Image.new('P',(w,h),c)
 def water(shallow=False,variant=0):
  a=im(c=5 if shallow else 3);d=ImageDraw.Draw(a)

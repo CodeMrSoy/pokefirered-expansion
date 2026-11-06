@@ -1458,3 +1458,19 @@ Text_TestMsg::
 
 	.include "data/maps/Havora_CoastalCliffs/scripts.inc"
 	.include "data/maps/Havora_CoastalCliffs/text.inc"
+
+	.include "data/maps/Corvala_Mart/scripts.inc"
+
+	.include "data/maps/Corvala_House1/scripts.inc"
+
+	.include "data/maps/Corvala_House2/scripts.inc"
+
+	.include "data/maps/Corvala_EntranceCave/scripts.inc"
+
+	.include "data/maps/Corvala_TidalGym/scripts.inc"
+
+	.include "data/maps/Corvala_House3/scripts.inc"
+
+	.include "data/maps/Corvala_House4/scripts.inc"
+
+	.include "data/maps/Corvala_House5/scripts.inc"
