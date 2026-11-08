@@ -6,4 +6,4 @@ Corvala_House4_Resident::
 	end
 
 Corvala_House4_Resident_Text::
-	.string "We mend our fishing nets here.\nThere is always another knot to tie.$"
+	.string "A loose knot can ruin a net.\nA tight knot can save a catch.\pMy apprentice says I tell that\nstory every day. I probably do.$"

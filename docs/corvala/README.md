@@ -1,91 +1,109 @@
-# Corvala cave cove — current design
+# Corvala cove: sand, residents and hourly tides
 
-The November 6 restart replaces the previous 80x64 road-linked town with a
-64x64 sheltered reef cove. This is the current authoring design; older
-composition-study documents describe superseded experiments.
+This pass starts from the user's Porymap cleanup in commit `0c02a4ba`.
+The wooden town layout, five houses, Center, Mart and new gym frontage are
+preserved. The gym warp now matches its visible door at (10,14); the entrance
+cave warp matches (49,15). Event elevations match the edited dock levels.
 
-## Requested layout
+## Low and high tide
 
-- One physical entrance: **Coastal Road → Entrance Cave → Corvala**.
-- No east/west town connections, lighthouse, or departure pier.
-- A tidal-cave gym above three stair-connected northwest cliff terraces.
-- A native red Pokémon Center and blue Poké Mart on raised platforms.
-- Five timber houses, with functioning interiors and residents.
-- Connected wooden platforms, a sheltered lagoon, and exposed LOW reef shelves.
-- Solid support rows beneath dock fronts, with designated stairs to the sand.
+Quantum uses the RTC (`OW_USE_FAKE_RTC = FALSE`). Corvala uses the same local
+clock as the rest of the game: even hours are LOW and odd hours are HIGH.
+An emulator must supply RTC support for real-time changes. The town checks
+once per second during normal overworld play, after movement/dialogue/fades
+finish. Time spent indoors or with the game closed is reflected on return.
 
-![Current packed LOW map](low-tide-playable.png)
+High tide now covers **all sand**, the entire lowest northwest cliff terrace,
+every dock support and the wooden stairs off the docks. No sand islands remain.
+The lower sea-facing north/east cliff layer is fully submerged. Its entire
+tiles become Surf water; the upper cliff caps and backing remain visible and
+solid. Higher gym terraces remain above water, and the cave doorway retains
+its frame. The outer map boundary remains blocked.
+The five homes, Center, Mart and entrance cave stay connected by raised docks.
+The walking route to the gym is available only at LOW tide, when its lower
+terrace and beach are exposed again.
 
-The gym has an enterable cave arena and attendant. Its battle, badge, puzzle
-and tide gates are not implemented in this map pass. The Mart has a working
-clerk and an eight-item stock list; the Center keeps the existing nurse.
+Native boulders stand on sand at LOW and have water beneath them at HIGH.
+Four native sea-rock formations also appear in permanently wet areas in both
+phases. Rocks are solid obstacles, with paths left clear around them.
 
-The old west/east Corvala road seams were removed on both sides. Coastal Road
-now reaches the entrance cave; Harbor Road's former western opening is capped.
-The remaining road connections to Eldervale and Havora are retained. Existing
-Fly/heal access is relocated to the new Center; the cave is the only ordinary
-overworld route into town.
+Six existing dock-edge tiles above the submerged stairs are Surf landings at
+HIGH. Their artwork stays unchanged; local map elevations provide the native
+Surf launch/landing behavior without altering Surf rules elsewhere.
 
-## Cliff and building art revision
+A tide change waits while the player is exploring the sandbar, gym terraces, or surfing.
+It applies on reaching permanent shore or the docks and stopping. This avoids
+flooding a walking player, stranding an island visitor, or drying the water
+beneath a surfer. A restored save view preserves the prior phase until safe.
+No new save fields are used. Map differences and safe positions live in ROM;
+the existing virtual map buffer is reused, with only two added EWRAM bytes.
 
-The gym ascent uses three cliff terraces with switchback stone stairs. Each
-front face blocks walking except at the stairs; host checks reject a bypass
-around any tier. Its cave retains the main pool and two smaller tide basins.
+![Low tide](low-tide-playable.png)
+![High tide](high-tide-playable.png)
 
-The Center now uses the complete native five-by-five Pewter exterior, including
-the missing top roof cap and right wall. Transparent grass backing is replaced
-with timber while retaining all building pixels and the native animated door.
-Dock supports use thicker upright wood piles with grain, fastening bands and
-waterline variants. All five house facades have simpler framing, deeper eaves,
-recessed doors, and blue window glass independent of roof color.
+This first tide pass affects the town exterior. The tidal gym interior still
+has its pools and attendant; its leader battle, badge and tide puzzles remain
+unfinished. There is no middle tide or tide animation in this pass.
 
-![Three-tier gym approach](terraced-gym-detail.png)
+## Encounters and residents
 
-## Current assets and editing
+Bare Corvala sand uses a local metatile encounter attribute while retaining
+sand behavior and footprints. Primary/shared sand tiles are unchanged. Docks
+have no land encounters. There are twelve sand slots plus Surf and fishing
+tables, using the existing encounter/randomizer pipeline. Current provisional
+levels are 18–22; tune these alongside Corvala's campaign placement.
 
-The redesigned tileset is repacked: **227/384 graphics, 222/384 metatiles**.
-Unlike the previous append-only experiments, old experimental metatile IDs do
-not apply to this design. Use the current `METATILE_Corvala_*` labels.
+Six residents occupy the docks, with dialogue about tides, reef care, fishing
+and the town. Each of the five houses retains its resident with expanded
+dialogue. NPCs leave doorways and travel paths open.
 
-Continue editing `Corvala_Town` in Porymap. The installed map and
-`tools/corvala/tide_states/low.bin` describe LOW only. MID/HIGH and automatic
-tides are not added. Permanent dock cells are recorded in `map.json` so later
-tide work can retain access to the services.
+## Authoring
 
-- `build_cove.py --write` explicitly regenerates this design. It checks the
-  previous output hash and refuses to overwrite unincorporated Porymap edits.
-- `connect_cove.py --write` installs the cave/interior wiring. Backport any
-  manual interior/event edits before running it again.
-- `validate_map.py` validates the current cove. The old procedural generator
-  remains locked and is not part of a normal ROM build.
-- `tests/corvala_cove_emulator.py` exercises real movement and transitions.
+`data/layouts/Corvala_Town/map.bin` remains the editable LOW map in Porymap.
+The preserved input is `tools/corvala/manual_layouts/user-0c02a4ba.bin`.
 
-## Preservation and scope
+- `refine_tides.py --write` applies this terrain pass to that snapshot and
+  generates LOW/HIGH maps, packed metatiles, previews and `src/data/corvala_tides.h`.
+  It refuses to overwrite new unincorporated Porymap edits. Incorporate later
+  edits into the authoring input before regenerating; do not discard them.
+- `populate_town.py --write` owns the six dock NPCs, house dialogue and local
+  encounter tables. Incorporate manual changes before rerunning it.
+- The old `build_cove.py --write` and `connect_cove.py --write` are guarded
+  because they predate the user's cleanup and tide support.
+- `validate_map.py` checks both tide layouts, assets, doorways and service/NPC
+  accessibility. `tests/corvala_tides_emulator.py` exercises the runtime behavior.
 
-The previous map, art, authoring scripts and related files were backed up to
-`corvala-reference/pre-restart-20261106.zip` in the surrounding workspace.
-Its old generated artwork and one-time migrations are archived outside the
-active repository. Existing map/layout IDs are preserved: new interiors are
-appended to the Corvala group and new cave layouts to the layout table.
+Build normally to regenerate map data and wild encounter headers. This pass
+has 248 secondary metatiles, within the 384 limit, and uses existing graphics.
+The native build passes at 258,106 bytes EWRAM and 27,573 bytes IWRAM.
 
-The current work is local on `feature/corvala-cave-cove-20261106`; it has not
-been committed, pushed or merged into V2.
+## Verification of this pass
 
-## Verification
+The native build passes at 258,106 bytes EWRAM and 27,573 bytes IWRAM.
+Host checks validate zero exposed sand/support/stair tiles at HIGH, the
+submerged lower cliff, solid rocks in both phases, accessible town services,
+and the six dock Surf landings. The LOW gym route remains walkable.
 
-The final incremental ROM build passes. EWRAM remains 258,104 bytes and IWRAM
-27,573 bytes; the existing RWX linker warnings remain. Host checks validate the
-packed preview, tile/palette limits, blocked outer boundary, removed seams,
-reciprocal warps, accessible landmarks and relocated heal/Fly landing.
+The runtime checks are in `tests/corvala_tides_emulator.py`. Earlier partial
+high-tide fixtures are superseded by the full-flood layout. Compatibility test
+entry points now run the current suite.
 
-`emulator-corvala-terraces-final-20261107` passes in mGBA: real walking from
-Coastal Road through the cave and back, 399 walking steps through the cove,
-entry/return for all eight buildings, the Mart Buy menu, three Surf round trips,
-the compiled Fly landing and all eight shoreline animation phases. The full
-64x64 runtime map is compared with the installed binary. These use fresh-game
-fixtures, not a full campaign progression run.
+`emulator-corvala-full-high-tide-20261107` passes on the final ROM (151.77s):
+LOW gym entry/return; all seven dock buildings at both tides; eleven resident
+dialogues; hourly and midnight switching; saved-view safety at the gym, sandbar
+and while surfing; all six dock Surf launches/landings; rock collisions on
+foot and while surfing; and a real sand battle through the move menu.
+The final packed LOW/HIGH previews and runtime Surf screenshot were inspected.
 
-After replacing repeated cave water-edge tiles with continuous native water,
-`emulator-corvala-pools-final-20261107` also passes on the final ROM: both pool
-maps match their binaries, the gym is crossed on foot and returns correctly
-to the upper terrace. Final pool screenshots were inspected.
+The focused cliff test checks Surf access to the submerged lower face at
+(30,10) and (61,25), with the preserved upper layer blocking north/east movement.
+It also checks the cave both ways and both runtime tide maps against assets.
+
+Verification: native build and host checks pass. The focused emulator run
+`emulator-corvala-correct-layer-20261108` passes (45.88s), including upper
+cliff collision, Surf return, cave entry/exit and both tide maps. LOW is
+pixel-identical to the pre-correction preview. Changes remain uncommitted.
+
+The twelve lower corners/faces circled in the shoreline review also flood,
+including the two faces beside the cave dock. Upper backing is preserved.
+Final corner verification: emulator-corvala-corners-20261108 passes (57.52s); native build and host validation pass.

@@ -2,6 +2,7 @@
 import hashlib
 from PIL import Image,ImageChops
 from build_cove import R,D,read,words,flood,atlas
+from refine_tides import reachable
 m=read(R/'tools/corvala/map.json');assert m['design']=='cave-cove-v1'
 assert {b['name'] for b in m['buildings'] if b['name'].startswith('house')}=={f'house{i}' for i in range(1,6)}
 w,h=m['dimensions'];assert (w,h)==(64,64)
@@ -46,15 +47,46 @@ for i,event in enumerate(town['warp_events']):
  interior=maps[event['dest_map']];back=interior['warp_events'][int(event['dest_warp_id'])]
  assert back['dest_map']=='MAP_CORVALA_TOWN' and back['dest_warp_id']==str(i)
  layout=layouts[interior['layout']];ib=words(R/layout['blockdata_filepath']);assert not ib[back['y']*layout['width']+back['x']]&0xc00
-assert all(blocks[y*w+x]&0xc00 for x,y in [(x,y) for y in range(h) for x in range(w) if x in (0,w-1) or y in (0,h-1)])
-doors={(v['x'],v['y']) for v in town['warp_events']};seen=flood(blocks,w,h,m['landmarks']['entrance_approach'],doors)
-for name,xy in m['landmarks'].items():assert tuple(xy) in seen,(name,'unreachable')
+doors={(v['x'],v['y']) for v in town['warp_events']}
+seen=reachable(blocks,m['landmarks']['entrance_approach'],doors)
 assert len(seen)==m['walkable_cells']
-for tx,ty,tw,th,sx in m['gym_terraces']['tiers']:
- stair_cells={(xx,yy) for xx in (sx,sx+1) for yy in (ty+th-2,ty+th-1)}
- assert tuple(m['landmarks']['gym_approach']) not in flood(blocks,w,h,m['landmarks']['entrance_approach'],doors|stair_cells),'gym tier can be bypassed'
-assert len(m['gym_terraces']['tiers'])==3
-print('PASS: gym route climbs all three stair-connected cliff terraces')
+assert not any(x in (0,63) or y in (0,63) for x,y in seen), 'accessible map boundary'
+assert m['gym_terraces']['source']=='user-0c02a4ba'
+high=words(R/'tools/corvala/tide_states/high.bin')
+images=atlas('corvala');out=Image.new('RGB',(w*16,h*16))
+for i,b in enumerate(high):out.paste(images[b&1023],(i%w*16,i//w*16))
+assert ImageChops.difference(out,Image.open(R/'docs/corvala/high-tide-playable.png')).getbbox() is None
+npcs={(v['x'],v['y']) for v in town['object_events']}
+for phase,bs in [('LOW',blocks),('HIGH',high)]:
+ seen=reachable(bs,m['landmarks']['entrance_approach'],doors|npcs)
+ for name,xy in m['landmarks'].items():
+  if phase=='HIGH' and name in m['tide_states']['low_only_landmarks']:continue
+  assert tuple(xy) in seen,(phase,name,'blocked by terrain/NPC')
+ for x,y in npcs:
+  assert any(p in seen for p in [(x-1,y),(x+1,y),(x,y-1),(x,y+1)])
+ for ev in town['warp_events']:assert bs[ev['y']*w+ev['x']]>>12==ev['elevation']
+print('PASS: both tides retain services, matching warp elevations and reachable dock NPCs')
+assert tuple(m['landmarks']['gym_approach']) not in reachable(high,m['landmarks']['entrance_approach'],doors)
+attrs=words(D/'metatile_attributes.bin',4);primary_attrs=words(R/'data/tilesets/primary/general/metatile_attributes.bin',4)
+for v in high:
+ mid=v&1023;a=primary_attrs[mid] if mid<640 else attrs[mid-640]
+ assert a&511!=0x21,'sand remains exposed at high tide'
+ assert mid not in (667,668,669,670,m['labels']['Stairs']),'dock support or wooden stairs remain exposed'
+for x,y in m['tide_states']['submerged_cliff_cells']:assert high[y*w+x]&1023==0x12b
+rim={(x,y) for x,y,mask in m['tide_states']['flooded_cliff_rim']}
+assert {(39,10),(43,11),(46,12),(47,16),(51,16),(56,15),(58,16),(59,18),(60,20),(61,23),(62,27),(63,31)}<=rim,'circled lower cliff corners remain exposed'
+assert {(30,10),(46,14),(61,25)}<=rim,'lower northern/eastern cliff sections were missed'
+for x,y,original in [(30,9,0x447c),(62,25,0x3c73)]:
+ assert (x,y) not in rim and high[y*w+x]==blocks[y*w+x]==original,'upper cliff layer changed'
+for x,y in rim:
+ assert high[y*w+x]&1023==0x12b and high[y*w+x]>>12==1
+ assert bool(high[y*w+x]&0xc00)==(x==63)
+for x,y in m['tide_states']['surf_landings']:
+ assert high[y*w+x]>>12==3 and high[(y+1)*w+x]==0x112b
+for x,y,size in m['tide_states']['rock_sites']:
+ for dy in range(size):
+  for dx in range(size):assert blocks[(y+dy)*w+x+dx]&0xc00 and high[(y+dy)*w+x+dx]&0xc00
+print('PASS: full sand/terrace/support/stair flooding, low-only gym, Surf landings and solid rocks in both tides')
 print('PASS: cave-only physical entrance, no road seams, nine reciprocal town warps and all approaches')
 cave=maps['MAP_CORVALA_ENTRANCE_CAVE'];layout=layouts[cave['layout']];ib=words(R/layout['blockdata_filepath'])
 a,b=cave['warp_events'];seen=flood(ib,layout['width'],layout['height'],(a['x'],a['y']+1),{(a['x'],a['y']),(b['x'],b['y'])})
@@ -63,5 +95,5 @@ road=maps['MAP_VIDRA_COASTAL_ROAD'];assert road['warp_events'][0]['dest_map']=='
 layout=layouts[road['layout']];rb=words(R/layout['blockdata_filepath']);assert (20,10) in flood(rb,24,24,(11,0))
 heal=next(v for v in read(R/'src/data/heal_locations.json')['heal_locations'] if v['id']=='HEAL_LOCATION_QUANTUM_COASTAL_CITY')
 assert [heal['x'],heal['y']]==m['landmarks']['center_approach']
-assert not m['tide_states']['runtime_switching']
+assert m['tide_states']['runtime_switching']
 print('PASS: Coastal Road-to-cave access, cave traversal and relocated heal/Fly landing')

@@ -290,6 +290,7 @@ if __name__=='__main__':
  ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--write',action='store_true');args=ap.parse_args()
  if args.write:
   old=read(R/'tools/corvala/map.json')
+  assert not old.get('tide_states',{}).get('runtime_switching'), 'Use refine_tides.py: the old cove generator predates the user layout and tides'
   if old.get('design')=='cave-cove-v1':assert hashlib.sha256((R/'data/layouts/Corvala_Town/map.bin').read_bytes()).hexdigest()==old['result_sha256'],'Manual edits detected; backport them before regenerating'
   p,blocks,m=build();install(p,blocks,m);print('Installed cove:',len(p.tiles),'tiles,',len(p.metas),'metatiles')
  render()

@@ -6,4 +6,4 @@ Corvala_House1_Resident::
 	end
 
 Corvala_House1_Resident_Text::
-	.string "Our homes stand above the reef.\nThe pilings reach into the sand.$"
+	.string "My grandfather drove the first\npilings into this sand.\pThe sea can come and go.\nOur home stays right here.$"

@@ -6,4 +6,4 @@ Corvala_House5_Resident::
 	end
 
 Corvala_House5_Resident_Text::
-	.string "From here, I can see the cave\nwhere travelers arrive.$"
+	.string "Everyone arrives through that\ncave. News travels with them.\pStay awhile. The cove looks\ndifferent when the tide turns.$"

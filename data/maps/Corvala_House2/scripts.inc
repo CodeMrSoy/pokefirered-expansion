@@ -6,4 +6,4 @@ Corvala_House2_Resident::
 	end
 
 Corvala_House2_Resident_Text::
-	.string "The cave is our link to the mainland.\nThese docks are the heart of CORVALA.$"
+	.string "The tide changes on the hour.\nCheck the clock before exploring.\pHead back to the docks when\nyou have finished on the reef.$"

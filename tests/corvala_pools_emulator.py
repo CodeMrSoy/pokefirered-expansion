@@ -30,6 +30,6 @@ for y in range(19,4,-1):
  if y==9:m.snap('gym-main-pool')
 for y in range(6,21):step(5,(13,y))
 m.keys.add(5);m.run(40);m.keys.clear();m.run(200)
-assert map_id()==ids['Corvala_Town'] and pos()==(12,9)
+assert map_id()==ids['Corvala_Town'] and pos()==(10,15)
 warp('Corvala_EntranceCave',14,14);m.snap('entrance-cave-pool')
 print('PASS: final ROM loads both repaired pool maps; gym crossing and return work',flush=True)

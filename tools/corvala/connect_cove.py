@@ -109,5 +109,7 @@ def main():
 
 if __name__=='__main__':
  ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--write',action='store_true');args=ap.parse_args()
- if args.write:main()
+ if args.write:
+  assert not read(R/'tools/corvala/map.json').get('tide_states',{}).get('runtime_switching'), 'Connections are now manually maintained; populate_town.py owns resident dialogue'
+  main()
  else:print('Use --write explicitly to install the cave-cove connections.')

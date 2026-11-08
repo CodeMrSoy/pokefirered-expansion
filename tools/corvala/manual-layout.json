@@ -2,5 +2,7 @@
   "design": "cave-cove-v1",
   "generator_locked": true,
   "authoritative": "data/layouts/Corvala_Town/map.bin",
-  "generator": "tools/corvala/build_cove.py"
+  "generator": "tools/corvala/refine_tides.py",
+  "source_snapshot": "tools/corvala/manual_layouts/user-0c02a4ba.bin",
+  "note": "Incorporate later Porymap edits into the authoring snapshot before regenerating tides."
 }

@@ -6,4 +6,4 @@ Corvala_House3_Resident::
 	end
 
 Corvala_House3_Resident_Text::
-	.string "The reef is full of color.\nPlease watch where you step.$"
+	.string "I keep drawings of every coral\nI find. No two are alike!\pSome POKéMON hide in the sand\nbetween the coral heads.$"

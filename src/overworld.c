@@ -1,4 +1,5 @@
 #include "global.h"
+#include "corvala_tides.h"
 #include "quantum_campaign.h"
 #include "quantum_cleanup.h"
 #include "text_window.h"
@@ -1657,6 +1658,7 @@ static void OverworldBasic(void)
     UpdateTilesetAnimations();
     DoScheduledBgTilemapCopiesToVram();
     UpdateLanternLighting();
+    CorvalaTide_Update();
     // Every minute if no palette fade is active, update TOD blending as needed
     if (!gPaletteFade.active && --gTimeUpdateCounter <= 0)
     {
