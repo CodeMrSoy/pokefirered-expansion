@@ -9,6 +9,9 @@ DOCKS=[
  ('ShellCollector','LITTLE_GIRL',16,35,'I found a shell that whistles!\\nListen...\\pOh. That was the wind.'),
  ('CoralKeeper','WOMAN_1',48,25,'These reefs are alive.\\nPlease leave the coral here.\\pTake a memory home instead!'),
  ('TideLookout','BOY',38,40,'High tide covers the sand and\\nthe lower cliff below the GYM.\\pVisit the GYM when the tide is\\nlow. I wait here on the docks!'),
+ ('DockCorsola','SPECIES(CORSOLA)',23,31,r'CORSOLA: Cor! Corsola!\nIt basks in the salty breeze.\pThe fisher keeps an eye on it\nwhile mending the nets.'),
+ ('DockMareanie','SPECIES(MAREANIE)',40,39,r'MAREANIE waves its tentacles.\nIt seems curious about you.\pThe coral keeper makes sure\nit leaves the reef alone.'),
+ ('DockCorsolaHome','SPECIES(CORSOLA)',36,37,r'CORSOLA: Cor! Cor!\nIt is resting beside the hut.\pTiny flecks of sand sparkle\non its coral branches.'),
 ]
 HOUSES=[
  'My grandfather drove the first\\npilings into this sand.\\pThe sea can come and go.\\nOur home stays right here.',
@@ -42,7 +45,7 @@ def main():
   'water_mons':table(4,['TENTACOOL','HORSEA','WINGULL','CORSOLA','MANTYKE']),
   'fishing_mons':table(20,['MAGIKARP','KRABBY','KRABBY','HORSEA','STARYU','HORSEA','CORSOLA','STARYU','MAREANIE','KINGLER'])})
  write(R/'src/data/wild_encounters.json',data)
- print('Installed six dock residents, five house dialogues and Corvala sand/Surf/fishing encounters')
+ print('Installed six dock residents, three friendly Pokemon, five house dialogues and Corvala sand/Surf/fishing encounters')
 
 if __name__=='__main__':
  ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--write',action='store_true');args=ap.parse_args()

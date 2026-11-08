@@ -74,7 +74,7 @@ The preserved input is `tools/corvala/manual_layouts/user-0c02a4ba.bin`.
   accessibility. `tests/corvala_tides_emulator.py` exercises the runtime behavior.
 
 Build normally to regenerate map data and wild encounter headers. This pass
-has 248 secondary metatiles, within the 384 limit, and uses existing graphics.
+has 266 secondary metatiles, within the 384 limit, and uses existing graphics.
 The native build passes at 258,106 bytes EWRAM and 27,573 bytes IWRAM.
 
 ## Verification of this pass
@@ -107,3 +107,18 @@ pixel-identical to the pre-correction preview. Changes remain uncommitted.
 The twelve lower corners/faces circled in the shoreline review also flood,
 including the two faces beside the cave dock. Upper backing is preserved.
 Final corner verification: emulator-corvala-corners-20261108 passes (57.52s); native build and host validation pass.
+
+## Pacifidlog huts
+
+The five home exteriors use native-resolution Pacifidlog straw huts from
+pret/pokeemerald. Doorways retain their coordinates, with open dock space
+around the smaller huts. The source assets and adapter live under
+`tools/corvala/assets/pacifidlog` and `pacifidlog_huts.py`.
+Verification: native build, host map validation and emulator-corvala-huts-20261108 pass, including all house entrances and resident dialogue at both tides.
+
+Dock details: six lantern posts, three timber benches, and two friendly Corsola and one Mareanie objects with dialogue. Furniture and Pokemon stay on the permanent raised docks.
+Dock detail verification: native build and emulator-corvala-dock-details-final-20261108 pass (154.63s), including all three Pokemon interactions, building access at both tides and tide/Surf safety.
+
+Hut flooring uses plain interior planks beneath all transparent corners,
+rather than repeating a sampled platform edge.
+Verification: native build, host checks and emulator-corvala-reef-residents-20261108 pass (50.86s). Corsola/Mareanie sprites and hut corner flooring inspected in emulator screenshots.

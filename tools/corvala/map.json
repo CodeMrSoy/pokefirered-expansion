@@ -5,8 +5,8 @@
     64,
     64
   ],
-  "tiles": 227,
-  "metatiles": 248,
+  "tiles": 320,
+  "metatiles": 274,
   "buildings": [
     {
       "name": "center",
@@ -3356,7 +3356,7 @@
       19
     ]
   ],
-  "walkable_cells": 1265,
+  "walkable_cells": 1418,
   "shoreline": {
     "generated_metatiles": [
       640,
@@ -3391,7 +3391,7 @@
       "odd": "high"
     },
     "changed_cells": 1051,
-    "safe_cells": 567,
+    "safe_cells": 720,
     "source_commit": "0c02a4ba",
     "full_flood": true,
     "submerged_supports_and_steps": [
@@ -4364,5 +4364,5 @@
       ]
     ]
   },
-  "result_sha256": "83891cfdbd65e314c1c23341ff56f300468c4eab898733c2e5e9a1c8e5967f60"
+  "result_sha256": "63dba60e427141dc9358bc00538117e55c0b289cfed73bf0b0eff1a19a91490c"
 }

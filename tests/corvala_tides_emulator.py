@@ -129,7 +129,7 @@ for i in range(1,6):
   if m.read(m.symbols['sGlobalScriptContext']+1,1)==b'\x00':break
  assert m.read(m.symbols['sGlobalScriptContext']+1,1)==b'\x00'
  follow((4,6));enter('Corvala_Town',5,40)
-print('PASS: all six dock residents and five house dialogues open and close',flush=True)
+print('PASS: all dock residents, friendly Pokemon and five house dialogues open and close',flush=True)
 
 # Return through the cave at HIGH; re-entering chooses the RTC's phase.
 follow((49,16));enter('Corvala_EntranceCave');follow((5,3));enter('Vidra_CoastalRoad')

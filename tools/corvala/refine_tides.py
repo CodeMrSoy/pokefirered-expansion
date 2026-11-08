@@ -136,6 +136,8 @@ def main():
             mid=p.meta(p.desc(mid),(p.attr(mid)&~0x07000000)|0x01000000)
             bs[i]=(v&0xfc00)|mid
     edge_and_encounters(low);edge_and_encounters(high)
+    from pacifidlog_huts import install
+    install(p,low,high,town,m)
     doors={(v['x'],v['y']) for v in town['warp_events']}
     for phase,bs in [('low',low),('high',high)]:
         seen=reachable(bs,(49,16),doors)

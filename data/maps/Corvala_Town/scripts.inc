@@ -47,3 +47,24 @@ Corvala_Dock_TideLookout::
 
 Corvala_Dock_TideLookout_Text::
 	.string "High tide covers the sand and\nthe lower cliff below the GYM.\pVisit the GYM when the tide is\nlow. I wait here on the docks!$"
+
+Corvala_Dock_DockCorsola::
+	msgbox Corvala_Dock_DockCorsola_Text, MSGBOX_NPC
+	end
+
+Corvala_Dock_DockCorsola_Text::
+	.string "CORSOLA: Cor! Corsola!\nIt basks in the salty breeze.\pThe fisher keeps an eye on it\nwhile mending the nets.$"
+
+Corvala_Dock_DockMareanie::
+	msgbox Corvala_Dock_DockMareanie_Text, MSGBOX_NPC
+	end
+
+Corvala_Dock_DockMareanie_Text::
+	.string "MAREANIE waves its tentacles.\nIt seems curious about you.\pThe coral keeper makes sure\nit leaves the reef alone.$"
+
+Corvala_Dock_DockCorsolaHome::
+	msgbox Corvala_Dock_DockCorsolaHome_Text, MSGBOX_NPC
+	end
+
+Corvala_Dock_DockCorsolaHome_Text::
+	.string "CORSOLA: Cor! Cor!\nIt is resting beside the hut.\pTiny flecks of sand sparkle\non its coral branches.$"
