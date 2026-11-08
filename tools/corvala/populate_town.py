@@ -32,6 +32,9 @@ def main():
   ev.update(graphics_id='OBJ_EVENT_GFX_'+gfx,x=x,y=y,elevation=bs[y*64+x]>>12,script=label)
   town['object_events'].append(ev)
   text+=f'\n{label}::\n\tmsgbox {label}_Text, MSGBOX_NPC\n\tend\n\n{label}_Text::\n\t.string "{dialogue}$"\n'
+ for name,change in [('Rising','getting higher'),('Receding','receding')]:
+  label='Corvala_Tide'+name+'Warning'
+  text+=f'\n{label}::\n\tlockall\n\tmsgbox {label}_Text, MSGBOX_DEFAULT\n\twarp MAP_CORVALA_TOWN, 255, 31, 26\n\twaitstate\n\treleaseall\n\tend\n\n{label}_Text::\n\t.string "The water looks like it is\\n{change}...\\pBetter get to safety!$"\n'
  write(R/'data/maps/Corvala_Town/map.json',town);write(R/'data/maps/Corvala_Town/scripts.inc',text)
  for i,dialogue in enumerate(HOUSES,1):
   name=f'Corvala_House{i}'

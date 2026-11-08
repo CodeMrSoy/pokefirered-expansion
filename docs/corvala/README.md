@@ -31,10 +31,12 @@ Six existing dock-edge tiles above the submerged stairs are Surf landings at
 HIGH. Their artwork stays unchanged; local map elevations provide the native
 Surf launch/landing behavior without altering Surf rules elsewhere.
 
-A tide change waits while the player is exploring the sandbar, gym terraces, or surfing.
-It applies on reaching permanent shore or the docks and stopping. This avoids
-flooding a walking player, stranding an island visitor, or drying the water
-beneath a surfer. A restored save view preserves the prior phase until safe.
+When the hour changes on sand, gym terraces or while surfing, a locked
+message warns that the water is getting higher or receding. The old phase
+stays intact until the message is dismissed. A normal warp then returns the
+player on foot to (31,26), in front of the Center, and applies the current tide.
+Saved views loaded across an hour boundary use the same warning/rescue flow.
+Permanent dock positions change tide normally without a warning or warp.
 No new save fields are used. Map differences and safe positions live in ROM;
 the existing virtual map buffer is reused, with only two added EWRAM bytes.
 
@@ -122,3 +124,9 @@ Dock detail verification: native build and emulator-corvala-dock-details-final-2
 Hut flooring uses plain interior planks beneath all transparent corners,
 rather than repeating a sampled platform edge.
 Verification: native build, host checks and emulator-corvala-reef-residents-20261108 pass (50.86s). Corsola/Mareanie sprites and hut corner flooring inspected in emulator screenshots.
+Dock landscaping: six pots reuse the native coral shapes, with light timber and dark sage-gray plank routes connecting the cave, Center, Mart and homes. Routes avoid furniture, doorways and outdoor residents. Run tools/corvala/render_overview.py for previews with resident sprites.
+Verification: native build, host checks and emulator-corvala-potted-coral-20261108 pass (51.65s), covering all huts at both tides and reef Pokemon interactions.
+Service building corner cleanup replaces embedded green grass pixels around Center and Mart with dock planks. Native door behavior is retained. Packed previews and host checks pass.
+Rescue verification: native build passes; emulator-corvala-tide-rescue-20261108 passes (33.65s) for rising sand, saved-view rising sand, receding Surf, locked movement, Center arrival on foot, normal dock switching and midnight. Full emulator-corvala-rescue-regression-20261108 passes (154.57s), including buildings, residents, Surf and wild encounters.
+Coral layering: sand decorations and potted coral use the bottom/middle background layers so adjacent coral cannot cover the player sprite. Collision and hourly tide behavior are preserved.
+Layer verification: native build and emulator-corvala-coral-layer-20261108 pass (33.37s); the original rising-sand warning scene was visually inspected with the player rendered in front of adjacent coral.

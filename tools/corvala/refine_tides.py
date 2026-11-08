@@ -28,6 +28,9 @@ def main():
     low=words(BASE);p=Pack()
     ds=words(D/'metatiles.bin')[:222*8]
     p.metas=[ds[i:i+8] for i in range(0,len(ds),8)];p.attrs=words(D/'metatile_attributes.bin',4)[:222]
+    # Sand decorations belong behind actors, rather than on the roof layer.
+    # Otherwise coral one row north draws over the player's head.
+    p.attrs=[(a&~0x60000000)|0x20000000 if a&511==0x21 else a for a in p.attrs]
     p.ml={tuple(d)+(a,):640+i for i,(d,a) in enumerate(zip(p.metas,p.attrs))}
     shore=NativeShore(R,atlas('cinnabar_island'),p.meta)
     def sand(v):return p.attr(v&1023)&511==0x21

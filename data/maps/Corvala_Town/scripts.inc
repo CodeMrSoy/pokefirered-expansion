@@ -68,3 +68,25 @@ Corvala_Dock_DockCorsolaHome::
 
 Corvala_Dock_DockCorsolaHome_Text::
 	.string "CORSOLA: Cor! Cor!\nIt is resting beside the hut.\pTiny flecks of sand sparkle\non its coral branches.$"
+
+Corvala_TideRisingWarning::
+	lockall
+	msgbox Corvala_TideRisingWarning_Text, MSGBOX_DEFAULT
+	warp MAP_CORVALA_TOWN, 255, 31, 26
+	waitstate
+	releaseall
+	end
+
+Corvala_TideRisingWarning_Text::
+	.string "The water looks like it is\ngetting higher...\pBetter get to safety!$"
+
+Corvala_TideRecedingWarning::
+	lockall
+	msgbox Corvala_TideRecedingWarning_Text, MSGBOX_DEFAULT
+	warp MAP_CORVALA_TOWN, 255, 31, 26
+	waitstate
+	releaseall
+	end
+
+Corvala_TideRecedingWarning_Text::
+	.string "The water looks like it is\nreceding...\pBetter get to safety!$"

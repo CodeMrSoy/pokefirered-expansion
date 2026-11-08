@@ -27,7 +27,9 @@ primary=words(R/'data/tilesets/primary/general/metatiles.bin')
 for yy,row in enumerate(native_center):
  for xx,expected in enumerate(row):
   actual=blocks[(center['y']+yy)*w+center['x']+xx]&1023
-  if yy==0 or xx==4:
+  if [center['x']+xx,center['y']+yy] in m.get('service_building_floor_repairs',[]):
+   assert not any(g>r*1.10 and g>b*1.06 for r,g,b in images[actual].getdata()), 'grass around Center'
+  elif yy==0 or xx==4:
    assert metas[(actual-640)*8+4:(actual-640)*8+8]==primary[expected*8+4:expected*8+8]
   else:assert actual==expected
 print('PASS: complete native Center roof cap, wall columns and animated doorway')
@@ -68,6 +70,8 @@ for phase,bs in [('LOW',blocks),('HIGH',high)]:
 print('PASS: both tides retain services, matching warp elevations and reachable dock NPCs')
 assert tuple(m['landmarks']['gym_approach']) not in reachable(high,m['landmarks']['entrance_approach'],doors)
 attrs=words(D/'metatile_attributes.bin',4);primary_attrs=words(R/'data/tilesets/primary/general/metatile_attributes.bin',4)
+for mid in [m['labels'][f'Coral{i}'] for i in range(7)]:
+ assert (attrs[mid-640]>>29)&3==1,'coral must render behind character sprites'
 for v in high:
  mid=v&1023;a=primary_attrs[mid] if mid<640 else attrs[mid-640]
  assert a&511!=0x21,'sand remains exposed at high tide'

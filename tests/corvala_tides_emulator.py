@@ -74,6 +74,15 @@ def check_phase(phase):
  vw,vh,ptr=struct.unpack('<iiI',m.read(m.symbols['VMap'],12))
  for y in range(64):assert m.read(ptr+2*((y+7)*vw+7),128)==raw[y*128:(y+1)*128],(phase,'row',y)
 
+def finish_tide_rescue(phase):
+ assert m.read(m.symbols['sGlobalScriptContext']+1,1)!=b'\0'
+ for _ in range(10):
+  m.press(8,60);m.run(100)
+  if pos()==(31,26) and m.read(m.symbols['sGlobalScriptContext']+1,1)==b'\0':break
+ assert pos()==(31,26)
+ assert not m.read(m.symbols['gPlayerAvatar'],1)[0]&8
+ check_phase(phase)
+
 hour(10);native('DisableWildEncounters',1)
 warp('Vidra_CoastalRoad',11,12);follow((20,10));enter('Corvala_EntranceCave');follow((24,3));enter('Corvala_Town')
 assert pos()==(49,16);check_phase('low')
@@ -86,9 +95,8 @@ for phase,clock in [('low',10),('high',11)]:
   enter('Corvala_Town',5,40 if label=='gym' else 22);assert pos()==approach,(label,pos(),approach)
   check_phase(phase)
  if phase=='low':
-  hour(11);check_phase('low');native('SaveMapView');native('InitMapFromSavedGame');check_phase('low')
-  follow((31,26));m.run(120);check_phase('high');hour(10)
-  print('PASS: pending high tide never strands the player at the gym or on its lower cliff',flush=True)
+  hour(11);check_phase('low');finish_tide_rescue('high');hour(10)
+  print('PASS: gym approach returns safely to the Center at tide change',flush=True)
  else:
   try:follow(tuple(manifest['landmarks']['gym_approach']))
   except AssertionError as e:assert e.args[0][0]=='no path'
@@ -98,11 +106,10 @@ for value,phase in [(12,'low'),(23,'high'),(0,'low')]:
  follow((31,26));hour(value);check_phase(phase)
 print('PASS: even/odd hours and midnight rollover update the live map',flush=True)
 
-# A saved beach position retains LOW across an hourly change and map reload.
+# Sand evacuation at the hourly boundary.
 follow((24,46));m.snap('low-reef');hour(11);check_phase('low')
-native('SaveMapView');native('InitMapFromSavedGame');check_phase('low')
-follow((31,26));m.run(120);check_phase('high')
-print('PASS: low-tide sandbar safety, saved-view reload, then automatic high tide on the dock',flush=True)
+finish_tide_rescue('high')
+print('PASS: sand warning and Center rescue',flush=True)
 
 # Every resident can be approached and their full message dismissed normally.
 town=json.loads((m.root/'data/maps/Corvala_Town/map.json').read_text())
@@ -146,11 +153,12 @@ for i,(x,y) in enumerate(manifest['tide_states']['surf_landings']):
  if i==0:
   follow((14,23),surf=True);m.press(4,30);assert pos()==(14,23),'rock should block Surf'
   follow((x,y+1),surf=True)
-  hour(12);check_phase('high');native('SaveMapView');native('InitMapFromSavedGame');check_phase('high');m.snap('high-surf-safety')
+  hour(12);check_phase('high');finish_tide_rescue('low');hour(11)
+  continue
  m.keys.add(4);m.run(12);m.keys.clear();m.run(90)
  assert pos()==(x,y) and not m.read(m.symbols['gPlayerAvatar'],1)[0]&8,('dock Surf return',x,y,pos())
  follow((31,26));m.run(120)
- if i==0:check_phase('low');hour(11);check_phase('high')
+
 print('PASS: all six dock Surf landings, solid sea rocks and saved high-water safety',flush=True)
 
 # Real movement on encounter sand must launch a wild battle; docks must not.

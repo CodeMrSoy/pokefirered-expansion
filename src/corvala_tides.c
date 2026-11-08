@@ -22,6 +22,8 @@ struct CorvalaTideTile
 // All geometry stays in ROM; reuse the engine's existing virtual map buffer.
 static EWRAM_DATA u8 sCorvalaTide = 0;
 static EWRAM_DATA u8 sCorvalaTideTimer = 0;
+extern const u8 Corvala_TideRisingWarning[];
+extern const u8 Corvala_TideRecedingWarning[];
 
 static bool32 IsCorvala(void)
 {
@@ -59,7 +61,7 @@ void CorvalaTide_OnLoad(void)
     {
         // Loading a save after an hour boundary must not flood a walking
         // player or remove water beneath a surfer. Recover the saved phase
-        // from the restored view, then wait for permanent ground.
+        // from the restored view, then warn and rescue on the next update.
         high = FALSE;
         for (i = 0; i < ARRAY_COUNT(sCorvalaTideTiles); i++)
         {
@@ -93,7 +95,13 @@ void CorvalaTide_Update(void)
         return;
     PlayerGetDestCoords(&x, &y);
     if (!IsSafePosition(x - MAP_OFFSET, y - MAP_OFFSET))
+    {
+        // Keep the current ground intact until the warning is acknowledged.
+        // The script warps onto permanent dock ground; OnLoad applies the RTC
+        // phase there and the normal warp resets Surf to walking.
+        ScriptContext_SetupScript(high ? Corvala_TideRisingWarning : Corvala_TideRecedingWarning);
         return;
+    }
     ApplyTide(high);
     DrawWholeMapView();
 }
