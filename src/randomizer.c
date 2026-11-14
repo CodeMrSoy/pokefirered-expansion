@@ -1,3 +1,4 @@
+#include "game_modes.h"
 #include "randomizer.h"
 #include "mail.h"
 
@@ -29,63 +30,43 @@ void RandomizerApplyFeatureFlags(void)
         return;
 
     #ifndef FORCE_RANDOMIZE_WILD_MON
-        if (gRandomizerEnabled) FlagSet(RANDOMIZER_FLAG_WILD_MON);
+        if (gRandomizerEnabled && GameModes_Enabled(GAME_MODE_POKEMON)) FlagSet(RANDOMIZER_FLAG_WILD_MON);
         else FlagClear(RANDOMIZER_FLAG_WILD_MON);
     #endif
     #ifndef FORCE_RANDOMIZE_FIELD_ITEMS
-        if (gRandomizerEnabled) FlagSet(RANDOMIZER_FLAG_FIELD_ITEMS);
+        if (gRandomizerEnabled && GameModes_Enabled(GAME_MODE_ITEMS)) FlagSet(RANDOMIZER_FLAG_FIELD_ITEMS);
         else FlagClear(RANDOMIZER_FLAG_FIELD_ITEMS);
     #endif
     #ifndef FORCE_RANDOMIZE_TRAINER_MON
-        if (gRandomizerEnabled) FlagSet(RANDOMIZER_FLAG_TRAINER_MON);
+        if (gRandomizerEnabled && GameModes_Enabled(GAME_MODE_POKEMON)) FlagSet(RANDOMIZER_FLAG_TRAINER_MON);
         else FlagClear(RANDOMIZER_FLAG_TRAINER_MON);
     #endif
     #ifndef FORCE_RANDOMIZE_FIXED_MON
-        if (gRandomizerEnabled) FlagSet(RANDOMIZER_FLAG_FIXED_MON);
+        if (gRandomizerEnabled && GameModes_Enabled(GAME_MODE_POKEMON)) FlagSet(RANDOMIZER_FLAG_FIXED_MON);
         else FlagClear(RANDOMIZER_FLAG_FIXED_MON);
     #endif
     #ifndef FORCE_RANDOMIZE_STARTER_AND_GIFT_MON
-        if (gRandomizerEnabled) FlagSet(RANDOMIZER_FLAG_STARTER_AND_GIFT_MON);
+        if (gRandomizerEnabled && GameModes_Enabled(GAME_MODE_POKEMON)) FlagSet(RANDOMIZER_FLAG_STARTER_AND_GIFT_MON);
         else FlagClear(RANDOMIZER_FLAG_STARTER_AND_GIFT_MON);
     #endif
     #ifndef FORCE_RANDOMIZE_EGG_MON
-        if (gRandomizerEnabled) FlagSet(RANDOMIZER_FLAG_EGG_MON);
+        if (gRandomizerEnabled && GameModes_Enabled(GAME_MODE_POKEMON)) FlagSet(RANDOMIZER_FLAG_EGG_MON);
         else FlagClear(RANDOMIZER_FLAG_EGG_MON);
     #endif
     #ifndef FORCE_RANDOMIZE_ABILITIES
-        if (gRandomizerEnabled) FlagSet(RANDOMIZER_FLAG_ABILITIES);
+        if (gRandomizerEnabled && GameModes_Enabled(GAME_MODE_ABILITIES)) FlagSet(RANDOMIZER_FLAG_ABILITIES);
         else FlagClear(RANDOMIZER_FLAG_ABILITIES);
     #endif
     #ifndef FORCE_RANDOMIZE_LEARNSET
-        if (gRandomizerEnabled) FlagSet(RANDOMIZER_FLAG_LEARNSET);
+        if (gRandomizerEnabled && GameModes_Enabled(GAME_MODE_MOVES)) FlagSet(RANDOMIZER_FLAG_LEARNSET);
         else FlagClear(RANDOMIZER_FLAG_LEARNSET);
     #endif
 }
 
 void RandomizerSetEnabled(bool8 enabled)
 {
-    gRandomizerEnabled = enabled;
-    if (enabled)
-    {
-        if (gCachedRandomizerSeed == 0)
-        {
-            if (gSaveBlock2Ptr != NULL && gSaveBlock2Ptr->randomizerSeed != 0)
-                gCachedRandomizerSeed = gSaveBlock2Ptr->randomizerSeed;
-            else
-                gCachedRandomizerSeed = GenerateSeedForRandomizer();
-        }
-        if (gSaveBlock2Ptr != NULL)
-            gSaveBlock2Ptr->randomizerSeed = gCachedRandomizerSeed;
-    }
-    else
-    {
-        gCachedRandomizerSeed = 0;
-        if (gSaveBlock2Ptr != NULL)
-            gSaveBlock2Ptr->randomizerSeed = 0;
-    }
-    RandomizerApplyFeatureFlags();
+    GameModes_Set(GAME_MODE_RANDOM, enabled);
 }
-
 
 // Add the mons you wish to be randomized when given as starter/gift mon to this list
 const u16 gStarterAndGiftMonTable[STARTER_AND_GIFT_MON_COUNT] =
@@ -1052,7 +1033,7 @@ void RandomizeGymTM_NativeCall(struct ScriptContext *ctx)
 bool32 RandomizerTrainerUsesLearnset(u16 trainerId)
 {
     // These crews intentionally teach fixed partner interactions.
-    if (trainerId >= TRAINER_HAVORA_DOCK_CREW && trainerId <= TRAINER_HAVORA_FIRST_MATE)
+    if (GameModes_PreserveGymTeam(trainerId))
         return FALSE;
 
     return RandomizerFeatureEnabled(RANDOMIZE_TRAINER_MON)

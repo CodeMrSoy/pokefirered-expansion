@@ -1,4 +1,5 @@
 #include "global.h"
+#include "game_modes.h"
 #include "avatar.h"
 #include "constants/vars.h"
 #include "gflib.h"
@@ -28,7 +29,6 @@
 #include "union_room_chat.h"
 #include "mystery_gift.h"
 #include "renewable_hidden_items.h"
-#include "trainer_tower.h"
 #include "script.h"
 #include "berry_powder.h"
 #include "pokemon_jump.h"
@@ -165,9 +165,9 @@ void NewGameInitData(void)
     FlagSet(FLAG_SYS_B_DASH);
     FlagSet(FLAG_HIDE_PEWTER_CITY_RUNNING_SHOES_GUY);
     StringCopy(gSaveBlock1Ptr->rivalName, rivalName);
-    ResetTrainerTowerResults();
     ResetItemFlags();
     ResetDexNav();
+    GameModes_NewGame();
     gCachedRandomizerSeed = gSaveBlock2Ptr->randomizerSeed;
     MgbaPrintf(MGBA_LOG_DEBUG, "NewGameInit: Cached Seed = 0x%08X", gCachedRandomizerSeed);
     #if (RANDOMIZER_AVAILABLE == TRUE) && (RANDOMIZER_DYNAMIC_SPECIES == TRUE)

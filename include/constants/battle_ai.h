@@ -34,7 +34,17 @@
 #define AI_FLAG_PREDICT_MOVE                (1 << 26)  // AI will predict the player's move based on what move it would use in the same situation. Recommend using AI_FLAG_OMNISCIENT
 #define AI_FLAG_SMART_TERA                  (1 << 27)  // AI will make smarter decisions when choosing whether to terrastalize (default is to always tera whenever available).
 
-#define AI_FLAG_COUNT                       28
+// Quantum tier markers are mutually exclusive. The profiles below include
+// the upstream fundamentals; no profile grants hidden-information access.
+#define AI_FLAG_QUANTUM_TIER_REGULAR        ((u64)1 << 28)
+#define AI_FLAG_QUANTUM_TIER_GYM_TRAINER    ((u64)1 << 29)
+#define AI_FLAG_QUANTUM_TIER_GYM_LEADER     ((u64)1 << 30)
+#define AI_FLAG_QUANTUM_TIER_RIVAL          ((u64)1 << 31)
+#define AI_FLAG_QUANTUM_TIER_ELITE_FOUR     ((u64)1 << 32)
+#define AI_FLAG_QUANTUM_TIER_CHAMPION       ((u64)1 << 33)
+#define AI_FLAG_QUANTUM_TIERS              (((u64)63) << 28)
+
+#define AI_FLAG_COUNT                       34
 
 // Flags at and after 32 need different formatting, as in
 // #define AI_FLAG_PLACEHOLDER      ((u64)1 << 32)
@@ -43,6 +53,16 @@
 #define AI_FLAG_BASIC_TRAINER         (AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_TRY_TO_FAINT | AI_FLAG_CHECK_VIABILITY)
 #define AI_FLAG_SMART_TRAINER         (AI_FLAG_BASIC_TRAINER | AI_FLAG_OMNISCIENT | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES | AI_FLAG_PP_STALL_PREVENTION | AI_FLAG_SMART_TERA)
 #define AI_FLAG_PREDICTION            (AI_FLAG_PREDICT_SWITCH | AI_FLAG_PREDICT_INCOMING_MON | AI_FLAG_PREDICT_MOVE)
+
+#define AI_FLAG_QUANTUM_FOUNDATION    (AI_FLAG_BASIC_TRAINER)
+#define AI_FLAG_QUANTUM_TACTICAL      (AI_FLAG_QUANTUM_FOUNDATION | AI_FLAG_HP_AWARE | AI_FLAG_SMART_MON_CHOICES)
+#define AI_FLAG_QUANTUM_STRATEGIC     (AI_FLAG_QUANTUM_TACTICAL | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_TERA)
+#define AI_FLAG_QUANTUM_REGULAR       (AI_FLAG_QUANTUM_FOUNDATION | AI_FLAG_QUANTUM_TIER_REGULAR)
+#define AI_FLAG_QUANTUM_GYM_TRAINER   (AI_FLAG_QUANTUM_TACTICAL | AI_FLAG_QUANTUM_TIER_GYM_TRAINER)
+#define AI_FLAG_QUANTUM_GYM_LEADER    (AI_FLAG_QUANTUM_STRATEGIC | AI_FLAG_QUANTUM_TIER_GYM_LEADER)
+#define AI_FLAG_QUANTUM_RIVAL         (AI_FLAG_QUANTUM_STRATEGIC | AI_FLAG_QUANTUM_TIER_RIVAL)
+#define AI_FLAG_QUANTUM_ELITE_FOUR    (AI_FLAG_QUANTUM_STRATEGIC | AI_FLAG_CONSERVATIVE | AI_FLAG_QUANTUM_TIER_ELITE_FOUR)
+#define AI_FLAG_QUANTUM_CHAMPION      (AI_FLAG_QUANTUM_STRATEGIC | AI_FLAG_CONSERVATIVE | AI_FLAG_QUANTUM_TIER_CHAMPION)
 
 // 'other' ai logic flags
 #define AI_FLAG_DYNAMIC_FUNC          ((u64)1 << 60)  // Create custom AI functions for specific battles via "setdynamicaifunc" cmd

@@ -1493,7 +1493,13 @@ void AIFlags_(u32 sourceLine, u64 flags)
 {
     INVALID_IF(!IsAITest(), "AI_FLAGS is usable only in AI_SINGLE_BATTLE_TEST & AI_DOUBLE_BATTLE_TEST");
     DATA.recordedBattle.AI_scripts = flags;
+    DATA.aiFlags = flags;
     DATA.hasAI = TRUE;
+}
+
+u64 TestRunner_Battle_GetAIFlags(void)
+{
+    return DATA.aiFlags;
 }
 
 void AILogScores(u32 sourceLine)

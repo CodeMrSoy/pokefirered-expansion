@@ -25,7 +25,7 @@ def native(name,*args):
     finally: m.inject=original_inject
 
 def constant(name, header):
-    value = subprocess.check_output([tool_prefix+'cpp','-P','-I',str(m.root/'include'),'-'],
+    value = subprocess.check_output([tool_prefix+'cpp','-P','-DFIRERED=1','-I',str(m.root/'include'),'-'],
         input=f'#include "constants/{header}"\n{name}\n',text=True)
     expression=value.strip().splitlines()[-1]
     if expression==name:
@@ -43,9 +43,21 @@ rows=[('PewterCity',39,'BROCK'),('CeruleanCity',3,'MISTY'),
 rows=[(town,constant(f'ITEM_TM{tm:02}','items.h'),constant('TRAINER_LEADER_'+leader,'opponents.h')) for town,tm,leader in rows]
 
 def set_seed(seed):
-    native('RandomizerSetEnabled',0)
-    m.write(m.symbols['gCachedRandomizerSeed'],struct.pack('<I',seed))
-    native('RandomizerSetEnabled',1)
+    # The old master-switch wrapper is stripped from release ROMs. Use the
+    # retained settings API and locate the seed immediately before the saved
+    # settings marker, as the main-menu save/load fixture does.
+    random_bits=constant('GAME_MODE_RANDOM','../game_modes.h')
+    native('GameModes_Set',random_bits,0)
+    save=struct.unpack('<I',m.read(m.symbols['gSaveBlock2Ptr'],4))[0]
+    blob=m.read(save,0xf80)
+    marker=bytes([constant('GAME_MODE_VERSION','../game_modes.h'),
+                  constant('GAME_MODE_LEVEL_CAPS','../game_modes.h')])+bytes(32)
+    offsets=[i for i in range(len(blob)) if blob.startswith(marker,i)]
+    assert len(offsets)==1,offsets
+    m.write(save+offsets[0]-5,struct.pack('<I',seed))
+    native('GameModes_Set',random_bits,1)
+    assert native('GetRandomizerSeed')==seed
+
 
 def reward(item,leader):
     m.write(m.symbols['gSpecialVar_0x8008'],struct.pack('<H',item))
@@ -153,6 +165,8 @@ def create_party(leader):
 # survive the custom trainer party path in all three combinations.
 for trainer_flag,learnset_flag in ((True,True),(True,False),(False,True)):
     assert m.lib.retro_unserialize(baseline,size)
+    # Set the gym permission before selecting the individual feature flags.
+    native('GameModes_Set',constant('GAME_MODE_VIDRA_GYMS','../game_modes.h'),1)
     native('FlagSet' if trainer_flag else 'FlagClear',0x0b1)
     native('FlagSet' if learnset_flag else 'FlagClear',0x0b6)
     battle=native('AllocZeroed_',16384,0)
@@ -173,8 +187,9 @@ for trainer_flag,learnset_flag in ((True,True),(True,False),(False,True)):
         assert count
     print('PASS all nine leaders use current species learnsets:',trainer_flag,learnset_flag,flush=True)
 
-# Fixed Havora crews keep their authored strategies under all feature states.
-for leader in range(constant('TRAINER_HAVORA_DOCK_CREW','opponents.h'),constant('TRAINER_HAVORA_FIRST_MATE','opponents.h')+1):
+# The default/off setting preserves every Havora team, including the two later IDs.
+native('GameModes_Set',constant('GAME_MODE_VIDRA_GYMS','../game_modes.h'),0)
+for leader in range(constant('TRAINER_HAVORA_DOCK_CREW','opponents.h'),constant('TRAINER_HAVORA_LOCKKEEPER','opponents.h')+1):
     assert not native('RandomizerTrainerUsesLearnset',leader)
 native('FlagClear',0x0b1);native('FlagClear',0x0b6)
 assert not native('RandomizerTrainerUsesLearnset',rows[0][2])

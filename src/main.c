@@ -27,7 +27,6 @@
 #include "intro.h"
 #include "main.h"
 #include "poke_glass.h"
-#include "trainer_tower.h"
 #include "test_runner.h"
 #include "constants/rgb.h"
 
@@ -188,7 +187,6 @@ static void UpdateLinkAndCallCallbacks(void)
 static void InitMainCallbacks(void)
 {
     gMain.vblankCounter1 = 0;
-    gTrainerTowerVBlankCounter = NULL;
     gMain.vblankCounter2 = 0;
     gMain.callback1 = NULL;
     SetMainCallback2(gInitialMainCB2);
@@ -379,9 +377,6 @@ static void VBlankIntr(void)
 
     gMain.vblankCounter1++;
 
-    if (gTrainerTowerVBlankCounter && *gTrainerTowerVBlankCounter < 0xFFFFFFFF)
-        (*gTrainerTowerVBlankCounter)++;
-
     if (gMain.vblankCallback)
         gMain.vblankCallback();
 
@@ -457,16 +452,6 @@ static void WaitForVBlank(void)
     {
         VBlankIntrWait();
     }
-}
-
-void SetTrainerTowerVBlankCounter(u32 *ptr)
-{
-    gTrainerTowerVBlankCounter = ptr;
-}
-
-void ClearTrainerTowerVBlankCounter(void)
-{
-    gTrainerTowerVBlankCounter = NULL;
 }
 
 void DoSoftReset(void)

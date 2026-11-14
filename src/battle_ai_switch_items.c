@@ -2,6 +2,7 @@
 #include "battle.h"
 #include "constants/battle_ai.h"
 #include "battle_ai_main.h"
+#include "battle_ai_quantum.h"
 #include "battle_ai_util.h"
 #include "battle_util.h"
 #include "battle_anim.h"
@@ -255,7 +256,7 @@ static bool32 ShouldSwitchIfHasBadOdds(u32 battler)
     // Get max damage mon could take
     for (i = 0; i < MAX_MON_MOVES; i++)
     {
-        playerMove = gBattleMons[opposingBattler].moves[i];
+        playerMove = GetMovesArray(opposingBattler)[i];
         if (playerMove != MOVE_NONE && !IsBattleMoveStatus(playerMove) && GetMoveEffect(playerMove) != EFFECT_FOCUS_PUNCH)
         {
             damageTaken = AI_GetDamage(opposingBattler, battler, i, AI_DEFENDING, gAiLogicData);
@@ -1324,6 +1325,8 @@ void AI_TrySwitchOrUseItem(u32 battler)
     {
         if (gAiLogicData->shouldSwitch & (1u << battler) && IsSwitchinValid(battler))
         {
+            if (QuantumAI_GetTier(battler) != QUANTUM_AI_NONE)
+                gAiBattleData->quantumLastSwitchTurn[battler] = gBattleResults.battleTurnCounter + 1;
             BtlController_EmitTwoReturnValues(battler, B_COMM_TO_ENGINE, B_ACTION_SWITCH, 0);
             if (gBattleStruct->AI_monToSwitchIntoId[battler] == PARTY_SIZE)
             {
@@ -1529,10 +1532,10 @@ static u32 GetSwitchinHazardsDamage(u32 battler, struct BattlePokemon *battleMon
     u16 heldItemEffect = GetItemHoldEffect(battleMon->item);
     u32 maxHP = battleMon->maxHP, ability = battleMon->ability, status = battleMon->status1;
     u32 spikesDamage = 0, tSpikesDamage = 0, hazardDamage = 0;
-    u32 hazardFlags = gSideStatuses[GetBattlerSide(battler)] & (SIDE_STATUS_SPIKES | SIDE_STATUS_STEALTH_ROCK | SIDE_STATUS_STICKY_WEB | SIDE_STATUS_TOXIC_SPIKES | SIDE_STATUS_SAFEGUARD);
+    u32 hazardFlags = gSideStatuses[GetBattlerSide(battler)] & (SIDE_STATUS_SPIKES | SIDE_STATUS_STEALTH_ROCK | SIDE_STATUS_STEELSURGE | SIDE_STATUS_STICKY_WEB | SIDE_STATUS_TOXIC_SPIKES | SIDE_STATUS_SAFEGUARD);
 
     // Check ways mon might avoid all hazards
-    if (ability != ABILITY_MAGIC_GUARD || (heldItemEffect == HOLD_EFFECT_HEAVY_DUTY_BOOTS &&
+    if (ability != ABILITY_MAGIC_GUARD && !(heldItemEffect == HOLD_EFFECT_HEAVY_DUTY_BOOTS &&
         !((gFieldStatuses & STATUS_FIELD_MAGIC_ROOM) || ability == ABILITY_KLUTZ)))
     {
         // Stealth Rock
@@ -1786,7 +1789,7 @@ static u32 GetSwitchinStatusDamage(u32 battler)
 // Gets number of hits to KO factoring in hazards, healing held items, status, and weather
 static u32 GetSwitchinHitsToKO(s32 damageTaken, u32 battler)
 {
-    u32 startingHP = gAiLogicData->switchinCandidate.battleMon.hp - GetSwitchinHazardsDamage(battler, &gAiLogicData->switchinCandidate.battleMon);
+    s32 startingHP = (s32)gAiLogicData->switchinCandidate.battleMon.hp - GetSwitchinHazardsDamage(battler, &gAiLogicData->switchinCandidate.battleMon);
     s32 weatherImpact = GetSwitchinWeatherImpact(); // Signed to handle both damage and healing in the same value
     u32 recurringDamage = GetSwitchinRecurringDamage();
     u32 recurringHealing = GetSwitchinRecurringHealing();
@@ -1799,16 +1802,17 @@ static u32 GetSwitchinHitsToKO(s32 damageTaken, u32 battler)
     bool32 usedSingleUseHealingItem = FALSE, opponentCanBreakMold = IsMoldBreakerTypeAbility(opposingBattler, opposingAbility);
     s32 currentHP = startingHP;
 
-    // No damage being dealt
-    if ((damageTaken + statusDamage + recurringDamage <= recurringHealing) || damageTaken + statusDamage + recurringDamage == 0)
-        return startingHP;
-
     // Mon fainted to hazards
-    if (startingHP == 0)
-        return 1;
+    if (startingHP <= 0)
+        return 0;
+
+    // No damage being dealt. Eight surviving turns is sufficient for ranking
+    // these candidates and avoids unbounded hypothetical healing loops.
+    if ((damageTaken + statusDamage + recurringDamage <= recurringHealing) || damageTaken + statusDamage + recurringDamage == 0)
+        return AI_SWITCH_SURVIVAL_HORIZON;
 
     // Find hits to KO
-    while (currentHP > 0)
+    while (currentHP > 0 && hitsToKO < AI_SWITCH_SURVIVAL_HORIZON)
     {
         // Remove weather damage when it would run out
         if (weatherImpact != 0 && weatherDuration == 0)
@@ -1945,7 +1949,7 @@ static s32 GetMaxDamagePlayerCouldDealToSwitchin(u32 battler, u32 opposingBattle
 
     for (i = 0; i < MAX_MON_MOVES; i++)
     {
-        playerMove = gBattleMons[opposingBattler].moves[i];
+        playerMove = GetMovesArray(opposingBattler)[i];
         if (playerMove != MOVE_NONE && !IsBattleMoveStatus(playerMove) && GetMoveEffect(playerMove) != EFFECT_FOCUS_PUNCH)
         {
             damageTaken = AI_CalcPartyMonDamage(playerMove, opposingBattler, battler, battleMon, AI_DEFENDING);
@@ -1956,6 +1960,58 @@ static s32 GetMaxDamagePlayerCouldDealToSwitchin(u32 battler, u32 opposingBattle
         }
     }
     return maxDamageTaken;
+}
+
+// Final veto after upstream switching rules and move scoring have both run.
+// Applies to voluntary switches only; forced replacements remain available.
+void QuantumAI_FinalizeSwitch(u32 battler)
+{
+    enum QuantumAITier tier = QuantumAI_GetTier(battler);
+    u32 candidate = gBattleStruct->AI_monToSwitchIntoId[battler];
+    u32 target = GetOppositeBattler(battler), hazards, incoming = 0, foe;
+    struct BattlePokemon mon;
+    bool32 emergency;
+
+    if (tier == QUANTUM_AI_NONE || !(gAiLogicData->shouldSwitch & (1u << battler)))
+        return;
+    emergency = (gStatuses3[battler] & STATUS3_PERISH_SONG)
+             && gDisableStructs[battler].perishSongTimer == 0;
+
+    if (candidate == PARTY_SIZE)
+        candidate = gAiLogicData->mostSuitableMonId[battler];
+    if (candidate >= PARTY_SIZE)
+        goto stay;
+
+    PokemonToBattleMon(&GetBattlerParty(battler)[candidate], &mon);
+    hazards = GetSwitchinHazardsDamage(battler, &mon);
+    if (hazards >= mon.hp)
+        goto stay;
+
+    for (foe = 0; foe < gBattlersCount; foe++)
+    {
+        if (IsBattlerAlive(foe) && !IsBattlerAlly(battler, foe))
+            incoming += GetMaxDamagePlayerCouldDealToSwitchin(battler, foe, mon);
+    }
+    if (!emergency && incoming >= mon.hp - hazards)
+        goto stay;
+
+    if (!emergency && !IsDoubleBattle() && QuantumAI_HasReliableKO(battler, target))
+        goto stay;
+
+    // Avoid consecutive voluntary switches. Perish Song still takes priority.
+    if (!emergency && gAiBattleData->quantumLastSwitchTurn[battler] != 0
+        && gBattleResults.battleTurnCounter + 1 <= gAiBattleData->quantumLastSwitchTurn[battler] + 1)
+        goto stay;
+
+    // Elite opponents preserve HP rather than switching into a near-fatal hit.
+    if (!emergency && tier >= QUANTUM_AI_ELITE_FOUR
+        && incoming + hazards + mon.maxHP / (tier == QUANTUM_AI_CHAMPION ? 5 : 10) >= mon.hp)
+        goto stay;
+    return;
+
+stay:
+    gAiLogicData->shouldSwitch &= ~(1u << battler);
+    gBattleStruct->AI_monToSwitchIntoId[battler] = PARTY_SIZE;
 }
 
 static bool32 CanAbilityTrapOpponent(u16 ability, u32 opponent)

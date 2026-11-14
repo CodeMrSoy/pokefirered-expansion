@@ -1,4 +1,5 @@
 #include "global.h"
+#include "game_modes.h"
 #include "battle.h"
 #include "battle_anim.h"
 #include "battle_ai_main.h"
@@ -521,6 +522,7 @@ static void CB2_InitBattleInternal(void)
 {
     s32 i;
 
+    Nuzlocke_BeginEncounter(gMapHeader.regionMapSectionId, gBattleTypeFlags);
     SetHBlankCallback(NULL);
     SetVBlankCallback(NULL);
 
@@ -2003,7 +2005,7 @@ u8 CreateNPCTrainerPartyFromTrainer(struct Pokemon *party, const struct Trainer 
             u16 species = partyData[monIndex].species;
 
             #if (RANDOMIZER_AVAILABLE)
-                if (seed >= TRAINER_HAVORA_DOCK_CREW && seed <= TRAINER_HAVORA_FIRST_MATE)
+                if (GameModes_PreserveGymTeam(seed))
                 {
                     // Havora crews teach specific partner interactions.
                 }
@@ -2042,9 +2044,8 @@ u8 CreateNPCTrainerPartyFromTrainer(struct Pokemon *party, const struct Trainer 
             CreateMon(&party[i], species, partyData[monIndex].lvl, 0, TRUE, personalityValue, otIdType, fixedOtId);
             SetMonData(&party[i], MON_DATA_HELD_ITEM, &partyData[monIndex].heldItem);
 
-            // CreateMon already chose level-appropriate moves from this species'
-            // current (possibly randomized) learnset. Do not overwrite them with
-            // the original trainer's authored moves in a randomized party.
+            // Keep authored themed teams unless the player opts them in.
+            // Other randomized teams use the current species' level-up moves.
             #if RANDOMIZER_AVAILABLE
             if (!RandomizerTrainerUsesLearnset(seed))
             #endif
@@ -2083,7 +2084,7 @@ u8 CreateNPCTrainerPartyFromTrainer(struct Pokemon *party, const struct Trainer 
             SetMonData(&party[i], MON_DATA_ABILITY_NUM, &abilityNum);
             {
                 // Other trainer parties retain the normal randomizer behavior.
-                u32 fixedAbility = seed >= TRAINER_HAVORA_DOCK_CREW && seed <= TRAINER_HAVORA_FIRST_MATE;
+                u32 fixedAbility = GameModes_PreserveGymTeam(seed);
                 SetMonData(&party[i], MON_DATA_CANT_RANDOMIZE_ABILITY, &fixedAbility);
             }
             SetMonData(&party[i], MON_DATA_FRIENDSHIP, &(partyData[monIndex].friendship));
@@ -5289,8 +5290,7 @@ static void HandleEndTurn_FinishBattle(void)
 
     if (gCurrentActionFuncId == B_ACTION_TRY_FINISH || gCurrentActionFuncId == B_ACTION_FINISHED)
     {
-        if (!(gBattleTypeFlags & (BATTLE_TYPE_TRAINER_TOWER 
-                                | BATTLE_TYPE_RECORDED_LINK
+        if (!(gBattleTypeFlags & (BATTLE_TYPE_RECORDED_LINK
                                 | BATTLE_TYPE_EREADER_TRAINER 
                                 | BATTLE_TYPE_OLD_MAN_TUTORIAL 
                                 | BATTLE_TYPE_BATTLE_TOWER 

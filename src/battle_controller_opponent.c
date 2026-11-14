@@ -29,7 +29,6 @@
 #include "string_util.h"
 #include "task.h"
 #include "text.h"
-#include "trainer_tower.h"
 #include "util.h"
 #include "window.h"
 #include "constants/battle_anim.h"
@@ -327,10 +326,6 @@ static u32 OpponentGetTrainerPicId(u32 battlerId)
         {
             trainerPicId = GetBattleTowerTrainerFrontSpriteId(TRAINER_BATTLE_PARAM.opponentA);
         }
-    }
-    else if (gBattleTypeFlags & BATTLE_TYPE_TRAINER_TOWER)
-    {
-        trainerPicId = GetTrainerTowerTrainerFrontSpriteId();
     }
     else if (gBattleTypeFlags & BATTLE_TYPE_EREADER_TRAINER)
     {

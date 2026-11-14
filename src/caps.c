@@ -1,4 +1,5 @@
 #include "global.h"
+#include "game_modes.h"
 #include "battle.h"
 #include "event_data.h"
 #include "caps.h"
@@ -37,6 +38,9 @@ u32 GetCurrentLevelCap(void)
     u32 i;
     u16 crests;
 
+    if (!GameModes_Enabled(GAME_MODE_LEVEL_CAPS))
+        return MAX_LEVEL;
+
     if (B_LEVEL_CAP_TYPE == LEVEL_CAP_FLAG_LIST)
     {
         // Completed saves remain uncapped, including saves from before the
@@ -74,7 +78,7 @@ u32 GetSoftLevelCapExpValue(u32 level, u32 expValue)
     u32 levelDifference;
     u32 currentLevelCap = GetCurrentLevelCap();
 
-    if (B_EXP_CAP_TYPE == EXP_CAP_NONE)
+    if (B_EXP_CAP_TYPE == EXP_CAP_NONE || !GameModes_Enabled(GAME_MODE_LEVEL_CAPS))
         return expValue;
 
     if (level < currentLevelCap)

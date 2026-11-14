@@ -1,4 +1,5 @@
 #include "global.h"
+#include "game_modes.h"
 
 #include "gflib.h"
 
@@ -62,7 +63,8 @@ static void Task_WaitFadeAndPrintMainMenuText(u8 taskId);
 static void Task_PrintMainMenuText(u8 taskId);
 static void Task_WaitDma3AndFadeIn(u8 taskId);
 static void Task_UpdateVisualSelection(u8 taskId);
-static void PrintRandomizerInfo(u8 windowId, u32 seed);
+static void OpenRandomizedOptions(u8 taskId);
+static void Task_RandomizedOptions(u8 taskId);
 static void Task_HandleMenuInput(u8 taskId);
 static void Task_ExecuteMainMenuSelection(u8 taskId);
 static void Task_MysteryGiftError(u8 taskId);
@@ -79,6 +81,8 @@ static void LoadUserFrameToBg(u8 bgId);
 static void SetStdFrame0OnBg(u8 bgId);
 static void MainMenu_DrawWindow(const struct WindowTemplate * template);
 static void MainMenu_EraseWindow(const struct WindowTemplate * template);
+
+static const u8 sRandomizedOptionsLabel[] = _("Randomized Options");
 
 static const u8 sString_Dummy[] = _("");
 static const u8 sString_Newline[] = _("\n");
@@ -264,7 +268,7 @@ static void Task_SetWin0BldRegsAndCheckSaveFile(u8 taskId)
         case SAVE_STATUS_OK:
             LoadUserFrameToBg(0);
             gCachedRandomizerSeed = gSaveBlock2Ptr->randomizerSeed;
-            RandomizerSetEnabled(gCachedRandomizerSeed != 0);
+            GameModes_Apply();
             if (FALSE)
             {
                 gTasks[taskId].tMenuType = MAIN_MENU_MYSTERYGIFT;
@@ -302,7 +306,8 @@ static void Task_SetWin0BldRegsAndCheckSaveFile(u8 taskId)
         default:
             LoadUserFrameToBg(0);
             gTasks[taskId].tMenuType = MAIN_MENU_NEWGAME;
-            RandomizerSetEnabled(FALSE);
+            GameModes_EnsureInitialized();
+            GameModes_Apply();
             gTasks[taskId].func = Task_WaitFadeAndPrintMainMenuText;
             break;
         case SAVE_STATUS_NO_FLASH:
@@ -427,21 +432,6 @@ static void Task_WaitFadeAndPrintMainMenuText(u8 taskId)
     }
 }
 
-static void PrintRandomizerInfo(u8 windowId, u32 seed)
-{
-    u8 seedString[11];
-    u8 *digits = seedString + sizeof(seedString) - 1;
-    // Seeds use the full unsigned range; the generic signed formatter shows
-    // a question mark for values above INT32_MAX.
-    *digits = EOS;
-    do
-    {
-        *--digits = CHAR_0 + seed % 10;
-        seed /= 10;
-    } while (seed != 0);
-    AddTextPrinterParameterized3(windowId, FONT_NORMAL, 74, 2, sTextColor1, -1, digits);
-}
-
 static void Task_PrintMainMenuText(u8 taskId)
 {
     u16 pal;
@@ -465,11 +455,7 @@ static void Task_PrintMainMenuText(u8 taskId)
         FillWindowPixelBuffer(MAIN_MENU_WINDOW_RANDOMIZER_ONLY, PIXEL_FILL(10));
         AddTextPrinterParameterized3(MAIN_MENU_WINDOW_NEWGAME_ONLY, FONT_NORMAL, 2, 2, sTextColor1, -1, gText_NewGame);
         AddTextPrinterParameterized3(MAIN_MENU_WINDOW_RANDOMIZER_ONLY, FONT_NORMAL, 2, 2, sTextColor1, -1,
-            gRandomizerEnabled ? gText_RandomizerOn : gText_RandomizerOff);
-        if (gRandomizerEnabled)
-            PrintRandomizerInfo(MAIN_MENU_WINDOW_RANDOMIZER_ONLY, GetRandomizerSeed());
-        else
-            AddTextPrinterParameterized3(MAIN_MENU_WINDOW_RANDOMIZER_ONLY, FONT_NORMAL, 74, 2, sTextColor1, -1, gText_SeedOff);
+            sRandomizedOptionsLabel);
         MainMenu_DrawWindow(&sWindowTemplate[MAIN_MENU_WINDOW_NEWGAME_ONLY]);
         MainMenu_DrawWindow(&sWindowTemplate[MAIN_MENU_WINDOW_RANDOMIZER_ONLY]);
         PutWindowTilemap(MAIN_MENU_WINDOW_NEWGAME_ONLY);
@@ -484,11 +470,7 @@ static void Task_PrintMainMenuText(u8 taskId)
         AddTextPrinterParameterized3(MAIN_MENU_WINDOW_NEWGAME, FONT_NORMAL, 2, 2, sTextColor1, -1, gText_NewGame);
         FillWindowPixelBuffer(MAIN_MENU_WINDOW_RANDOMIZER, PIXEL_FILL(10));
         AddTextPrinterParameterized3(MAIN_MENU_WINDOW_RANDOMIZER, FONT_NORMAL, 2, 2, sTextColor1, -1,
-            gRandomizerEnabled ? gText_RandomizerOn : gText_RandomizerOff);
-        if (gRandomizerEnabled)
-            PrintRandomizerInfo(MAIN_MENU_WINDOW_RANDOMIZER, GetRandomizerSeed());
-        else
-            AddTextPrinterParameterized3(MAIN_MENU_WINDOW_RANDOMIZER, FONT_NORMAL, 74, 2, sTextColor1, -1, gText_SeedOff);
+            sRandomizedOptionsLabel);
         PrintContinueStats();
         MainMenu_DrawWindow(&sWindowTemplate[MAIN_MENU_WINDOW_CONTINUE]);
         MainMenu_DrawWindow(&sWindowTemplate[MAIN_MENU_WINDOW_NEWGAME]);
@@ -508,11 +490,7 @@ static void Task_PrintMainMenuText(u8 taskId)
         AddTextPrinterParameterized3(MAIN_MENU_WINDOW_NEWGAME, FONT_NORMAL, 2, 2, sTextColor1, -1, gText_NewGame);
         FillWindowPixelBuffer(MAIN_MENU_WINDOW_RANDOMIZER, PIXEL_FILL(10));
         AddTextPrinterParameterized3(MAIN_MENU_WINDOW_RANDOMIZER, FONT_NORMAL, 2, 2, sTextColor1, -1,
-            gRandomizerEnabled ? gText_RandomizerOn : gText_RandomizerOff);
-        if (gRandomizerEnabled)
-            PrintRandomizerInfo(MAIN_MENU_WINDOW_RANDOMIZER, GetRandomizerSeed());
-        else
-            AddTextPrinterParameterized3(MAIN_MENU_WINDOW_RANDOMIZER, FONT_NORMAL, 74, 2, sTextColor1, -1, gText_SeedOff);
+            sRandomizedOptionsLabel);
         gTasks[taskId].tMGErrorType = 1;
         AddTextPrinterParameterized3(MAIN_MENU_WINDOW_MYSTERYGIFT, FONT_NORMAL, 2, 2, sTextColor1, -1, gText_MysteryGift);
         PrintContinueStats();
@@ -635,6 +613,7 @@ static void Task_ExecuteMainMenuSelection(u8 taskId)
         {
         default:
         case MAIN_MENU_NEWGAME:
+            GameModes_Apply();
             if (gRandomizerEnabled)
             {
                 gCachedRandomizerSeed = GenerateSeedForRandomizer();
@@ -735,19 +714,8 @@ static bool8 HandleMenuInput(u8 taskId)
         && ((gTasks[taskId].tMenuType == MAIN_MENU_NEWGAME && gTasks[taskId].tCursorPos == 1)
             || (gTasks[taskId].tMenuType != MAIN_MENU_NEWGAME && gTasks[taskId].tCursorPos == 2)))
     {
-        RandomizerSetEnabled(!gRandomizerEnabled);
         PlaySE(SE_SELECT);
-        Task_PrintMainMenuText(taskId);
-        {
-        u8 window = gTasks[taskId].tMenuType == MAIN_MENU_NEWGAME
-            ? MAIN_MENU_WINDOW_OPTIONS_ONLY : MAIN_MENU_WINDOW_OPTIONS;
-        FillWindowPixelBuffer(window, PIXEL_FILL(10));
-        AddTextPrinterParameterized3(window, FONT_NORMAL, 2, 2, sTextColor1, -1, sOptionsLabel);
-        MainMenu_DrawWindow(&sWindowTemplate[window]);
-        PutWindowTilemap(window);
-        CopyWindowToVram(window, COPYWIN_FULL);
-    }
-    gTasks[taskId].func = Task_WaitDma3AndFadeIn;
+        OpenRandomizedOptions(taskId);
     }
     else if (JOY_NEW(A_BUTTON))
     {
@@ -967,4 +935,93 @@ static void MainMenu_EraseWindow(const struct WindowTemplate * windowTemplate)
         2
     );
     CopyBgTilemapBufferToVram(windowTemplate->bg);
+}
+
+#define tModeCursor data[11]
+#define tModeWindow data[12]
+
+static const u8 sModeBits[] = {
+    GAME_MODE_POKEMON, GAME_MODE_MOVES, GAME_MODE_ABILITIES,
+    GAME_MODE_LEVEL_CAPS, GAME_MODE_NUZLOCKE, GAME_MODE_ITEMS,
+    GAME_MODE_VIDRA_GYMS,
+};
+static const u8 *const sModeLabels[] = {
+    COMPOUND_STRING("All POKéMON"), COMPOUND_STRING("Moves"),
+    COMPOUND_STRING("Abilities"), COMPOUND_STRING("Level caps"),
+    COMPOUND_STRING("Nuzlocke"), COMPOUND_STRING("Items"),
+    COMPOUND_STRING("Vidra gyms"),
+};
+static const u8 *const sModeHints[] = {
+    COMPOUND_STRING("Randomize species. Vidra gyms\nhave a separate toggle."),
+    COMPOUND_STRING("Randomize level-up moves. Vidra\ngyms have a separate toggle."),
+    COMPOUND_STRING("Randomize abilities. Vidra gyms\nhave a separate toggle."),
+    COMPOUND_STRING("Limit levels to the next Gym's cap."),
+    COMPOUND_STRING("First encounter per area: grass,\nsurf and fishing share one chance."),
+    COMPOUND_STRING("Randomize field pickups and TMs.\nStory keys stay fixed."),
+    COMPOUND_STRING("WARNING: Designed for specific\nPOKéMON, abilities and moves."),
+};
+static const struct WindowTemplate sModeWindowTemplate = {
+    .bg = 0, .tilemapLeft = 2, .tilemapTop = 1, .width = 26, .height = 18,
+    .paletteNum = 15, .baseBlock = 0x201,
+};
+
+static void DrawRandomizedOptions(u8 taskId)
+{
+    u32 i;
+    u32 first = gTasks[taskId].tModeCursor >= 6 ? gTasks[taskId].tModeCursor - 5 : 0;
+    u8 window = gTasks[taskId].tModeWindow;
+    FillWindowPixelBuffer(window, PIXEL_FILL(10));
+    AddTextPrinterParameterized3(window, FONT_NORMAL, 8, 0, sTextColor1, -1, sRandomizedOptionsLabel);
+    for (i = first; i < ARRAY_COUNT(sModeBits) && i < first + 6; i++)
+    {
+        u32 y = 21 + (i - first) * 14;
+        const u8 *color = i == gTasks[taskId].tModeCursor ? sTextColor2 : sTextColor1;
+        AddTextPrinterParameterized3(window, FONT_SMALL, 6, y, color, -1, sModeLabels[i]);
+        AddTextPrinterParameterized3(window, FONT_SMALL, 164, y, color, -1,
+            GameModes_Enabled(sModeBits[i]) ? COMPOUND_STRING("ON") : COMPOUND_STRING("OFF"));
+    }
+    AddTextPrinterParameterized3(window, FONT_SMALL, 6, 108, sTextColor1, -1,
+        sModeHints[gTasks[taskId].tModeCursor]);
+    AddTextPrinterParameterized3(window, FONT_SMALL, 6, 133, sTextColor1, -1,
+        COMPOUND_STRING("A: Toggle    B: Back"));
+    MainMenu_DrawWindow(&sModeWindowTemplate);
+    PutWindowTilemap(window);
+    CopyWindowToVram(window, COPYWIN_FULL);
+}
+
+static void OpenRandomizedOptions(u8 taskId)
+{
+    gTasks[taskId].tModeCursor = 0;
+    gTasks[taskId].tModeWindow = AddWindow(&sModeWindowTemplate);
+    FillBgTilemapBufferRect_Palette0(0, 0, 0, 0, 32, 32);
+    ChangeBgY(0, 0, BG_COORD_SET);
+    SetGpuReg(REG_OFFSET_WIN0H, WIN_RANGE(0, DISPLAY_WIDTH));
+    SetGpuReg(REG_OFFSET_WIN0V, WIN_RANGE(0, DISPLAY_HEIGHT));
+    SetGpuReg(REG_OFFSET_BLDY, 0);
+    DrawRandomizedOptions(taskId);
+    gTasks[taskId].func = Task_RandomizedOptions;
+}
+
+static void Task_RandomizedOptions(u8 taskId)
+{
+    u8 bit = sModeBits[gTasks[taskId].tModeCursor];
+    if (JOY_NEW(B_BUTTON))
+    {
+        PlaySE(SE_SELECT);
+        RemoveWindow(gTasks[taskId].tModeWindow);
+        FillBgTilemapBufferRect_Palette0(0, 0, 0, 0, 32, 32);
+        Task_PrintMainMenuText(taskId);
+        gTasks[taskId].func = Task_UpdateVisualSelection;
+        return;
+    }
+    if (JOY_NEW(DPAD_UP))
+        gTasks[taskId].tModeCursor = (gTasks[taskId].tModeCursor + ARRAY_COUNT(sModeBits) - 1) % ARRAY_COUNT(sModeBits);
+    else if (JOY_NEW(DPAD_DOWN))
+        gTasks[taskId].tModeCursor = (gTasks[taskId].tModeCursor + 1) % ARRAY_COUNT(sModeBits);
+    else if (JOY_NEW(A_BUTTON | DPAD_LEFT | DPAD_RIGHT))
+        GameModes_Set(bit, JOY_NEW(DPAD_LEFT) ? FALSE : JOY_NEW(DPAD_RIGHT) ? TRUE : !GameModes_Enabled(bit));
+    else
+        return;
+    PlaySE(SE_SELECT);
+    DrawRandomizedOptions(taskId);
 }
