@@ -943,19 +943,22 @@ static void MainMenu_EraseWindow(const struct WindowTemplate * windowTemplate)
 static const u8 sModeBits[] = {
     GAME_MODE_POKEMON, GAME_MODE_MOVES, GAME_MODE_ABILITIES,
     GAME_MODE_LEVEL_CAPS, GAME_MODE_NUZLOCKE, GAME_MODE_ITEMS,
+    GAME_MODE_VIDRA_GYMS,
 };
 static const u8 *const sModeLabels[] = {
     COMPOUND_STRING("All POKéMON"), COMPOUND_STRING("Moves"),
     COMPOUND_STRING("Abilities"), COMPOUND_STRING("Level caps"),
     COMPOUND_STRING("Nuzlocke"), COMPOUND_STRING("Items"),
+    COMPOUND_STRING("Vidra gyms"),
 };
 static const u8 *const sModeHints[] = {
-    COMPOUND_STRING("Randomize species. Havora's themed\nteams stay fixed."),
-    COMPOUND_STRING("Randomize level-up moves. Havora's\nthemed moves stay fixed."),
-    COMPOUND_STRING("Randomize abilities. Havora's\nthemed abilities stay fixed."),
+    COMPOUND_STRING("Randomize species. Vidra gyms\nhave a separate toggle."),
+    COMPOUND_STRING("Randomize level-up moves. Vidra\ngyms have a separate toggle."),
+    COMPOUND_STRING("Randomize abilities. Vidra gyms\nhave a separate toggle."),
     COMPOUND_STRING("Limit levels to the next Gym's cap."),
     COMPOUND_STRING("First encounter per area: grass,\nsurf and fishing share one chance."),
     COMPOUND_STRING("Randomize field pickups and TMs.\nStory keys stay fixed."),
+    COMPOUND_STRING("WARNING: Designed for specific\nPOKéMON, abilities and moves."),
 };
 static const struct WindowTemplate sModeWindowTemplate = {
     .bg = 0, .tilemapLeft = 2, .tilemapTop = 1, .width = 26, .height = 18,
@@ -965,12 +968,13 @@ static const struct WindowTemplate sModeWindowTemplate = {
 static void DrawRandomizedOptions(u8 taskId)
 {
     u32 i;
+    u32 first = gTasks[taskId].tModeCursor >= 6 ? gTasks[taskId].tModeCursor - 5 : 0;
     u8 window = gTasks[taskId].tModeWindow;
     FillWindowPixelBuffer(window, PIXEL_FILL(10));
     AddTextPrinterParameterized3(window, FONT_NORMAL, 8, 0, sTextColor1, -1, sRandomizedOptionsLabel);
-    for (i = 0; i < ARRAY_COUNT(sModeBits); i++)
+    for (i = first; i < ARRAY_COUNT(sModeBits) && i < first + 6; i++)
     {
-        u32 y = 21 + i * 14;
+        u32 y = 21 + (i - first) * 14;
         const u8 *color = i == gTasks[taskId].tModeCursor ? sTextColor2 : sTextColor1;
         AddTextPrinterParameterized3(window, FONT_SMALL, 6, y, color, -1, sModeLabels[i]);
         AddTextPrinterParameterized3(window, FONT_SMALL, 164, y, color, -1,

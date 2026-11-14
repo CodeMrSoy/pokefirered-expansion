@@ -201,3 +201,45 @@ TEST("Game modes: trainer species and move switches produce matching level-up mo
     }
     FREE_AND_SET_NULL(gBattleStruct);ResetModes();
 }
+
+TEST("Game modes: Vidra gym opt-in respects each independent randomization category")
+{
+    u32 mode,id,i,j;
+    PARAMETRIZE { mode=0; }
+    PARAMETRIZE { mode=GAME_MODE_POKEMON; }
+    PARAMETRIZE { mode=GAME_MODE_MOVES; }
+    PARAMETRIZE { mode=GAME_MODE_ABILITIES; }
+    ResetModes();
+    EXPECT(!GameModes_Enabled(GAME_MODE_VIDRA_GYMS));
+    GameModes_Set(GAME_MODE_VIDRA_GYMS,TRUE);
+    EXPECT(!gRandomizerEnabled); // Permission alone does not activate any category.
+    gSaveBlock2Ptr->randomizerSeed=12345;
+    if(mode) GameModes_Set(mode,TRUE);
+    gBattleStruct=AllocZeroed(sizeof(*gBattleStruct));
+    for(id=TRAINER_HAVORA_DOCK_CREW;id<=TRAINER_HAVORA_LOCKKEEPER;id++) {
+        const struct Trainer *trainer=GetTrainerStructFromId(id);
+        EXPECT(!GameModes_PreserveGymTeam(id));
+        CreateNPCTrainerPartyFromTrainer(gEnemyParty,trainer,TRUE,BATTLE_TYPE_TRAINER|BATTLE_TYPE_DOUBLE,id);
+        for(i=0;i<trainer->partySize;i++) {
+            struct Pokemon reference;
+            u16 species=GetMonData(&gEnemyParty[i],MON_DATA_SPECIES);
+            u32 slot=GetMonData(&gEnemyParty[i],MON_DATA_ABILITY_NUM);
+            EXPECT_EQ(species,mode==GAME_MODE_POKEMON
+                ? RandomizeTrainerMon(id,i,trainer->partySize,trainer->party[i].species)
+                : trainer->party[i].species);
+            EXPECT(!GetMonData(&gEnemyParty[i],MON_DATA_CANT_RANDOMIZE_ABILITY));
+            EXPECT_EQ(GetMonAbility(&gEnemyParty[i]),mode==GAME_MODE_ABILITIES
+                ? RandomizeAbility(species,gSpeciesInfo[species].abilities[slot])
+                : gSpeciesInfo[species].abilities[slot]);
+            CreateMon(&reference,species,trainer->party[i].lvl,0,TRUE,0,OT_ID_PRESET,0);
+            for(j=0;j<4;j++) EXPECT_EQ(GetMonData(&gEnemyParty[i],MON_DATA_MOVE1+j),
+                mode==GAME_MODE_POKEMON || mode==GAME_MODE_MOVES
+                    ? GetMonData(&reference,MON_DATA_MOVE1+j) : trainer->party[i].moves[j]);
+        }
+    }
+    GameModes_Set(GAME_MODE_VIDRA_GYMS,FALSE);
+    for(id=TRAINER_HAVORA_DOCK_CREW;id<=TRAINER_HAVORA_LOCKKEEPER;id++)
+        EXPECT(GameModes_PreserveGymTeam(id));
+    EXPECT(!GameModes_PreserveGymTeam(TRAINER_LEADER_BROCK));
+    FREE_AND_SET_NULL(gBattleStruct);ResetModes();
+}

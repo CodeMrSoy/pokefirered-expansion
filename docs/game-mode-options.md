@@ -12,10 +12,15 @@ or settings screen. A toggles; Left selects Off; Right selects On; B returns.
 | Level caps | Enable the existing campaign milestones and experience/Rare Candy cap. Off restores the normal maximum level and experience behavior. |
 | Nuzlocke | Restrict captures to the first eligible wild battle in each named map area. |
 | Items | Independently enable the existing field-item randomizer. |
+| Vidra gyms | Opt themed Vidra gym teams into the selected Pokémon, Moves and Abilities categories. Defaults to Off; does not enable any category by itself. |
 
-All eight Havora Gym encounters retain their authored species, moves and
-abilities, including Harborhand and Lockkeeper. Their weather and partner
-combinations remain intact. Other gyms follow the selected randomization modes.
+With **Vidra gyms Off**, all eight current Havora Gym encounters retain their
+authored species, moves and abilities, including Harborhand and Lockkeeper.
+With it On, each enabled category applies to these teams. The selected row warns:
+“WARNING: Designed for specific Pokémon, abilities and moves.” Kanto gyms continue
+to follow the main categories. Future Vidra gym definitions must be added to
+`GameModes_PreserveGymTeam` when their trainer IDs are implemented.
+The seven-option list scrolls to keep its selection and warning visible.
 
 Settings belong to the current save, take effect on Continue and persist with
 the next ordinary game save. Starting a new game carries the selected modes
@@ -53,7 +58,7 @@ The menu emulator checks independent controls, stable seeds, repeated open/close
 return from general Options, New Game, Flash reload, Continue, and saved encounter
 history. Screenshots are written under `build/quantum-qol-tests/` for visual review.
 
-Validation on 2026-11-14: release ROM build passed; all 20 focused emulator test
+Validation on 2026-11-14: release ROM build passed; all 21 focused emulator test
 groups passed, including parameterized category and ball-command checks; the
 menu/Flash emulator and all three listed host-check scripts passed. The menu and
 Continue screenshots were visually reviewed. No full legacy test-suite claim is

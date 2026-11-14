@@ -39,11 +39,19 @@ assert m.read(ptr('gSaveBlock2Ptr')+seedoff,4)==seed
 # Exit/reopen repeatedly to expose window leaks, cursor loss and stale tilemaps.
 for _ in range(4):
     m.press(0);wait('Task_HandleMenuInput');m.press(8);wait('Task_RandomizedOptions');assert mask()==17
-m.snap('game-modes-options-reopened');m.press(0);wait('Task_HandleMenuInput')
+m.snap('game-modes-options-reopened')
+for _ in range(6):m.press(5)
+assert mask()==17
+m.snap('game-modes-vidra-warning-off')
+m.press(7);assert mask()==81
+m.press(6);assert mask()==17
+m.press(8);assert mask()==81
+m.snap('game-modes-vidra-warning-on')
+m.press(0);wait('Task_HandleMenuInput')
 # General options must preserve game-mode selections as well.
-m.press(5);m.press(8);m.run(180);m.press(0);m.run(180);wait('Task_HandleMenuInput');assert mask()==17
+m.press(5);m.press(8);m.run(180);m.press(0);m.run(180);wait('Task_HandleMenuInput');assert mask()==81
 m.press(4);m.press(4);m.press(8)
-wait('Task_OakSpeech_HandleGenderInput');assert mask()==17,'New Game lost mode selections'
+wait('Task_OakSpeech_HandleGenderInput');assert mask()==81,'New Game lost mode selections'
 # Complete character setup, as the existing avatar emulator fixtures do.
 m.press(8);wait('Task_AvatarChoice_Input');m.press(8)
 for _ in range(7):m.press(8)
@@ -52,7 +60,7 @@ for _ in range(5):m.press(8)
 m.press(5);m.press(8)
 for _ in range(12):m.press(8)
 m.press(0);m.press(0);m.press(0)
-assert mask()==17,'Field initialization lost modes'
+assert mask()==81,'Field initialization lost modes'
 m.snap('game-modes-new-game-field')
 # Call real save code through an overworld native-call trampoline.
 helpers=pathlib.Path(__file__).with_name('rom_cleanup_migration_emulator.py').read_text().split('old=(m.root')[0]
@@ -72,10 +80,10 @@ m.lib.retro_get_memory_size.argtypes=[c.c_uint];m.lib.retro_get_memory_size.rest
 flash=c.string_at(m.lib.retro_get_memory_data(0),m.lib.retro_get_memory_size(0))
 (m.d/'game-modes-save.sav').write_bytes(flash)
 # Reset core while retaining Flash, then Continue and reopen the modes screen.
-m.lib.retro_reset();m.run(360);m.press(3);wait('Task_HandleMenuInput');assert mask()==17
-m.snap('game-modes-continue-menu');m.press(5);m.press(5);m.press(8);wait('Task_RandomizedOptions');assert mask()==17
+m.lib.retro_reset();m.run(360);m.press(3);wait('Task_HandleMenuInput');assert mask()==81
+m.snap('game-modes-continue-menu');m.press(5);m.press(5);m.press(8);wait('Task_RandomizedOptions');assert mask()==81
 m.snap('game-modes-continue-options')
 assert m.read(ptr('gSaveBlock2Ptr')+version+2,32)==history,'Flash reload lost encounter history'
 m.press(0);m.press(4);m.press(4);m.press(8);m.run(500)
 native('Nuzlocke_BeginEncounter',route1,0);assert native('Nuzlocke_CanCatch')==0,'Continue reset encounter history' 
-print('PASS: title modes, independent toggles, stable seed, repeat open/close, general Options, New Game and Flash reload')
+print('PASS: title modes, independent toggles, stable seed, Vidra gym warning/toggle, repeat open/close, general Options, New Game and Flash reload')
