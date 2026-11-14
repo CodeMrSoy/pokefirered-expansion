@@ -667,6 +667,7 @@ struct BattleTrialData
 
 struct BattleTestData
 {
+    u64 aiFlags; // Full-width test flags; the legacy replay save stores only 32 bits.
     u8 stack[BATTLE_TEST_STACK_SIZE];
 
     u8 playerPartySize;

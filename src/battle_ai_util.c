@@ -5,6 +5,7 @@
 #include "battle_anim.h"
 #include "battle_ai_util.h"
 #include "battle_ai_main.h"
+#include "battle_ai_quantum.h"
 #include "battle_ai_switch_items.h"
 // #include "battle_factory.h"
 #include "battle_setup.h"
@@ -63,9 +64,9 @@ u32 AI_GetDamage(u32 battlerAtk, u32 battlerDef, u32 moveIndex, enum DamageCalcC
     }
     else if (calcContext == AI_DEFENDING && BattlerHasAi(battlerDef))
     {
-        if ((gAiThinkingStruct->aiFlags[battlerAtk] & AI_FLAG_RISKY) && !(gAiThinkingStruct->aiFlags[battlerAtk] & AI_FLAG_CONSERVATIVE)) // Risky assumes it takes min damage
+        if ((gAiThinkingStruct->aiFlags[battlerDef] & AI_FLAG_RISKY) && !(gAiThinkingStruct->aiFlags[battlerDef] & AI_FLAG_CONSERVATIVE)) // Risky assumes it takes min damage
             return aiData->simulatedDmg[battlerAtk][battlerDef][moveIndex].minimum;
-        if ((gAiThinkingStruct->aiFlags[battlerAtk] & AI_FLAG_CONSERVATIVE) && !(gAiThinkingStruct->aiFlags[battlerAtk] & AI_FLAG_RISKY)) // Conservative assumes it takes max damage
+        if ((gAiThinkingStruct->aiFlags[battlerDef] & AI_FLAG_CONSERVATIVE) && !(gAiThinkingStruct->aiFlags[battlerDef] & AI_FLAG_RISKY)) // Conservative assumes it takes max damage
             return aiData->simulatedDmg[battlerAtk][battlerDef][moveIndex].maximum;
         return aiData->simulatedDmg[battlerAtk][battlerDef][moveIndex].median; // Default assumes it takes median damage
     }
@@ -215,11 +216,25 @@ void RecordItemEffectBattle(u32 battlerId, u32 itemEffect)
 {
     gBattleHistory->itemEffects[battlerId] = itemEffect;
     gAiPartyData->mons[GetBattlerSide(battlerId)][gBattlerPartyIndexes[battlerId]].heldEffect = itemEffect;
+    if (QuantumAI_UsesFairKnowledge())
+    {
+        u32 item = gBattleMons[battlerId].item;
+        // Theft may record the effect before the engine assigns the new item.
+        // Do not infer an exact item from a mismatching/stale item field.
+        gAiPartyData->mons[GetBattlerSide(battlerId)][gBattlerPartyIndexes[battlerId]].item =
+            itemEffect != HOLD_EFFECT_NONE && GetItemHoldEffect(item) == itemEffect ? item : ITEM_NONE;
+    }
 }
 
 void ClearBattlerItemEffectHistory(u32 battlerId)
 {
     gBattleHistory->itemEffects[battlerId] = 0;
+    if (QuantumAI_UsesFairKnowledge() && gBattleMons[battlerId].item == ITEM_NONE)
+    {
+        struct AiPartyMon *mon = &gAiPartyData->mons[GetBattlerSide(battlerId)][gBattlerPartyIndexes[battlerId]];
+        mon->item = ITEM_NONE;
+        mon->heldEffect = HOLD_EFFECT_NONE;
+    }
 }
 
 void SaveBattlerData(u32 battlerId)
@@ -309,12 +324,16 @@ void SetBattlerData(u32 battlerId)
         else
             gBattleMons[battlerId].ability = ABILITY_NONE;
 
-        if (gAiPartyData->mons[side][gBattlerPartyIndexes[battlerId]].heldEffect == 0)
+        if (QuantumAI_UsesFairKnowledge())
+            gBattleMons[battlerId].item = gAiPartyData->mons[side][gBattlerPartyIndexes[battlerId]].item;
+        else if (gAiPartyData->mons[side][gBattlerPartyIndexes[battlerId]].heldEffect == 0)
             gBattleMons[battlerId].item = 0;
 
         for (i = 0; i < MAX_MON_MOVES; i++)
         {
-            if (gAiPartyData->mons[side][gBattlerPartyIndexes[battlerId]].moves[i] == 0)
+            if (QuantumAI_UsesFairKnowledge())
+                gBattleMons[battlerId].moves[i] = gAiPartyData->mons[side][gBattlerPartyIndexes[battlerId]].moves[i];
+            else if (gAiPartyData->mons[side][gBattlerPartyIndexes[battlerId]].moves[i] == 0)
                 gBattleMons[battlerId].moves[i] = 0;
         }
     }
@@ -1435,7 +1454,8 @@ s32 AI_DecideKnownAbilityForTurn(u32 battlerId)
         return gAiPartyData->mons[GetBattlerSide(battlerId)][gBattlerPartyIndexes[battlerId]].ability;
 
     // Abilities that prevent fleeing - treat as always known
-    if (knownAbility == ABILITY_SHADOW_TAG || knownAbility == ABILITY_MAGNET_PULL || knownAbility == ABILITY_ARENA_TRAP)
+    if (!QuantumAI_UsesFairKnowledge()
+        && (knownAbility == ABILITY_SHADOW_TAG || knownAbility == ABILITY_MAGNET_PULL || knownAbility == ABILITY_ARENA_TRAP))
         return knownAbility;
 
     for (i = 0; i < NUM_ABILITY_SLOTS; i++)
@@ -2118,7 +2138,8 @@ bool32 CanIndexMoveGuaranteeFaintTarget(u32 battlerAtk, u32 battlerDef, u32 move
 
 u16 *GetMovesArray(u32 battler)
 {
-    if (IsAiBattlerAware(battler) || IsAiBattlerAware(BATTLE_PARTNER(battler)))
+    if (IsAiBattlerAware(battler)
+        || (!QuantumAI_UsesFairKnowledge() && IsAiBattlerAware(BATTLE_PARTNER(battler))))
         return gBattleMons[battler].moves;
     else
         return gBattleHistory->usedMoves[battler];

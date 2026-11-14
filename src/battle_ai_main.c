@@ -5,6 +5,7 @@
 #include "battle_anim.h"
 #include "battle_ai_util.h"
 #include "battle_ai_main.h"
+#include "battle_ai_quantum.h"
 #include "battle_controllers.h"
 // #include "battle_factory.h"
 #include "battle_setup.h"
@@ -90,12 +91,12 @@ static s32 (*const sBattleAiFuncTable[])(u32, u32, u32, s32) =
     [25] = AI_CheckPpStall,          // AI_FLAG_PP_STALL_PREVENTION
     [26] = NULL,                     // AI_FLAG_PREDICT_MOVE
     [27] = NULL,                     // Unused
-    [28] = NULL,                     // Unused
-    [29] = NULL,                     // Unused
-    [30] = NULL,                     // Unused
-    [31] = NULL,                     // Unused
-    [32] = NULL,                     // Unused
-    [33] = NULL,                     // Unused
+    [28] = QuantumAI_ScoreMove,
+    [29] = QuantumAI_ScoreMove,
+    [30] = QuantumAI_ScoreMove,
+    [31] = QuantumAI_ScoreMove,
+    [32] = QuantumAI_ScoreMove,
+    [33] = QuantumAI_ScoreMove,
     [34] = NULL,                     // Unused
     [35] = NULL,                     // Unused
     [36] = NULL,                     // Unused
@@ -192,7 +193,13 @@ static u64 GetAiFlags(u16 trainerId)
     else
     {
         if (gBattleTypeFlags & BATTLE_TYPE_RECORDED)
+        {
             flags = GetAiScriptsInRecordedBattle();
+            #if TESTING
+            if (gTestRunnerEnabled)
+                flags = TestRunner_Battle_GetAIFlags();
+            #endif
+        }
         else if (gBattleTypeFlags & BATTLE_TYPE_SAFARI)
             flags = AI_FLAG_SAFARI;
         else if (gBattleTypeFlags & BATTLE_TYPE_ROAMER)
@@ -288,9 +295,7 @@ void BattleAI_SetupAIData(u8 defaultScoreMoves, u32 battler)
     // Conditional score reset, unlike Ruby.
     for (moveIndex = 0; moveIndex < MAX_MON_MOVES; moveIndex++)
     {
-        if (moveLimitations & (1u << moveIndex))
-            SET_SCORE(battler, moveIndex, 0);
-        if (defaultScoreMoves & 1)
+        if ((defaultScoreMoves & 1) && !(moveLimitations & (1u << moveIndex)))
             SET_SCORE(battler, moveIndex, AI_SCORE_DEFAULT);
         else
             SET_SCORE(battler, moveIndex, 0);
@@ -309,9 +314,7 @@ void BattleAI_SetupAIData(u8 defaultScoreMoves, u32 battler)
 
         for (moveIndex = 0; moveIndex < MAX_MON_MOVES; moveIndex++)
         {
-            if (moveLimitationsTarget & (1u << moveIndex))
-                SET_SCORE(opposingBattler, moveIndex, 0);
-            if (defaultScoreMovesTarget & 1)
+            if ((defaultScoreMovesTarget & 1) && !(moveLimitationsTarget & (1u << moveIndex)))
                 SET_SCORE(opposingBattler, moveIndex, AI_SCORE_DEFAULT);
             else
                 SET_SCORE(opposingBattler, moveIndex, 0);
@@ -370,6 +373,10 @@ void SetupAIPredictionData(u32 battler, enum SwitchType switchType)
 
 void ComputeBattlerDecisions(u32 battler)
 {
+    struct BattlePokemon playerMons[MAX_BATTLERS_COUNT];
+    u32 other;
+    bool32 fairKnowledge = QuantumAI_GetTier(battler) != QUANTUM_AI_NONE;
+
     if ((gBattleTypeFlags & BATTLE_TYPE_HAS_AI || IsWildMonSmart())
         && (BattlerHasAi(battler)
         && !(gBattleTypeFlags & BATTLE_TYPE_PALACE)))
@@ -385,6 +392,21 @@ void ComputeBattlerDecisions(u32 battler)
 
         // Setup battler and prediction data
         BattleAI_SetupAIData(0xF, battler);
+        // Legacy evaluators sometimes read gBattleMons directly. Present a
+        // revealed-information snapshot throughout this decision, including
+        // nested damage/speed calculations, then restore the live battlers.
+        if (fairKnowledge)
+        {
+            for (other = 0; other < gBattlersCount; other++)
+            {
+                if (BattlerHasAi(other))
+                    continue;
+                playerMons[other] = gBattleMons[other];
+                SaveBattlerData(other);
+                SetBattlerData(other);
+                gAiThinkingStruct->saved[other].saved = FALSE;
+            }
+        }
         SetupAIPredictionData(battler, switchType);
 
         // AI's own switching data
@@ -396,6 +418,17 @@ void ComputeBattlerDecisions(u32 battler)
         // AI's move scoring
         gAiBattleData->chosenMoveIndex[battler] = BattleAI_ChooseMoveIndex(battler); // Calculate score and chose move index
         ModifySwitchAfterMoveScoring(battler);
+
+        QuantumAI_FinalizeSwitch(battler);
+
+        if (fairKnowledge)
+        {
+            for (other = 0; other < gBattlersCount; other++)
+            {
+                if (!BattlerHasAi(other))
+                    gBattleMons[other] = playerMons[other];
+            }
+        }
 
         gAiLogicData->aiCalcInProgress = FALSE;
     }
@@ -543,6 +576,11 @@ void SetBattlerAiData(u32 battler, struct AiLogicData *aiData)
     aiData->items[battler] = gBattleMons[battler].item;
     holdEffect = aiData->holdEffects[battler] = AI_DecideHoldEffectForTurn(battler);
     aiData->holdEffectParams[battler] = GetBattlerHoldEffectParam(battler);
+    if (QuantumAI_UsesFairKnowledge() && !IsAiBattlerAware(battler))
+    {
+        aiData->items[battler] = gAiPartyData->mons[GetBattlerSide(battler)][gBattlerPartyIndexes[battler]].item;
+        aiData->holdEffectParams[battler] = GetItemHoldEffectParam(aiData->items[battler]);
+    }
     aiData->lastUsedMove[battler] = gLastMoves[battler];
     aiData->hpPercents[battler] = GetHealthPercentage(battler);
     aiData->moveLimitations[battler] = CheckMoveLimitations(battler, 0, MOVE_LIMITATIONS_ALL);

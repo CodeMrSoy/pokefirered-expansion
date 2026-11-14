@@ -785,6 +785,7 @@ struct BattleStruct
 
 struct AiBattleData
 {
+    u16 quantumLastSwitchTurn[MAX_BATTLERS_COUNT]; // Turn + 1, zero means no voluntary switch yet.
     s32 finalScore[MAX_BATTLERS_COUNT][MAX_BATTLERS_COUNT][MAX_MON_MOVES]; // AI, target, moves to make debugging easier
     u8 playerStallMons[PARTY_SIZE];
     u8 chosenMoveIndex[MAX_BATTLERS_COUNT];
