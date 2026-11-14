@@ -1,4 +1,5 @@
 #include "global.h"
+#include "game_modes.h"
 #include "quantum_campaign.h"
 #include "quantum_cleanup.h"
 #include "text_window.h"
@@ -1734,7 +1735,7 @@ void CB2_NewGame(void)
     MgbaPrintf(MGBA_LOG_DEBUG, "Seed restored: 0x%08X", GetRandomizerSeed());
 
     NewGameInitData();
-    RandomizerApplyFeatureFlags();
+    GameModes_Apply();
 
     ResetInitialPlayerAvatarState();
     PlayTimeCounter_Start();
@@ -1904,7 +1905,7 @@ void CB2_ContinueSavedGame(void)
     #if RANDOMIZER_AVAILABLE == TRUE
     gCachedRandomizerSeed = gSaveBlock2Ptr->randomizerSeed;
     gRandomizerEnabled = gCachedRandomizerSeed != 0;
-    RandomizerApplyFeatureFlags();
+    GameModes_Apply();
     MgbaPrintf(MGBA_LOG_DEBUG, "Continue Game: Seed restored 0x%08X", GetRandomizerSeed());
     #endif
     FieldClearVBlankHBlankCallbacks();

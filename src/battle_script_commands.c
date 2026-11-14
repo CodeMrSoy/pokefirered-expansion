@@ -1,4 +1,5 @@
 #include "global.h"
+#include "game_modes.h"
 #include "battle.h"
 #include "battle_message.h"
 #include "battle_anim.h"
@@ -15571,6 +15572,10 @@ static void Cmd_handleballthrow(void)
         MarkBattlerForControllerExec(gBattlerAttacker);
         gBattlescriptCurrInstr = BattleScript_OldMan_Pokedude_CaughtMessage;
     }
+    else if (!Nuzlocke_CanCatch())
+    {
+        gBattlescriptCurrInstr = BattleScript_NuzlockeBallBlock;
+    }
     else
     {
         u32 odds, i;
@@ -15879,6 +15884,7 @@ static void Cmd_givecaughtmon(void)
     switch (state)
     {
     case GIVECAUGHTMON_CHECK_PARTY_SIZE:
+        Nuzlocke_RecordCatch();
         if (CalculatePlayerPartyCount() == PARTY_SIZE && B_CATCH_SWAP_INTO_PARTY >= GEN_7)
         {
             PrepareStringBattle(STRINGID_SENDCAUGHTMONPARTYORBOX, gBattlerAttacker);

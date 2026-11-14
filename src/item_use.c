@@ -1,4 +1,5 @@
 #include "global.h"
+#include "game_modes.h"
 #include "field_tools.h"
 #include "field_move.h"
 #include "gflib.h"
@@ -1243,6 +1244,9 @@ static u32 GetBallThrowableState(void)
     else if (FlagGet(B_FLAG_NO_CATCHING))
         return BALL_THROW_UNABLE_DISABLED_FLAG;
 
+    if (!Nuzlocke_CanCatch())
+        return BALL_THROW_UNABLE_NUZLOCKE;
+
     return BALL_THROW_ABLE;
 }
 
@@ -1253,6 +1257,7 @@ bool32 CanThrowBall(void)
 
 static const u8 sText_CantThrowPokeBall_TwoMons[] = _("Cannot throw a ball!\nThere are two Pokémon out there!\p");
 static const u8 sText_CantThrowPokeBall_SemiInvulnerable[] = _("Cannot throw a ball!\nThere's no Pokémon in sight!\p");
+static const u8 sText_NuzlockeEncounterUsed[] = _("NUZLOCKE: This area's first\nencounter has already been used!\p");
 static const u8 sText_CantThrowPokeBall_Disabled[] = _("POKé BALLS cannot be used\nright now!\p");
 // Returns whether an item can be used in battle and sets the fail text.
 bool32 CannotUseItemsInBattle(u16 itemId, struct Pokemon *mon)
@@ -1302,6 +1307,10 @@ bool32 CannotUseItemsInBattle(u16 itemId, struct Pokemon *mon)
             break;
         case BALL_THROW_UNABLE_SEMI_INVULNERABLE:
             failStr = sText_CantThrowPokeBall_SemiInvulnerable;
+            cannotUse = TRUE;
+            break;
+        case BALL_THROW_UNABLE_NUZLOCKE:
+            failStr = sText_NuzlockeEncounterUsed;
             cannotUse = TRUE;
             break;
         case BALL_THROW_UNABLE_DISABLED_FLAG:

@@ -1,4 +1,5 @@
 #include "global.h"
+#include "game_modes.h"
 #include "battle.h"
 #include "battle_anim.h"
 #include "battle_ai_main.h"
@@ -521,6 +522,7 @@ static void CB2_InitBattleInternal(void)
 {
     s32 i;
 
+    Nuzlocke_BeginEncounter(gMapHeader.regionMapSectionId, gBattleTypeFlags);
     SetHBlankCallback(NULL);
     SetVBlankCallback(NULL);
 
@@ -2003,7 +2005,7 @@ u8 CreateNPCTrainerPartyFromTrainer(struct Pokemon *party, const struct Trainer 
             u16 species = partyData[monIndex].species;
 
             #if (RANDOMIZER_AVAILABLE)
-                if (seed >= TRAINER_HAVORA_DOCK_CREW && seed <= TRAINER_HAVORA_FIRST_MATE)
+                if (seed >= TRAINER_HAVORA_DOCK_CREW && seed <= TRAINER_HAVORA_LOCKKEEPER)
                 {
                     // Havora crews teach specific partner interactions.
                 }
@@ -2042,7 +2044,11 @@ u8 CreateNPCTrainerPartyFromTrainer(struct Pokemon *party, const struct Trainer 
             CreateMon(&party[i], species, partyData[monIndex].lvl, 0, TRUE, personalityValue, otIdType, fixedOtId);
             SetMonData(&party[i], MON_DATA_HELD_ITEM, &partyData[monIndex].heldItem);
 
-            CustomTrainerPartyAssignMoves(&party[i], &partyData[monIndex]);
+            // Preserve Havora's authored partner/weather teams in every mode.
+            if ((seed >= TRAINER_HAVORA_DOCK_CREW && seed <= TRAINER_HAVORA_LOCKKEEPER)
+                || (!RandomizerFeatureEnabled(RANDOMIZE_TRAINER_MON)
+                    && !RandomizerFeatureEnabled(RANDOMIZE_LEARNSET)))
+                CustomTrainerPartyAssignMoves(&party[i], &partyData[monIndex]);
             SetMonData(&party[i], MON_DATA_IVS, &(partyData[monIndex].iv));
             if (partyData[monIndex].ev != NULL)
             {
@@ -2077,7 +2083,7 @@ u8 CreateNPCTrainerPartyFromTrainer(struct Pokemon *party, const struct Trainer 
             SetMonData(&party[i], MON_DATA_ABILITY_NUM, &abilityNum);
             {
                 // Other trainer parties retain the normal randomizer behavior.
-                u32 fixedAbility = seed >= TRAINER_HAVORA_DOCK_CREW && seed <= TRAINER_HAVORA_FIRST_MATE;
+                u32 fixedAbility = seed >= TRAINER_HAVORA_DOCK_CREW && seed <= TRAINER_HAVORA_LOCKKEEPER;
                 SetMonData(&party[i], MON_DATA_CANT_RANDOMIZE_ABILITY, &fixedAbility);
             }
             SetMonData(&party[i], MON_DATA_FRIENDSHIP, &(partyData[monIndex].friendship));

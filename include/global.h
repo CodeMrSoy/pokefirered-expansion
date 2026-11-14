@@ -433,7 +433,11 @@ struct SaveBlock2
     /*0x169C*/ struct BerryTree berryTrees[BERRY_TREES_COUNT]; // moved to SaveBlock2 due to QuestLogScene taking up SaveBlock1
     /*0x???*/ u32 randomizerSeed;
     /*0x???*/ bool8 randomizerActive;
-    /*0x???*/ u8 filler_90[207];
+    // Use reserved bytes without changing the save block's size or old offsets.
+    u8 gameModesVersion;
+    u8 gameModes;
+    u8 nuzlockeAreas[32];
+    /*0x???*/ u8 filler_90[173];
 }; // size: 0xF24
 
 extern struct SaveBlock2 *gSaveBlock2Ptr;
