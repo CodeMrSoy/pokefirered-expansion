@@ -15,7 +15,6 @@
 #include "quest_log.h"
 #include "random.h"
 #include "save_location.h"
-#include "trainer_tower.h"
 #include "constants/event_objects.h"
 
 struct LoadedSaveData
@@ -95,7 +94,6 @@ void MoveSaveBlocks_ResetHeap(void)
     hblankCB = gMain.hblankCallback;
     gMain.vblankCallback = NULL;
     gMain.hblankCallback = NULL;
-    gTrainerTowerVBlankCounter = NULL;
     
     saveBlock2Copy = (struct SaveBlock2 *)(gHeap);
     saveBlock1Copy = (struct SaveBlock1 *)(gHeap + sizeof(struct SaveBlock2));

@@ -66,8 +66,6 @@ void InitFlashTimer(void);
 void DoSoftReset(void);
 void ClearPokemonCrySongs(void);
 void RestoreSerialTimer3IntrHandlers(void);
-void SetTrainerTowerVBlankCounter(u32 *ptr);
-void ClearTrainerTowerVBlankCounter(void);
 void StartTimer1(void);
 void SeedRngAndSetTrainerId(void);
 u16 GetGeneratedTrainerIdLower(void);

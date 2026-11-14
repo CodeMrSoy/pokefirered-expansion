@@ -11,7 +11,6 @@
 #include "event_data.h"
 #include "item.h"
 #include "battle_tower.h"
-#include "trainer_tower.h"
 #include "battle_setup.h"
 #include "field_specials.h"
 #include "menu.h"
@@ -1539,14 +1538,6 @@ const u16 gDoubleBattleRecallStrings[1 << (MAX_BATTLERS_COUNT / 2)] =
     STRINGID_TRAINER1MON1AND2COMEBACK
 };
 
-const u8 *const gTrainerTowerChallengeTypeTexts[NUM_TOWER_CHALLENGE_TYPES] =
-{
-    gOtherText_Single,
-    gOtherText_Double,
-    gOtherText_Knockout,
-    gOtherText_Mixed
-};
-
 static const u16 sGrammarMoveUsedTable[] =
 {
     MOVE_SWORDS_DANCE,
@@ -2078,11 +2069,6 @@ static const u8 *BattleStringGetOpponentNameByTrainerId(u16 trainerId, u8 *text,
     {
         GetBattleTowerTrainerName(text);
     }
-    else if (gBattleTypeFlags & BATTLE_TYPE_TRAINER_TOWER)
-    {
-        GetTrainerTowerOpponentName(text);
-        toCpy = text;
-    }
     else if (gBattleTypeFlags & BATTLE_TYPE_EREADER_TRAINER)
     {
         CopyEReaderTrainerName5(text);
@@ -2177,8 +2163,6 @@ static const u8 *BattleStringGetOpponentClassByTrainerId(u16 trainerId)
         toCpy = gTrainerClasses[GetUnionRoomTrainerClass()].name;
     else if (gBattleTypeFlags & BATTLE_TYPE_BATTLE_TOWER)
         toCpy = gTrainerClasses[GetBattleTowerTrainerClassNameId()].name;
-    else if (gBattleTypeFlags & BATTLE_TYPE_TRAINER_TOWER)
-        toCpy = gTrainerClasses[GetTrainerTowerOpponentClass()].name;
     else if (gBattleTypeFlags & BATTLE_TYPE_EREADER_TRAINER)
         toCpy = gTrainerClasses[GetEreaderTrainerClassId()].name;
     else
@@ -2517,44 +2501,16 @@ u32 BattleStringExpandPlaceholders(const u8 *src, u8 *dst, u32 dstSize)
                 toCpy = BattleStringGetPlayerName(text, GetBattlerAtPosition(B_POSITION_PLAYER_LEFT));
                 break;
             case B_TXT_TRAINER1_LOSE_TEXT: // trainerA lose text
-                if (gBattleTypeFlags & BATTLE_TYPE_TRAINER_TOWER)
-                {
-                    GetTrainerTowerOpponentLoseText(gStringVar4, 0);
-                    toCpy = gStringVar4;
-                }
-                else
-                {
-                    toCpy = GetTrainerALoseText();
-                }
+                toCpy = GetTrainerALoseText();
                 break;
             case B_TXT_TRAINER1_WIN_TEXT: // trainerA win text
-                if (gBattleTypeFlags & BATTLE_TYPE_TRAINER_TOWER)
-                {
-                    GetTrainerTowerOpponentWinText(gStringVar4, 0);
-                    toCpy = gStringVar4;
-                }
-                else
-                {
-                    toCpy = GetTrainerWonSpeech();
-                }
+                toCpy = GetTrainerWonSpeech();
                 break;
             case B_TXT_TRAINER2_LOSE_TEXT:
-                if (gBattleTypeFlags & BATTLE_TYPE_TRAINER_TOWER)
-                {
-                    GetTrainerTowerOpponentLoseText(gStringVar4, 1);
-                    toCpy = gStringVar4;
-                }
-                else
-                {
-                    toCpy = GetTrainerBLoseText();
-                }
+                toCpy = GetTrainerBLoseText();
                 break;
             case B_TXT_TRAINER2_WIN_TEXT:
-                if (gBattleTypeFlags & BATTLE_TYPE_TRAINER_TOWER)
-                {
-                    GetTrainerTowerOpponentWinText(gStringVar4, 1);
-                    toCpy = gStringVar4;
-                }
+                toCpy = GetTrainerWonSpeech();
                 break;
             case B_TXT_26: // ?
                 HANDLE_NICKNAME_STRING_CASE(gBattleScripting.battler)

@@ -769,6 +769,7 @@ struct MysteryGiftSave
     u32 trainerIds[2][5]; // Saved ids for 10 trainers, 5 each for battles and trades 
 }; // 0x36C 0x348C
 
+// Reserved legacy save layout; Trainer Tower gameplay has been removed.
 struct TrainerTower
 {
     u32 timer;

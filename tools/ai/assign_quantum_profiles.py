@@ -13,11 +13,21 @@ import re
 ROOT = Path(__file__).resolve().parents[2]
 SOURCE = ROOT / "src/data/trainers.party"
 
+# Story bosses and the former Fighting Gym do not use Leader trainer classes.
+LEADER_EQUIVALENTS = {
+    "TRAINER_HAVORA_CAPTAIN",
+    "TRAINER_BOSS_GIOVANNI",
+    "TRAINER_BOSS_GIOVANNI_2",
+    "TRAINER_BLACK_BELT_KOICHI",
+}
+
 
 def gym_trainers():
     members = set()
     for path in (ROOT / "data/maps").glob("*Gym*/scripts.inc"):
         members.update(re.findall(r"\bTRAINER_[A-Z0-9_]+", path.read_text()))
+    members.update(re.findall(r"\bTRAINER_[A-Z0-9_]+",
+                             (ROOT / "data/maps/SaffronCity_Dojo/scripts.inc").read_text()))
     return members
 
 
@@ -28,7 +38,7 @@ def tier_for(trainer, trainer_class, gyms):
         return "Elite Four"
     if trainer.startswith("TRAINER_RIVAL_") or trainer_class in {"Rival Early", "Rival Late"}:
         return "Rival"
-    if trainer.startswith("TRAINER_LEADER_") or trainer == "TRAINER_HAVORA_CAPTAIN" or trainer_class in {"Leader", "RS Leader"}:
+    if trainer.startswith("TRAINER_LEADER_") or trainer in LEADER_EQUIVALENTS or trainer_class in {"Leader", "RS Leader"}:
         return "Gym Leader"
     if trainer in gyms:
         return "Gym Trainer"

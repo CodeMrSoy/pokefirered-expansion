@@ -5649,7 +5649,7 @@ Pic: Black Belt
 Gender: Male
 Music: Intense
 Double Battle: No
-AI: Quantum Regular
+AI: Quantum Gym Leader
 
 Hitmonlee @ Black Belt
 Level: 44
@@ -5666,7 +5666,7 @@ Pic: Black Belt
 Gender: Male
 Music: Intense
 Double Battle: No
-AI: Quantum Regular
+AI: Quantum Gym Trainer
 
 Mankey @ Black Belt
 Level: 38
@@ -5687,7 +5687,7 @@ Pic: Black Belt
 Gender: Male
 Music: Intense
 Double Battle: No
-AI: Quantum Regular
+AI: Quantum Gym Trainer
 
 Machop @ Black Belt
 Level: 39
@@ -5704,7 +5704,7 @@ Pic: Black Belt
 Gender: Male
 Music: Intense
 Double Battle: No
-AI: Quantum Regular
+AI: Quantum Gym Trainer
 
 Primeape @ Black Belt
 Level: 43
@@ -5717,7 +5717,7 @@ Pic: Black Belt
 Gender: Male
 Music: Intense
 Double Battle: No
-AI: Quantum Regular
+AI: Quantum Gym Trainer
 
 Machop @ Black Belt
 Level: 38
@@ -6358,7 +6358,7 @@ Pic: Leader Giovanni
 Gender: Male
 Music: Aqua
 Double Battle: No
-AI: Quantum Regular
+AI: Quantum Gym Leader
 
 Onix
 Level: 25
@@ -6379,7 +6379,7 @@ Pic: Leader Giovanni
 Gender: Male
 Music: Aqua
 Double Battle: No
-AI: Quantum Regular
+AI: Quantum Gym Leader
 
 Nidorino
 Level: 44

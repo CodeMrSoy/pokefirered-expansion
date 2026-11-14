@@ -28,6 +28,23 @@ leader despite using the Sailor class. It covers rival starter variants and
 Elite Four/Champion rematches. Run it again when adding gyms. New custom leaders
 should use a leader class/ID or an explicit exception in `tier_for`.
 
+Giovanni's Rocket Hideout and Silph Co. encounters use Gym Leader tier as story
+bosses. The Fighting Dojo's four students use Gym Trainer tier; Koichi uses Gym
+Leader tier. These exceptions are included in the assignment generator.
+
+All 750 nonempty trainer definitions have a profile. Of these, 106 retired
+definitions are intentionally excluded from the generated game data. The 644
+compiled definitions comprise 539 Regular, 52 Gym Trainer, 20 Gym Leader,
+21 Rival, 8 Elite Four and 4 Champion entries, including unused placeholders.
+The audit checks numeric ID coverage, generated flags, the retirement list and
+all 221 VS Seeker rematch groups as well as the source assignments.
+
+Trainer Tower was already inaccessible through the retired-map system. Its
+implementation, opponent sets, scripts, timer, battle hooks and tower-specific
+e-Reader import path have now been removed. Reserved map/special IDs and the
+legacy save-layout fields remain for compatibility. Other expansion facilities
+retain their existing AI; they are not campaign trainers.
+
 ## Shared decision changes
 
 - Disabled, empty-PP and Choice-locked move slots retain zero scores instead of
@@ -84,8 +101,12 @@ move scores remain available in `gAiBattleData->finalScore`.
 Validation on 2026-11-14: normal FireRed ROM build passed; all 11 Quantum
 scenario groups passed in mGBA (including the six-tier parameterizations);
 21 existing tests from `ai_trytofaint.c`, `ai_calc_best_move_score.c`,
-`check_bad_move.c` and `ai_choice.c` passed in the same focused run. All three
-host assignment checks passed. The full legacy suite was not run successfully
+`check_bad_move.c` and `ai_choice.c` passed in the same focused run. After the
+Giovanni/Dojo changes and Trainer Tower removal, the normal ROM build, all
+32 focused emulator tests and all six host assignment checks passed again.
+The linked ROM also matches the tier markers for all 644 compiled trainers;
+the removed Tower runtime functions, timer and opponent-set symbols are absent.
+The full legacy suite was not run successfully
 because of the unrelated trainer-control API mismatch noted above. No win-rate
 or device timing benchmark was performed.
 

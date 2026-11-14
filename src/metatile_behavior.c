@@ -1035,14 +1035,6 @@ bool8 MetatileBehavior_IsBurglary(u8 metatileBehavior)
         return FALSE;
 }
 
-bool8 MetatileBehavior_IsTrainerTowerMonitor(u8 metatileBehavior)
-{
-    if (metatileBehavior == MB_TRAINER_TOWER_MONITOR)
-        return TRUE;
-    else
-        return FALSE;
-}
-
 bool8 MetatileBehavior_IsSidewaysStairsRightSide(u8 metatileBehavior)
 {
     if (metatileBehavior == MB_SIDEWAYS_STAIRS_RIGHT_SIDE || metatileBehavior == MB_SIDEWAYS_STAIRS_RIGHT_SIDE_BOTTOM)

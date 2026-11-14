@@ -28,7 +28,6 @@
 #include "union_room_chat.h"
 #include "mystery_gift.h"
 #include "renewable_hidden_items.h"
-#include "trainer_tower.h"
 #include "script.h"
 #include "berry_powder.h"
 #include "pokemon_jump.h"
@@ -165,7 +164,6 @@ void NewGameInitData(void)
     FlagSet(FLAG_SYS_B_DASH);
     FlagSet(FLAG_HIDE_PEWTER_CITY_RUNNING_SHOES_GUY);
     StringCopy(gSaveBlock1Ptr->rivalName, rivalName);
-    ResetTrainerTowerResults();
     ResetItemFlags();
     ResetDexNav();
     gCachedRandomizerSeed = gSaveBlock2Ptr->randomizerSeed;

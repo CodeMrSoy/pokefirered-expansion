@@ -27,7 +27,6 @@ EWRAM_DATA bool8 gGiftIsFromEReader = FALSE;
 
 static void CreateMysteryGiftTask(void);
 static void Task_MysteryGift(u8 taskId);
-extern void CreateEReaderTask(void);
 
 static const u16 sTextboxBorder_Pal[] = INCBIN_U16("graphics/interface/mystery_gift_textbox_border.gbapal");
 static const u32 sTextboxBorder_Gfx[] = INCBIN_U32("graphics/interface/mystery_gift_textbox_border.4bpp.lz");
@@ -438,16 +437,6 @@ void CB2_InitMysteryGift(void)
         SetMainCallback2(CB2_MysteryGiftEReader);
         gGiftIsFromEReader = FALSE;
         CreateMysteryGiftTask();
-    }
-}
-
-void CB2_InitEReader(void)
-{
-    if (HandleMysteryGiftOrEReaderSetup(TRUE))
-    {
-        SetMainCallback2(CB2_MysteryGiftEReader);
-        gGiftIsFromEReader = TRUE;
-        CreateEReaderTask();
     }
 }
 
