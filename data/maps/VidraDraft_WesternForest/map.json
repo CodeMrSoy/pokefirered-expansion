@@ -1,0 +1,62 @@
+{
+  "id": "MAP_VIDRA_DRAFT_WESTERNFOREST",
+  "name": "VidraDraft_WesternForest",
+  "layout": "LAYOUT_VIDRA_DRAFT_WESTERNFOREST",
+  "music": "MUS_SEVII_123",
+  "region_map_section": "MAPSEC_VIDRA_DRAFT_WESTERNFOREST",
+  "requires_flash": false,
+  "weather": "WEATHER_SUNNY",
+  "map_type": "MAP_TYPE_ROUTE",
+  "allow_cycling": false,
+  "allow_escaping": false,
+  "allow_running": true,
+  "show_map_name": true,
+  "floor_number": 0,
+  "battle_scene": "MAP_BATTLE_SCENE_NORMAL",
+  "connections": [
+    {
+      "map": "MAP_VIDRA_DRAFT_RAINFALLROUTE",
+      "direction": "up",
+      "offset": 36
+    }
+  ],
+  "object_events": [],
+  "warp_events": [
+    {
+      "x": 8,
+      "y": 14,
+      "elevation": 3,
+      "dest_map": "MAP_VIDRA_DRAFT_CORVALAPASSAGE",
+      "dest_warp_id": "0"
+    }
+  ],
+  "coord_events": [
+    {
+      "type": "trigger",
+      "x": 80,
+      "y": 76,
+      "elevation": 3,
+      "var": "VAR_TEMP_0",
+      "var_value": "0",
+      "script": "VidraDraft_WesternForest_Travel0"
+    }
+  ],
+  "bg_events": [
+    {
+      "type": "sign",
+      "x": 76,
+      "y": 71,
+      "elevation": 3,
+      "player_facing_dir": "BG_EVENT_PLAYER_FACING_ANY",
+      "script": "VidraDraft_WesternForest_Sign0"
+    },
+    {
+      "type": "sign",
+      "x": 41,
+      "y": 40,
+      "elevation": 3,
+      "player_facing_dir": "BG_EVENT_PLAYER_FACING_ANY",
+      "script": "VidraDraft_WesternForest_Sign1"
+    }
+  ]
+}

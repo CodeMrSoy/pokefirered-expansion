@@ -1458,3 +1458,5 @@ Text_TestMsg::
 
 	.include "data/maps/Havora_CoastalCliffs/scripts.inc"
 	.include "data/maps/Havora_CoastalCliffs/text.inc"
+
+	.include "data/scripts/vidra_drafts.inc"

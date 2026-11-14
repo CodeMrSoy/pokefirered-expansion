@@ -1,0 +1,263 @@
+[
+  {
+    "map": "VidraDraft_WesternForest",
+    "title": "WESTERN FOREST",
+    "width": 88,
+    "height": 80,
+    "points": {
+      "havora": [
+        80,
+        74
+      ],
+      "cave": [
+        8,
+        15
+      ],
+      "rain": [
+        60,
+        2
+      ],
+      "clearing": [
+        43,
+        43
+      ]
+    },
+    "preview": "docs/vidra/drafts/WesternForest.png"
+  },
+  {
+    "map": "VidraDraft_CorvalaPassage",
+    "title": "CORVALA PASSAGE",
+    "width": 56,
+    "height": 48,
+    "points": {
+      "forest": [
+        49,
+        37
+      ],
+      "corvala": [
+        8,
+        10
+      ]
+    },
+    "preview": "docs/vidra/drafts/CorvalaPassage.png"
+  },
+  {
+    "map": "VidraDraft_RainfallRoute",
+    "title": "RAINFALL ROUTE",
+    "width": 56,
+    "height": 72,
+    "points": {
+      "south": [
+        24,
+        69
+      ],
+      "north": [
+        24,
+        2
+      ],
+      "falls": [
+        40,
+        35
+      ]
+    },
+    "preview": "docs/vidra/drafts/RainfallRoute.png"
+  },
+  {
+    "map": "VidraDraft_Veyden",
+    "title": "VEYDEN",
+    "width": 56,
+    "height": 48,
+    "points": {
+      "home9": [
+        11,
+        16
+      ],
+      "home36": [
+        38,
+        15
+      ],
+      "center8": [
+        10,
+        31
+      ],
+      "mart36": [
+        38,
+        31
+      ],
+      "gym22": [
+        24,
+        11
+      ],
+      "home20": [
+        22,
+        39
+      ],
+      "home39": [
+        41,
+        39
+      ],
+      "south": [
+        24,
+        45
+      ],
+      "east": [
+        53,
+        20
+      ],
+      "north": [
+        24,
+        2
+      ],
+      "square": [
+        20,
+        25
+      ]
+    },
+    "preview": "docs/vidra/drafts/Veyden.png"
+  },
+  {
+    "map": "VidraDraft_LakewoodRoute",
+    "title": "LAKEWOOD ROUTE",
+    "width": 64,
+    "height": 40,
+    "points": {
+      "west": [
+        2,
+        20
+      ],
+      "east": [
+        61,
+        20
+      ],
+      "lake": [
+        40,
+        19
+      ]
+    },
+    "preview": "docs/vidra/drafts/LakewoodRoute.png"
+  },
+  {
+    "map": "VidraDraft_Lyrvik",
+    "title": "LYRVIK TOWN",
+    "width": 56,
+    "height": 48,
+    "points": {
+      "center8": [
+        10,
+        16
+      ],
+      "mart24": [
+        26,
+        16
+      ],
+      "gym38": [
+        40,
+        14
+      ],
+      "home8": [
+        10,
+        27
+      ],
+      "home24": [
+        26,
+        27
+      ],
+      "west": [
+        2,
+        20
+      ],
+      "pier": [
+        18,
+        39
+      ],
+      "square": [
+        22,
+        20
+      ]
+    },
+    "preview": "docs/vidra/drafts/Lyrvik.png"
+  },
+  {
+    "map": "VidraDraft_HighlandAscent",
+    "title": "HIGHLAND ASCENT",
+    "width": 56,
+    "height": 72,
+    "points": {
+      "south": [
+        24,
+        69
+      ],
+      "north": [
+        24,
+        2
+      ],
+      "snowline": [
+        39,
+        23
+      ]
+    },
+    "preview": "docs/vidra/drafts/HighlandAscent.png"
+  },
+  {
+    "map": "VidraDraft_Norvyn",
+    "title": "NORVYN TOWN",
+    "width": 56,
+    "height": 48,
+    "points": {
+      "home9": [
+        11,
+        14
+      ],
+      "home35": [
+        37,
+        14
+      ],
+      "gym22": [
+        24,
+        10
+      ],
+      "center8": [
+        10,
+        31
+      ],
+      "mart35": [
+        37,
+        31
+      ],
+      "home10": [
+        12,
+        40
+      ],
+      "home37": [
+        39,
+        40
+      ],
+      "south": [
+        24,
+        45
+      ],
+      "square": [
+        24,
+        19
+      ]
+    },
+    "preview": "docs/vidra/drafts/Norvyn.png"
+  },
+  {
+    "map": "VidraDraft_Corvala",
+    "title": "CORVALA TOWN",
+    "width": 64,
+    "height": 64,
+    "points": {
+      "cave": [
+        49,
+        15
+      ],
+      "village": [
+        26,
+        22
+      ]
+    },
+    "preview": "docs/vidra/drafts/Corvala.png"
+  }
+]

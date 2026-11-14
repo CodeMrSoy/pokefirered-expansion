@@ -1,0 +1,41 @@
+{
+  "id": "MAP_VIDRA_DRAFT_HIGHLANDASCENT",
+  "name": "VidraDraft_HighlandAscent",
+  "layout": "LAYOUT_VIDRA_DRAFT_HIGHLANDASCENT",
+  "music": "MUS_SEVII_123",
+  "region_map_section": "MAPSEC_VIDRA_DRAFT_HIGHLANDASCENT",
+  "requires_flash": false,
+  "weather": "WEATHER_SUNNY",
+  "map_type": "MAP_TYPE_ROUTE",
+  "allow_cycling": false,
+  "allow_escaping": false,
+  "allow_running": true,
+  "show_map_name": true,
+  "floor_number": 0,
+  "battle_scene": "MAP_BATTLE_SCENE_NORMAL",
+  "connections": [
+    {
+      "map": "MAP_VIDRA_DRAFT_VEYDEN",
+      "direction": "down",
+      "offset": 0
+    },
+    {
+      "map": "MAP_VIDRA_DRAFT_NORVYN",
+      "direction": "up",
+      "offset": 0
+    }
+  ],
+  "object_events": [],
+  "warp_events": [],
+  "coord_events": [],
+  "bg_events": [
+    {
+      "type": "sign",
+      "x": 20,
+      "y": 65,
+      "elevation": 3,
+      "player_facing_dir": "BG_EVENT_PLAYER_FACING_ANY",
+      "script": "VidraDraft_HighlandAscent_Sign0"
+    }
+  ]
+}

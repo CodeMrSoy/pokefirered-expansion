@@ -4596,6 +4596,114 @@
       "secondary_tileset": "gTileset_HavoraGym",
       "border_filepath": "data/layouts/Havora_Gym/border.bin",
       "blockdata_filepath": "data/layouts/Havora_Gym/map.bin"
+    },
+    {
+      "id": "LAYOUT_VIDRA_DRAFT_WESTERNFOREST",
+      "name": "VidraDraft_WesternForest_Layout",
+      "width": 88,
+      "height": 80,
+      "border_width": 2,
+      "border_height": 2,
+      "primary_tileset": "gTileset_General",
+      "secondary_tileset": "gTileset_ViridianForest",
+      "border_filepath": "data/layouts/VidraDraft_WesternForest/border.bin",
+      "blockdata_filepath": "data/layouts/VidraDraft_WesternForest/map.bin"
+    },
+    {
+      "id": "LAYOUT_VIDRA_DRAFT_CORVALAPASSAGE",
+      "name": "VidraDraft_CorvalaPassage_Layout",
+      "width": 56,
+      "height": 48,
+      "border_width": 2,
+      "border_height": 2,
+      "primary_tileset": "gTileset_General",
+      "secondary_tileset": "gTileset_VidraDraftCave",
+      "border_filepath": "data/layouts/VidraDraft_CorvalaPassage/border.bin",
+      "blockdata_filepath": "data/layouts/VidraDraft_CorvalaPassage/map.bin"
+    },
+    {
+      "id": "LAYOUT_VIDRA_DRAFT_RAINFALLROUTE",
+      "name": "VidraDraft_RainfallRoute_Layout",
+      "width": 56,
+      "height": 72,
+      "border_width": 2,
+      "border_height": 2,
+      "primary_tileset": "gTileset_General",
+      "secondary_tileset": "gTileset_VidraDraftRain",
+      "border_filepath": "data/layouts/VidraDraft_RainfallRoute/border.bin",
+      "blockdata_filepath": "data/layouts/VidraDraft_RainfallRoute/map.bin"
+    },
+    {
+      "id": "LAYOUT_VIDRA_DRAFT_VEYDEN",
+      "name": "VidraDraft_Veyden_Layout",
+      "width": 56,
+      "height": 48,
+      "border_width": 2,
+      "border_height": 2,
+      "primary_tileset": "gTileset_General",
+      "secondary_tileset": "gTileset_SeviiIslands123",
+      "border_filepath": "data/layouts/VidraDraft_Veyden/border.bin",
+      "blockdata_filepath": "data/layouts/VidraDraft_Veyden/map.bin"
+    },
+    {
+      "id": "LAYOUT_VIDRA_DRAFT_LAKEWOODROUTE",
+      "name": "VidraDraft_LakewoodRoute_Layout",
+      "width": 64,
+      "height": 40,
+      "border_width": 2,
+      "border_height": 2,
+      "primary_tileset": "gTileset_General",
+      "secondary_tileset": "gTileset_SeviiIslands123",
+      "border_filepath": "data/layouts/VidraDraft_LakewoodRoute/border.bin",
+      "blockdata_filepath": "data/layouts/VidraDraft_LakewoodRoute/map.bin"
+    },
+    {
+      "id": "LAYOUT_VIDRA_DRAFT_LYRVIK",
+      "name": "VidraDraft_Lyrvik_Layout",
+      "width": 56,
+      "height": 48,
+      "border_width": 2,
+      "border_height": 2,
+      "primary_tileset": "gTileset_General",
+      "secondary_tileset": "gTileset_SeviiIslands123",
+      "border_filepath": "data/layouts/VidraDraft_Lyrvik/border.bin",
+      "blockdata_filepath": "data/layouts/VidraDraft_Lyrvik/map.bin"
+    },
+    {
+      "id": "LAYOUT_VIDRA_DRAFT_HIGHLANDASCENT",
+      "name": "VidraDraft_HighlandAscent_Layout",
+      "width": 56,
+      "height": 72,
+      "border_width": 2,
+      "border_height": 2,
+      "primary_tileset": "gTileset_General",
+      "secondary_tileset": "gTileset_VidraDraftHighlands",
+      "border_filepath": "data/layouts/VidraDraft_HighlandAscent/border.bin",
+      "blockdata_filepath": "data/layouts/VidraDraft_HighlandAscent/map.bin"
+    },
+    {
+      "id": "LAYOUT_VIDRA_DRAFT_NORVYN",
+      "name": "VidraDraft_Norvyn_Layout",
+      "width": 56,
+      "height": 48,
+      "border_width": 2,
+      "border_height": 2,
+      "primary_tileset": "gTileset_GeneralWinter",
+      "secondary_tileset": "gTileset_SeviiIslands123Winter",
+      "border_filepath": "data/layouts/VidraDraft_Norvyn/border.bin",
+      "blockdata_filepath": "data/layouts/VidraDraft_Norvyn/map.bin"
+    },
+    {
+      "id": "LAYOUT_VIDRA_DRAFT_CORVALA",
+      "name": "VidraDraft_Corvala_Layout",
+      "width": 64,
+      "height": 64,
+      "border_width": 2,
+      "border_height": 2,
+      "primary_tileset": "gTileset_General",
+      "secondary_tileset": "gTileset_VidraDraftCorvala",
+      "border_filepath": "data/layouts/VidraDraft_Corvala/border.bin",
+      "blockdata_filepath": "data/layouts/VidraDraft_Corvala/map.bin"
     }
   ]
 }

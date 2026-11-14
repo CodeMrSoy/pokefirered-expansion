@@ -2122,3 +2122,83 @@ const u16 gTilesetPalettes_HavoraGym[][16] = {
  INCBIN_U16("data/tilesets/secondary/havora_gym/palettes/14.gbapal"),
  INCBIN_U16("data/tilesets/secondary/havora_gym/palettes/15.gbapal"),
 };
+
+const u32 gTilesetTiles_VidraDraftHighlands[] = INCBIN_U32("data/tilesets/secondary/vidra_draft_highlands/tiles.4bpp.lz");
+const u16 gTilesetPalettes_VidraDraftHighlands[][16] = {
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_highlands/palettes/00.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_highlands/palettes/01.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_highlands/palettes/02.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_highlands/palettes/03.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_highlands/palettes/04.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_highlands/palettes/05.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_highlands/palettes/06.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_highlands/palettes/07.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_highlands/palettes/08.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_highlands/palettes/09.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_highlands/palettes/10.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_highlands/palettes/11.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_highlands/palettes/12.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_highlands/palettes/13.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_highlands/palettes/14.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_highlands/palettes/15.gbapal"),
+};
+
+const u32 gTilesetTiles_VidraDraftCorvala[] = INCBIN_U32("data/tilesets/secondary/vidra_draft_corvala/tiles.4bpp.lz");
+const u16 gTilesetPalettes_VidraDraftCorvala[][16] = {
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_corvala/palettes/00.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_corvala/palettes/01.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_corvala/palettes/02.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_corvala/palettes/03.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_corvala/palettes/04.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_corvala/palettes/05.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_corvala/palettes/06.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_corvala/palettes/07.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_corvala/palettes/08.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_corvala/palettes/09.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_corvala/palettes/10.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_corvala/palettes/11.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_corvala/palettes/12.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_corvala/palettes/13.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_corvala/palettes/14.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_corvala/palettes/15.gbapal"),
+};
+
+const u32 gTilesetTiles_VidraDraftRain[] = INCBIN_U32("data/tilesets/secondary/vidra_draft_rain/tiles.4bpp.lz");
+const u16 gTilesetPalettes_VidraDraftRain[][16] = {
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_rain/palettes/00.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_rain/palettes/01.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_rain/palettes/02.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_rain/palettes/03.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_rain/palettes/04.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_rain/palettes/05.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_rain/palettes/06.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_rain/palettes/07.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_rain/palettes/08.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_rain/palettes/09.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_rain/palettes/10.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_rain/palettes/11.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_rain/palettes/12.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_rain/palettes/13.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_rain/palettes/14.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_rain/palettes/15.gbapal"),
+};
+
+const u32 gTilesetTiles_VidraDraftCave[] = INCBIN_U32("data/tilesets/secondary/vidra_draft_cave/tiles.4bpp.lz");
+const u16 gTilesetPalettes_VidraDraftCave[][16] = {
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_cave/palettes/00.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_cave/palettes/01.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_cave/palettes/02.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_cave/palettes/03.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_cave/palettes/04.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_cave/palettes/05.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_cave/palettes/06.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_cave/palettes/07.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_cave/palettes/08.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_cave/palettes/09.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_cave/palettes/10.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_cave/palettes/11.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_cave/palettes/12.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_cave/palettes/13.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_cave/palettes/14.gbapal"),
+    INCBIN_U16("data/tilesets/secondary/vidra_draft_cave/palettes/15.gbapal"),
+};

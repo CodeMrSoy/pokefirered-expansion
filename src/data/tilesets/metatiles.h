@@ -369,3 +369,15 @@ const u32 gMetatileAttributes_HavoraGymPrimary[] = INCBIN_U32("data/tilesets/pri
 
 const u16 gMetatiles_HavoraGym[] = INCBIN_U16("data/tilesets/secondary/havora_gym/metatiles.bin");
 const u32 gMetatileAttributes_HavoraGym[] = INCBIN_U32("data/tilesets/secondary/havora_gym/metatile_attributes.bin");
+
+const u16 gMetatiles_VidraDraftHighlands[] = INCBIN_U16("data/tilesets/secondary/vidra_draft_highlands/metatiles.bin");
+const u32 gMetatileAttributes_VidraDraftHighlands[] = INCBIN_U32("data/tilesets/secondary/vidra_draft_highlands/metatile_attributes.bin");
+
+const u16 gMetatiles_VidraDraftCorvala[] = INCBIN_U16("data/tilesets/secondary/vidra_draft_corvala/metatiles.bin");
+const u32 gMetatileAttributes_VidraDraftCorvala[] = INCBIN_U32("data/tilesets/secondary/vidra_draft_corvala/metatile_attributes.bin");
+
+const u16 gMetatiles_VidraDraftRain[] = INCBIN_U16("data/tilesets/secondary/vidra_draft_rain/metatiles.bin");
+const u32 gMetatileAttributes_VidraDraftRain[] = INCBIN_U32("data/tilesets/secondary/vidra_draft_rain/metatile_attributes.bin");
+
+const u16 gMetatiles_VidraDraftCave[] = INCBIN_U16("data/tilesets/secondary/vidra_draft_cave/metatiles.bin");
+const u32 gMetatileAttributes_VidraDraftCave[] = INCBIN_U32("data/tilesets/secondary/vidra_draft_cave/metatile_attributes.bin");

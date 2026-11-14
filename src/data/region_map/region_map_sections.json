@@ -1250,6 +1250,78 @@
       "y": 2,
       "width": 1,
       "height": 1
+    },
+    {
+      "id": "MAPSEC_VIDRA_DRAFT_WESTERNFOREST",
+      "name": "WESTERN FOREST",
+      "x": 9,
+      "y": 7,
+      "width": 1,
+      "height": 1
+    },
+    {
+      "id": "MAPSEC_VIDRA_DRAFT_CORVALAPASSAGE",
+      "name": "CORVALA PASSAGE",
+      "x": 9,
+      "y": 7,
+      "width": 1,
+      "height": 1
+    },
+    {
+      "id": "MAPSEC_VIDRA_DRAFT_RAINFALLROUTE",
+      "name": "RAINFALL ROUTE",
+      "x": 9,
+      "y": 7,
+      "width": 1,
+      "height": 1
+    },
+    {
+      "id": "MAPSEC_VIDRA_DRAFT_VEYDEN",
+      "name": "VEYDEN",
+      "x": 9,
+      "y": 7,
+      "width": 1,
+      "height": 1
+    },
+    {
+      "id": "MAPSEC_VIDRA_DRAFT_LAKEWOODROUTE",
+      "name": "LAKEWOOD ROUTE",
+      "x": 9,
+      "y": 7,
+      "width": 1,
+      "height": 1
+    },
+    {
+      "id": "MAPSEC_VIDRA_DRAFT_LYRVIK",
+      "name": "LYRVIK TOWN",
+      "x": 9,
+      "y": 7,
+      "width": 1,
+      "height": 1
+    },
+    {
+      "id": "MAPSEC_VIDRA_DRAFT_HIGHLANDASCENT",
+      "name": "HIGHLAND ASCENT",
+      "x": 9,
+      "y": 7,
+      "width": 1,
+      "height": 1
+    },
+    {
+      "id": "MAPSEC_VIDRA_DRAFT_NORVYN",
+      "name": "NORVYN TOWN",
+      "x": 9,
+      "y": 7,
+      "width": 1,
+      "height": 1
+    },
+    {
+      "id": "MAPSEC_VIDRA_DRAFT_CORVALA",
+      "name": "CORVALA TOWN",
+      "x": 9,
+      "y": 7,
+      "width": 1,
+      "height": 1
     }
   ]
 }

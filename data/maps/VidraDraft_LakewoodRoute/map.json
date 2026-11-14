@@ -1,0 +1,41 @@
+{
+  "id": "MAP_VIDRA_DRAFT_LAKEWOODROUTE",
+  "name": "VidraDraft_LakewoodRoute",
+  "layout": "LAYOUT_VIDRA_DRAFT_LAKEWOODROUTE",
+  "music": "MUS_SEVII_123",
+  "region_map_section": "MAPSEC_VIDRA_DRAFT_LAKEWOODROUTE",
+  "requires_flash": false,
+  "weather": "WEATHER_SUNNY",
+  "map_type": "MAP_TYPE_ROUTE",
+  "allow_cycling": false,
+  "allow_escaping": false,
+  "allow_running": true,
+  "show_map_name": true,
+  "floor_number": 0,
+  "battle_scene": "MAP_BATTLE_SCENE_NORMAL",
+  "connections": [
+    {
+      "map": "MAP_VIDRA_DRAFT_VEYDEN",
+      "direction": "left",
+      "offset": 0
+    },
+    {
+      "map": "MAP_VIDRA_DRAFT_LYRVIK",
+      "direction": "right",
+      "offset": 0
+    }
+  ],
+  "object_events": [],
+  "warp_events": [],
+  "coord_events": [],
+  "bg_events": [
+    {
+      "type": "sign",
+      "x": 5,
+      "y": 23,
+      "elevation": 3,
+      "player_facing_dir": "BG_EVENT_PLAYER_FACING_ANY",
+      "script": "VidraDraft_LakewoodRoute_Sign0"
+    }
+  ]
+}

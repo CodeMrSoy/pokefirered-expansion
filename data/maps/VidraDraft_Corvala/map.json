@@ -1,0 +1,29 @@
+{
+  "id": "MAP_VIDRA_DRAFT_CORVALA",
+  "name": "VidraDraft_Corvala",
+  "layout": "LAYOUT_VIDRA_DRAFT_CORVALA",
+  "music": "MUS_SEVII_123",
+  "region_map_section": "MAPSEC_VIDRA_DRAFT_CORVALA",
+  "requires_flash": false,
+  "weather": "WEATHER_SUNNY",
+  "map_type": "MAP_TYPE_TOWN",
+  "allow_cycling": false,
+  "allow_escaping": false,
+  "allow_running": true,
+  "show_map_name": true,
+  "floor_number": 0,
+  "battle_scene": "MAP_BATTLE_SCENE_NORMAL",
+  "connections": [],
+  "object_events": [],
+  "warp_events": [
+    {
+      "x": 49,
+      "y": 15,
+      "elevation": 4,
+      "dest_map": "MAP_VIDRA_DRAFT_CORVALAPASSAGE",
+      "dest_warp_id": "1"
+    }
+  ],
+  "coord_events": [],
+  "bg_events": []
+}

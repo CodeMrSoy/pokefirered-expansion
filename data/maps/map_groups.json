@@ -49,7 +49,8 @@
     "gMapGroup_Myrdal",
     "gMapGroup_Iskora",
     "gMapGroup_VidraRoutes",
-    "gMapGroup_VidraLandmarks"
+    "gMapGroup_VidraLandmarks",
+    "gMapGroup_VidraDrafts"
   ],
   "gMapGroup_Link": [
     "BattleColosseum_2P",
@@ -625,5 +626,16 @@
   "gMapGroup_VidraLandmarks": [
     "Eldervik_Woods",
     "Frostfell_Mountains"
+  ],
+  "gMapGroup_VidraDrafts": [
+    "VidraDraft_WesternForest",
+    "VidraDraft_CorvalaPassage",
+    "VidraDraft_RainfallRoute",
+    "VidraDraft_Veyden",
+    "VidraDraft_LakewoodRoute",
+    "VidraDraft_Lyrvik",
+    "VidraDraft_HighlandAscent",
+    "VidraDraft_Norvyn",
+    "VidraDraft_Corvala"
   ]
 }

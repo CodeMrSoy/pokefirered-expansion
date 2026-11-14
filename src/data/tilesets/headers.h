@@ -1173,3 +1173,43 @@ const struct Tileset gTileset_HavoraGym = {
  .metatiles = gMetatiles_HavoraGym, .metatileAttributes = gMetatileAttributes_HavoraGym,
  .callback = InitTilesetAnim_HavoraCity,
 };
+
+const struct Tileset gTileset_VidraDraftHighlands = {
+    .isCompressed = TRUE,
+    .isSecondary = TRUE,
+    .tiles = gTilesetTiles_VidraDraftHighlands,
+    .palettes = gTilesetPalettes_VidraDraftHighlands,
+    .metatiles = gMetatiles_VidraDraftHighlands,
+    .metatileAttributes = gMetatileAttributes_VidraDraftHighlands,
+    .callback = NULL,
+};
+
+const struct Tileset gTileset_VidraDraftCorvala = {
+    .isCompressed = TRUE,
+    .isSecondary = TRUE,
+    .tiles = gTilesetTiles_VidraDraftCorvala,
+    .palettes = gTilesetPalettes_VidraDraftCorvala,
+    .metatiles = gMetatiles_VidraDraftCorvala,
+    .metatileAttributes = gMetatileAttributes_VidraDraftCorvala,
+    .callback = NULL,
+};
+
+const struct Tileset gTileset_VidraDraftRain = {
+    .isCompressed = TRUE,
+    .isSecondary = TRUE,
+    .tiles = gTilesetTiles_VidraDraftRain,
+    .palettes = gTilesetPalettes_VidraDraftRain,
+    .metatiles = gMetatiles_VidraDraftRain,
+    .metatileAttributes = gMetatileAttributes_VidraDraftRain,
+    .callback = NULL,
+};
+
+const struct Tileset gTileset_VidraDraftCave = {
+    .isCompressed = TRUE,
+    .isSecondary = TRUE,
+    .tiles = gTilesetTiles_VidraDraftCave,
+    .palettes = gTilesetPalettes_VidraDraftCave,
+    .metatiles = gMetatiles_VidraDraftCave,
+    .metatileAttributes = gMetatileAttributes_VidraDraftCave,
+    .callback = NULL,
+};
