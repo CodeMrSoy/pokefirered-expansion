@@ -16,6 +16,7 @@ from bridge import (
     Conversation, DialogueBridge, MAILBOX_SIZE, REPLY_OFFSET, SKIP, TEXT_CAPACITY, WAIT, validate,
 )
 from inference import DialogueReplies, LocalModel, windows_launcher_environment
+from reasoning import BALANCED_SHA256, LIGHTWEIGHT_SHA256, GuideTurn, guide_reply, reported_fact
 from profiles import PROFILES
 from world import Encounter, WorldMemory
 
@@ -217,6 +218,7 @@ def main():
     mode.add_argument("--model-test", action="store_true")
     mode.add_argument("--pallet-test", action="store_true")
     mode.add_argument("--pallet-social", action="store_true")
+    parser.add_argument("--lightweight", action="store_true", help="Use short dialogue and skip optional prose")
     args = parser.parse_args()
     runtime = ROOT / "inference"
     if args.sandbox_test:
@@ -229,7 +231,14 @@ def main():
     rom = rom_path.read_bytes()
     if hashlib.sha256(rom).hexdigest() != manifest["sha256"]:
         raise RuntimeError("The bundled ROM and mailbox manifest do not match")
-    model = LocalModel(runtime, manifest["species"], catalog=ROOT / "world-knowledge.sqlite3")
+    try:
+        with (runtime / "model.gguf").open("rb") as weights:
+            digest = hashlib.file_digest(weights, "sha256").hexdigest()
+    except OSError:
+        digest = None
+    style = {BALANCED_SHA256: "qwen3", LIGHTWEIGHT_SHA256: "chatml"}.get(digest, "unavailable")
+    model = LocalModel(runtime, manifest["species"], catalog=ROOT / "world-knowledge.sqlite3",
+                       style=style, natural=style == "qwen3" and not args.lightweight)
     if args.model_test:
         expected = {
             "pc_resident": "watts:pikachu",
@@ -243,6 +252,8 @@ def main():
                 if fact not in proposal.knowledge:
                     raise RuntimeError(f"Missing expected Pikachu fact for {npc}")
                 print(PROFILES[npc]["name"], validate(proposal.dialogue).decode("ascii"), proposal.metrics)
+            reply = model.guide(GuideTurn("pallet-sighting:25", True))
+            print("Guide follow-up", validate(reply.dialogue).decode("ascii"), reply.intention, reply.metrics)
         finally:
             model.close()
         return 0
@@ -272,6 +283,10 @@ def main():
             scene = None
             encounter = None
             work = None
+            last_guide = None
+            guide_turn = None
+            guide_work = None
+            guide_result = None
             title = b"Living Quantum World"
             def prepare_demo():
                 if demo:
@@ -282,11 +297,27 @@ def main():
             prepare_demo()
 
             def propose(context):
-                nonlocal staged, scene, encounter, work
+                nonlocal staged, scene, encounter, work, guide_turn, guide_work, guide_result, last_guide
                 if context.npc == "pallet_exchange":
+                    last_guide = None
                     scene = memory.social.scene()
                     return scene[1] if scene else SKIP
+                if context.npc == "guide_followup":
+                    if bridge.pending is None:
+                        if last_guide is None or last_guide[0] != bridge.sequence or time.monotonic() > last_guide[2]:
+                            return SKIP
+                        guide_turn = memory.social.guide_turn(last_guide[1])
+                        last_guide = None
+                        guide_work = pool.submit(model.guide, guide_turn)
+                    if not guide_work.done():
+                        return WAIT
+                    try:
+                        guide_result = guide_work.result()
+                    except (ValueError, RuntimeError, TimeoutError, OSError) as error:
+                        guide_result = guide_reply(guide_turn, metrics={"fallback_error": str(error)[:240]})
+                    return guide_result.dialogue
                 if bridge.pending is None:
+                    last_guide = None
                     encounter = memory.context(context)
                     work = replies.prepare(encounter)
                 if not work.done():
@@ -303,6 +334,7 @@ def main():
                 game.core.retro_run()
                 staged = None
                 scene = None
+                guide_result = None
                 trace = bridge.poll(propose)
                 next_title = b"Living Quantum World - NPC is thinking" if bridge.pending else b"Living Quantum World"
                 if next_title != title:
@@ -312,6 +344,17 @@ def main():
                     if scene and trace["validation"] == "accepted":
                         memory.social.displayed(scene[0])
                         trace["event"] = scene[0]
+                    log.write(json.dumps(trace) + "\n")
+                    trace = None
+                if trace and trace["context"]["npc"] == "guide_followup":
+                    if guide_result and trace["validation"] == "accepted":
+                        trace.update(intention=guide_result.intention, report=guide_turn.fact,
+                                     generated_reaction=guide_result.generated_reaction, metrics=guide_result.metrics)
+                        try:
+                            if memory.social.apply_guide_turn(guide_turn, guide_result.intention):
+                                trace["changes"].append("guide_requested_verification")
+                        except ValueError as error:
+                            trace["action_error"] = str(error)
                     log.write(json.dumps(trace) + "\n")
                     trace = None
                 if trace:
@@ -331,6 +374,10 @@ def main():
                                 updates = memory.apply(encounter, proposal.action)
                                 trace["changes"].extend(updates)
                                 trace["action_result"] = "approved"
+                                if encounter.npc == "sign_guide":
+                                    sequence = (trace["sequence"] + 1) & 0xFFFFFFFF or 1
+                                    last_guide = (sequence, reported_fact(proposal.dialogue, proposal.knowledge),
+                                                  time.monotonic() + 90)
                                 if updates:
                                     prepare_demo()
                             except ValueError as error:

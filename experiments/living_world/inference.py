@@ -12,6 +12,7 @@ from knowledge import prompt_facts, retrieve
 from worker import ResidentWorker
 from world import Encounter
 from profiles import PROFILES
+from reasoning import REACTION, plan_guide, reaction_page
 
 TOPICS = {
     "Pikachu": "Pikachu can spark near the computer. Watts likes Electric Pokemon.",
@@ -90,6 +91,10 @@ def chat(instructions, observation):
     )
 
 
+def non_thinking_chat(instructions, observation):
+    return chat(instructions, observation) + "<think>\n\n</think>\n\n"
+
+
 @dataclass(frozen=True)
 class Proposal:
     dialogue: str
@@ -101,14 +106,23 @@ class Proposal:
 
 class LocalModel:
     def __init__(self, runtime: Path, species_names: dict, timeout=8, *,
-                 catalog=None, fact_limit=2, fact_budget=220):
+                 catalog=None, fact_limit=2, fact_budget=220, style="chatml", natural=False):
         self.species_names = species_names
         self.catalog = catalog
         self.fact_limit = fact_limit
         self.fact_budget = fact_budget
+        self.style = style
+        self.render_prompt = non_thinking_chat if style == "qwen3" else chat
+        self.natural = natural
         self.worker = ResidentWorker(runtime, windows_launcher_environment, timeout)
 
+    def guide(self, turn):
+        return plan_guide(self.worker, self.render_prompt, turn,
+                          natural=self.natural and self.style != "unavailable")
+
     def plan(self, encounter):
+        if self.style == "unavailable":
+            raise ValueError("Packaged local model is missing or has an unknown checksum")
         start = perf_counter()
         facts = retrieve(self.catalog, encounter, limit=self.fact_limit, budget=self.fact_budget) if self.catalog else ()
         retrieved = perf_counter()
@@ -135,6 +149,10 @@ class LocalModel:
         action = allowed[0]
         first, second = dialogue_options(species, encounter, facts)
         grammar = "root ::= " + choices(first) + r' "\n" ' + choices(second)
+        natural = (self.natural and encounter.npc in ("pc_resident", "oak")
+                   and not encounter.completes_quest and encounter.quest != "completed")
+        if natural:
+            grammar += r' ("\n" reaction)?'
         tail = " Speak in two short lines."
         if len(allowed) > 1:
             _, body = grammar.split(" ::= ", 1)
@@ -147,7 +165,11 @@ class LocalModel:
             if allowed[0] == "PROPOSE_OPTIONAL_QUEST":
                 grammar = r'root ::= "A" | "B" "\n" body' + "\nbody ::= " + body
                 tail += " If you offer a survey, write only A."
-        prompt = chat(instructions, observation + tail)
+        if natural:
+            grammar += "\n" + REACTION
+            tail += (" If you are speaking, add a short personal reaction on a new line. "
+                     "This extra sentence gives your own short reaction, without names, places or facts.")
+        prompt = self.render_prompt(instructions, observation + tail)
         inference_start = perf_counter()
         result, metrics = self.worker.generate(grammar, prompt)
         if len(allowed) > 1:
@@ -162,9 +184,14 @@ class LocalModel:
                 raise ValueError("Quest choice must contain only its action")
             text = "Pikachu again, I see!\nShow me a new Pokemon."
         else:
-            first_line, _, second_line = text.partition("\n")
+            first_line, _, rest = text.partition("\n")
+            second_line, _, reaction = rest.partition("\n")
             if first_line not in first or second_line not in second:
                 raise ValueError("Generated dialogue is outside approved choices")
+            extra = reaction_page(reaction) if natural else None
+            if reaction and not natural:
+                raise ValueError("Unexpected extra dialogue")
+            text = first_line + "\n" + second_line + ("\f" + extra if extra else "")
         raw = json.dumps({"action": "SAY_DIALOGUE", "text": text})
         validate(raw)
         return Proposal(raw, action, {
@@ -195,6 +222,8 @@ class DialogueReplies:
             stale = [key for key in self.pending if key.npc == context.npc and key.visible_species == context.visible_species]
             for key in stale:
                 self.pending.pop(key).cancel()
+            if len(self.pending) >= 32:
+                self.pending.pop(next(iter(self.pending))).cancel()
             reply = self.executor.submit(self.propose, context)
             self.pending[context] = reply
         return reply

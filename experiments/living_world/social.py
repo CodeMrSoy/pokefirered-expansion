@@ -4,10 +4,10 @@ import json
 from time import time
 
 from profiles import KNOWLEDGE_PROFILES, SOCIAL_CONTACTS
+from reasoning import GuideTurn, REPORTS, SIGHTINGS
 
 WATTS = "pc_resident"
 GUIDE = "sign_guide"
-SIGHTINGS = {25: "Pikachu", 7: "Squirtle"}
 DELAY = 4
 COOLDOWN = 12
 
@@ -25,6 +25,12 @@ CREATE TABLE IF NOT EXISTS social_relationship (
     experiences INTEGER NOT NULL, goal TEXT NOT NULL,
     PRIMARY KEY (save, npc, peer)
 );
+CREATE TABLE IF NOT EXISTS social_followup (
+    save TEXT NOT NULL, event TEXT NOT NULL, requested_at REAL NOT NULL,
+    answered_at REAL, displayed INTEGER NOT NULL DEFAULT 0,
+    PRIMARY KEY (save, event)
+);
+CREATE INDEX IF NOT EXISTS social_followup_due ON social_followup(save, answered_at, requested_at, event);
 """
 
 
@@ -40,11 +46,15 @@ class SocialWorld:
         return self.memory.save
 
     def next_deadline(self):
-        row = self.db.execute("""
+        sighting = self.db.execute("""
             SELECT due FROM social_event WHERE save=? AND shared IS NULL
             ORDER BY due, event LIMIT 1
         """, (self.save,)).fetchone()
-        return row[0] if row else None
+        followup = self.db.execute("""
+            SELECT requested_at + ? FROM social_followup WHERE save=? AND answered_at IS NULL
+            ORDER BY requested_at, event LIMIT 1
+        """, (DELAY, self.save)).fetchone()
+        return min((row[0] for row in (sighting, followup) if row), default=None)
 
     def checkpoint(self, target):
         self.db.execute("""
@@ -57,10 +67,58 @@ class SocialWorld:
             SELECT ?, npc, peer, familiarity, trust, affinity, experiences, goal
             FROM social_relationship WHERE save=?
         """, (target, self.save))
+        self.db.execute("""
+            INSERT INTO social_followup SELECT ?, event, requested_at, answered_at, displayed
+            FROM social_followup WHERE save=?
+        """, (target, self.save))
 
     def discard(self):
         self.db.execute("DELETE FROM social_event WHERE save=?", (self.save,))
         self.db.execute("DELETE FROM social_relationship WHERE save=?", (self.save,))
+        self.db.execute("DELETE FROM social_followup WHERE save=?", (self.save,))
+
+    def guide_turn(self, fact):
+        if fact not in REPORTS:
+            return GuideTurn(None, False)
+        row = self.db.execute("""
+            SELECT EXISTS (
+                SELECT 1 FROM social_followup
+                WHERE save=e.save AND event=e.event
+            ), EXISTS (
+                SELECT 1 FROM npc_knowledge
+                WHERE save=e.save AND npc=e.listener AND fact=CAST(e.species AS TEXT)
+                  AND origin='witnessed' AND verified=1
+            ), EXISTS (
+                SELECT 1 FROM social_followup
+                WHERE save=e.save AND event=e.event AND answered_at IS NOT NULL
+            )
+            FROM social_event AS e
+            JOIN npc_knowledge AS k ON k.save=e.save AND k.npc=e.listener AND k.fact=e.event
+            WHERE e.save=? AND e.event=? AND e.shared IS NOT NULL
+              AND e.speaker=? AND e.listener=? AND e.area='pallet'
+              AND k.origin='conversation' AND k.source=e.speaker
+        """, (self.save, fact, WATTS, GUIDE)).fetchone()
+        if not row:
+            return GuideTurn(None, False)
+        requested, witnessed, answered = map(bool, row)
+        return GuideTurn(fact, not requested and not witnessed, requested, witnessed, answered)
+
+    def apply_guide_turn(self, turn, intention, now=None):
+        if intention == "CONSERVE":
+            return False
+        with self.db:
+            self.db.execute("BEGIN IMMEDIATE")
+            if intention != "ASK_WATTS" or not turn.can_request or self.guide_turn(turn.fact) != turn:
+                raise ValueError("Stale or unauthorized guide follow-up")
+            self.db.execute("""
+                INSERT INTO social_followup(save,event,requested_at) VALUES (?,?,?)
+            """, (self.save, turn.fact, time() if now is None else now))
+            self.db.execute("""
+                UPDATE social_relationship SET goal='verify_attributed_sighting'
+                WHERE save=? AND npc=? AND peer=?
+            """, (self.save, GUIDE, WATTS))
+        self.deadline = self.next_deadline()
+        return True
 
     def queue_sighting(self, encounter, now=None):
         """Called in the same transaction as the witnessed follower record."""
@@ -90,13 +148,34 @@ class SocialWorld:
             return None
         with self.db:
             self.db.execute("BEGIN IMMEDIATE")
-            row = self.db.execute("""
-                SELECT event, speaker, listener, area, species, observed FROM social_event
+            sighting = self.db.execute("""
+                SELECT event, speaker, listener, area, species, observed, due FROM social_event
                 WHERE save=? AND shared IS NULL AND due<=? ORDER BY due, event LIMIT 1
             """, (self.save, now)).fetchone()
-            result = self._share(row, now) if row else None
+            question = self.db.execute("""
+                SELECT event, requested_at + ? FROM social_followup
+                WHERE save=? AND answered_at IS NULL AND requested_at<=?
+                ORDER BY requested_at,event LIMIT 1
+            """, (DELAY, self.save, now - DELAY)).fetchone()
+            if question and (not sighting or question[1] < sighting[-1]):
+                result = self._answer(question[0], now)
+            else:
+                result = self._share(sighting[:-1], now) if sighting else None
         self.deadline = self.next_deadline()
         return result
+
+    def _answer(self, fact, now):
+        turn = self.guide_turn(fact)
+        if not turn.requested:
+            self.db.execute("DELETE FROM social_followup WHERE save=? AND event=?", (self.save, fact))
+            return {"event": fact, "status": "rejected"}
+        self.db.execute("UPDATE social_followup SET answered_at=? WHERE save=? AND event=?",
+                        (now, self.save, fact))
+        self.db.execute("""
+            UPDATE social_relationship SET goal='note_uncertain_sighting'
+            WHERE save=? AND npc=? AND peer=?
+        """, (self.save, GUIDE, WATTS))
+        return dict(event=fact, speaker=WATTS, listener=GUIDE, status="answered_unknown_time")
 
     def _share(self, row, now):
         event, speaker, listener, area, species, observed = row
@@ -135,7 +214,7 @@ class SocialWorld:
             INSERT INTO social_relationship VALUES (?,?,?,1,?,1,1,?)
             ON CONFLICT(save,npc,peer) DO UPDATE SET
                 familiarity=MIN(familiarity+1,5), trust=MIN(trust+1,5),
-                affinity=MIN(affinity+1,5), experiences=experiences+1, goal=excluded.goal
+                affinity=MIN(affinity+1,5), experiences=experiences+1
         """, (self.save, npc, peer, SOCIAL_CONTACTS[npc][peer] + 1, goal))
 
     def scene(self):
@@ -144,13 +223,27 @@ class SocialWorld:
             AND displayed=0 AND speaker=? AND listener=? AND area='pallet'
             ORDER BY shared,event LIMIT 1
         """, (self.save, WATTS, GUIDE)).fetchone()
-        if not row or row[1] not in SIGHTINGS:
-            return None
-        event, species = row
-        text = f"Watts: I saw a {SIGHTINGS[species]}.\nGuide: I'll tell visitors."
+        if row and row[1] in SIGHTINGS:
+            event, species = row
+            text = f"Watts: I saw a {SIGHTINGS[species]}.\nGuide: I'll tell visitors."
+        else:
+            answer = self.db.execute("""
+                SELECT event FROM social_followup WHERE save=? AND answered_at IS NOT NULL
+                AND displayed=0 ORDER BY answered_at,event LIMIT 1
+            """, (self.save,)).fetchone()
+            if not answer or not self.guide_turn(answer[0]).answered:
+                return None
+            event = "followup:" + answer[0]
+            text = "Guide: Do you know when?\nWatts: I couldn't tell you."
         return event, json.dumps({"action": "SAY_DIALOGUE", "text": text})
 
     def displayed(self, event):
         with self.db:
-            self.db.execute("UPDATE social_event SET displayed=1 WHERE save=? AND event=? AND shared IS NOT NULL",
-                            (self.save, event))
+            if event.startswith("followup:"):
+                self.db.execute("""
+                    UPDATE social_followup SET displayed=1 WHERE save=? AND event=? AND answered_at IS NOT NULL
+                """, (self.save, event.removeprefix("followup:")))
+            else:
+                self.db.execute("""
+                    UPDATE social_event SET displayed=1 WHERE save=? AND event=? AND shared IS NOT NULL
+                """, (self.save, event))

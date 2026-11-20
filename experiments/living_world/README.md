@@ -1,6 +1,6 @@
 # Living Quantum World
 
-This branch starts from Pokémon Quantum V3 at `c3a7e53bed3055d9d78a3a28e55db907661efa97`. Its first slice uses the existing PC-storage conversation in Pallet Town. The guest exports an NPC identifier and the species of an onscreen follower, if present, after the player has received the Pokédex. An mGBA host can return two short lines. If it stays silent, returns unusable text, or replies with the wrong sequence, the ROM falls back to the original PC-storage tip within 30 script ticks. The desktop player runs an offline Qwen2.5-0.5B-Instruct model through llama.cpp. The test can use either the actual worker or a deterministic responder.
+This branch starts from Pokémon Quantum V3 at `c3a7e53bed3055d9d78a3a28e55db907661efa97`. Its first slice uses the existing PC-storage conversation in Pallet Town. The guest exports an NPC identifier and the species of an onscreen follower, if present, after the player has received the Pokédex. An mGBA host can return up to two short pages. If it stays silent, returns unusable text, or replies with the wrong sequence, the ROM falls back to the original PC-storage tip within 30 script ticks. The desktop player runs an offline Qwen3-0.6B model through llama.cpp. The test can use either the actual worker or a deterministic responder.
 
 ## Run the bridge in mGBA
 
@@ -14,7 +14,7 @@ ADVENTURE_TEST_MODE=0 python3 tests/living_world_bridge_emulator.py
 ADVENTURE_TEST_MODE=1 python3 tests/living_world_bridge_emulator.py
 ```
 
-Mode 0 is Classic and mode 1 is Quantum. The harness runs the compiled map event through the field script interpreter and verifies the resulting text buffer. Its JSON lines show request context, proposals, host validation, response writes, elapsed time and, for successful cases, the rendered text. Set `LIVING_WORLD_INFERENCE_RUNTIME` to run with the actual worker. The emulator trace measures the host handoff and frames to the text buffer. The desktop log also records model load, inference and IPC overhead. The [playtest guide](PLAYTEST.md) covers the packaged desktop launcher. See [Phase 4](PHASE4.md) for the social demo. See [Phase 2](PHASE2.md) for model comparisons and the Pond Survey, and [Phase 3](PHASE3.md) for the offline catalog, knowledge boundaries, and benchmark results.
+Mode 0 is Classic and mode 1 is Quantum. The harness runs the compiled map event through the field script interpreter and verifies the resulting text buffer. Its JSON lines show request context, proposals, host validation, response writes, elapsed time and, for successful cases, the rendered text. Set `LIVING_WORLD_INFERENCE_RUNTIME` to run with the actual worker. The emulator trace measures the host handoff and frames to the text buffer. The desktop log also records model load, inference and IPC overhead. The [playtest guide](PLAYTEST.md) covers the packaged desktop launcher. See [Phase 5](PHASE5.md) for the Windows playtest, benchmark and two-turn dialogue. See [Phase 2](PHASE2.md) for model comparisons and the Pond Survey, and [Phase 3](PHASE3.md) for the offline catalog, knowledge boundaries, and benchmark results.
 
 ### Build the offline worker and Windows package
 
@@ -36,8 +36,8 @@ Use the symbol `gLivingWorldMailbox` from the ELF paired with the loaded ROM. Th
 | 10 | 2 | Visible follower species ID, or zero |
 | 12 | 4 | Response sequence, written last |
 | 16 | 1 | Response text length |
-| 17 | 57 | Plain ASCII dialogue with at most one line break |
-| 74 | 2 | Alignment padding |
+| 17 | 115 | Plain ASCII dialogue, up to two lines per page and one form-feed page break |
+
 
 The host accepts the exact JSON shape `{"action":"SAY_DIALOGUE","text":"..."}`. The ROM independently encodes an allowlist of plain characters and checks field-font pixel width before displaying text. The only outcome of a valid message is dialogue. The protocol has no operation for state mutation. The test and desktop frontend publish on the emulator thread. The desktop frontend pauses emulation while its worker processes the current request. Reset, ROM switching and save-state rewind would require invalidating outstanding replies before resuming a different game state.
 

@@ -10,10 +10,10 @@ from profiles import NPC_IDS
 
 REQUEST = struct.Struct("<4sIHH")
 REPLY_OFFSET = REQUEST.size
-TEXT_CAPACITY = 57
-MAILBOX_SIZE = 76
+TEXT_CAPACITY = 115
+MAILBOX_SIZE = 132
 LINE = re.compile(r"[A-Za-z0-9 !?.,':-]{1,28}")
-REQUEST_IDS = {**NPC_IDS, 10: "pallet_exchange"}
+REQUEST_IDS = {**NPC_IDS, 10: "pallet_exchange", 11: "guide_followup"}
 WAIT = object()
 SKIP = object()
 
@@ -39,9 +39,13 @@ def validate(raw):
         raise ValueError("Expected action and text fields")
     if proposal["action"] != "SAY_DIALOGUE" or not isinstance(proposal["text"], str):
         raise ValueError("Only SAY_DIALOGUE with plain text is available")
-    lines = proposal["text"].split("\n")
-    if len(lines) > 2 or any(not LINE.fullmatch(line) or not line.strip() for line in lines):
-        raise ValueError("Expected one or two short lines of plain text")
+    pages = proposal["text"].split("\f")
+    if len(pages) > 2:
+        raise ValueError("Expected at most two short pages")
+    for page in pages:
+        lines = page.split("\n")
+        if len(lines) > 2 or any(not LINE.fullmatch(line) or not line.strip() for line in lines):
+            raise ValueError("Expected one or two short lines of plain text per page")
     return proposal["text"].encode("ascii")
 
 
@@ -58,6 +62,7 @@ class DialogueBridge:
         self.pending = None
         self.deferred = deferred
         self.started = 0
+        self.sequence = 0
 
     def _signal(self, sequence, length):
         self.write(self.address + REPLY_OFFSET + 4, bytes([length]))
@@ -74,6 +79,7 @@ class DialogueBridge:
             return None
 
         context = Conversation(REQUEST_IDS[npc], species or None)
+        self.sequence = sequence
         trace = {"context": vars(context), "sequence": sequence, "changes": []}
         if self.pending != header:
             self.started = time.perf_counter()

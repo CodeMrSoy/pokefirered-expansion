@@ -84,7 +84,7 @@ def printed_message():
 
 def render_expected(ascii_text):
     charmap = {" ": 0, ".": 0xAD, "!": 0xAB, "?": 0xAC, ",": 0xB8,
-               "'": 0xB4, "-": 0xAE, ":": 0xF0, "\n": 0xFE}
+               "'": 0xB4, "-": 0xAE, ":": 0xF0, "\n": 0xFE, "\f": 0xFB}
     charmap.update({str(i): 0xA1 + i for i in range(10)})
     charmap.update({chr(65 + i): 0xBB + i for i in range(26)})
     charmap.update({chr(97 + i): 0xD5 + i for i in range(26)})
@@ -389,6 +389,9 @@ if catalog and runtime:
         memory = WorldMemory(db, "demo", b"checkpoint")
         deferred = DialogueBridge(gba.read, gba.write, mailbox, deferred=True)
         local = LocalModel(Path(runtime), {"25": "Pikachu", "7": "Squirtle"}, catalog=catalog)
+        phase5_runtime = os.environ.get("LIVING_WORLD_PHASE5_RUNTIME")
+        phase5 = LocalModel(Path(phase5_runtime), {"25": "Pikachu", "7": "Squirtle"},
+                            catalog=catalog, style="qwen3", natural=True) if phase5_runtime else None
         try:
             enter_map("PalletTown", 13, 18)
             start_conversation()
@@ -446,6 +449,32 @@ if catalog and runtime:
             assert "Watts saw your Pikachu." in json.loads(trace["proposal"])["text"]
             assert printed_message() == render_expected(json.loads(trace["proposal"])["text"])
             print("Guide recalled Watts's sighting with no follower in view.", flush=True)
+            if phase5:
+                wait_aside(True)
+                turn = memory.social.guide_turn("pallet-sighting:25")
+                assert turn.can_request
+                reply = phase5.guide(turn)
+                assert reply.intention == "ASK_WATTS", reply
+                assert reply.generated_reaction, reply
+
+                def follow_up(context):
+                    assert context == Conversation("guide_followup", None)
+                    return reply.dialogue
+
+                trace = deferred.poll(follow_up)
+                assert trace["validation"] == "accepted", trace
+                assert printed_message() == render_expected(json.loads(reply.dialogue)["text"])
+                assert memory.social.apply_guide_turn(turn, reply.intention)
+                memory.close()
+                memory = WorldMemory(db, "demo", b"checkpoint")
+                assert memory.social.guide_turn(turn.fact).requested
+                second = phase5.guide(memory.social.guide_turn(turn.fact))
+                assert second.intention == "CONSERVE"
+                assert "I've asked Watts to check." in json.loads(second.dialogue)["text"]
+                assert memory.social.tick(memory.social.deadline)["status"] == "answered_unknown_time"
+                assert memory.social.guide_turn(turn.fact).answered
+                print("Phase 5 guide turn:", json.loads(reply.dialogue)["text"], reply.metrics, flush=True)
+                print("Phase 5 retained consequence:", json.loads(second.dialogue)["text"], flush=True)
             finish_dialogue()
             deferred.poll(lambda _: SKIP)
 
@@ -465,6 +494,8 @@ if catalog and runtime:
         finally:
             memory.close()
             local.close()
+            if phase5:
+                phase5.close()
 
 
 # Create a clearly labeled, independent battery save for the playable demo.

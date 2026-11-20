@@ -12,7 +12,8 @@ sys.path.insert(0, str(APP))
 
 from bridge import Conversation, validate
 from knowledge import retrieve
-from social import COOLDOWN, GUIDE, WATTS
+from reasoning import guide_reply, reaction_page
+from social import COOLDOWN, DELAY, GUIDE, WATTS
 from world import WorldMemory
 
 PIKACHU = Conversation(WATTS, 25)
@@ -49,6 +50,21 @@ def verify(catalog, db):
     assert "pallet-sighting:25" in keys(catalog, memory, GUIDE_ALONE)
     assert "pallet-sighting:25" not in keys(catalog, memory, Conversation("oak", None))
     assert "pallet-sighting:25" not in keys(catalog, memory, Conversation(WATTS, None))
+    turn = memory.social.guide_turn("pallet-sighting:25")
+    assert turn.can_request and not turn.requested
+    assert not memory.social.apply_guide_turn(turn, "CONSERVE")
+    assert not reaction_page("I observed Pikachu at noon.")
+    assert reaction_page("I would rather be careful.")
+    assert memory.social.apply_guide_turn(turn, "ASK_WATTS", now=due)
+    try:
+        memory.social.apply_guide_turn(turn, "ASK_WATTS")
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Duplicate follow-up was accepted")
+    assert not memory.social.guide_turn("pallet-sighting:7").can_request
+    assert memory.social.tick(due + DELAY)["status"] == "answered_unknown_time"
+    assert "wasn't sure when" in validate(guide_reply(memory.social.guide_turn(turn.fact)).dialogue).decode()
     assert memory.social.deadline == due + COOLDOWN
     assert memory.social.tick(due + COOLDOWN - 0.1) is None
     memory.social.tick(due + COOLDOWN)
@@ -62,18 +78,22 @@ def verify(catalog, db):
         (memory.save,),
     ).fetchall()
     assert len(relations) == 2 and all(row[:4] == (2, 3, 2, 2) for row in relations)
-    assert {row[4] for row in relations} == {"share_local_notes", "pass_along_sightings"}
+    assert {row[4] for row in relations} == {"share_local_notes", "note_uncertain_sighting"}
 
     scene = memory.social.scene()
     assert verify_scene(scene, "Pikachu")
     memory.social.displayed(scene[0])
     memory.close()
     memory = WorldMemory(db, "demo", b"second")
+    assert memory.social.guide_turn("pallet-sighting:25").requested
     assert verify_scene(memory.social.scene(), "Squirtle")
+    memory.social.displayed(memory.social.scene()[0])
+    assert "Watts: I couldn't tell you." in validate(memory.social.scene()[1]).decode()
     assert "pallet-sighting:25" in keys(catalog, memory, GUIDE_ALONE)
     assert memory.context(PIKACHU).remembered
     memory.checkpoint(b"first")
     assert memory.knowledge(GUIDE, None) == []
+    assert not memory.social.guide_turn("pallet-sighting:25").can_request
     memory.close()
 
     memory = WorldMemory(db, "normal", b"second")

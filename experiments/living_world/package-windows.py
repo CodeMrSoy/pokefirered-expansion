@@ -10,10 +10,11 @@ import sys
 import tempfile
 from zipfile import ZIP_DEFLATED, ZipFile
 
+from reasoning import BALANCED_SHA256, LIGHTWEIGHT_SHA256
+
 ROOT = Path(__file__).resolve().parents[2]
 APP = Path(__file__).resolve().parent
 INPUTS = {
-    "model-q4.gguf": "7671c0c304e6ce5a7fc577bcb12aba01e2c155cc2efd29b2213c95b18edaf6ed",
     "mgba-win.zip": "a7ae453b739d3f9117537e8ca7275ecebd923d9035b52435f556470bf58a268f",
     "python-win.zip": "4acbed6dd1c744b0376e3b1cf57ce906f9dc9e95e68824584c8099a63025a3c3",
     "sdl-win.zip": "6cf9706eefd0a4a06dc764007934d428afaf029fabdd408a9e646048c91e18fb",
@@ -40,9 +41,11 @@ def main():
     parser.add_argument("inputs", type=Path)
     parser.add_argument("output", type=Path)
     parser.add_argument("--nm", default="arm-none-eabi-nm")
+    parser.add_argument("--legacy-weights", action="store_true", help="Bundle Phase 4 Qwen 2.5 weights")
     args = parser.parse_args()
     inputs = args.inputs
-    for filename, expected in INPUTS.items():
+    model_sha = LIGHTWEIGHT_SHA256 if args.legacy_weights else BALANCED_SHA256
+    for filename, expected in {**INPUTS, "model-q4.gguf": model_sha}.items():
         if sha256(inputs / filename) != expected:
             raise ValueError(f"SHA-256 mismatch for {filename}")
     symbols = subprocess.check_output([args.nm, ROOT / "pokefirered.elf"], text=True)
@@ -66,7 +69,8 @@ def main():
         shutil.copyfile(inputs / "PalletTest.sav", stage / "PalletTest.sav")
         shutil.copyfile(inputs / "PalletSocialTest.sav", stage / "PalletSocialTest.sav")
         for name in ("play.py", "bridge.py", "inference.py", "worker.py", "world.py", "profiles.py",
-                     "knowledge.py", "social.py", "PLAYTEST.md", "PHASE2.md", "PHASE3.md", "PHASE4.md"):
+                     "knowledge.py", "social.py", "reasoning.py", "PLAYTEST.md", "PHASE2.md",
+                     "PHASE3.md", "PHASE4.md", "PHASE5.md"):
             shutil.copyfile(APP / name, stage / name)
         subprocess.run([sys.executable, APP / "build-knowledge.py", stage / "world-knowledge.sqlite3"], check=True)
         shutil.copyfile(APP / "launch-windows.cmd", stage / "Play.cmd")
@@ -91,7 +95,7 @@ def main():
         manifest = {
             "mailbox": mailbox,
             "sha256": sha256(stage / "PokemonQuantum.gba"),
-            "model_sha256": INPUTS["model-q4.gguf"],
+            "model_sha256": model_sha,
             "species": names,
             "revision": revision,
         }

@@ -227,8 +227,21 @@ PalletTown_EventScript_SignLadyDone::
 	waitmovement 0
 	msgbox PalletTown_Text_RaisingMonsToo
 	living_world_aside LIVING_WORLD_SIGN_GUIDE
+	call_if_eq VAR_RESULT, TRUE, PalletTown_EventScript_OfferGuideFollowUp
 	release
 	end
+
+PalletTown_EventScript_OfferGuideFollowUp::
+	msgbox PalletTown_Text_AskGuideFollowUp, MSGBOX_YESNO
+	call_if_eq VAR_RESULT, YES, PalletTown_EventScript_GuideFollowUp
+	return
+
+PalletTown_EventScript_GuideFollowUp::
+	living_world_aside LIVING_WORLD_GUIDE_FOLLOW_UP
+	return
+
+PalletTown_Text_AskGuideFollowUp::
+	.string "Ask for more details?$"
 
 PalletTown_EventScript_SignLadyGoReadSign::
 	applymovement LOCALID_PALLET_SIGN_LADY, Common_Movement_FacePlayer

@@ -15,7 +15,7 @@
 #define LIVING_WORLD_DEFERRED_FRAMES 600
 #define LIVING_WORLD_REPLY_PENDING 255
 #define LIVING_WORLD_LINE_LENGTH 28
-#define LIVING_WORLD_TEXT_CAPACITY (LIVING_WORLD_LINE_LENGTH * 2 + 1)
+#define LIVING_WORLD_TEXT_CAPACITY (LIVING_WORLD_LINE_LENGTH * 4 + 3)
 
 struct LivingWorldMailbox
 {
@@ -29,7 +29,7 @@ struct LivingWorldMailbox
 };
 
 STATIC_ASSERT(offsetof(struct LivingWorldMailbox, responseSequence) == 12, LivingWorldReplyOffset);
-STATIC_ASSERT(sizeof(struct LivingWorldMailbox) == 76, LivingWorldMailboxSize);
+STATIC_ASSERT(sizeof(struct LivingWorldMailbox) == 132, LivingWorldMailboxSize);
 
 // The reference host finds this symbol in the ELF from the same build.
 EWRAM_DATA volatile struct LivingWorldMailbox gLivingWorldMailbox = {0};
@@ -67,6 +67,8 @@ static bool8 ReceiveDialogue(void)
 {
     u8 length = gLivingWorldMailbox.length;
     u8 lineStart = 0;
+    u8 page = 0;
+    bool8 secondLine = FALSE;
 
     if (length == 0 || length > LIVING_WORLD_TEXT_CAPACITY)
         return FALSE;
@@ -75,14 +77,18 @@ static bool8 ReceiveDialogue(void)
     {
         u8 ascii = gLivingWorldMailbox.text[i];
 
-        if (ascii == '\n')
+        if (ascii == '\n' || ascii == '\f')
         {
-            if (lineStart != 0 || i == 0 || i + 1 == length)
+            if (i == lineStart || i + 1 == length
+             || (ascii == '\n' && secondLine) || (ascii == '\f' && page != 0))
                 return FALSE;
             gLivingWorldDialogue[i] = EOS;
-            if (GetStringWidth(FONT_NORMAL, gLivingWorldDialogue, -1) > 198)
+            if (GetStringWidth(FONT_NORMAL, gLivingWorldDialogue + lineStart, -1) > 198)
                 return FALSE;
-            gLivingWorldDialogue[i] = CHAR_NEWLINE;
+            gLivingWorldDialogue[i] = ascii == '\n' ? CHAR_NEWLINE : CHAR_PROMPT_CLEAR;
+            secondLine = ascii == '\n';
+            if (ascii == '\f')
+                page++;
             lineStart = i + 1;
         }
         else if (i - lineStart >= LIVING_WORLD_LINE_LENGTH
@@ -105,12 +111,12 @@ static void BeginConversation(u8 npc)
     gLivingWorldMailbox.request = 0;
     sFramesRemaining = 0;
     sDeferred = FALSE;
-    if (npc < LIVING_WORLD_PC_RESIDENT || npc > LIVING_WORLD_PALLET_EXCHANGE
+    if (npc < LIVING_WORLD_PC_RESIDENT || npc > LIVING_WORLD_GUIDE_FOLLOW_UP
      || !FlagGet(FLAG_SYS_POKEDEX_GET) || gQuestLogState == QL_STATE_PLAYBACK)
         return;
 
     follower = GetFollowerObject();
-    if (npc != LIVING_WORLD_PALLET_EXCHANGE && follower != NULL && !follower->invisible && !follower->offScreen)
+    if (npc < LIVING_WORLD_PALLET_EXCHANGE && follower != NULL && !follower->invisible && !follower->offScreen)
         visibleSpecies = OW_SPECIES(follower);
 
     gLivingWorldMailbox.sequence = sequence != 0 ? sequence : 1;
