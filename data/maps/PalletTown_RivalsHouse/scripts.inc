@@ -36,6 +36,7 @@ PalletTown_RivalsHouse_EventScript_Daisy::
 
 PalletTown_RivalsHouse_EventScript_HeardBattledRival::
 	msgbox PalletTown_RivalsHouse_Text_HeardYouBattledRival
+	living_world_aside LIVING_WORLD_DAISY
 	release
 	end
 
@@ -125,6 +126,7 @@ PalletTown_RivalsHouse_EventScript_MonFriendshipHighest::
 
 PalletTown_RivalsHouse_EventScript_PleaseGiveMonsRest::
 	msgbox PalletTown_RivalsHouse_Text_PleaseGiveMonsRest
+	living_world_aside LIVING_WORLD_DAISY
 	release
 	end
 

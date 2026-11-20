@@ -301,3 +301,7 @@ PalletTown_ProfessorOaksLab_Text_OakChoosingRandomStarter::
     .string "I see! {STR_VAR_1} is your choice.\p"
     .string "So, {PLAYER}, you want to choose\n"
     .string "{STR_VAR_1}?$"
+
+PalletTown_ProfessorOaksLab_Text_PostgameBlue::
+	.string "Back in PALLET, huh?\p"
+	.string "I'm still training. Hope you are,\ntoo!$"

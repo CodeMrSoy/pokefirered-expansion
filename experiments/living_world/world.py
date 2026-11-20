@@ -6,21 +6,8 @@ import json
 import sqlite3
 from uuid import uuid4
 
-PROFILE = {
-    "name": "Watts",
-    "role": "Pallet Town PC tinkerer by the pond",
-    "traits": ["practical", "friendly", "dry humor"],
-    "primary_goal": "Keep the town's computers working.",
-    "secondary_motivation": "Compare how different Pokemon behave near the pond.",
-    "favorite_species": 25,
-    "favorite_type": "Electric",
-    "knowledge": ["Pallet Town", "visible Pokemon", "his own past encounters"],
-    "permitted_actions": [
-        "SAY_DIALOGUE", "COMMENT_ON_POKEMON", "REMEMBER_EVENT",
-        "ADJUST_RELATIONSHIP", "PROPOSE_OPTIONAL_QUEST",
-    ],
-    "protected_interactions": ["starter selection", "Oak's errands", "Blue's rival events"],
-}
+from profiles import PROFILES, WATTS
+
 QUEST = "pond_survey"
 
 
@@ -35,17 +22,18 @@ class Encounter:
 
     @property
     def completes_quest(self):
-        return self.quest == "offered" and self.visible_species not in (None, self.quest_species)
+        return self.npc == "pc_resident" and self.quest == "offered" and self.visible_species not in (None, self.quest_species)
 
     def allowed(self):
         if self.npc != "pc_resident":
-            return ("SAY_DIALOGUE",)
+            action = "COMMENT_ON_POKEMON" if self.npc in PROFILES and self.visible_species else "SAY_DIALOGUE"
+            return (action,)
         if self.completes_quest:
             return ("SAY_DIALOGUE",)
         if (self.quest == "none" and self.remembered
-                and self.visible_species == PROFILE["favorite_species"]):
+                and self.visible_species == WATTS["favorite_species"]):
             return ("PROPOSE_OPTIONAL_QUEST", "COMMENT_ON_POKEMON")
-        if self.visible_species == PROFILE["favorite_species"] and not self.remembered and self.trust == 0:
+        if self.visible_species == WATTS["favorite_species"] and not self.remembered and self.trust == 0:
             return ("ADJUST_RELATIONSHIP", "REMEMBER_EVENT")
         if self.visible_species is not None:
             return ("COMMENT_ON_POKEMON", "SAY_DIALOGUE") if self.remembered else (
@@ -102,7 +90,7 @@ class WorldMemory:
 
     def _apply(self, encounter, action):
         current = self.context(encounter)
-        if current != encounter or current.npc != "pc_resident" or action not in current.allowed():
+        if current != encounter or current.npc not in PROFILES or action not in current.allowed():
             raise ValueError("Stale encounter or action outside allowed game state")
 
         state = self.snapshot(current.npc)

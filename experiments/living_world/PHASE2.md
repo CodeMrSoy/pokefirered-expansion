@@ -88,6 +88,10 @@ AppContainer launch policy is reused, with native Windows Phase 2 still to verif
 
 ## D. Pallet Town expansion
 
-The existing NPC audit is in [README.md](README.md). Keep the prototype limited
-to Watts until native Windows confirms the full save/restart/quest cycle.
-Oak's and Blue's mandatory events have no Phase 2 hooks.
+The optional dialogue path now covers all nine Pallet profiles. The eight new
+profiles can remember observed species, with their own save-scoped memory.
+Watts remains the sole quest and relationship NPC. The [script audit](README.md)
+lists the eligible branches and protected interactions for each character.
+Blue's optional return to the lab requires a completed League and Pokédex
+introduction. The Windows worker and isolation policy are reused. Native
+Windows verification of the expanded playtest is still pending.

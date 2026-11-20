@@ -7,10 +7,10 @@
 #include "constants/characters.h"
 #include "constants/event_objects.h"
 #include "constants/flags.h"
+#include "constants/living_world.h"
 #include "constants/species.h"
 
 #define LIVING_WORLD_REQUEST_V1 0x3157514C // Bytes "LQW1"
-#define LIVING_WORLD_PC_RESIDENT 1
 #define LIVING_WORLD_TIMEOUT_FRAMES 30
 #define LIVING_WORLD_LINE_LENGTH 28
 #define LIVING_WORLD_TEXT_CAPACITY (LIVING_WORLD_LINE_LENGTH * 2 + 1)
@@ -91,7 +91,7 @@ static bool8 ReceiveDialogue(void)
     return GetStringWidth(FONT_NORMAL, gLivingWorldDialogue + lineStart, -1) <= 198;
 }
 
-void LivingWorld_BeginPalletConversation(struct ScriptContext *ctx)
+static void BeginConversation(u8 npc)
 {
     struct ObjectEvent *follower;
     u16 visibleSpecies = SPECIES_NONE;
@@ -100,7 +100,8 @@ void LivingWorld_BeginPalletConversation(struct ScriptContext *ctx)
     gSpecialVar_Result = FALSE;
     gLivingWorldMailbox.request = 0;
     sFramesRemaining = 0;
-    if (!FlagGet(FLAG_SYS_POKEDEX_GET) || gQuestLogState == QL_STATE_PLAYBACK)
+    if (npc < LIVING_WORLD_PC_RESIDENT || npc > LIVING_WORLD_AIDE_3
+     || !FlagGet(FLAG_SYS_POKEDEX_GET) || gQuestLogState == QL_STATE_PLAYBACK)
         return;
 
     follower = GetFollowerObject();
@@ -108,12 +109,22 @@ void LivingWorld_BeginPalletConversation(struct ScriptContext *ctx)
         visibleSpecies = OW_SPECIES(follower);
 
     gLivingWorldMailbox.sequence = sequence != 0 ? sequence : 1;
-    gLivingWorldMailbox.npc = LIVING_WORLD_PC_RESIDENT;
+    gLivingWorldMailbox.npc = npc;
     gLivingWorldMailbox.visibleSpecies = visibleSpecies;
     gLivingWorldMailbox.responseSequence = 0;
     gLivingWorldMailbox.length = 0;
     sFramesRemaining = LIVING_WORLD_TIMEOUT_FRAMES;
     gLivingWorldMailbox.request = LIVING_WORLD_REQUEST_V1;
+}
+
+void LivingWorld_BeginPalletConversation(struct ScriptContext *ctx)
+{
+    BeginConversation(LIVING_WORLD_PC_RESIDENT);
+}
+
+void LivingWorld_BeginPalletOptional(struct ScriptContext *ctx)
+{
+    BeginConversation(ScriptReadByte(ctx));
 }
 
 bool8 LivingWorld_WaitForDialogue(void)

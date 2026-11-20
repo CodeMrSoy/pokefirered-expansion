@@ -15,6 +15,14 @@ Use Windows 10 or 11, x64, and extract the whole ZIP to a writable folder. No em
 
 The demo prepares both replies in the background as it opens. Ready replies are reused during that session. A first encounter can still wait if it reaches the resident before generation finishes. The original PC-storage tip appears if inference times out, isolation cannot start, or the dialogue fails validation. The app writes battery saves, previous-save backups and an inference log under `%LOCALAPPDATA%\LivingQuantumWorld`. Inspect `dialogue.jsonl` for the observed Pokémon, generated text, validator result, elapsed time or worker error.
 
+## Pallet conversations
+
+Try the lab aides after getting the Pokédex. Read their usual dialogue and press
+**Z** to advance it. An optional character remark follows when the worker has
+a valid response. Daisy has asides in her casual conversations, Mom after
+healing, and the sign guide after her tutorial. Oak can comment after giving
+an ordinary Dex rating. Blue visits the lab after the League clear.
+
 ## Windows isolation check
 
 Open Command Prompt in the extracted folder and run `Play.cmd --sandbox-test`. It launches a probe through the same AppContainer and attempts to read and write a temporary file outside its allowed folder, to start a child command, and to open an internet connection. All four values in the printed denial report should be 1. Then run `Play.cmd --model-test` to check that the restricted worker can load the bundled model and return a valid Pikachu reply. The playable build is a Windows test package. Its AppContainer and probe require a native Windows run to confirm the denials.

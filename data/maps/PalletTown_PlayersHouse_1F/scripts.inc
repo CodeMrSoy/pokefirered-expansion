@@ -27,6 +27,7 @@ PalletTown_PlayersHouse_1F_EventScript_MomHeal::
 	closemessage
 	call EventScript_OutOfCenterPartyHeal
 	msgbox PalletTown_PlayersHouse_1F_Text_LookingGreatTakeCare
+	living_world_aside LIVING_WORLD_MOM
 	release
 	end
 

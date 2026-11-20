@@ -3,6 +3,7 @@
 #include "constants/global.h"
 #include "constants/adventure_mode.h"
 #include "constants/flags.h"
+#include "constants/living_world.h"
 #include "constants/battle_tower.h"
 #include "constants/berry.h"
 #include "constants/event_objects.h"
@@ -47,6 +48,13 @@
 	.include "asm/macros.inc"
 	.include "asm/macros/event.inc"
 	.include "constants/constants.inc"
+
+	.macro living_world_aside npc:req
+	callnative LivingWorld_BeginPalletOptional
+	.byte \npc
+	gotonative LivingWorld_WaitForDialogue
+	call_if_eq VAR_RESULT, TRUE, EventScript_LivingWorldShowAside
+	.endm
 
 	.section script_data, "aw", %progbits
 
@@ -1459,3 +1467,7 @@ Text_TestMsg::
 	.include "data/maps/Havora_CoastalCliffs/text.inc"
 
 	.include "data/scripts/vidra_drafts.inc"
+
+EventScript_LivingWorldShowAside::
+	msgbox gLivingWorldDialogue
+	return

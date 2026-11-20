@@ -32,7 +32,7 @@ Use the symbol `gLivingWorldMailbox` from the ELF paired with the loaded ROM. Th
 | --- | ---: | --- |
 | 0 | 4 | Request marker `LQW1`, cleared on completion or timeout |
 | 4 | 4 | Request sequence |
-| 8 | 2 | Stable NPC ID, currently 1 for the PC-storage resident |
+| 8 | 2 | Stable NPC ID from `include/constants/living_world.h` |
 | 10 | 2 | Visible follower species ID, or zero |
 | 12 | 4 | Response sequence, written last |
 | 16 | 1 | Response text length |
@@ -52,14 +52,28 @@ Sources are the map objects and associated scripts under [data/maps](../../data/
 | Daisy | Rival's house `Daisy` | Sociable and supportive. Stay close to family and help local Trainers. Clefairy. | Direct conversations and Pokémon shown for grooming or observation. Preserve the Town Map, grooming, friendship ratings and existing rewards. |
 | Mom | Player's house 1F `Mom` | Warm and practical. Keep the player safe and encourage independence. Chansey. | Family interactions and Pokémon the player shows her. Preserve the opening directions and healing. |
 | Sign guide | Town `SignLady` and tutorial triggers | Eager and civic-minded. Help newcomers read town signs and learn to navigate. Pidgey. | Local signs and conversations she witnessed. Preserve the tutorial, movements and triggers. |
-| PC-storage resident | Town `FatMan` | Enthusiastic and practical. Teach useful PC habits and collect examples for newcomers. Porygon. | Pallet's public landmarks, direct interactions, and visible followers. The first bridge uses this event and falls back to the original tip. |
+| PC-storage resident | Town `FatMan` | Watts is practical and friendly. Keep Pallet's computers working and compare notes on local Pokemon. Pikachu. | Pallet's public landmarks, direct interactions, and visible followers. The first bridge uses this event and falls back to the original tip. |
 | Lab aide 1 | Lab `Aide1`, scientist at local object 1 | Methodical. Improve research records and explain Oak's public work. Magnemite. | Lab work and public announcements. Preserve the postgame radio dialogue and Oak Fame Checker event. |
 | Lab aide 2 | Lab `Aide2`, scientist at local object 3 | Considerate. Improve Pokémon care at the lab and share grooming advice. Vulpix. | Local care work and reported observations. Preserve the postgame Daisy dialogue and Fame Checker event. |
 | Lab aide 3 | Lab `Aide3`, worker at local object 2 | Inquisitive and outgoing. Explain Oak's research and encourage visitors. Oddish. | Public research and lab activity. Preserve the Oak Fame Checker event. |
 
-The audit describes **nine distinct NPCs** across the town and interiors. The profile concepts are proposed content. At Level 1, give each NPC only expression actions and put the hook in a freestanding conversation or after an existing script has completed its required work. Preserve mandatory text verbatim for the first expansion. New memory and relationship rules start with per-NPC baselines and consume only validated game observations.
+All nine audited NPCs have profiles. Watts retains the optional survey. The
+other eight can offer short asides and remember a visible follower they saw.
+They cannot offer quests, change trust, or affect items, maps, battles or
+story state through the host bridge.
 
-## Next verification
+## Optional Pallet conversations
 
-Run the Phase 2 save, restart, survey and Windows isolation checks on a native
-Windows machine before extending resident behavior to any other Pallet NPC.
+The additional NPCs finish their original dialogue or service before the host
+can supply an aside. All asides require the Pokédex and skip quest-log playback.
+With a missing or rejected reply, the script ends after the original dialogue.
+
+- Daisy can add a remark to her casual conversations. Her Town Map and grooming keep their original paths.
+- Oak can add a remark after his ordinary Dex rating or when revisiting the lab after his completion thanks. The initial starter, parcel, and Pokédex sequences have no hook.
+- Blue uses his existing lab object for an optional visit after the League clear and the Pokédex introduction. His starter and battle scripts have no hook.
+- Mom can add a remark after healing. The sign guide can add one after finishing her tutorial.
+- The lab aides can add remarks to their ordinary conversations. Their Fame Checker calls and special postgame paths remain in their scripts.
+
+Classic and Quantum mGBA tests exercised all nine NPC IDs, Blue's postgame
+return, early protected branches, and the Town Map gift. Native Windows
+playtesting of the updated ROM and host is pending.

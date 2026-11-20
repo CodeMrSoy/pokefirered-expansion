@@ -9,7 +9,8 @@ from time import perf_counter
 
 from bridge import validate
 from worker import ResidentWorker
-from world import Encounter, PROFILE
+from world import Encounter
+from profiles import PROFILES
 
 TOPICS = {
     "Pikachu": "Pikachu can spark near the computer. Watts likes Electric Pokemon.",
@@ -30,7 +31,18 @@ def choices(lines):
 
 
 def dialogue_grammar(species, encounter):
-    if encounter.completes_quest:
+    if encounter.npc != "pc_resident":
+        profile = PROFILES[encounter.npc]
+        greeting = profile["greeting_lines"]
+        reaction = profile["seen_lines"]
+        if encounter.remembered:
+            first = ("Good to see you both again.", greeting[0])
+        elif encounter.visible_species == profile["favorite_species"] and species and len(species) <= 18:
+            first = (f"Oh, a {species}!", reaction[0])
+        else:
+            first = (reaction[0], greeting[0]) if encounter.visible_species else (greeting[0],)
+        second = (reaction[1], greeting[1]) if encounter.visible_species else (greeting[1],)
+    elif encounter.completes_quest:
         first, second = ("Survey complete!",), ("You earned my repair tips.",)
     elif encounter.quest == "completed":
         first, second = ("Here is a repair tip.", "Back for a repair tip?"), (
@@ -78,16 +90,20 @@ class LocalModel:
 
     def plan(self, encounter):
         species = self.species_names.get(str(encounter.visible_species))
+        profile = PROFILES[encounter.npc]
         instructions = (
-            f"You are {PROFILE['name']}, a {PROFILE['role']}. "
-            f"You are {', '.join(PROFILE['traits'])}. {PROFILE['primary_goal']} "
-            f"{PROFILE['secondary_motivation']} Keep to experiences you witnessed."
+            f"You are {profile['name']}, a {profile['role']}. "
+            f"You are {', '.join(profile['traits'])}. {profile['primary_goal']} "
+            f"{profile['secondary_motivation']} Keep to experiences you witnessed."
         )
         observation = f"Visible Pokemon: {species or 'none'}. "
         if encounter.remembered:
             observation += "You remember meeting this Pokemon. "
-        observation += f"Trust: {encounter.trust}. Survey: {encounter.quest}. "
-        observation += TOPICS.get(species, "")
+        if encounter.npc == "pc_resident":
+            observation += f"Trust: {encounter.trust}. Survey: {encounter.quest}. "
+            observation += TOPICS.get(species, "")
+        elif encounter.visible_species == profile["favorite_species"]:
+            observation += "This is your favorite Pokemon. "
         allowed = encounter.allowed()
         action = allowed[0]
         start = perf_counter()
@@ -139,7 +155,7 @@ class DialogueReplies:
     def prepare(self, context):
         reply = self.pending.get(context)
         if reply is None or (reply.done() and reply.exception() is not None):
-            stale = [key for key in self.pending if key.visible_species == context.visible_species]
+            stale = [key for key in self.pending if key.npc == context.npc and key.visible_species == context.visible_species]
             for key in stale:
                 self.pending.pop(key).cancel()
             reply = self.executor.submit(self.propose, context)

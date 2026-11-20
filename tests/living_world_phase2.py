@@ -71,7 +71,20 @@ try:
         assert not restored.context(squirtle).remembered
         restored.checkpoint(b"saved")
         assert restored.context(pikachu).quest == "completed"
+        daisy = Conversation("daisy", 25)
+        assert not restored.context(daisy).remembered
+        try:
+            restored.apply(restored.context(daisy), "PROPOSE_OPTIONAL_QUEST")
+        except ValueError:
+            pass
+        else:
+            raise AssertionError("Daisy was allowed to offer Watts's quest")
+        assert restored.apply(restored.context(daisy), "COMMENT_ON_POKEMON") == ["REMEMBER_EVENT"]
+        assert restored.context(daisy).quest == "none"
         restored.close()
+        reopened = WorldMemory(path, "demo", b"saved")
+        assert reopened.context(daisy).remembered
+        reopened.close()
         assert WorldMemory(path, "main", b"saved").context(pikachu).quest == "none"
 finally:
     if model:

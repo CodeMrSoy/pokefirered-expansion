@@ -16,6 +16,7 @@ sys.path.insert(0, str(gba.root / "experiments" / "living_world"))
 from bridge import Conversation, DialogueBridge, REPLY_OFFSET
 from inference import DialogueReplies, LocalModel
 from worker import ResidentWorker
+from profiles import NPC_IDS, PROFILES
 
 
 def field_ready():
@@ -53,15 +54,19 @@ def enter_pallet():
     assert field_ready()
 
 
-def start_conversation(expect_request=True):
+def invoke_event(label):
     # Invoke the compiled map event through the real field script interpreter.
-    pointer = gba.symbols["PalletTown_EventScript_FatMan"]
+    pointer = gba.symbols[label]
     context = gba.symbols["sGlobalScriptContext"]
     script = gba.symbols["gDecompressionBuffer"]
     gba.write(script, b"\x04" + struct.pack("<I", pointer) + b"\x02")
     gba.write(context, b"\x00\x01\x00\x00")
     gba.write(context + 8, struct.pack("<I", script))
     gba.write(gba.symbols["sGlobalScriptContextStatus"], b"\x00")
+
+
+def start_conversation(expect_request=True):
+    invoke_event("PalletTown_EventScript_FatMan")
     for _ in range(15):
         if gba.read(mailbox, 4) == b"LQW1":
             assert expect_request
@@ -243,6 +248,118 @@ for failure in ("missing_host", "worker_error", "stale_reply", "bad_wire_text"):
 assert native("FlagGet", pokedex_flag) == 1
 assert native("AdventureMode_Get") == mode
 print(f"Pallet dialogue, context, validator and fallback passed in adventure mode {mode}.")
+
+
+def enter_map(name, x, y):
+    groups = json.loads((gba.root / "data/maps/map_groups.json").read_text())
+    for map_group, key in enumerate(groups["group_order"]):
+        if name in groups[key]:
+            number = groups[key].index(name)
+            break
+    else:
+        raise AssertionError(f"Unknown test map {name}")
+    gba.inject(b"\x39" + struct.pack("<BBBhh", map_group, number, 255, x, y) + b"\x27\x6b\x02")
+    assert field_ready()
+    return map_group, number
+
+
+def wait_aside(should_publish):
+    # A normal stock message proceeds before the request. Check every frame so
+    # the host can answer during the ROM's 30-frame window.
+    for frame in range(1200):
+        if gba.read(mailbox, 4) == b"LQW1":
+            assert should_publish, "Protected conversation published an aside"
+            return
+        if field_ready():
+            assert not should_publish, "Expected aside did not publish"
+            return
+        if frame % 40 == 30:
+            gba.keys.add(8)
+        gba.run(1)
+        gba.keys.discard(8)
+    raise AssertionError("Pallet event did not finish")
+
+
+def talk(label, npc=None):
+    invoke_event(label)
+    wait_aside(npc is not None)
+    if npc is None:
+        return
+    trace = bridge.poll(aside_model.propose if aside_model else stub)
+    assert trace["context"]["npc"] == npc, trace
+    assert trace["validation"] == "accepted", trace
+    assert printed_message() == render_expected(json.loads(trace["proposal"])["text"])
+    finish_dialogue()
+    bridge.poll(lambda context: None)
+    print(npc, "aside rendered", flush=True)
+
+
+def stub(context):
+    return json.dumps({"action": "SAY_DIALOGUE", "text": "\n".join(PROFILES[context.npc]["greeting_lines"])})
+
+
+assert len(NPC_IDS) == len(PROFILES) == 9
+for profile in PROFILES.values():
+    for type_ in ("greeting_lines", "seen_lines"):
+        for line in profile.get(type_, ()):
+            assert len(line) <= 28
+
+aside_model = LocalModel(Path(runtime), {"25": "Pikachu", "7": "Squirtle"}) if runtime else None
+try:
+    lab = "PalletTown_ProfessorOaksLab"
+    native("VarSet", 0x4055, 6)
+    enter_map(lab, 6, 10)
+    # Blue's early-starter branches end before the optional post-Dex aside.
+    native("VarSet", 0x4055, 2)
+    talk(lab + "_EventScript_Rival")
+    native("VarSet", 0x4055, 3)
+    talk(lab + "_EventScript_Rival")
+    native("VarSet", 0x4055, 6)
+    talk(lab + "_EventScript_Rival")
+    talk(lab + "_EventScript_RatePokedex", "oak")
+    for number in range(1, 4):
+        talk(lab + f"_EventScript_Aide{number}", f"lab_aide_{number}")
+    native("FlagSet", 0x82C)  # FLAG_SYS_GAME_CLEAR
+    native("FlagSet", 0x02D)  # FLAG_HIDE_RIVAL_IN_LAB
+    group_id, map_id = enter_map(lab, 6, 8)
+    assert native("FlagGet", 0x02D) == 0, "Blue did not return after the League"
+    assert native("GetObjectEventIdByLocalIdAndMap", 8, map_id, group_id) < 16
+    talk(lab + "_EventScript_Rival", "blue")
+    talk(lab + "_EventScript_Aide1")
+    talk(lab + "_EventScript_Aide2")
+    native("FlagClear", 0x82C)
+    native("FlagSet", 0x02D)
+
+    house = "PalletTown_RivalsHouse"
+    enter_map(house, 5, 5)
+    talk(house + "_EventScript_HeardBattledRival", "daisy")
+    talk(house + "_EventScript_PleaseGiveMonsRest", "daisy")
+    invoke_event(house + "_EventScript_PleaseGiveMonsRest")
+    wait_aside(True)
+    gba.run(45)
+    assert field_ready() and gba.read(mailbox, 4) == b"\0" * 4
+    native("VarSet", 0x4058, 1)  # VAR_MAP_SCENE_PALLET_TOWN_RIVALS_HOUSE
+    assert not native("CheckBagHasItem", 713, 1)  # ITEM_TOWN_MAP
+    talk(house + "_EventScript_Daisy")
+    assert native("CheckBagHasItem", 713, 1)
+    talk(house + "_EventScript_DeclineGrooming")
+
+    home = "PalletTown_PlayersHouse_1F"
+    enter_map(home, 6, 5)
+    native("FlagClear", 0x258)  # FLAG_BEAT_RIVAL_IN_OAKS_LAB
+    talk(home + "_EventScript_Mom")
+    native("FlagSet", 0x258)
+    talk(home + "_EventScript_Mom", "mom")
+
+    enter_pallet()
+    native("FlagClear", pokedex_flag)
+    talk("PalletTown_EventScript_SignLadyDone")
+    native("FlagSet", pokedex_flag)
+    talk("PalletTown_EventScript_SignLadyDone", "sign_guide")
+finally:
+    if aside_model:
+        aside_model.close()
+print("Pallet asides and protected branch bypasses passed.")
 
 
 # Create a clearly labeled, independent battery save for the playable demo.

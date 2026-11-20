@@ -14,7 +14,8 @@ import time
 
 from bridge import Conversation, DialogueBridge, MAILBOX_SIZE, REPLY_OFFSET, TEXT_CAPACITY, validate
 from inference import DialogueReplies, LocalModel, windows_launcher_environment
-from world import PROFILE, WorldMemory
+from profiles import PROFILES
+from world import WorldMemory
 
 ROOT = Path(__file__).resolve().parent
 VOID = c.c_void_p
@@ -290,7 +291,7 @@ def main():
                 staged = None
                 trace = bridge.poll(propose)
                 if trace:
-                    trace["profile"] = PROFILE
+                    trace["profile"] = PROFILES[trace["context"]["npc"]]
                     trace["fallback"] = trace["validation"] != "accepted"
                     if staged:
                         encounter, proposal = staged

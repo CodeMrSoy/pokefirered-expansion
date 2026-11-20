@@ -16,7 +16,16 @@ PalletTown_ProfessorOaksLab_OnTransition::
 	setflag FLAG_VISITED_OAKS_LAB
 	call_if_eq VAR_MAP_SCENE_PALLET_TOWN_PROFESSOR_OAKS_LAB, 1, PalletTown_ProfessorOaksLab_EventScript_ReadyOakForStarterScene
 	call_if_set FLAG_GOT_POKEBALLS_FROM_OAK_AFTER_22_RIVAL, PalletTown_ProfessorOaksLab_EventScript_SetSkipPokeBallCheck
+	call_if_set FLAG_SYS_GAME_CLEAR, PalletTown_ProfessorOaksLab_EventScript_ShowPostgameBlue
 	end
+
+PalletTown_ProfessorOaksLab_EventScript_ShowPostgameBlue::
+	goto_if_unset FLAG_SYS_POKEDEX_GET, EventScript_Return
+	goto_if_lt VAR_MAP_SCENE_PALLET_TOWN_PROFESSOR_OAKS_LAB, 6, EventScript_Return
+	clearflag FLAG_HIDE_RIVAL_IN_LAB
+	setobjectxyperm LOCALID_OAKS_LAB_RIVAL, 5, 4
+	setobjectmovementtype LOCALID_OAKS_LAB_RIVAL, MOVEMENT_TYPE_FACE_DOWN
+	return
 
 PalletTown_ProfessorOaksLab_EventScript_SetSkipPokeBallCheck::
 	setflag FLAG_OAK_SKIP_22_RIVAL_CHECK
@@ -394,7 +403,17 @@ PalletTown_ProfessorOaksLab_EventScript_Rival::
 	faceplayer
 	goto_if_eq VAR_MAP_SCENE_PALLET_TOWN_PROFESSOR_OAKS_LAB, 3, PalletTown_ProfessorOaksLab_EventScript_RivalChoseStarter
 	goto_if_eq VAR_MAP_SCENE_PALLET_TOWN_PROFESSOR_OAKS_LAB, 2, PalletTown_ProfessorOaksLab_EventScript_RivalWaitingForStarter
+	goto_if_lt VAR_MAP_SCENE_PALLET_TOWN_PROFESSOR_OAKS_LAB, 6, PalletTown_ProfessorOaksLab_EventScript_BlueStock
+	goto_if_unset FLAG_SYS_POKEDEX_GET, PalletTown_ProfessorOaksLab_EventScript_BlueStock
+	goto_if_set FLAG_SYS_GAME_CLEAR, PalletTown_ProfessorOaksLab_EventScript_PostgameBlue
+PalletTown_ProfessorOaksLab_EventScript_BlueStock::
 	msgbox PalletTown_ProfessorOaksLab_Text_RivalGrampsIsntAround
+	release
+	end
+
+PalletTown_ProfessorOaksLab_EventScript_PostgameBlue::
+	msgbox PalletTown_ProfessorOaksLab_Text_PostgameBlue
+	living_world_aside LIVING_WORLD_BLUE
 	release
 	end
 
@@ -424,6 +443,7 @@ PalletTown_ProfessorOaksLab_EventScript_ProfOak::
 
 PalletTown_ProfessorOaksLab_EventScript_OakJustShownCompleteDex::
 	msgbox PokedexRating_Text_ThankYouMadeDreamReality
+	living_world_aside LIVING_WORLD_OAK
 	release
 	end
 
@@ -629,6 +649,7 @@ PalletTown_ProfessorOaksLab_EventScript_RatePokedexOrTryGiveBalls::
 PalletTown_ProfessorOaksLab_EventScript_RatePokedex::
 	call PokedexRating_EventScript_RateInPerson
 	goto_if_set FLAG_OAK_SAW_DEX_COMPLETION, PalletTown_ProfessorOaksLab_EventScript_DexCompleted
+	living_world_aside LIVING_WORLD_OAK
 	release
 	end
 
@@ -1042,6 +1063,7 @@ PalletTown_ProfessorOaksLab_EventScript_Aide1::
 	faceplayer
 	goto_if_set FLAG_SYS_GAME_CLEAR, PalletTown_ProfessorOaksLab_EventScript_Aide1GameClear
 	msgbox PalletTown_ProfessorOaksLab_Text_StudyAsOaksAide
+	living_world_aside LIVING_WORLD_AIDE_1
 	release
 	end
 
@@ -1056,6 +1078,7 @@ PalletTown_ProfessorOaksLab_EventScript_Aide2::
 	faceplayer
 	goto_if_set FLAG_SYS_GAME_CLEAR, PalletTown_ProfessorOaksLab_EventScript_Aide2GameClear
 	msgbox PalletTown_ProfessorOaksLab_Text_StudyAsOaksAide
+	living_world_aside LIVING_WORLD_AIDE_2
 	release
 	end
 
@@ -1070,6 +1093,7 @@ PalletTown_ProfessorOaksLab_EventScript_Aide3::
 	faceplayer
 	famechecker FAMECHECKER_OAK, 2
 	msgbox PalletTown_ProfessorOaksLab_Text_OakIsAuthorityOnMons
+	living_world_aside LIVING_WORLD_AIDE_3
 	release
 	end
 

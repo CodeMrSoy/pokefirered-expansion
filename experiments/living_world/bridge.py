@@ -6,6 +6,8 @@ import struct
 import time
 from dataclasses import dataclass
 
+from profiles import NPC_IDS
+
 REQUEST = struct.Struct("<4sIHH")
 REPLY_OFFSET = REQUEST.size
 TEXT_CAPACITY = 57
@@ -57,11 +59,11 @@ class DialogueBridge:
         if magic != b"LQW1":
             self.handled = None
             return None
-        if not sequence or npc != 1 or self.handled == header:
+        if not sequence or npc not in NPC_IDS or self.handled == header:
             return None
         self.handled = header
 
-        context = Conversation("pc_resident", species or None)
+        context = Conversation(NPC_IDS[npc], species or None)
         trace = {"context": vars(context), "sequence": sequence, "changes": []}
         start = time.perf_counter()
         try:

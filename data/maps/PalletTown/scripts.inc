@@ -226,6 +226,7 @@ PalletTown_EventScript_SignLadyDone::
 	applymovement LOCALID_PALLET_SIGN_LADY, Common_Movement_FacePlayer
 	waitmovement 0
 	msgbox PalletTown_Text_RaisingMonsToo
+	living_world_aside LIVING_WORLD_SIGN_GUIDE
 	release
 	end
 
