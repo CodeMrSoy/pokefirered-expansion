@@ -3,7 +3,7 @@
 Use Windows 10 or 11, x64, and extract the whole ZIP to a writable folder. No emulator install, model download or connection is needed.
 
 1. Double-click **Play Pallet Demo.cmd**, press Enter at the title screen, then choose **Continue** with **Z**. The separate demo save starts in Pallet Town with the Pokédex, PokéGlass, Pikachu and Squirtle.
-2. Walk a few steps so Pikachu is visible. Find the man near the pond in southern Pallet Town who talks about PC storage. Face him and press **Z**. The game window title says **NPC is thinking** while the model runs. The acceptable reply greets the visible follower and gives a short PC tip.
+2. Walk a few steps so Pikachu is visible. Find the man near the pond in southern Pallet Town who talks about PC storage. Face him and press **Z**. The resident reacts to Pikachu and Squirtle using different topics. If a reply is still being prepared, the window title says **NPC is thinking**.
 3. Open PokéGlass with **Enter**, switch Squirtle into the first party slot, exit the menu, and walk a few steps. Talk to the same resident again to see how the dialogue changes. The demo save is separate from the normal adventure launched by **Play.cmd**.
 
 | Game input | Keyboard |
@@ -13,7 +13,7 @@ Use Windows 10 or 11, x64, and extract the whole ZIP to a writable folder. No em
 | Start / Select | Enter / Backspace |
 | L / R | A / S |
 
-The first inference may take a few seconds. The original PC-storage tip appears if inference times out, isolation cannot start, or the dialogue fails validation. The app writes battery saves, previous-save backups and an inference log under `%LOCALAPPDATA%\LivingQuantumWorld`. Inspect `dialogue.jsonl` for the observed Pokémon, generated text, validator result, elapsed time or worker error.
+The demo prepares both replies in the background as it opens. Ready replies are reused during that session. A first encounter can still wait if it reaches the resident before generation finishes. The original PC-storage tip appears if inference times out, isolation cannot start, or the dialogue fails validation. The app writes battery saves, previous-save backups and an inference log under `%LOCALAPPDATA%\LivingQuantumWorld`. Inspect `dialogue.jsonl` for the observed Pokémon, generated text, validator result, elapsed time or worker error.
 
 ## Windows isolation check
 

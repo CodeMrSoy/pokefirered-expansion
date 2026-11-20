@@ -13,7 +13,7 @@ import tempfile
 import time
 
 from bridge import Conversation, DialogueBridge, MAILBOX_SIZE, REPLY_OFFSET, TEXT_CAPACITY, validate
-from inference import LocalModel, windows_launcher_environment
+from inference import DialogueReplies, LocalModel, windows_launcher_environment
 
 ROOT = Path(__file__).resolve().parent
 VOID = c.c_void_p
@@ -246,9 +246,18 @@ def main():
         with ThreadPoolExecutor(max_workers=1) as pool, (profile / "dialogue.jsonl").open(
             "a", encoding="utf-8", buffering=1
         ) as log:
+            replies = DialogueReplies(pool, model.propose)
+            if args.pallet_test:
+                # The demo starts with these two Pokemon. Generate their
+                # dialogue while the title screen and field stay responsive.
+                for species in (25, 7):
+                    replies.prepare(Conversation("pc_resident", species))
+
             def propose(context):
+                work = replies.prepare(context)
+                if work.done():
+                    return work.result()
                 display.title(display.window, b"Living Quantum World - NPC is thinking")
-                work = pool.submit(model.propose, context)
                 try:
                     while not work.done():
                         if not display.pump():

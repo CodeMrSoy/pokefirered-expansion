@@ -6,26 +6,30 @@ from pathlib import Path
 import subprocess
 import sys
 
-PC_LINE = r"""tip ::= "Your PC " ("can " | "keeps " | "holds " | "stores ") [a-z] [A-Za-z0-9 -]{2,11} "."
-"""
-PROFILE = (
-    "You are a friendly Pallet Town resident. You teach Pokemon trainers to use a PC. "
-    "Speak directly to the trainer. First greet them or their visible Pokemon, then give "
-    "one brief, concrete storage tip beginning with 'Your PC'."
-)
-EXAMPLE = (
-    "<|im_start|>user\nNo Pokemon is visible.<|im_end|>\n"
-    "<|im_start|>assistant\nHello, trainer!\nYour PC stores items.<|im_end|>\n"
-)
+from bridge import validate
+
+PROFILE = "You are the friendly neighbor by the Pallet Town pond who loves computers."
+REACTIONS = {
+    "Pikachu": (
+        "Pikachu's cheeks can spark. You are protective of your computer wiring.",
+        r'''root ::= "Pikachu, " ("mind my cables!" | "watch those sparks!" | "easy on the sparks!") "\n" ("My PC's had enough " ("shocks." | "trouble.") | "Stay clear of my PC." | "That would fry my PC.")''',
+    ),
+    "Squirtle": (
+        "Squirtle is a little turtle with a shell. Invite it to swim in the pond.",
+        r'''root ::= "Squirtle, " ("eyeing the pond?" | "fancy a swim?" | "ready for a dip?") "\n" ("That shell looks " ("sturdy." | "polished." | "spotless.") | "The pond's nice and cool.")''',
+    ),
+}
 
 
 def dialogue_grammar(species):
+    if species in REACTIONS:
+        return REACTIONS[species][1]
     if species and re.fullmatch("[A-Za-z][A-Za-z0-9 .'-]{0,19}", species):
-        greeting = json.dumps(species) + ' ", " ("good " | "nice " | "hey ") '
-        greeting += "[a-z] [A-Za-z0-9 '-]{0," + str(19 - len(species)) + "} [.!?]"
+        ending = ' ("!" | ", hi there!")' if len(species) <= 17 else ' "!"'
+        greeting = json.dumps(species) + ending
     else:
-        greeting = '''"Hello" [A-Za-z0-9 ,'-]{0,22} [.!?]'''
-    return 'root ::= ' + greeting + r' "\n" tip' + "\n" + PC_LINE
+        greeting = '"Hello, trainer!"'
+    return 'root ::= ' + greeting + r''' "\n" ("Your PC stores items." | "Try storing spare items." | "Try your PC for storage.")'''
 
 
 def windows_launcher_environment():
@@ -47,9 +51,10 @@ class LocalModel:
     def propose(self, context):
         species = self.species_names.get(str(context.visible_species))
         observation = f"You see {species}." if species else "No Pokemon is visible."
+        if species in REACTIONS:
+            observation += " " + REACTIONS[species][0]
         prompt = (
-            f"<|im_start|>system\n{PROFILE}<|im_end|>\n"
-            f"{EXAMPLE}"
+            f"<|im_start|>system\n{PROFILE} Reply with two short lines.<|im_end|>\n"
             f"<|im_start|>user\n{observation}<|im_end|>\n"
             "<|im_start|>assistant\n"
         )
@@ -82,3 +87,24 @@ class LocalModel:
         # Windows text-mode stdout expands the worker's line break to CRLF.
         generated = result.stdout.decode("utf-8").replace("\r\n", "\n").strip()
         return json.dumps({"action": "SAY_DIALOGUE", "text": generated}, ensure_ascii=True)
+
+
+class DialogueReplies:
+    """Generate each context once per session and reuse its validated reply."""
+
+    def __init__(self, executor, propose):
+        self.executor = executor
+        self.propose = propose
+        self.pending = {}
+
+    def prepare(self, context):
+        reply = self.pending.get(context)
+        if reply is None or (reply.done() and reply.exception() is not None):
+            reply = self.executor.submit(self._generate, context)
+            self.pending[context] = reply
+        return reply
+
+    def _generate(self, context):
+        proposal = self.propose(context)
+        validate(proposal)
+        return proposal

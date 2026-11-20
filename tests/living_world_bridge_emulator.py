@@ -1,5 +1,6 @@
 """Run the Pallet dialogue mailbox through the compiled event in mGBA."""
 
+from concurrent.futures import ThreadPoolExecutor
 import ctypes as c
 import json
 from pathlib import Path
@@ -12,8 +13,8 @@ from unittest.mock import patch
 import quantum_qol_emulator as gba
 
 sys.path.insert(0, str(gba.root / "experiments" / "living_world"))
-from bridge import DialogueBridge, REPLY_OFFSET
-from inference import LocalModel
+from bridge import Conversation, DialogueBridge, REPLY_OFFSET
+from inference import DialogueReplies, LocalModel
 
 
 def field_ready():
@@ -118,6 +119,15 @@ names = {25: "Pikachu", 7: "Squirtle"}
 runtime = os.environ.get("LIVING_WORLD_INFERENCE_RUNTIME")
 propose = (LocalModel(Path(runtime), {str(key): name for key, name in names.items()}).propose
            if runtime else fixture_responder)
+with ThreadPoolExecutor(max_workers=1) as pool:
+    replies = DialogueReplies(pool, propose)
+    requests = {species: Conversation("pc_resident", species) for species in lines}
+    prefetched = {species: replies.prepare(context) for species, context in requests.items()}
+    for species, context in requests.items():
+        prefetched[species].result()
+        assert replies.prepare(context) is prefetched[species]
+print("Prefetched replies are reused by species.")
+propose = lambda context: prefetched[context.visible_species].result()
 give_mon(25, 6)
 give_mon(7, 6)
 assert native("AddBagItem", 717, 1) == 1  # ITEM_POKEGLASS
@@ -150,7 +160,10 @@ for species in lines:
     reply = json.loads(trace["proposal"])["text"]
     if runtime:
         assert reply.startswith(names[species] + ", ")
-        assert reply.splitlines()[1].startswith("Your PC ")
+        if species == 25:
+            assert any(word in reply for word in ("cables", "sparks", "shocks"))
+        else:
+            assert any(word in reply for word in ("pond", "swim", "shell", "dip"))
     else:
         assert reply == lines[species]
     assert printed_message() == render_expected(reply)
