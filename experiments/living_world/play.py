@@ -12,7 +12,9 @@ import sys
 import tempfile
 import time
 
-from bridge import Conversation, DialogueBridge, MAILBOX_SIZE, REPLY_OFFSET, TEXT_CAPACITY, validate
+from bridge import (
+    Conversation, DialogueBridge, MAILBOX_SIZE, REPLY_OFFSET, SKIP, TEXT_CAPACITY, WAIT, validate,
+)
 from inference import DialogueReplies, LocalModel, windows_launcher_environment
 from profiles import PROFILES
 from world import Encounter, WorldMemory
@@ -164,7 +166,8 @@ class Game:
     def write_reply(self, address, data):
         offset = address - self.mailbox
         if not ((offset == REPLY_OFFSET and len(data) == 4)
-                or (offset == REPLY_OFFSET + 4 and 1 < len(data) <= TEXT_CAPACITY + 1)):
+                or (offset == REPLY_OFFSET + 4
+                    and (data in (b"\0", b"\xff") or 1 < len(data) <= TEXT_CAPACITY + 1))):
             raise ValueError("Invalid mailbox write")
         c.memmove(self.mailbox_ptr + offset, data, len(data))
 
@@ -213,6 +216,7 @@ def main():
     mode.add_argument("--sandbox-test", action="store_true")
     mode.add_argument("--model-test", action="store_true")
     mode.add_argument("--pallet-test", action="store_true")
+    mode.add_argument("--pallet-social", action="store_true")
     args = parser.parse_args()
     runtime = ROOT / "inference"
     if args.sandbox_test:
@@ -244,7 +248,8 @@ def main():
         return 0
     profile = Path(os.environ.get("LOCALAPPDATA", Path.home() / ".local/share")) / "LivingQuantumWorld"
     profile.mkdir(parents=True, exist_ok=True)
-    save_path = profile / ("PalletTest.sav" if args.pallet_test else "PokemonQuantum.sav")
+    demo = "PalletSocialTest.sav" if args.pallet_social else "PalletTest.sav" if args.pallet_test else None
+    save_path = profile / (demo or "PokemonQuantum.sav")
     core_path = ROOT / ("mgba_libretro.dll" if sys.platform == "win32" else "mgba_libretro.so")
     display = Display()
     game = Game(core_path, rom_path, rom, manifest["mailbox"], display)
@@ -253,19 +258,23 @@ def main():
     try:
         if save_path.is_file():
             game.load_save(save_path.read_bytes())
-        elif args.pallet_test:
-            game.load_save((ROOT / "PalletTest.sav").read_bytes())
+        elif demo:
+            game.load_save((ROOT / demo).read_bytes())
         previous = game.save_bytes()
         memory = WorldMemory(profile / "living-world.sqlite3", save_path.name, previous,
-                             unsaved=not args.pallet_test and not save_path.is_file())
-        bridge = DialogueBridge(game.read_request, game.write_reply, game.mailbox)
+                             unsaved=not demo and not save_path.is_file())
+        bridge = DialogueBridge(game.read_request, game.write_reply, game.mailbox, deferred=True)
         with ThreadPoolExecutor(max_workers=1) as pool, (profile / "dialogue.jsonl").open(
             "a", encoding="utf-8", buffering=1
         ) as log:
             replies = DialogueReplies(pool, model.plan)
             staged = None
+            scene = None
+            encounter = None
+            work = None
+            title = b"Living Quantum World"
             def prepare_demo():
-                if args.pallet_test:
+                if demo:
                     for species in (25, 7):
                         replies.prepare(memory.context(Conversation("pc_resident", species)))
 
@@ -273,30 +282,38 @@ def main():
             prepare_demo()
 
             def propose(context):
-                nonlocal staged
-                encounter = memory.context(context)
-                work = replies.prepare(encounter)
+                nonlocal staged, scene, encounter, work
+                if context.npc == "pallet_exchange":
+                    scene = memory.social.scene()
+                    return scene[1] if scene else SKIP
+                if bridge.pending is None:
+                    encounter = memory.context(context)
+                    work = replies.prepare(encounter)
                 if not work.done():
-                    display.title(display.window, b"Living Quantum World - NPC is thinking")
-                try:
-                    while not work.done():
-                        if not display.pump():
-                            raise RuntimeError("Window closed")
-                        time.sleep(0.015)
-                    proposal = work.result()
-                    staged = (encounter, proposal)
-                    if proposal.action not in encounter.allowed():
-                        raise ValueError("Rejected action outside the encounter allowlist")
-                    return proposal.dialogue
-                finally:
-                    display.title(display.window, b"Living Quantum World")
+                    return WAIT
+                proposal = work.result()
+                staged = (encounter, proposal)
+                if proposal.action not in encounter.allowed():
+                    raise ValueError("Rejected action outside the encounter allowlist")
+                return proposal.dialogue
 
             next_save = time.monotonic() + 2
             while display.pump():
                 start = time.monotonic()
                 game.core.retro_run()
                 staged = None
+                scene = None
                 trace = bridge.poll(propose)
+                next_title = b"Living Quantum World - NPC is thinking" if bridge.pending else b"Living Quantum World"
+                if next_title != title:
+                    display.title(display.window, next_title)
+                    title = next_title
+                if trace and trace["context"]["npc"] == "pallet_exchange":
+                    if scene and trace["validation"] == "accepted":
+                        memory.social.displayed(scene[0])
+                        trace["event"] = scene[0]
+                    log.write(json.dumps(trace) + "\n")
+                    trace = None
                 if trace:
                     trace["profile"] = PROFILES[trace["context"]["npc"]]
                     trace["fallback"] = trace["validation"] != "accepted"
@@ -323,6 +340,12 @@ def main():
                         trace["context"]["npc"], trace["context"]["visible_species"]
                     )
                     log.write(json.dumps(trace) + "\n")
+                if not bridge.pending and memory.social.deadline is not None:
+                    simulation_start = time.perf_counter()
+                    event = memory.social.tick(time.time())
+                    if event:
+                        event["simulation_ms"] = (time.perf_counter() - simulation_start) * 1000
+                        log.write(json.dumps({"social": event}) + "\n")
                 if start >= next_save:
                     current = game.save_bytes()
                     if current != previous:

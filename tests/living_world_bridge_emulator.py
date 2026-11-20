@@ -7,16 +7,18 @@ from pathlib import Path
 import os
 import struct
 import sys
+from tempfile import TemporaryDirectory
 from io import BytesIO
 from queue import Queue
 
 import quantum_qol_emulator as gba
 
 sys.path.insert(0, str(gba.root / "experiments" / "living_world"))
-from bridge import Conversation, DialogueBridge, REPLY_OFFSET
+from bridge import Conversation, DialogueBridge, REPLY_OFFSET, SKIP, WAIT
 from inference import DialogueReplies, LocalModel
 from worker import ResidentWorker
 from profiles import NPC_IDS, PROFILES
+from world import WorldMemory
 
 
 def field_ready():
@@ -82,7 +84,7 @@ def printed_message():
 
 def render_expected(ascii_text):
     charmap = {" ": 0, ".": 0xAD, "!": 0xAB, "?": 0xAC, ",": 0xB8,
-               "'": 0xB4, "-": 0xAE, "\n": 0xFE}
+               "'": 0xB4, "-": 0xAE, ":": 0xF0, "\n": 0xFE}
     charmap.update({str(i): 0xA1 + i for i in range(10)})
     charmap.update({chr(65 + i): 0xBB + i for i in range(26)})
     charmap.update({chr(97 + i): 0xD5 + i for i in range(26)})
@@ -381,6 +383,89 @@ finally:
         aside_model.close()
 print("Pallet asides and protected branch bypasses passed.")
 
+if catalog and runtime:
+    with TemporaryDirectory() as folder:
+        db = Path(folder) / "world.sqlite3"
+        memory = WorldMemory(db, "demo", b"checkpoint")
+        deferred = DialogueBridge(gba.read, gba.write, mailbox, deferred=True)
+        local = LocalModel(Path(runtime), {"25": "Pikachu", "7": "Squirtle"}, catalog=catalog)
+        try:
+            enter_map("PalletTown", 13, 18)
+            start_conversation()
+            assert deferred.poll(lambda _: WAIT) is None
+            # Rendering and frame execution continue beyond the stock timeout.
+            gba.run(45)
+            assert gba.read(mailbox, 4) == b"LQW1"
+            pending = []
+
+            def observe(context):
+                assert context == Conversation("pc_resident", 25), context
+                encounter = memory.context(context)
+                proposal = local.plan(encounter)
+                pending.append((encounter, proposal.action))
+                return proposal.dialogue
+
+            assert deferred.poll(observe)["validation"] == "accepted"
+            assert printed_message()
+            assert "social_sighting_scheduled" in memory.apply(*pending[0])
+            finish_dialogue()
+            deferred.poll(lambda _: SKIP)
+            assert memory.social.scene() is None
+            event = memory.social.tick(memory.social.deadline)
+            assert event["speaker"] == "pc_resident" and event["listener"] == "sign_guide"
+            # The relay survives closing and reopening and doesn't consume the follower input.
+            memory.close()
+            memory = WorldMemory(db, "demo", b"checkpoint")
+            native("RemoveFollowingPokemon")
+            invoke_event("PalletTown_EventScript_TownSign")
+            wait_aside(True)
+            scene = memory.social.scene()
+            assert scene and deferred.poll(lambda _: scene[1])["validation"] == "accepted"
+            dialogue = json.loads(scene[1])["text"]
+            assert printed_message() == render_expected(dialogue)
+            print("Town sign exchange rendered:", repr(dialogue), flush=True)
+            memory.social.displayed(scene[0])
+            finish_dialogue()
+            deferred.poll(lambda _: SKIP)
+            invoke_event("PalletTown_EventScript_TownSign")
+            wait_aside(True)
+            assert memory.social.scene() is None
+            assert deferred.poll(lambda _: SKIP)["validation"] == "skipped"
+            finish_dialogue()
+            deferred.poll(lambda _: SKIP)
+            invoke_event("PalletTown_EventScript_SignLadyDone")
+            wait_aside(True)
+
+            def recall(context):
+                assert context == Conversation("sign_guide", None), context
+                assert not memory.context(context).remembered
+                return local.plan(memory.context(context)).dialogue
+
+            trace = deferred.poll(recall)
+            assert trace["validation"] == "accepted", trace
+            assert "Watts saw your Pikachu." in json.loads(trace["proposal"])["text"]
+            assert printed_message() == render_expected(json.loads(trace["proposal"])["text"])
+            print("Guide recalled Watts's sighting with no follower in view.", flush=True)
+            finish_dialogue()
+            deferred.poll(lambda _: SKIP)
+
+            start_conversation()
+            deferred.poll(lambda _: WAIT)
+            gba.run(45)
+            deferred.poll(broken_responder)
+            assert printed_message() == stock
+            finish_dialogue()
+            deferred.poll(lambda _: SKIP)
+            start_conversation()
+            deferred.poll(lambda _: WAIT)
+            gba.run(640)
+            assert gba.read(mailbox, 4) == b"\0" * 4 and printed_message() == stock
+            finish_dialogue()
+            print("Deferred reply, worker failure cancellation and ROM timeout passed.", flush=True)
+        finally:
+            memory.close()
+            local.close()
+
 
 # Create a clearly labeled, independent battery save for the playable demo.
 # Both Pokemon and the post-Oak state are QA fixtures in this save only.
@@ -391,6 +476,8 @@ if os.environ.get("LIVING_WORLD_TEST_SAVE"):
     assert native("AddBagItem", 717, 1) == 1  # ITEM_POKEGLASS
     native("VarSet", 0x4050, 3)  # VAR_MAP_SCENE_PALLET_TOWN_OAK
     native("VarSet", 0x4055, 6)  # VAR_MAP_SCENE_PALLET_TOWN_PROFESSOR_OAKS_LAB
+    if os.environ.get("LIVING_WORLD_SOCIAL_FIXTURE"):
+        native("VarSet", 0x4070, 2)  # VAR_MAP_SCENE_PALLET_TOWN_SIGN_LADY
     enter_pallet()
     assert native("TrySavingData", 0) == 1
     gba.lib.retro_get_memory_data.restype = c.c_void_p

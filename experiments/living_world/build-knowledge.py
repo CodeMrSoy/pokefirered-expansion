@@ -9,6 +9,7 @@ from tempfile import TemporaryDirectory
 
 from bridge import LINE
 from knowledge import SCHEMA
+from social import SIGHTINGS
 
 ROOT = Path(__file__).resolve().parents[2]
 FAMILY = "src/data/pokemon/species_info/gen_1_families.h"
@@ -152,6 +153,13 @@ def db_rows():
     add("survey:pond", "quests", "Watts has finished this trainer's pond survey.",
         "experiments/living_world/world.py#pond_survey", kind="discovery", area="pallet",
         region="kanto", access="witnessed", required="pond-survey", trust=2, priority=60)
+
+    for species, name in SIGHTINGS.items():
+        event = f"pallet-sighting:{species}"
+        add(event, "local_news", f"Watts told the sign guide he saw the trainer's {name} in Pallet.",
+            "experiments/living_world/social.py#INSERT OR IGNORE INTO npc_knowledge",
+            kind="rumor", area="pallet", region="kanto", access="conversation",
+            required=event, priority=90, line=f"Watts saw your {name}.")
 
     wilds = json.loads(read(WILDS))["wild_encounter_groups"][0]["encounters"]
     forest = next(entry for entry in wilds if entry["map"] == "MAP_VIRIDIAN_FOREST")

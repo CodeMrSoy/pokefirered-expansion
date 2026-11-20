@@ -26,7 +26,7 @@ keyed to the same save slot, battery checkpoint and NPC. A validated aside
 with a visible follower records a sighting. Completing the existing Pond
 Survey records distinct evidence and keeps its persistent repair tips.
 Restoring an existing checkpoint keeps the knowledge and memories that
-belong to that checkpoint. This release supports rules for rumors and
+belong to that checkpoint. Phase 3 introduced rules for rumors and
 reported knowledge; no player report, battle witness, or NPC news wire is
 exposed by this mailbox. Unknown story prerequisites fail closed.
 

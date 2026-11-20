@@ -12,6 +12,8 @@
 
 #define LIVING_WORLD_REQUEST_V1 0x3157514C // Bytes "LQW1"
 #define LIVING_WORLD_TIMEOUT_FRAMES 30
+#define LIVING_WORLD_DEFERRED_FRAMES 600
+#define LIVING_WORLD_REPLY_PENDING 255
 #define LIVING_WORLD_LINE_LENGTH 28
 #define LIVING_WORLD_TEXT_CAPACITY (LIVING_WORLD_LINE_LENGTH * 2 + 1)
 
@@ -32,7 +34,8 @@ STATIC_ASSERT(sizeof(struct LivingWorldMailbox) == 76, LivingWorldMailboxSize);
 // The reference host finds this symbol in the ELF from the same build.
 EWRAM_DATA volatile struct LivingWorldMailbox gLivingWorldMailbox = {0};
 EWRAM_DATA u8 gLivingWorldDialogue[LIVING_WORLD_TEXT_CAPACITY + 1] = {0};
-static EWRAM_DATA u8 sFramesRemaining = 0;
+static EWRAM_DATA u16 sFramesRemaining = 0;
+static EWRAM_DATA bool8 sDeferred = FALSE;
 
 static bool8 EncodeCharacter(u8 ascii, u8 *encoded)
 {
@@ -52,6 +55,7 @@ static bool8 EncodeCharacter(u8 ascii, u8 *encoded)
         case '.': *encoded = CHAR_PERIOD; break;
         case ',': *encoded = CHAR_COMMA; break;
         case '-': *encoded = CHAR_HYPHEN; break;
+        case ':': *encoded = CHAR_COLON; break;
         case '\'': *encoded = CHAR_SGL_QUOTE_RIGHT; break;
         default: return FALSE;
         }
@@ -100,12 +104,13 @@ static void BeginConversation(u8 npc)
     gSpecialVar_Result = FALSE;
     gLivingWorldMailbox.request = 0;
     sFramesRemaining = 0;
-    if (npc < LIVING_WORLD_PC_RESIDENT || npc > LIVING_WORLD_AIDE_3
+    sDeferred = FALSE;
+    if (npc < LIVING_WORLD_PC_RESIDENT || npc > LIVING_WORLD_PALLET_EXCHANGE
      || !FlagGet(FLAG_SYS_POKEDEX_GET) || gQuestLogState == QL_STATE_PLAYBACK)
         return;
 
     follower = GetFollowerObject();
-    if (follower != NULL && !follower->invisible && !follower->offScreen)
+    if (npc != LIVING_WORLD_PALLET_EXCHANGE && follower != NULL && !follower->invisible && !follower->offScreen)
         visibleSpecies = OW_SPECIES(follower);
 
     gLivingWorldMailbox.sequence = sequence != 0 ? sequence : 1;
@@ -133,7 +138,17 @@ bool8 LivingWorld_WaitForDialogue(void)
         return TRUE;
 
     if (gLivingWorldMailbox.responseSequence == gLivingWorldMailbox.sequence)
+    {
+        if (gLivingWorldMailbox.length == LIVING_WORLD_REPLY_PENDING && !sDeferred)
+        {
+            // Acknowledge the one-shot host deferral. Continue rendering frames.
+            gLivingWorldMailbox.responseSequence = 0;
+            sFramesRemaining = LIVING_WORLD_DEFERRED_FRAMES;
+            sDeferred = TRUE;
+            return FALSE;
+        }
         gSpecialVar_Result = ReceiveDialogue();
+    }
     else if (--sFramesRemaining != 0)
         return FALSE;
 

@@ -113,3 +113,9 @@ KNOWLEDGE_PROFILES = {
     "lab_aide_2": ("oak_lab", ("kanto",), ("care",), ("oak",), ()),
     "lab_aide_3": ("oak_lab", ("kanto",), ("biology",), ("oak",), ()),
 }
+
+# Existing outdoor Pallet residents have a mutual, local working relationship.
+SOCIAL_CONTACTS = {
+    "pc_resident": {"sign_guide": 1},
+    "sign_guide": {"pc_resident": 1},
+}

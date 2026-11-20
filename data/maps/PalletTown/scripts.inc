@@ -285,7 +285,10 @@ PalletTown_EventScript_RivalsHouseSign::
 	end
 
 PalletTown_EventScript_TownSign::
-	msgbox PalletTown_Text_TownSign, MSGBOX_SIGN
+	lockall
+	msgbox PalletTown_Text_TownSign
+	living_world_aside LIVING_WORLD_PALLET_EXCHANGE
+	releaseall
 	end
 
 PalletTown_EventScript_TrainerTips::

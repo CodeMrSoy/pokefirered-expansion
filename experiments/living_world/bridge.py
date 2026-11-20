@@ -12,7 +12,10 @@ REQUEST = struct.Struct("<4sIHH")
 REPLY_OFFSET = REQUEST.size
 TEXT_CAPACITY = 57
 MAILBOX_SIZE = 76
-LINE = re.compile(r"[A-Za-z0-9 !?.,'-]{1,28}")
+LINE = re.compile(r"[A-Za-z0-9 !?.,':-]{1,28}")
+REQUEST_IDS = {**NPC_IDS, 10: "pallet_exchange"}
+WAIT = object()
+SKIP = object()
 
 
 @dataclass(frozen=True)
@@ -45,33 +48,51 @@ def validate(raw):
 class DialogueBridge:
     """Poll and publish on the emulator thread, exclusively between frames."""
 
-    def __init__(self, read, write, mailbox_address):
+    def __init__(self, read, write, mailbox_address, *, deferred=False):
         if mailbox_address % 4 or not 0x02000000 <= mailbox_address <= 0x02040000 - MAILBOX_SIZE:
             raise ValueError("Mailbox must be aligned and contained within EWRAM")
         self.read = read
         self.write = write
         self.address = mailbox_address
         self.handled = None
+        self.pending = None
+        self.deferred = deferred
+        self.started = 0
+
+    def _signal(self, sequence, length):
+        self.write(self.address + REPLY_OFFSET + 4, bytes([length]))
+        self.write(self.address + REPLY_OFFSET, struct.pack("<I", sequence))
 
     def poll(self, propose):
         header = self.read(self.address, REQUEST.size)
         magic, sequence, npc, species = REQUEST.unpack(header)
         if magic != b"LQW1":
             self.handled = None
+            self.pending = None
             return None
-        if not sequence or npc not in NPC_IDS or self.handled == header:
+        if not sequence or npc not in REQUEST_IDS or self.handled == header:
             return None
-        self.handled = header
 
-        context = Conversation(NPC_IDS[npc], species or None)
+        context = Conversation(REQUEST_IDS[npc], species or None)
         trace = {"context": vars(context), "sequence": sequence, "changes": []}
-        start = time.perf_counter()
+        if self.pending != header:
+            self.started = time.perf_counter()
         try:
             raw = propose(context)
-            trace["proposal"] = raw[:512] if isinstance(raw, str) else None
-            payload = validate(raw)
             if self.read(self.address, REQUEST.size) != header:
                 raise ValueError("Request changed before publication")
+            if self.deferred and raw is WAIT:
+                if self.pending != header:
+                    self._signal(sequence, 255)
+                    self.pending = header
+                return None
+            if self.deferred and raw is SKIP:
+                self._signal(sequence, 0)
+                trace.update(validation="skipped")
+                self.handled, self.pending = header, None
+                return trace
+            trace["proposal"] = raw[:512] if isinstance(raw, str) else None
+            payload = validate(raw)
             self.write(self.address + REPLY_OFFSET + 4, bytes([len(payload)]) + payload)
             self.write(self.address + REPLY_OFFSET, struct.pack("<I", sequence))
             trace["validation"] = "accepted"
@@ -80,5 +101,8 @@ class DialogueBridge:
             trace.update(validation="rejected", error=str(error))
         except Exception as error:
             trace.update(validation="error", error=f"{type(error).__name__}: {error}"[:320])
-        trace["elapsed_ms"] = round((time.perf_counter() - start) * 1000, 3)
+        if self.deferred and trace["validation"] != "accepted" and self.read(self.address, REQUEST.size) == header:
+            self._signal(sequence, 0)
+        self.handled, self.pending = header, None
+        trace["elapsed_ms"] = round((time.perf_counter() - self.started) * 1000, 3)
         return trace

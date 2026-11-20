@@ -10,6 +10,7 @@ from worker import ResidentWorker
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("runtime", type=Path)
 parser.add_argument("models", type=Path, nargs="+")
+parser.add_argument("--social", action="store_true", help="Compare source attribution and relay decisions")
 args = parser.parse_args()
 
 grammar=r'''root ::= line "\n" line
@@ -26,6 +27,21 @@ cases=[
  ('quiet',decision,"You are Watts. Choose one action. Only propose a quest if you remember meeting the player's Pikachu and they show it again. If the player shows an unfamiliar Pokemon, remember it. Otherwise choose SAY_DIALOGUE.", "No Pokemon is visible. You have no memory of this player."),
  ('visit',decision,"You are Watts. Choose one action. Only propose a quest if you remember meeting the player's Pikachu and they show it again. If the player shows an unfamiliar Pokemon, remember it. Otherwise choose SAY_DIALOGUE.", "The player shows you Pikachu and you remember it from a previous visit. You want to meet a Squirtle.")
 ]
+if args.social:
+ cases = [
+  ('guide', grammar,
+   "You are the friendly Pallet Town sign guide. Write two short complete lines. Say who told you about Pikachu.",
+   "Watts reported seeing the player's Pikachu by the pond. You did not see it. The player asks what you heard."),
+  ('exchange', grammar,
+   "Line 1 is Watts sharing what he saw. Line 2 is the guide reacting. Two complete sentences. No speaker labels.",
+   "Watts saw the player's Pikachu. The guide helps visitors and has not seen Pikachu herself."),
+  ('witness', 'root ::= "SHARE_WITH_GUIDE" | "WAIT"',
+   "You are Watts. Share a firsthand local sighting with the sign guide. For hearsay, wait. Output the action only.",
+   "Your verified observation: you saw the player's Pikachu yourself in Pallet. The sign guide is here."),
+  ('hearsay', 'root ::= "SHARE_WITH_GUIDE" | "WAIT"',
+   "You are Watts. Share a firsthand local sighting with the sign guide. For hearsay, wait. Output the action only.",
+   "A stranger told you they saw a Pikachu. You were not there and cannot verify it. The sign guide is here."),
+ ]
 for path in args.models:
  name = path.name
  w=ResidentWorker(args.runtime,windows_launcher_environment,timeout=40,model=path)

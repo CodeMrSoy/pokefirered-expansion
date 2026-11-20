@@ -7,6 +7,7 @@ import sqlite3
 from uuid import uuid4
 
 from profiles import PROFILES, WATTS
+from social import SocialWorld
 
 QUEST = "pond_survey"
 
@@ -68,6 +69,8 @@ class WorldMemory:
             self.db.execute("INSERT OR IGNORE INTO npc_checkpoint SELECT DISTINCT save FROM npc_memory")
             self.db.execute("INSERT OR IGNORE INTO npc_checkpoint VALUES (?)", (self.save,))
 
+        self.social = SocialWorld(self)
+
     def _key(self, battery):
         return self.slot + ":" + hashlib.sha256(battery).hexdigest()
 
@@ -86,19 +89,22 @@ class WorldMemory:
                         SELECT ?, npc, fact, origin, source, verified, acquired_at
                         FROM npc_knowledge WHERE save = ?
                     """, (next_save, self.save))
+                    self.social.checkpoint(next_save)
                 self._discard_unsaved()
             self.save = next_save
+            self.social.deadline = self.social.next_deadline()
 
     def _discard_unsaved(self):
         if self.save.startswith("unsaved:"):
             self.db.execute("DELETE FROM npc_memory WHERE save=?", (self.save,))
             self.db.execute("DELETE FROM npc_knowledge WHERE save=?", (self.save,))
+            self.social.discard()
             self.db.execute("DELETE FROM npc_checkpoint WHERE save=?", (self.save,))
 
     def knowledge(self, npc, species):
         rows = self.db.execute("""
             SELECT fact, origin, source, verified, acquired_at FROM npc_knowledge
-            WHERE save=? AND npc=? AND fact IN (?, 'pond-survey')
+            WHERE save=? AND npc=? AND fact IN (?, 'pond-survey', 'pallet-sighting:25', 'pallet-sighting:7')
             ORDER BY fact, origin
         """, (self.save, npc, str(species))).fetchall()
         return [dict(zip(("fact", "origin", "source", "verified", "acquired_at"), row)) for row in rows]
@@ -130,7 +136,12 @@ class WorldMemory:
     def apply(self, encounter, action):
         with self.db:
             self.db.execute("BEGIN IMMEDIATE")
-            return self._apply(encounter, action)
+            changes = self._apply(encounter, action)
+            if self.social.queue_sighting(encounter):
+                changes.append("social_sighting_scheduled")
+        if "social_sighting_scheduled" in changes:
+            self.social.deadline = self.social.next_deadline()
+        return changes
 
     def _apply(self, encounter, action):
         current = self.context(encounter)
