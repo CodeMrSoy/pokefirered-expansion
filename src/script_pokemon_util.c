@@ -304,12 +304,22 @@ u32 ScriptGiveMon(u16 species, u8 level, u16 item)
 
 /* Give or create a mon to either player or opponent
  */
-void ScrCmd_createmon(struct ScriptContext *ctx)
+static void CreateScriptMon(struct ScriptContext *ctx, bool8 isGift)
 {
     u8 side           = ScriptReadByte(ctx);
     u8 slot           = ScriptReadByte(ctx);
-    u16 species       = VarGet(ScriptReadHalfword(ctx));
+    u16 speciesVar    = ScriptReadHalfword(ctx);
+    u16 species       = VarGet(speciesVar);
     u8 level          = VarGet(ScriptReadHalfword(ctx));
+
+    #if RANDOMIZER_AVAILABLE == TRUE
+    if (isGift)
+    {
+        species = RandomizeGiftSpecies(species);
+        if (speciesVar >= VARS_START && speciesVar < VARS_END)
+            VarSet(speciesVar, species);
+    }
+    #endif
 
     u32 flags         = ScriptReadWord(ctx);
     u16 item          = PARSE_FLAG(0, ITEM_NONE);
@@ -385,6 +395,16 @@ void ScrCmd_createmon(struct ScriptContext *ctx)
         Script_RequestEffects(SCREFF_V1);
 
     gSpecialVar_Result = ScriptGiveMonParameterized(side, slot, species, level, item, ball, nature, abilityNum, gender, evs, ivs, moves, isShiny, gmaxFactor, teraType, dmaxLevel);
+}
+
+void ScrCmd_createmon(struct ScriptContext *ctx)
+{
+    CreateScriptMon(ctx, FALSE);
+}
+
+void ScrCmd_givegiftmon(struct ScriptContext *ctx)
+{
+    CreateScriptMon(ctx, TRUE);
 }
 
 void ScrCmd_createmonrandom(struct ScriptContext *ctx)

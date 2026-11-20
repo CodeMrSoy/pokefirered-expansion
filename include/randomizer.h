@@ -133,6 +133,7 @@ u16 RandomizeFixedEncounterMon(u16 species, u8 mapNum, u8 mapGroup, u8 localId);
 
 // Given a starter/gift slot and the list of original starters/gifts, returns the random mon in that slot.
 u16 RandomizeStarterAndGiftMon(u16 originalSlot, const u16* originalStarterAndGiftMons, u8 count);
+u16 RandomizeGiftSpecies(u16 species);
 u16 GetRandomizedStarterSpecies(u16 starterSlot);
 u16 GetRivalStarterSlot(u16 playerStarterSlot);
 u16 GetRivalStarterSpecies(u16 playerStarterSlot);

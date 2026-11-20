@@ -1,5 +1,6 @@
 #include "game_modes.h"
 #include "randomizer.h"
+#include "quantum_cleanup.h"
 #include "mail.h"
 
 #if RANDOMIZER_AVAILABLE == TRUE
@@ -1223,6 +1224,20 @@ u16 RandomizeStarterAndGiftMon(u16 originalSlot, const u16* originalStarterAndGi
 
     // Randomizer disabled; return original starter
     return originalStarterAndGiftMons[originalSlot];
+}
+
+u16 RandomizeGiftSpecies(u16 species)
+{
+    u32 i;
+    if (!RandomizerFeatureEnabled(RANDOMIZE_STARTER_AND_GIFT_MON))
+        return species;
+    // Keep existing save seeds' starter/gift mappings unchanged.
+    for (i = 0; i < STARTER_AND_GIFT_MON_COUNT; i++)
+        if (gStarterAndGiftMonTable[i] == species)
+            return QuantumCanonicalSpecies(RandomizeStarterAndGiftMon(i, gStarterAndGiftMonTable, STARTER_AND_GIFT_MON_COUNT));
+    // Other scripted gifts/prizes use a stable stream without expanding the
+    // shared pool (which would reroll every existing starter).
+    return QuantumCanonicalSpecies(RandomizeMon(RANDOMIZER_REASON_STARTER_AND_GIFT_MON, MON_RANDOM, species, species));
 }
 
 u16 GetRandomizedStarterSpecies(u16 starterSlot)

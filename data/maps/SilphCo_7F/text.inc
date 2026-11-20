@@ -6,18 +6,18 @@ SilphCo_7F_Text_HaveMonForSavingUs::
     .string "for saving us.$"
 
 SilphCo_7F_Text_ObtainedLaprasFromEmployee::
-    .string "{PLAYER} obtained a LAPRAS from\n"
-    .string "the SILPH employee!$"
+    .string "{PLAYER} obtained {STR_VAR_1}!\n"
+    .string "A gift from the SILPH employee!$"
 
 SilphCo_7F_Text_ExplainLapras::
-    .string "It's a LAPRAS.\n"
+    .string "It's {STR_VAR_1}.\n"
     .string "It's a very intelligent POKéMON.\p"
     .string "We kept it in our lab, but it will\n"
     .string "be much better off with you.\p"
     .string "I think you will be a good TRAINER\n"
-    .string "for LAPRAS!\p"
-    .string "It's a good swimmer.\n"
-    .string "It'll give you a lift across water!$"
+    .string "for your new friend!\p"
+    .string "Take good care of it.\n"
+    .string "I know it will be happy with you!$"
 
 SilphCo_7F_Text_RocketBossWentToBoardroom::
     .string "TEAM ROCKET's BOSS went to the\n"

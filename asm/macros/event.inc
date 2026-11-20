@@ -989,7 +989,7 @@
 	@ Gives the player a Pokémon of the specified species and level, and allows to customize extra parameters.
 	@ VAR_RESULT will be set to MON_GIVEN_TO_PARTY, MON_GIVEN_TO_PC, or MON_CANT_GIVE depending on the outcome.
 	.macro givemon species:req, level:req, item, ball, nature, abilityNum, gender, hpEv, atkEv, defEv, speedEv, spAtkEv, spDefEv, hpIv, atkIv, defIv, speedIv, spAtkIv, spDefIv, move1, move2, move3, move4, isShiny, gmaxFactor, teraType, dmaxLevel
-	callnative ScrCmd_createmon, requests_effects=1
+	callnative ScrCmd_givegiftmon, requests_effects=1
 	.byte 0
 	.byte 6 @ assign to first empty slot
 	.set givemon_flags, 0
@@ -1223,6 +1223,14 @@
 	.endm
 
 	@ Writes the name of the given Pokemon species to the specified buffer.
+	@ Gift preview only: leaves the source variable unchanged for the actual grant.
+	.macro buffergiftname stringVarId:req, species:req
+	callnative ScrCmd_buffergiftname, requests_effects=1
+	stringvar \stringVarId
+	.2byte \species
+	.endm
+
+	@ Writes an already-resolved species name without randomizing it again.
 	.macro bufferspeciesname stringVarId:req, species:req
 	.byte SCR_OP_BUFFERSPECIESNAME
 	stringvar \stringVarId

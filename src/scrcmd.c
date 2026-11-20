@@ -2019,7 +2019,7 @@ bool8 ScrCmd_showmonpic(struct ScriptContext * ctx)
                 break;
         }
         if (i < STARTER_AND_GIFT_MON_COUNT)
-            species = RandomizeStarterAndGiftMon(i, gStarterAndGiftMonTable, STARTER_AND_GIFT_MON_COUNT);
+            species = RandomizeGiftSpecies(species);
     #endif
 
     ScriptMenu_ShowPokemonPic(species, x, y);
@@ -2094,6 +2094,17 @@ u8 *const sScriptStringVars[] =
     gStringVar2,
     gStringVar3,
 };
+
+void ScrCmd_buffergiftname(struct ScriptContext *ctx)
+{
+    u8 stringVarIndex = ScriptReadByte(ctx);
+    u16 species = VarGet(ScriptReadHalfword(ctx));
+    Script_RequestEffects(SCREFF_V1);
+    #if RANDOMIZER_AVAILABLE == TRUE
+    species = RandomizeGiftSpecies(species);
+    #endif
+    StringCopy(sScriptStringVars[stringVarIndex], gSpeciesInfo[species].speciesName);
+}
 
 bool8 ScrCmd_bufferspeciesname(struct ScriptContext * ctx)
 {
