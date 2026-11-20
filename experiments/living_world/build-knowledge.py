@@ -175,11 +175,40 @@ def db_rows():
 
 def build(output):
     rows = db_rows()
+    # Source references establish roles. These reviewed examples only add
+    # character voice. Canonical claims still come from the permitted facts.
+    pallet_script = "data/maps/PalletTown/scripts.inc"
+    examples = (
+        ("pc_resident", 25, 0, "Mind those cheeks, partner.", pallet_script, "PalletTown_EventScript_FatMan"),
+        ("pc_resident", 7, 0, "Fancy a dip, Squirtle?", pallet_script, "PalletTown_EventScript_FatMan"),
+        ("daisy", 25, 0, "Take a breather, you two.", DAISY, "PalletTown_RivalsHouse_EventScript_PleaseGiveMonsRest"),
+        ("daisy", 25, 1, "Good to see you both again.", DAISY, "PalletTown_RivalsHouse_EventScript_PleaseGiveMonsRest"),
+        ("daisy", 7, 0, "Rest a bit, Squirtle.", DAISY, "PalletTown_RivalsHouse_EventScript_PleaseGiveMonsRest"),
+        ("oak", 7, 0, "Study that Squirtle closely.", LAB, "PalletTown_ProfessorOaksLab_EventScript_RatePokedex"),
+        ("oak", 25, 1, "Back to compare notes?", LAB, "PalletTown_ProfessorOaksLab_EventScript_RatePokedex"),
+        ("sign_guide", 0, 0, "You might find this handy.", pallet_script, "PalletTown_EventScript_SignLadyDone"),
+    )
+    for npc, species, remembered, line, source, label in examples:
+        if not LINE.fullmatch(line) or f"{label}::" not in read(source):
+            raise ValueError(f"Invalid voice example for {npc} ({species}, {remembered})")
+    for map_name, slot, script in (
+        ("PalletTown", 1, "PalletTown_EventScript_SignLady"),
+        ("PalletTown", 2, "PalletTown_EventScript_FatMan"),
+        ("PalletTown_RivalsHouse", 1, "PalletTown_RivalsHouse_EventScript_Daisy"),
+        ("PalletTown_ProfessorOaksLab", 4, "PalletTown_ProfessorOaksLab_EventScript_ProfOak"),
+    ):
+        objects = json.loads(read(f"data/maps/{map_name}/map.json"))["object_events"]
+        if objects[slot - 1]["script"] != script:
+            raise ValueError(f"Field prediction object slot changed for {map_name}")
     with TemporaryDirectory(dir=output.parent) as directory:
         candidate = Path(directory) / output.name
         with sqlite3.connect(candidate) as db:
             db.executescript(SCHEMA)
             db.executemany("INSERT INTO fact VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)", rows)
+            db.executemany("INSERT INTO dialogue_example VALUES (?,?,?,?,?)", (
+                (npc, species, remembered, line, source + "#" + label)
+                for npc, species, remembered, line, source, label in examples
+            ))
         db.close()
         candidate.replace(output)
     return len(rows)

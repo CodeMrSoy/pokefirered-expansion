@@ -16,6 +16,7 @@ import quantum_qol_emulator as gba
 sys.path.insert(0, str(gba.root / "experiments" / "living_world"))
 from bridge import Conversation, DialogueBridge, REPLY_OFFSET, SKIP, WAIT
 from inference import DialogueReplies, LocalModel
+from hybrid import FIELD_HINT, FieldHint, HybridDialogue
 from worker import ResidentWorker
 from profiles import NPC_IDS, PROFILES
 from world import WorldMemory
@@ -147,6 +148,16 @@ enter_pallet()
 native("UpdateFollowingPokemon")
 party = gba.symbols["gPlayerParty"]
 original_order = gba.read(party, 200)
+hybrid_memory = WorldMemory(":memory:", "hybrid", b"test") if catalog and model else None
+hybrid_pool = ThreadPoolExecutor(max_workers=1) if hybrid_memory else None
+router = HybridDialogue(hybrid_memory, model, hybrid_pool) if hybrid_memory else None
+hint_symbol = gba.symbols["gLivingWorldFieldHint"]
+
+
+def read_hint():
+    return FieldHint.decode(gba.read(hint_symbol, FIELD_HINT.size))
+
+
 for species in lines:
     if species == 7:
         # Switch the existing party through PokéGlass, then return to the
@@ -164,6 +175,11 @@ for species in lines:
         gba.run(24)
         gba.keys.clear()
         gba.run(45)
+    if router:
+        approach = read_hint()
+        assert approach and approach.npc == "pc_resident" and approach.species == species, approach
+        router.predict(approach, 0)
+        assert router.predict(approach, 0.26)
     start_conversation()
     trace = bridge.poll(propose)
     assert trace["context"] == {"npc": "pc_resident", "visible_species": species}, trace
@@ -192,6 +208,32 @@ for species in lines:
     print(json.dumps(trace))
     finish_dialogue()
     bridge.poll(lambda context: None)
+    if router:
+        start_conversation()
+
+        def routed(context):
+            lookup = router.request(context, read_hint())
+            assert lookup.cache == "hit", lookup
+            response, route = lookup.future.result()
+            assert route == "retrieved_dialogue" and response.metrics["inference_ms"] == 0
+            return response.dialogue
+
+        trace = bridge.poll(routed)
+        assert trace["validation"] == "accepted", trace
+        native_message = render_expected(json.loads(trace["proposal"])["text"])
+        for frame in range(1, 120):
+            gba.run(1)
+            if gba.read(gba.symbols["gStringVar4"], 256).split(b"\xff", 1)[0] == native_message:
+                break
+        else:
+            raise AssertionError("Prefetched reply never reached the ROM text buffer")
+        print("Hybrid follower/cached handoff:", species, trace["elapsed_ms"], frame, flush=True)
+        finish_dialogue()
+        bridge.poll(lambda context: None)
+
+if hybrid_pool:
+    hybrid_pool.shutdown()
+    hybrid_memory.close()
 
 start_conversation()
 windows_stdout = b"Squirtle, nice to see you!\nYour PC stores items."

@@ -1,6 +1,8 @@
 #include "global.h"
 #include "event_data.h"
 #include "event_object_movement.h"
+#include "field_player_avatar.h"
+#include "living_world_bridge.h"
 #include "quest_log.h"
 #include "script.h"
 #include "text.h"
@@ -8,7 +10,9 @@
 #include "constants/event_objects.h"
 #include "constants/flags.h"
 #include "constants/living_world.h"
+#include "constants/maps.h"
 #include "constants/species.h"
+#include "constants/vars.h"
 
 #define LIVING_WORLD_REQUEST_V1 0x3157514C // Bytes "LQW1"
 #define LIVING_WORLD_TIMEOUT_FRAMES 30
@@ -36,6 +40,95 @@ EWRAM_DATA volatile struct LivingWorldMailbox gLivingWorldMailbox = {0};
 EWRAM_DATA u8 gLivingWorldDialogue[LIVING_WORLD_TEXT_CAPACITY + 1] = {0};
 static EWRAM_DATA u16 sFramesRemaining = 0;
 static EWRAM_DATA bool8 sDeferred = FALSE;
+
+struct LivingWorldFieldHint
+{
+    u32 magic;
+    u16 frame;
+    u16 species;
+    u8 area;
+    u8 story;
+    u8 npc;
+    u8 distance;
+};
+
+STATIC_ASSERT(sizeof(struct LivingWorldFieldHint) == 12, LivingWorldFieldHintSize);
+EWRAM_DATA volatile struct LivingWorldFieldHint gLivingWorldFieldHint = {0};
+
+static u16 VisibleSpecies(void)
+{
+    struct ObjectEvent *follower = GetFollowerObject();
+    return follower != NULL && !follower->invisible && !follower->offScreen
+         ? OW_SPECIES(follower) : SPECIES_NONE;
+}
+
+static void ConsiderNearby(struct LivingWorldFieldHint *hint, u8 localId, u8 npc)
+{
+    const struct ObjectEvent *player = &gObjectEvents[gPlayerAvatar.objectEventId];
+    u8 object = GetObjectEventIdByLocalIdAndMap(localId, gSaveBlock1Ptr->location.mapNum,
+                                              gSaveBlock1Ptr->location.mapGroup);
+    if (object >= OBJECT_EVENTS_COUNT || !player->active)
+        return;
+    const struct ObjectEvent *resident = &gObjectEvents[object];
+    if (resident->invisible || resident->offScreen)
+        return;
+    s32 dx = player->currentCoords.x - resident->currentCoords.x;
+    s32 dy = player->currentCoords.y - resident->currentCoords.y;
+    s32 distance = abs(dx) + abs(dy);
+    if (distance < hint->distance)
+    {
+        hint->npc = npc;
+        hint->distance = distance;
+    }
+}
+
+void LivingWorld_UpdateFieldHint(void)
+{
+    struct LivingWorldFieldHint hint = {
+        .magic = 0x3150514C, // Bytes "LQP1"
+        .frame = gLivingWorldFieldHint.frame + 1,
+        .distance = 8,
+    };
+    if (FlagGet(FLAG_SYS_POKEDEX_GET) && gQuestLogState != QL_STATE_PLAYBACK)
+    {
+        bool8 idle = !ScriptContext_IsEnabled();
+        switch ((gSaveBlock1Ptr->location.mapGroup << 8) | gSaveBlock1Ptr->location.mapNum)
+        {
+        case MAP_PALLET_TOWN:
+            hint.area = 1;
+            hint.story = VarGet(VAR_MAP_SCENE_PALLET_TOWN_SIGN_LADY);
+            if (idle)
+            {
+                ConsiderNearby(&hint, 2, LIVING_WORLD_PC_RESIDENT);
+                if (hint.story == 2)
+                    ConsiderNearby(&hint, 1, LIVING_WORLD_SIGN_GUIDE);
+            }
+            break;
+        case MAP_PALLET_TOWN_RIVALS_HOUSE:
+            hint.area = 2;
+            hint.story = VarGet(VAR_MAP_SCENE_PALLET_TOWN_RIVALS_HOUSE) | (FlagGet(FLAG_SYS_GAME_CLEAR) << 7);
+            if (idle && (hint.story == 2
+                     || (hint.story == 0 && VarGet(VAR_MAP_SCENE_PALLET_TOWN_PROFESSOR_OAKS_LAB) >= 1)))
+                ConsiderNearby(&hint, 1, LIVING_WORLD_DAISY);
+            break;
+        case MAP_PALLET_TOWN_PROFESSOR_OAKS_LAB:
+            hint.area = 3;
+            hint.story = VarGet(VAR_MAP_SCENE_PALLET_TOWN_PROFESSOR_OAKS_LAB)
+                       | (FlagGet(FLAG_OAK_SAW_DEX_COMPLETION) << 6)
+                       | ((VarGet(VAR_MAP_SCENE_CERULEAN_CITY_RIVAL) == 1) << 7);
+            if (idle && (hint.story & 0x3F) >= 6)
+                ConsiderNearby(&hint, 4, LIVING_WORLD_OAK);
+            break;
+        }
+        if (hint.area)
+        {
+            hint.species = VisibleSpecies();
+            if (!idle)
+                hint.distance = 255;
+        }
+    }
+    gLivingWorldFieldHint = hint;
+}
 
 static bool8 EncodeCharacter(u8 ascii, u8 *encoded)
 {
@@ -103,8 +196,6 @@ static bool8 ReceiveDialogue(void)
 
 static void BeginConversation(u8 npc)
 {
-    struct ObjectEvent *follower;
-    u16 visibleSpecies = SPECIES_NONE;
     u32 sequence = gLivingWorldMailbox.sequence + 1;
 
     gSpecialVar_Result = FALSE;
@@ -115,13 +206,9 @@ static void BeginConversation(u8 npc)
      || !FlagGet(FLAG_SYS_POKEDEX_GET) || gQuestLogState == QL_STATE_PLAYBACK)
         return;
 
-    follower = GetFollowerObject();
-    if (npc < LIVING_WORLD_PALLET_EXCHANGE && follower != NULL && !follower->invisible && !follower->offScreen)
-        visibleSpecies = OW_SPECIES(follower);
-
     gLivingWorldMailbox.sequence = sequence != 0 ? sequence : 1;
     gLivingWorldMailbox.npc = npc;
-    gLivingWorldMailbox.visibleSpecies = visibleSpecies;
+    gLivingWorldMailbox.visibleSpecies = npc < LIVING_WORLD_PALLET_EXCHANGE ? VisibleSpecies() : SPECIES_NONE;
     gLivingWorldMailbox.responseSequence = 0;
     gLivingWorldMailbox.length = 0;
     sFramesRemaining = LIVING_WORLD_TIMEOUT_FRAMES;

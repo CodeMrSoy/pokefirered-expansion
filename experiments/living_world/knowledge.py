@@ -28,6 +28,14 @@ CREATE TABLE fact (
 CREATE INDEX fact_species ON fact(species, priority DESC);
 CREATE INDEX fact_area ON fact(area, species, priority DESC);
 CREATE INDEX fact_topic ON fact(topic, priority DESC);
+CREATE TABLE dialogue_example (
+    npc TEXT NOT NULL,
+    species INTEGER NOT NULL,
+    remembered INTEGER NOT NULL CHECK (remembered IN (0, 1)),
+    line TEXT NOT NULL,
+    source TEXT NOT NULL,
+    PRIMARY KEY(npc, species, remembered)
+);
 PRAGMA user_version = 1;
 """
 
@@ -96,3 +104,15 @@ def retrieve(path, encounter, *, limit=2, budget=220):
 
 def prompt_facts(facts):
     return " | ".join(f"{fact.kind}: {fact.text}" for fact in facts)
+
+
+def retrieve_examples(path, encounter):
+    """Fetch one reviewed voice line for this NPC and companion, if any."""
+    with closing(sqlite3.connect(path.resolve().as_uri() + "?mode=ro", uri=True)) as db:
+        if not db.execute("SELECT 1 FROM sqlite_master WHERE name='dialogue_example'").fetchone():
+            return ()
+        row = db.execute("""
+            SELECT line FROM dialogue_example
+            WHERE npc=? AND species=? AND remembered=?
+        """, (encounter.npc, encounter.visible_species or 0, encounter.remembered)).fetchone()
+        return row if row and LINE.fullmatch(row[0]) else ()

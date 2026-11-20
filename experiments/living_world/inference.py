@@ -26,6 +26,7 @@ SECOND_LINES = {
     "Pikachu": ("My PC's had enough shocks.", "That would fry my PC.", "Stay clear of my PC."),
     "Squirtle": ("The pond's nice and cool.", "That shell looks sturdy.", "The water's clear today."),
 }
+SURVEY_OFFER = "Pikachu again, I see!\nShow me a new Pokemon."
 
 
 def choices(lines):
@@ -120,6 +121,25 @@ class LocalModel:
         return plan_guide(self.worker, self.render_prompt, turn,
                           natural=self.natural and self.style != "unavailable")
 
+    def survey(self, encounter):
+        """Resolve the existing optional quest choice without generating prose."""
+        if encounter.allowed() != ("PROPOSE_OPTIONAL_QUEST", "COMMENT_ON_POKEMON"):
+            raise ValueError("The pond survey is not available")
+        start = perf_counter()
+        context = f"Returning visitor with Pikachu. Trust is {encounter.trust}. No survey offered yet."
+        prompt = self.render_prompt(
+            "You are Watts, a practical Pallet PC tinkerer. You survey Pokemon by the pond. "
+            "Choose A to invite this returning visitor to help, or B to keep chatting. Output only A or B.",
+            context,
+        )
+        inference_start = perf_counter()
+        letter, metrics = self.worker.generate('root ::= "A" | "B"', prompt)
+        if letter not in ("A", "B"):
+            raise ValueError("Invalid survey choice")
+        return encounter.allowed()[letter == "B"], {
+            **metrics, "context_ms": (inference_start - start) * 1000,
+        }, context
+
     def plan(self, encounter):
         if self.style == "unavailable":
             raise ValueError("Packaged local model is missing or has an unknown checksum")
@@ -174,7 +194,7 @@ class LocalModel:
         if action == "PROPOSE_OPTIONAL_QUEST":
             if result != "A":
                 raise ValueError("Quest choice must contain only its action")
-            text = "Pikachu again, I see!\nShow me a new Pokemon."
+            text = SURVEY_OFFER
         else:
             first_line, _, second_line = text.partition("\n")
             if first_line not in first or second_line not in second:

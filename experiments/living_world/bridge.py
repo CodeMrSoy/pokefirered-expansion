@@ -98,9 +98,13 @@ class DialogueBridge:
                 self.handled, self.pending = header, None
                 return trace
             trace["proposal"] = raw[:512] if isinstance(raw, str) else None
+            validate_start = time.perf_counter()
             payload = validate(raw)
+            validated = time.perf_counter()
             self.write(self.address + REPLY_OFFSET + 4, bytes([len(payload)]) + payload)
             self.write(self.address + REPLY_OFFSET, struct.pack("<I", sequence))
+            trace["validation_ms"] = (validated - validate_start) * 1000
+            trace["handoff_ms"] = (time.perf_counter() - validated) * 1000
             trace["validation"] = "accepted"
             trace["changes"] = ["reply published to mailbox"]
         except ValueError as error:

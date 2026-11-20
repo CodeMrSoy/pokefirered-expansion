@@ -33,6 +33,7 @@
 #include "item_icon.h"
 #include "link.h"
 #include "link_rfu.h"
+#include "living_world_bridge.h"
 #include "load_save.h"
 #include "m4a.h"
 #include "map_name_popup.h"
@@ -1691,6 +1692,7 @@ void CB2_Overworld(void)
     if (fading)
         SetVBlankCallback(NULL);
     OverworldBasic();
+    LivingWorld_UpdateFieldHint();
     if (fading)
         SetFieldVBlankCallback();
 }
