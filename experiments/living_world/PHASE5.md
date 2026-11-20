@@ -99,7 +99,9 @@ response per case, rather than a general intelligence or personality score.
 
 The balanced package picks Qwen3-0.6B for its two-turn attribution,
 decision accuracy, size and latency. Model-authored reactions appear only
-where the host can validate them. The Windows test build keeps a single
+in the guide's follow-up. A package smoke test failed the bounded inference
+check when ordinary asides also attempted a reaction page, so Watts and Oak
+keep their context-specific approved lines. The Windows test build keeps a single
 resident model and the existing CPU worker. The existing serverless pipe
 and process boundaries remain in place. GPU device access was unavailable
 in the build environment. Upstream llama.cpp provides Windows Vulkan and
