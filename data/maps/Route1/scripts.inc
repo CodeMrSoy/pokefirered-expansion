@@ -27,7 +27,11 @@ Route1_EventScript_AlreadyGotPotion::
 	end
 
 Route1_EventScript_Boy::
-	msgbox Route1_Text_CanJumpFromLedges, MSGBOX_NPC
+	lock
+	faceplayer
+	msgbox Route1_Text_CanJumpFromLedges
+	living_world_aside LIVING_WORLD_ROUTE_SCOUT
+	release
 	end
 
 Route1_EventScript_RouteSign::

@@ -1,4 +1,5 @@
 #include "global.h"
+#include "living_world_bridge.h"
 #include "quantum_cleanup.h"
 #include "gflib.h"
 #include "battle_anim.h"
@@ -4098,6 +4099,8 @@ static bool8 MovementType_WanderUpAndDown_Step4(struct ObjectEvent *objectEvent,
 {
     u8 direction;
     u8 directions[2];
+    if (!LivingWorld_AllowsScheduledWalk(objectEvent))
+        return FALSE;
     memcpy(directions, gUpAndDownDirections, sizeof directions);
     direction = directions[Random() & 1];
     SetObjectEventDirection(objectEvent, direction);
@@ -4167,6 +4170,8 @@ static bool8 MovementType_WanderLeftAndRight_Step4(struct ObjectEvent *objectEve
 {
     u8 direction;
     u8 directions[2];
+    if (!LivingWorld_AllowsScheduledWalk(objectEvent))
+        return FALSE;
     memcpy(directions, gLeftAndRightDirections, sizeof directions);
     direction = directions[Random() & 1];
     SetObjectEventDirection(objectEvent, direction);

@@ -7,6 +7,7 @@ import sqlite3
 from uuid import uuid4
 
 from profiles import PROFILES, WATTS
+from routines import RoutineWorld
 from social import SocialWorld
 
 QUEST = "pond_survey"
@@ -70,6 +71,7 @@ class WorldMemory:
             self.db.execute("INSERT OR IGNORE INTO npc_checkpoint VALUES (?)", (self.save,))
 
         self.social = SocialWorld(self)
+        self.routines = RoutineWorld(self)
 
     def _key(self, battery):
         return self.slot + ":" + hashlib.sha256(battery).hexdigest()
@@ -90,23 +92,26 @@ class WorldMemory:
                         FROM npc_knowledge WHERE save = ?
                     """, (next_save, self.save))
                     self.social.checkpoint(next_save)
+                    self.routines.checkpoint(next_save)
                 self._discard_unsaved()
             self.save = next_save
             self.social.deadline = self.social.next_deadline()
+            self.routines.load()
 
     def _discard_unsaved(self):
         if self.save.startswith("unsaved:"):
             self.db.execute("DELETE FROM npc_memory WHERE save=?", (self.save,))
             self.db.execute("DELETE FROM npc_knowledge WHERE save=?", (self.save,))
             self.social.discard()
+            self.routines.discard()
             self.db.execute("DELETE FROM npc_checkpoint WHERE save=?", (self.save,))
 
     def knowledge(self, npc, species):
         rows = self.db.execute("""
             SELECT fact, origin, source, verified, acquired_at FROM npc_knowledge
-            WHERE save=? AND npc=? AND fact IN (?, 'pond-survey', 'pallet-sighting:25', 'pallet-sighting:7')
+            WHERE save=? AND npc=? AND fact IN (?, 'pond-survey', 'pallet-sighting:25', 'pallet-sighting:7', ?, ?)
             ORDER BY fact, origin
-        """, (self.save, npc, str(species))).fetchall()
+        """, (self.save, npc, str(species), f"relay:{npc}:25", f"relay:{npc}:7")).fetchall()
         return [dict(zip(("fact", "origin", "source", "verified", "acquired_at"), row)) for row in rows]
 
     def _witness(self, npc, fact, source):
@@ -176,5 +181,7 @@ class WorldMemory:
 
     def close(self):
         with self.db:
+            if not self.save.startswith("unsaved:"):
+                self.routines.persist_clock()
             self._discard_unsaved()
         self.db.close()

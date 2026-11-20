@@ -151,7 +151,7 @@ assert native('IsNationalPokedexEnabled') == 1
 # scripted end-state fixture, not a claim that all Gym battles were played.
 fixture = b''
 for species in (1, 4, 7, 25, 133, 143):
-    fixture += b'\x23' + struct.pack('<I', (m.symbols['ScrCmd_createmon'] | 1) + 0x2000000)
+    fixture += b'\x23' + struct.pack('<I', (m.symbols['ScrCmd_givegiftmon'] | 1) + 0x2000000)
     fixture += struct.pack('<BBHHI', 0, 6, species, 25, 0)
 m.inject(fixture + b'\x02')
 for i in range(8): native('FlagSet', constant('FLAG_BADGE01_GET') + i)

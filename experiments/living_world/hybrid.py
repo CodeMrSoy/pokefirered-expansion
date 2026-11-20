@@ -14,10 +14,12 @@ from profiles import KNOWLEDGE_PROFILES, NPC_IDS, PROFILES
 from reasoning import GuideTurn
 from world import Encounter
 
-AREAS = {1: "pallet", 2: "rival_house", 3: "oak_lab"}
+AREAS = {0: "", 1: "pallet", 2: "rival_house", 3: "oak_lab", 4: "route_1", 5: "viridian"}
 PREDICTION_DELAY = 0.2
 MAX_REPLIES = 32
 FIELD_HINT = struct.Struct("<4sHHBBBB")
+FIELD_CLOCK = struct.Struct("<I")
+FIELD_SIZE = FIELD_HINT.size + FIELD_CLOCK.size
 
 
 @dataclass(frozen=True)
@@ -28,17 +30,20 @@ class FieldHint:
     story: int
     npc: str | None
     busy: bool
+    local_second: int | None = None
 
     @classmethod
     def decode(cls, raw):
-        magic, frame, species, area, story, npc, distance = FIELD_HINT.unpack(raw)
+        magic, frame, species, area, story, npc, distance = FIELD_HINT.unpack_from(raw)
         if magic != b"LQP1" or area not in AREAS:
             return None
         area = AREAS[area]
         candidate = NPC_IDS.get(npc) if distance <= 7 else None
         if candidate and KNOWLEDGE_PROFILES[candidate][0] != area:
             candidate = None
-        return cls(frame, species or None, area, story, candidate, distance == 255)
+        second = FIELD_CLOCK.unpack_from(raw, FIELD_HINT.size)[0] if len(raw) == FIELD_SIZE else 0xFFFFFFFF
+        return cls(frame, species or None, area, story, candidate, distance == 255,
+                   second if second != 0xFFFFFFFF else None)
 
 
 @dataclass(frozen=True)
@@ -88,7 +93,14 @@ def npc_state(memory, conversation, hint=None):
                         if x.startswith("conversation:pallet-sighting:"))
         if any(report.requested for report in reports):
             concern = "check_the_sighting_details"
-    return NpcState(encounter, area, story, profile["role"],
+    routine = memory.routines.state(encounter.npc)
+    if routine:
+        activity, goal = routine
+        if not concern:
+            concern = goal
+    else:
+        activity = profile["role"]
+    return NpcState(encounter, area, story, activity,
                     profile["primary_goal"], profile["secondary_motivation"], concern, topic, intentions, reports)
 
 
@@ -115,6 +127,14 @@ def prepare(model, state, *, fallback=False):
                    any(fact.key == report.fact and fact.line == ending for fact in facts)), None)
     if report and report.requested:
         opening = "Watts wasn't sure when." if report.answered else "I asked him for details."
+    if encounter.npc == "route_scout":
+        opening = {"record_report": "I'll pass this note along.",
+                   "write_field_notes": "I'm sorting my field notes.",
+                   "watch_the_route": "I keep an eye on the ledges."}.get(state.activity, opening)
+    if encounter.npc == "viridian_student":
+        opening = {"compare_report": "I'm checking that report.",
+                   "rest": "My field notes can wait.",
+                   "study_trail_habitats": "I'm studying trail habitats."}.get(state.activity, opening)
     action = next((option for option in state.intentions if option in (
         "ADJUST_RELATIONSHIP", "REMEMBER_EVENT", "COMMENT_ON_POKEMON", "SAY_DIALOGUE",
     )), "SAY_DIALOGUE")

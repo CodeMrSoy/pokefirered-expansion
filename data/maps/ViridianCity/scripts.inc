@@ -162,11 +162,13 @@ ViridianCity_EventScript_Youngster::
 
 ViridianCity_EventScript_YoungsterExplainCaterpillars::
 	msgbox ViridianCity_Text_ExplainCaterpieWeedle
+	living_world_aside LIVING_WORLD_VIRIDIAN_STUDENT
 	release
 	end
 
 ViridianCity_EventScript_YoungsterDeclineExplanation::
 	msgbox ViridianCity_Text_OhOkayThen
+	living_world_aside LIVING_WORLD_VIRIDIAN_STUDENT
 	release
 	end
 

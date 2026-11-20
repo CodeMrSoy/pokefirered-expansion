@@ -4,6 +4,7 @@
 #include "field_player_avatar.h"
 #include "living_world_bridge.h"
 #include "quest_log.h"
+#include "rtc.h"
 #include "script.h"
 #include "text.h"
 #include "constants/characters.h"
@@ -50,10 +51,25 @@ struct LivingWorldFieldHint
     u8 story;
     u8 npc;
     u8 distance;
+    u32 localSecond;
 };
 
-STATIC_ASSERT(sizeof(struct LivingWorldFieldHint) == 12, LivingWorldFieldHintSize);
+STATIC_ASSERT(sizeof(struct LivingWorldFieldHint) == 16, LivingWorldFieldHintSize);
 EWRAM_DATA volatile struct LivingWorldFieldHint gLivingWorldFieldHint = {0};
+
+bool8 LivingWorld_AllowsScheduledWalk(const struct ObjectEvent *objectEvent)
+{
+    u16 map = (objectEvent->mapGroup << 8) | objectEvent->mapNum;
+    // Only these two ordinary wanderers get schedules. Existing engine
+    // direction, range, collision, freeze and held movements remain in force.
+    if (!FlagGet(FLAG_SYS_POKEDEX_GET) || gQuestLogState == QL_STATE_PLAYBACK)
+        return TRUE;
+    if (map == MAP_ROUTE1 && objectEvent->localId == 2)
+        return gLocalTime.hours >= LIVING_WORLD_SCOUT_START && gLocalTime.hours < LIVING_WORLD_SCOUT_END;
+    if (map == MAP_VIRIDIAN_CITY && objectEvent->localId == 6)
+        return gLocalTime.hours >= LIVING_WORLD_STUDENT_START && gLocalTime.hours < LIVING_WORLD_STUDENT_END;
+    return TRUE;
+}
 
 static u16 VisibleSpecies(void)
 {
@@ -88,10 +104,18 @@ void LivingWorld_UpdateFieldHint(void)
         .magic = 0x3150514C, // Bytes "LQP1"
         .frame = gLivingWorldFieldHint.frame + 1,
         .distance = 8,
+        .localSecond = (u32)-1,
     };
     if (FlagGet(FLAG_SYS_POKEDEX_GET) && gQuestLogState != QL_STATE_PLAYBACK)
     {
         bool8 idle = !ScriptContext_IsEnabled();
+        if (hint.frame % 60 == 1)
+            RtcCalcLocalTime();
+        if (gLocalTime.days >= 0 && gLocalTime.hours >= 0 && gLocalTime.hours < 24
+         && gLocalTime.minutes >= 0 && gLocalTime.minutes < 60
+         && gLocalTime.seconds >= 0 && gLocalTime.seconds < 60)
+            hint.localSecond = (u32)gLocalTime.days * 86400 + gLocalTime.hours * 3600
+                             + gLocalTime.minutes * 60 + gLocalTime.seconds;
         switch ((gSaveBlock1Ptr->location.mapGroup << 8) | gSaveBlock1Ptr->location.mapNum)
         {
         case MAP_PALLET_TOWN:
@@ -118,6 +142,17 @@ void LivingWorld_UpdateFieldHint(void)
                        | ((VarGet(VAR_MAP_SCENE_CERULEAN_CITY_RIVAL) == 1) << 7);
             if (idle && (hint.story & 0x3F) >= 6)
                 ConsiderNearby(&hint, 4, LIVING_WORLD_OAK);
+            break;
+        case MAP_ROUTE1:
+            hint.area = 4;
+            if (idle)
+                ConsiderNearby(&hint, 2, LIVING_WORLD_ROUTE_SCOUT);
+            break;
+        case MAP_VIRIDIAN_CITY:
+            hint.area = 5;
+            hint.story = VarGet(VAR_MAP_SCENE_VIRIDIAN_CITY_OLD_MAN);
+            if (idle)
+                ConsiderNearby(&hint, 6, LIVING_WORLD_VIRIDIAN_STUDENT);
             break;
         }
         if (hint.area)
@@ -202,13 +237,14 @@ static void BeginConversation(u8 npc)
     gLivingWorldMailbox.request = 0;
     sFramesRemaining = 0;
     sDeferred = FALSE;
-    if (npc < LIVING_WORLD_PC_RESIDENT || npc > LIVING_WORLD_GUIDE_FOLLOW_UP
+    if (npc < LIVING_WORLD_PC_RESIDENT || npc > LIVING_WORLD_VIRIDIAN_STUDENT
      || !FlagGet(FLAG_SYS_POKEDEX_GET) || gQuestLogState == QL_STATE_PLAYBACK)
         return;
 
     gLivingWorldMailbox.sequence = sequence != 0 ? sequence : 1;
     gLivingWorldMailbox.npc = npc;
-    gLivingWorldMailbox.visibleSpecies = npc < LIVING_WORLD_PALLET_EXCHANGE ? VisibleSpecies() : SPECIES_NONE;
+    gLivingWorldMailbox.visibleSpecies = npc == LIVING_WORLD_PALLET_EXCHANGE || npc == LIVING_WORLD_GUIDE_FOLLOW_UP
+                                       ? SPECIES_NONE : VisibleSpecies();
     gLivingWorldMailbox.responseSequence = 0;
     gLivingWorldMailbox.length = 0;
     sFramesRemaining = LIVING_WORLD_TIMEOUT_FRAMES;

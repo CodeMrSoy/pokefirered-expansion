@@ -16,7 +16,7 @@ from bridge import (
     Conversation, DialogueBridge, MAILBOX_SIZE, REPLY_OFFSET, SKIP, TEXT_CAPACITY, WAIT, validate,
 )
 from inference import LocalModel, windows_launcher_environment
-from hybrid import FIELD_HINT, FieldHint, HybridDialogue, prepare
+from hybrid import FIELD_SIZE, FieldHint, HybridDialogue, prepare
 from reasoning import BALANCED_SHA256, LIGHTWEIGHT_SHA256, GuideTurn, guide_reply, reported_fact
 from profiles import PROFILES
 from world import Encounter, WorldMemory
@@ -142,8 +142,8 @@ class Game:
             raise RuntimeError("mGBA mailbox is unavailable")
         self.mailbox_ptr = ram + mailbox - 0x02000000
         if field_hint is not None and (field_hint % 4 or not
-                0x02000000 <= field_hint <= 0x02040000 - FIELD_HINT.size
-                or not (field_hint + FIELD_HINT.size <= mailbox or mailbox + MAILBOX_SIZE <= field_hint)):
+                0x02000000 <= field_hint <= 0x02040000 - FIELD_SIZE
+                or not (field_hint + FIELD_SIZE <= mailbox or mailbox + MAILBOX_SIZE <= field_hint)):
             self.close()
             raise RuntimeError("Invalid field hint location")
         self.hint_ptr = None if field_hint is None else ram + field_hint - 0x02000000
@@ -172,7 +172,7 @@ class Game:
         return c.string_at(self.mailbox_ptr, size)
 
     def read_hint(self):
-        return FieldHint.decode(c.string_at(self.hint_ptr, FIELD_HINT.size)) if self.hint_ptr else None
+        return FieldHint.decode(c.string_at(self.hint_ptr, FIELD_SIZE)) if self.hint_ptr else None
 
     def write_reply(self, address, data):
         offset = address - self.mailbox
@@ -406,6 +406,7 @@ def main():
                             cache_lookup_ms=lookup.lookup_ms,
                             context_validation_ms=check_ms,
                             topic=lookup.key.state.topic,
+                            activity=lookup.key.state.activity,
                             action_result="rejected",
                         )
                         if not trace["fallback"]:
@@ -428,13 +429,18 @@ def main():
                     simulation_start = time.perf_counter()
                     event = memory.social.tick(time.time())
                     if event:
+                        if event["status"] == "shared":
+                            memory.routines.discovery_pending = True
                         event["simulation_ms"] = (time.perf_counter() - simulation_start) * 1000
                         log.write(json.dumps({"social": event}) + "\n")
-                if not args.no_predict and not bridge.pending and start >= next_prediction:
+                if not bridge.pending and start >= next_prediction:
                     hint = game.read_hint()
                     try:
-                        predicted = replies.predict(hint if hint and hint.frame != previous_hint_frame else None,
-                                                    start)
+                        fresh = hint if hint and hint.frame != previous_hint_frame else None
+                        if fresh:
+                            for change in memory.routines.tick(fresh.local_second):
+                                log.write(json.dumps({"world_event": change}) + "\n")
+                        predicted = None if args.no_predict else replies.predict(fresh, start)
                         if predicted:
                             log.write(json.dumps({"prefetched": predicted.state.encounter.npc,
                                                   "species": predicted.state.encounter.visible_species,

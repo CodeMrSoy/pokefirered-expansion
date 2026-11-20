@@ -16,7 +16,7 @@ import quantum_qol_emulator as gba
 sys.path.insert(0, str(gba.root / "experiments" / "living_world"))
 from bridge import Conversation, DialogueBridge, REPLY_OFFSET, SKIP, WAIT
 from inference import DialogueReplies, LocalModel
-from hybrid import FIELD_HINT, FieldHint, HybridDialogue
+from hybrid import FIELD_HINT, FIELD_SIZE, FieldHint, HybridDialogue
 from worker import ResidentWorker
 from profiles import NPC_IDS, PROFILES
 from world import WorldMemory
@@ -280,7 +280,7 @@ for failure in ("missing_host", "worker_error", "stale_reply", "bad_wire_text"):
     start_conversation()
     sequence = struct.unpack("<I", gba.read(mailbox + 4, 4))[0]
     if failure == "worker_error":
-        broken_model = LocalModel(Path(runtime), {"25": "Pikachu"},
+        broken_model = LocalModel(Path(runtime or "."), {"25": "Pikachu"},
                                   catalog=catalog.with_suffix(".missing")) if catalog else None
         trace = bridge.poll(broken_model.propose if broken_model else broken_responder)
         assert trace["validation"] == "error" and not trace["changes"], trace
@@ -298,7 +298,7 @@ assert native("AdventureMode_Get") == mode
 print(f"Pallet dialogue, context, validator and fallback passed in adventure mode {mode}.")
 
 
-def enter_map(name, x, y):
+def enter_map(name, x, y, *, walk=True):
     groups = json.loads((gba.root / "data/maps/map_groups.json").read_text())
     for map_group, key in enumerate(groups["group_order"]):
         if name in groups[key]:
@@ -308,7 +308,7 @@ def enter_map(name, x, y):
         raise AssertionError(f"Unknown test map {name}")
     gba.inject(b"\x39" + struct.pack("<BBBhh", map_group, number, 255, x, y) + b"\x27\x6b\x02")
     assert field_ready()
-    if catalog:
+    if catalog and walk:
         # Native warps withdraw followers, so let the normal walk-out happen.
         native("UpdateFollowingPokemon")
         for button in (6, 7):
@@ -358,7 +358,7 @@ def stub(context):
     return json.dumps({"action": "SAY_DIALOGUE", "text": "\n".join(PROFILES[context.npc]["greeting_lines"])})
 
 
-assert len(NPC_IDS) == len(PROFILES) == 9
+assert len(NPC_IDS) == len(PROFILES) == 11
 for profile in PROFILES.values():
     for type_ in ("greeting_lines", "seen_lines"):
         for line in profile.get(type_, ()):
@@ -538,6 +538,137 @@ if catalog and runtime:
             local.close()
             if phase5:
                 phase5.close()
+
+
+if catalog and os.environ.get("LIVING_WORLD_ROUTINES_TEST"):
+    def clock(hour, minute=0):
+        native("RtcInitLocalTimeOffset", hour, minute)
+        gba.run(65)
+        hint = FieldHint.decode(gba.read(hint_symbol, FIELD_SIZE))
+        assert hint.local_second is not None and hint.local_second % 86400 // 3600 == hour, hint
+        return hint.local_second
+
+    def coords(object_id):
+        assert 0 <= object_id < 16, object_id
+        return tuple(value - 7 for value in struct.unpack(
+            "<hh", gba.read(gba.symbols["gObjectEvents"] + 0x24 * object_id + 0x10, 4)))
+
+    def sample_scout(samples):
+        path = []
+        for _ in range(samples):
+            gba.run(50)
+            path.append(coords(scout))
+        return path
+
+    with TemporaryDirectory() as folder, ThreadPoolExecutor(max_workers=1) as pool:
+        path = Path(folder) / "routines.sqlite"
+        memory = WorldMemory(path, "emulator", b"before")
+        model = LocalModel(Path(runtime or "."), {"25": "Pikachu"}, catalog=catalog, style="unavailable")
+        router = HybridDialogue(memory, model, pool)
+
+        def reply_from_host(context):
+            hint = FieldHint.decode(gba.read(hint_symbol, FIELD_SIZE))
+            lookup = router.request(context, hint)
+            proposal, _ = lookup.future.result()
+            memory.apply(lookup.key.state.encounter, proposal.action)
+            return proposal.dialogue
+
+        gba.write(party, original_order)
+        enter_map("PalletTown", 13, 18)
+        now = clock(10)
+        start_conversation()
+        observed = bridge.poll(reply_from_host)
+        assert observed["validation"] == "accepted" and observed["context"]["visible_species"] == 25, observed
+        finish_dialogue()
+        bridge.poll(lambda _: None)
+        assert memory.social.tick(memory.social.deadline)["status"] == "shared"
+        memory.routines.tick(now)
+        assert memory.routines.state("sign_guide")[1] == "relay_sighting"
+
+        route_group, route_map = enter_map("Route1", 19, 18, walk=False)
+        scout = native("GetObjectEventIdByLocalIdAndMap", 2, route_map, route_group)
+        gb_hint = FieldHint.decode(gba.read(hint_symbol, FIELD_SIZE))
+        assert gb_hint.area == "route_1" and gb_hint.npc == "route_scout", gb_hint
+        gba.snap("phase7-route-scout-day-start")
+        start_position = coords(scout)
+        daylight = []
+        moved = False
+        for _ in range(25):
+            daylight.extend(sample_scout(1))
+            if daylight[-1] != start_position and not moved:
+                gba.snap("phase7-route-scout-day-step")
+                moved = True
+        assert len(set(daylight)) > 1 and all(y == 16 and 18 <= x <= 20 for x, y in daylight), daylight
+        assert moved
+        occupied = next(point for point in daylight if point != (19, 16))
+        enter_map("Route1", *occupied, walk=False)
+        scout = native("GetObjectEventIdByLocalIdAndMap", 2, route_map, route_group)
+        assert occupied not in sample_scout(15), occupied
+
+        forwarded = clock(10, 1)
+        assert memory.routines.tick(forwarded)[0]["receiver"] == "route_scout"
+        invoke_event("Route1_EventScript_Boy")
+        wait_aside(True)
+        trace = bridge.poll(reply_from_host)
+        assert trace["validation"] == "accepted" and "Watts reported a Pikachu." in trace["proposal"], trace
+        assert b"" != printed_message()
+        gba.snap("phase7-route-attributed-report")
+        finish_dialogue()
+        bridge.poll(lambda _: None)
+        assert memory.routines.tick(forwarded)[0]["receiver"] == "viridian_student"
+
+        city_group, city_map = enter_map("ViridianCity", 32, 27)
+        city_hint = FieldHint.decode(gba.read(hint_symbol, FIELD_SIZE))
+        assert city_hint.area == "viridian" and city_hint.npc == "viridian_student", city_hint
+        student = native("GetObjectEventIdByLocalIdAndMap", 6, city_map, city_group)
+        positions = []
+        for _ in range(18):
+            gba.run(50)
+            positions.append(coords(student))
+        assert len(set(positions)) > 1 and all(x == 33 and 24 <= y <= 28 for x, y in positions), positions
+        invoke_event("ViridianCity_EventScript_YoungsterDeclineExplanation")
+        wait_aside(True)
+        trace = bridge.poll(reply_from_host)
+        assert trace["validation"] == "accepted" and "I'm checking that report." in trace["proposal"], trace
+        assert printed_message() == render_expected(json.loads(trace["proposal"])["text"])
+        gba.snap("phase7-viridian-research-review")
+        finish_dialogue()
+        bridge.poll(lambda _: None)
+        assert memory.routines.tick(clock(10, 2))[0]["status"] == "resolved"
+
+        assert native("TrySavingData", 0) == 1
+        gba.lib.retro_get_memory_data.restype = c.c_void_p
+        gba.lib.retro_get_memory_size.restype = c.c_size_t
+        battery = c.string_at(gba.lib.retro_get_memory_data(0), gba.lib.retro_get_memory_size(0))
+        memory.checkpoint(battery)
+        memory.close()
+        memory = WorldMemory(path, "emulator", battery)
+        router = HybridDialogue(memory, model, pool)
+        assert memory.knowledge("viridian_student", None)[0]["source"] == "route_scout"
+        invoke_event("ViridianCity_EventScript_YoungsterDeclineExplanation")
+        wait_aside(True)
+        restored_trace = bridge.poll(reply_from_host)
+        assert "Watts reported a Pikachu." in restored_trace["proposal"], restored_trace
+        finish_dialogue()
+        bridge.poll(lambda _: None)
+
+        clock(22)
+        enter_map("Route1", 19, 18, walk=False)
+        scout = native("GetObjectEventIdByLocalIdAndMap", 2, route_map, route_group)
+        assert len(set(sample_scout(15))) == 1
+        gba.snap("phase7-route-scout-night")
+        native("VarSet", 0x4050, 3)  # Existing Oak intro already complete in this fixture.
+        enter_map("PalletTown", 12, 0, walk=False)
+        gba.keys.add(4)
+        gba.run(45)
+        gba.keys.discard(4)
+        gba.run(90)
+        neighbor = FieldHint.decode(gba.read(hint_symbol, FIELD_SIZE))
+        assert neighbor.area == "route_1", neighbor
+        memory.close()
+        model.close()
+        print("Phase 7 native walks, occupied-tile collision, night rest, map changes,"
+              " attributed report and battery-keyed reload passed.", flush=True)
 
 
 # Create a clearly labeled, independent battery save for the playable demo.

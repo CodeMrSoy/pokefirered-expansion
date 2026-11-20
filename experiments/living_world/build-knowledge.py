@@ -9,6 +9,7 @@ from tempfile import TemporaryDirectory
 
 from bridge import LINE
 from knowledge import SCHEMA
+from routines import KANTO
 from social import SIGHTINGS
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -160,6 +161,12 @@ def db_rows():
             "experiments/living_world/social.py#INSERT OR IGNORE INTO npc_knowledge",
             kind="rumor", area="pallet", region="kanto", access="conversation",
             required=event, priority=90, line=f"Watts saw your {name}.")
+        for resident, sender in ((KANTO.scout, "Pallet's sign guide"), (KANTO.researcher, "the Route 1 scout")):
+            relay = f"relay:{resident.npc}:{species}"
+            add(relay, "local_news", f"{sender} passed along a secondhand report of {name} originally seen by Watts.",
+                "experiments/living_world/routines.py#def _transfer(", kind="rumor",
+                area=resident.area, region="kanto", access="conversation",
+                required=relay, priority=100, line=f"Watts reported a {name}.")
 
     wilds = json.loads(read(WILDS))["wild_encounter_groups"][0]["encounters"]
     forest = next(entry for entry in wilds if entry["map"] == "MAP_VIRIDIAN_FOREST")
@@ -196,10 +203,17 @@ def build(output):
         ("PalletTown", 2, "PalletTown_EventScript_FatMan"),
         ("PalletTown_RivalsHouse", 1, "PalletTown_RivalsHouse_EventScript_Daisy"),
         ("PalletTown_ProfessorOaksLab", 4, "PalletTown_ProfessorOaksLab_EventScript_ProfOak"),
+        ("Route1", 2, "Route1_EventScript_Boy"),
+        ("ViridianCity", 6, "ViridianCity_EventScript_Youngster"),
     ):
         objects = json.loads(read(f"data/maps/{map_name}/map.json"))["object_events"]
         if objects[slot - 1]["script"] != script:
             raise ValueError(f"Field prediction object slot changed for {map_name}")
+    header = read("include/constants/living_world.h")
+    for actor, token in ((KANTO.scout, "SCOUT"), (KANTO.researcher, "STUDENT")):
+        for suffix, hour in (("START", actor.starts), ("END", actor.ends)):
+            if not re.search(rf"^#define LIVING_WORLD_{token}_{suffix}\s+{hour}$", header, re.M):
+                raise ValueError(f"ROM hours differ from {actor.npc}'s simulated schedule")
     with TemporaryDirectory(dir=output.parent) as directory:
         candidate = Path(directory) / output.name
         with sqlite3.connect(candidate) as db:

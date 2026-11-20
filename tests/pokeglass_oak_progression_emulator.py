@@ -46,7 +46,7 @@ assert native('RemoveBagItem', 717, 1)
 native('FlagSet', dexflag); locked('Dex flag without the device'); native('FlagClear', dexflag)
 # The ordinary givemon command supplies a single starter, rather than the old
 # six-mon/unlocked-Pokedex fixture that masked the early-game problem.
-m.inject(b'\x23' + struct.pack('<I', (m.symbols['ScrCmd_createmon'] | 1) + 0x2000000)
+m.inject(b'\x23' + struct.pack('<I', (m.symbols['ScrCmd_givegiftmon'] | 1) + 0x2000000)
          + struct.pack('<BBHHI', 0, 6, 1, 5, 0) + b'\x02')
 native('FlagSet', constant('FLAG_SYS_POKEMON_GET'))
 assert byte('gPlayerPartyCount') == 1

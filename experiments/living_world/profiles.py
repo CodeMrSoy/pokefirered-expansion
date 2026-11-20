@@ -20,11 +20,26 @@ WATTS = {
 NPC_IDS = {
     1: "pc_resident", 2: "daisy", 3: "oak", 4: "blue", 5: "mom",
     6: "sign_guide", 7: "lab_aide_1", 8: "lab_aide_2", 9: "lab_aide_3",
+    12: "route_scout", 13: "viridian_student",
 }
 
 # Name, role, traits, goal, motivation, favorite species, knowledge and
 # protected interactions. Each aside has two short, spoken lines.
 _ASIDES = {
+    "route_scout": (
+        "Route 1 scout", "local youngster who watches the ledges", ("observant", "eager"),
+        "Keep useful notes on Route 1.", "Share clear directions with travelers.", 25,
+        ("Route 1", "local sightings"), ("ledge tutorial",),
+        ("You've been out exploring?", "Mind the ledges up ahead."),
+        ("Taking the long way?", "Mind the ledges up ahead."),
+    ),
+    "viridian_student": (
+        "Viridian insect student", "youngster who studies Caterpie and Weedle", ("curious", "cautious"),
+        "Compare Pokemon habitats.", "Keep guesses separate from sightings.", 10,
+        ("Viridian City", "caterpillar Pokemon"), ("Caterpie and Weedle lesson",),
+        ("Look closely at its feet.", "I like studying habitats."),
+        ("I'm comparing habitats.", "The little details matter."),
+    ),
     "daisy": (
         "Daisy", "Blue's sister", ("gentle", "attentive"),
         "Help Pokemon feel at ease.", "Notice what makes each partner happy.", 35,
@@ -103,6 +118,8 @@ for key, (name, role, traits, goal, motivation, favorite, knowledge, protected, 
 # both the Pokedex and game-clear flags. Other hooks provide no story evidence.
 # Area, familiar regions, expertise, known characters, proven story milestones.
 KNOWLEDGE_PROFILES = {
+    "route_scout": ("route_1", ("kanto",), ("directions",), ("sign_guide",), ()),
+    "viridian_student": ("viridian", ("kanto",), ("biology",), ("route_scout",), ()),
     "pc_resident": ("pallet", ("kanto",), ("electronics",), ("oak",), ()),
     "oak": ("oak_lab", ("kanto",), ("research", "biology"), ("blue", "daisy"), ()),
     "blue": ("oak_lab", ("kanto",), ("battle",), ("daisy", "oak"), ("league_clear",)),

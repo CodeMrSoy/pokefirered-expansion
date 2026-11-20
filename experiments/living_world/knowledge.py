@@ -86,7 +86,8 @@ def retrieve(path, encounter, *, limit=2, budget=220):
                 ELSE 0
               END
               AND (kind NOT IN ('rumor', 'belief') OR access IN ('personal', 'conversation'))
-            ORDER BY species IS NOT NULL DESC, priority DESC, key
+            ORDER BY (topic='local_news' AND :area IN ('route_1','viridian')) DESC,
+                     species IS NOT NULL DESC, priority DESC, key
             LIMIT :limit
         """, params).fetchall()
 

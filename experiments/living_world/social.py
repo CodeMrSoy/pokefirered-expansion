@@ -209,13 +209,15 @@ class SocialWorld:
         return dict(event=event, speaker=speaker, listener=listener, species=species,
                     area=area, observed=observed, shared=now, status="shared")
 
-    def _relationship(self, npc, peer, goal):
+    def _relationship(self, npc, peer, goal, *, baseline=None):
+        if baseline is None:
+            baseline = SOCIAL_CONTACTS[npc][peer]
         self.db.execute("""
             INSERT INTO social_relationship VALUES (?,?,?,1,?,1,1,?)
             ON CONFLICT(save,npc,peer) DO UPDATE SET
                 familiarity=MIN(familiarity+1,5), trust=MIN(trust+1,5),
                 affinity=MIN(affinity+1,5), experiences=experiences+1
-        """, (self.save, npc, peer, SOCIAL_CONTACTS[npc][peer] + 1, goal))
+        """, (self.save, npc, peer, baseline + 1, goal))
 
     def scene(self):
         row = self.db.execute("""

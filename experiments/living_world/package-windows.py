@@ -71,8 +71,8 @@ def main():
         shutil.copyfile(inputs / "PalletTest.sav", stage / "PalletTest.sav")
         shutil.copyfile(inputs / "PalletSocialTest.sav", stage / "PalletSocialTest.sav")
         for name in ("play.py", "bridge.py", "inference.py", "worker.py", "world.py", "profiles.py",
-                     "knowledge.py", "social.py", "reasoning.py", "hybrid.py", "PLAYTEST.md", "PHASE2.md",
-                     "PHASE3.md", "PHASE4.md", "PHASE5.md", "PHASE6.md"):
+                     "knowledge.py", "social.py", "reasoning.py", "hybrid.py", "routines.py", "PLAYTEST.md",
+                     "PHASE2.md", "PHASE3.md", "PHASE4.md", "PHASE5.md", "PHASE6.md", "PHASE7.md"):
             shutil.copyfile(APP / name, stage / name)
         subprocess.run([sys.executable, APP / "build-knowledge.py", stage / "world-knowledge.sqlite3"], check=True)
         shutil.copyfile(APP / "launch-windows.cmd", stage / "Play.cmd")
