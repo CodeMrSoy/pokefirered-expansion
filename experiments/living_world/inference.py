@@ -59,21 +59,24 @@ class LocalModel:
         if sys.platform == "win32":
             command = [str(runtime / "sandbox.exe"), *args]
             env = windows_launcher_environment()
-            flags = subprocess.CREATE_NO_WINDOW
         elif sys.platform == "linux":
             command = [str(runtime / "offline-worker"), *args]
             env = {}
-            flags = 0
         else:
             raise RuntimeError("No inference isolation backend for this platform")
+        # On Windows the launcher must keep Play.cmd's console for the
+        # isolated console worker. Dialogue still travels through pipes.
         result = subprocess.run(
             command, cwd=runtime, env=env, stdin=subprocess.DEVNULL,
             stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-            timeout=self.timeout, creationflags=flags, check=False,
+            timeout=self.timeout, check=False,
         )
         if result.returncode:
             reason = result.stderr.decode("utf-8", errors="replace").strip()[-240:]
-            raise RuntimeError(f"Offline worker exited {result.returncode}. {reason}")
+            status = str(result.returncode)
+            if sys.platform == "win32":
+                status += f" (0x{result.returncode & 0xFFFFFFFF:08X})"
+            raise RuntimeError(f"Offline worker exited {status}. {reason}")
         if sys.platform == "linux" and not result.stderr.startswith(b"LQW isolation active\n"):
             raise RuntimeError("Linux isolation did not initialize")
         # Windows text-mode stdout expands the worker's line break to CRLF.

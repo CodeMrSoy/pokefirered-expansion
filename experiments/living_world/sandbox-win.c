@@ -129,9 +129,12 @@ int wmain(int argc, wchar_t **argv)
     startup.StartupInfo.hStdOutput = pipes[1];
     startup.StartupInfo.hStdError = pipes[2];
 
+    // Let the worker inherit the caller's console. CREATE_NO_WINDOW can
+    // fail while Windows initializes a console executable in isolation.
+    SetErrorMode(GetErrorMode() | SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX);
     stage = "CreateProcessW";
     if (!CreateProcessW(worker, command, NULL, NULL, TRUE,
-            EXTENDED_STARTUPINFO_PRESENT | CREATE_SUSPENDED | CREATE_NO_WINDOW,
+            EXTENDED_STARTUPINFO_PRESENT | CREATE_SUSPENDED,
             NULL, directory, &startup.StartupInfo, &process))
         goto win_error;
     stage = "AssignProcessToJobObject";

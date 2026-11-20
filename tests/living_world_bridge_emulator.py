@@ -170,10 +170,10 @@ with (
         "LOCALAPPDATA": r"C:\Users\Tester\AppData\Local",
         "UNRELATED_VARIABLE": "must stay in the host",
     }),
-    patch("inference.subprocess.CREATE_NO_WINDOW", 0, create=True),
     patch("inference.subprocess.run", return_value=CompletedProcess([], 0, windows_stdout, b"")) as launch,
 ):
     windows_trace = bridge.poll(windows_worker.propose)
+assert launch.call_args.kwargs.get("creationflags", 0) == 0
 assert launch.call_args.kwargs["env"] == {
     "SystemRoot": r"C:\Windows",
     "LOCALAPPDATA": r"C:\Users\Tester\AppData\Local",
