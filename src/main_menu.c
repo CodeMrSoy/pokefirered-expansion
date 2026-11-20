@@ -997,15 +997,19 @@ static void DrawAdventureSelection(u8 taskId)
     AddTextPrinterParameterized3(window, FONT_NORMAL, 8, 0, sTextColor1, -1,
         COMPOUND_STRING("Choose your adventure"));
     for (i = 0; i < ADVENTURE_MODE_COUNT; i++)
-        AddTextPrinterParameterized3(window, FONT_NORMAL, 10, 28 + i * 23,
+        AddTextPrinterParameterized3(window, FONT_NORMAL, 10, 26 + i * 22,
             i == mode ? sTextColor2 : sTextColor1, -1, AdventureMode_Name(i));
-    AddTextPrinterParameterized3(window, FONT_SMALL, 6, 81, sTextColor1, -1,
+    AddTextPrinterParameterized3(window, FONT_SMALL, 6, 72, sTextColor1, -1,
         mode == ADVENTURE_MODE_CLASSIC
         ? COMPOUND_STRING("The Kanto journey with modern\nenhancements. Eight Kanto Gyms.\nNo Vidra island campaign.")
         : COMPOUND_STRING("The expanded Kanto and Vidra\nadventure, with new locations\nand additional Gym Leaders."));
-    AddTextPrinterParameterized3(window, FONT_SMALL, 6, 123, sTextColor1, -1,
+    // The 144px window must fit both footer lines, including the 13px font.
+    if (gTasks[taskId].tAdventureConfirm)
+        AddTextPrinterParameterized3(window, FONT_SMALL, 6, 112, sTextColor1, -1,
+            COMPOUND_STRING("This choice lasts for this save."));
+    AddTextPrinterParameterized3(window, FONT_SMALL, 6, 128, sTextColor1, -1,
         gTasks[taskId].tAdventureConfirm
-        ? COMPOUND_STRING("This choice lasts for this save.\nA: Confirm    B: Choose again")
+        ? COMPOUND_STRING("A: Confirm    B: Choose again")
         : COMPOUND_STRING("A: Select    B: Back"));
     MainMenu_DrawWindow(&sModeWindowTemplate);
     PutWindowTilemap(window);
@@ -1080,7 +1084,7 @@ static void DrawRandomizedOptions(u8 taskId)
     AddTextPrinterParameterized3(window, FONT_NORMAL, 8, 0, sTextColor1, -1, sRandomizedOptionsLabel);
     for (i = first; i < rows && i < first + 6; i++)
     {
-        u32 y = 21 + (i - first) * 14;
+        u32 y = 20 + (i - first) * 13;
         const u8 *color = i == gTasks[taskId].tModeCursor ? sTextColor2 : sTextColor1;
         AddTextPrinterParameterized3(window, FONT_SMALL, 6, y, color, -1,
             i == count ? COMPOUND_STRING("Begin adventure") : sModeLabels[i]);
@@ -1088,7 +1092,7 @@ static void DrawRandomizedOptions(u8 taskId)
             AddTextPrinterParameterized3(window, FONT_SMALL, 164, y, color, -1,
                 GameModes_Enabled(sModeBits[i]) ? COMPOUND_STRING("ON") : COMPOUND_STRING("OFF"));
     }
-    AddTextPrinterParameterized3(window, FONT_SMALL, 6, 108, sTextColor1, -1,
+    AddTextPrinterParameterized3(window, FONT_SMALL, 6, 100, sTextColor1, -1,
         gTasks[taskId].tModeCursor == count
         ? COMPOUND_STRING("Continue to character selection.")
         : count == 6 && gTasks[taskId].tModeCursor < 3
@@ -1096,7 +1100,7 @@ static void DrawRandomizedOptions(u8 taskId)
             : gTasks[taskId].tModeCursor == 1 ? COMPOUND_STRING("Randomize level-up moves.")
             : COMPOUND_STRING("Randomize POKéMON abilities."))
         : sModeHints[gTasks[taskId].tModeCursor]);
-    AddTextPrinterParameterized3(window, FONT_SMALL, 6, 133, sTextColor1, -1,
+    AddTextPrinterParameterized3(window, FONT_SMALL, 6, 128, sTextColor1, -1,
         COMPOUND_STRING("A: Select    B: Back"));
     MainMenu_DrawWindow(&sModeWindowTemplate);
     PutWindowTilemap(window);

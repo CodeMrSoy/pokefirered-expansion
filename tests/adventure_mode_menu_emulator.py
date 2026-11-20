@@ -39,6 +39,13 @@ def wait(name):
 def record():
     return m.read(ptr('gSaveBlock2Ptr') + 3795, 8)
 
+def check_menu_margins():
+    # Check rendered GBA pixels, including the last two rows inside the frame.
+    # Text reaching these gutters can be truncated by the window tile buffer.
+    background = m.screen.getpixel((16, 8))
+    assert m.screen.crop((16, 150, 224, 152)).getcolors() == [(416, background)], 'Clipped menu footer'
+    assert m.screen.crop((222, 8, 224, 152)).getcolors() == [(288, background)], 'Clipped menu text'
+
 m.lib.retro_get_memory_data.argtypes = [c.c_uint]
 m.lib.retro_get_memory_data.restype = c.c_void_p
 m.lib.retro_get_memory_size.argtypes = [c.c_uint]
@@ -81,6 +88,18 @@ else:
     if mode == 0:
         m.press(4)
     m.snap('adventure-selection')
+    check_menu_margins()
+    selection = m.screen.tobytes()
+    # Redraw long/short descriptions and both highlights without stale pixels.
+    m.press(5); m.press(5)
+    assert m.screen.tobytes() == selection, 'Adventure redraw left artifacts'
+    m.press(8); m.snap('adventure-selected-confirmation'); check_menu_margins()
+    m.press(0)
+    assert m.screen.tobytes() == selection, 'Confirmation cancellation left artifacts'
+    m.press(8); m.press(8); wait('Task_RandomizedOptions')
+    check_menu_margins()
+    m.press(0); wait('Task_AdventureSelection')
+    assert m.screen.tobytes() == selection, 'Settings return left artifacts'
     m.press(8); m.press(8); wait('Task_RandomizedOptions')
     m.snap('adventure-gameplay-options')
     assert record() == original, 'Pending choice changed the active save'
