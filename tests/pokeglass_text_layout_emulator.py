@@ -5,7 +5,7 @@ setup=pathlib.Path(__file__).with_name('avatar_wardrobe_emulator.py')
 exec(compile(setup.read_text().split("fixture = b'\\x23'")[0],str(setup),'exec'))
 fixture=b''
 for species,level in [(1,100),(25,100),(143,100),(133,100),(4,100),(7,100)]:
- fixture+=b'\x23'+struct.pack('<I',(m.symbols['ScrCmd_createmon']|1)+0x2000000)+struct.pack('<BBHHI',0,6,species,level,0)
+ fixture+=b'\x23'+struct.pack('<I',(m.symbols['ScrCmd_givegiftmon']|1)+0x2000000)+struct.pack('<BBHHI',0,6,species,level,0)
 fixture+=b'\x29'+struct.pack('<H',0x829)
 for item,q in [(717,1),(28,3),(715,1),(716,1),(831,1),(582,2),(520,3),(188,1)]:fixture+=b'\x44'+struct.pack('<HH',item,q)
 m.inject(fixture+b'\x02')
@@ -40,7 +40,7 @@ def border(x,y,w,h):
  assert np.all(a[y+h-1,x:x+w]==6),('text crosses bottom border',x,y+h-1)
  assert np.all(a[y:y+h,x]==6) and np.all(a[y:y+h,x+w-1]==6),('text crosses side border',x,y)
 m.press(3);wait_task('Task_PokeGlassHub');m.run(80);base=save();capture('launcher-one')
-paths={0:[],1:[7],2:[7,7],3:[5,7],4:[5],5:[5,7,7],6:[6,5,6],7:[5,6],8:[6,5],9:[6,6]}
+paths={0:[],1:[7],2:[7,7],3:[5,7],4:[5],5:[5,7,7],6:[6,5,6],7:[5,6,6],8:[6,5],9:[6,6]}
 def open_app(app,task):
  restore(base)
  for key in paths[app]:m.press(key,30)

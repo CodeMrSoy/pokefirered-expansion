@@ -1,7 +1,9 @@
 #include <stdlib.h>
 #include "global.h"
+#include "quest_book.h"
 #include "quantum_cleanup.h"
 #include "field_tools.h"
+#include "field_message_box.h"
 #include "field_move.h"
 #include "avatar.h"
 #include "item_menu.h"
@@ -310,7 +312,7 @@ static EWRAM_DATA u16 sHubPalette[32] = {0};
 static const u8 sHubTitle[] = _("POKéGLASS");
 static const u8 sHubLabels[][16] = {
     _("Pokédex"), _("Party"), _("Storage"), _("Stats"), _("Map"), _("Bag"),
-    _("Trainer Card"), _("Options"), _("Save"), _("Field Kit"), _("DexNav"), _("Retire"), _("TM Case")
+    _("Trainer Card"), _("Options"), _("Save"), _("Field Kit"), _("DexNav"), _("Retire"), _("TM Case"), _("Quest Book")
 };
 static const struct WindowTemplate sHubTemplate = {
     .bg = 0, .tilemapLeft = 0, .tilemapTop = 0,
@@ -467,6 +469,14 @@ static void DrawHubIcon(u8 app, u16 x, u16 y)
         HubRect(8, x + 9, y + 9, 6, 6);
         HubRect(4, x + 11, y + 11, 2, 2);
         break;
+    case 13: // Quest Book: two pages, a spine and a ribbon marker.
+        HubRect(8, x + 1, y + 2, 22, 21);
+        HubRect(5, x + 2, y + 3, 9, 18);
+        HubRect(5, x + 13, y + 3, 9, 18);
+        HubRect(10, x + 16, y + 3, 3, 10);
+        HubRect(8, x + 4, y + 8, 5, 1);
+        HubRect(8, x + 4, y + 12, 5, 1);
+        break;
     case 11: // Retire: exit door.
         HubRect(8, x + 2, y + 1, 13, 22);
         HubRect(5, x + 5, y + 4, 8, 17);
@@ -477,10 +487,12 @@ static void DrawHubIcon(u8 app, u16 x, u16 y)
 }
 
 // Stable script IDs, arranged in two rows on each phone-style page.
-static const u8 sHubPages[2][6] = {{0, 1, 2, 4, 3, 5}, {9, 12, 11, 6, 8, 7}};
+static const u8 sHubPages[3][6] = {{0, 1, 2, 4, 3, 5}, {9, 12, 11, 6, 8, 7}, {255, 255, 255, 255, 255, 13}};
 
 // The final utility slot shows Safari Retire during a Safari session, and
 // retains the optional DexNav outside Safari when that feature is enabled.
+static u8 HubPage(void) { return sHubCursor == 13 ? 2 : sHubCursor >= 6; }
+
 static u8 HubAppAt(u8 page, u8 slot)
 {
     if (page == 1 && slot == 2 && !GetSafariZoneFlag()) return 10;
@@ -495,6 +507,7 @@ bool8 CanUsePokeGlass(void)
 
 static bool8 HubAppAvailable(u8 app)
 {
+    if (app >= ARRAY_COUNT(sHubLabels)) return FALSE;
     if (app == 0 && !FlagGet(FLAG_SYS_POKEDEX_GET))
         return FALSE;
     if ((app == 1 || app == 3) && CalculatePlayerPartyCount() == 0)
@@ -512,14 +525,14 @@ static u8 HubSlot(void)
 {
     u8 i;
     for (i = 0; i < 6; i++)
-        if (HubAppAt(sHubCursor >= 6, i) == sHubCursor) return i;
+        if (HubAppAt(HubPage(), i) == sHubCursor) return i;
     return 0;
 }
 
 static void DrawHubApp(u8 slot)
 {
     static const u8 textColors[] = {0, 8, 4};
-    u8 app = HubAppAt(sHubCursor >= 6, slot);
+    u8 app = HubAppAt(HubPage(), slot);
     u16 x = 12 + (slot % 3) * 74, y = 35 + (slot / 3) * 50;
     bool8 selected = app == sHubCursor;
     if (!HubAppAvailable(app)) return;
@@ -603,10 +616,18 @@ static void DrawPokeGlassInventoryFrame(bool8 tmCase)
                 tiles[edge * 32 + y * 4 + x / 2] |= (line ? 6 : 4) << ((x & 1) * 4);
             }
     CpuCopy16(tiles, (void *)(VRAM + 0x6E00), sizeof(tiles));
-    DrawGlassBagPanel(11, 4, 17, 9);
-    DrawGlassBagPanel(2, tmCase ? 14 : 13, 26, tmCase ? 4 : 5);
+    if (tmCase)
+    {
+        DrawGlassBagPanel(11, 4, 17, 9);
+        DrawGlassBagPanel(2, 14, 26, 4);
+    }
+    else
+    {
+        DrawGlassBagPanel(13, 4, 15, 14);
+        DrawGlassBagPanel(2, 12, 11, 6);
+    }
     ScheduleBgCopyTilemapToVram(1);
-    SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(14, 4));
+    SetGpuReg(REG_OFFSET_BLDALPHA, tmCase ? BLDALPHA_BLEND(14, 4) : BLDALPHA_BLEND(15, 2));
 }
 
 void DrawPokeGlassBagFrame(void) { DrawPokeGlassInventoryFrame(FALSE); }
@@ -892,6 +913,7 @@ static void DrawHub(void)
         _("Find nearby wild POKéMON."),
         _("Leave the SAFARI session."),
         _("Browse TMs and teach your team."),
+        _("Objectives, discoveries and field notes."),
     };
     u8 i;
     DrawTabletShell((u8 *)GetWindowAttribute(sHubWindow, WINDOW_TILE_DATA));
@@ -905,8 +927,7 @@ static void DrawHub(void)
     SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(14, 4));
     AddTextPrinterParameterized3(sHubWindow, FONT_SMALL, 16, 132, textColors, TEXT_SKIP_DRAW, descriptions[sHubCursor]);
     // Two page dots and edge arrows keep horizontal paging discoverable.
-    HubRect(sHubCursor < 6 ? 8 : 6, 110, 146, 4, 2);
-    HubRect(sHubCursor >= 6 ? 8 : 6, 120, 146, 4, 2);
+    for (i = 0; i < 3; i++) HubRect(HubPage() == i ? 8 : 6, 104 + i * 10, 146, 4, 2);
     AddTextPrinterParameterized3(sHubWindow, FONT_SMALL, 15, 17, textColors, TEXT_SKIP_DRAW, COMPOUND_STRING("{LEFT_ARROW}"));
     AddTextPrinterParameterized3(sHubWindow, FONT_SMALL, 35, 17, textColors, TEXT_SKIP_DRAW, COMPOUND_STRING("{RIGHT_ARROW}"));
     PutWindowTilemap(sHubWindow);
@@ -996,26 +1017,25 @@ static void Task_PokeGlassHub(u8 taskId)
         gSpecialVar_Result = sHubCursor;
     else
     {
-        u8 slot = HubSlot(), page = sHubCursor >= 6, attempts;
+        u8 slot = HubSlot(), page = HubPage(), attempts;
         s8 direction = JOY_NEW(DPAD_LEFT) ? -1 : JOY_NEW(DPAD_RIGHT) ? 1 : 0;
         if (direction)
         {
-            // Moving past either row's edge switches pages, preserving the row.
-            if (direction < 0)
+            // Preserve row and existing page order; skip unavailable cells
+            // across pages, including the reserved cells on the Quest page.
+            for (attempts = 0; attempts < 18; attempts++)
             {
-                if (slot % 3 == 0) { page ^= 1; slot += 2; }
-                else slot--;
-            }
-            else
-            {
-                if (slot % 3 == 2) { page ^= 1; slot -= 2; }
-                else slot++;
-            }
-            // Sparse pages still open when a whole row is unavailable.
-            for (attempts = 0; attempts < 6; attempts++)
-            {
+                if (direction < 0)
+                {
+                    if (slot % 3 == 0) { page = (page + 2) % 3; slot += 2; }
+                    else slot--;
+                }
+                else
+                {
+                    if (slot % 3 == 2) { page = (page + 1) % 3; slot -= 2; }
+                    else slot++;
+                }
                 if (HubAppAvailable(HubAppAt(page, slot))) break;
-                slot = (slot + direction + 6) % 6;
             }
             sHubCursor = HubAppAt(page, slot);
         }
@@ -1202,6 +1222,8 @@ static void StatsNumber(u16 right, u16 y, u16 value)
 
 #include "poke_glass_storage.inc"
 #include "poke_glass_field_kit.inc"
+
+#include "poke_glass_quests.inc"
 
 static void DestroyStatsMonSprite(void)
 {
@@ -1898,6 +1920,7 @@ void OpenPokeGlassSystemApp(void)
 {
     u16 app = gSpecialVar_Result;
     if (app == 9) { ShowGlassFieldKit(); return; }
+    if (app == 13) { ShowGlassQuestBook(); return; }
     CloseTabletForNativeApp();
     // Save and field-only actions do not replace VRAM with a native screen.
     if (app != 5 && app != 6 && app != 7 && app != 12)

@@ -1,4 +1,5 @@
 #include "global.h"
+#include "quest_book.h"
 #include "game_modes.h"
 #include "adventure_mode.h"
 #include "quantum_campaign.h"
@@ -1661,6 +1662,7 @@ static void OverworldBasic(void)
     UpdateTilesetAnimations();
     DoScheduledBgTilemapCopiesToVram();
     UpdateLanternLighting();
+    QuestBook_Tick();
     // Every minute if no palette fade is active, update TOD blending as needed
     if (!gPaletteFade.active && --gTimeUpdateCounter <= 0)
     {

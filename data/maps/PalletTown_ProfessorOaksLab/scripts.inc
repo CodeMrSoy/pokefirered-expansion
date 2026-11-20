@@ -1042,14 +1042,20 @@ PalletTown_ProfessorOaksLab_EventScript_Aide1::
 	faceplayer
 	goto_if_set FLAG_SYS_GAME_CLEAR, PalletTown_ProfessorOaksLab_EventScript_Aide1GameClear
 	msgbox PalletTown_ProfessorOaksLab_Text_StudyAsOaksAide
+PalletTown_ProfessorOaksLab_EventScript_FieldNotesOffer::
+	goto_if_unset FLAG_SYS_POKEDEX_GET, EventScript_ReleaseEnd
+	setvar VAR_0x8004, QUEST_FIELD_NOTES
+	callnative QuestBook_OfferFromScript, requests_effects=1
+	compare VAR_RESULT, FALSE
+	goto_if_eq EventScript_ReleaseEnd
+	waitstate
 	release
 	end
 
 PalletTown_ProfessorOaksLab_EventScript_Aide1GameClear::
 	famechecker FAMECHECKER_OAK, 5
 	msgbox PalletTown_ProfessorOaksLab_Text_OakIsGoingToHaveRadioShow
-	release
-	end
+	goto PalletTown_ProfessorOaksLab_EventScript_FieldNotesOffer
 
 PalletTown_ProfessorOaksLab_EventScript_Aide2::
 	lock

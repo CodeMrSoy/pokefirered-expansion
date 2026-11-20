@@ -14,6 +14,7 @@ STATIC_ASSERT(offsetof(struct SaveBlock2, gameModesVersion) == 3761, AdventureGa
 STATIC_ASSERT(offsetof(struct SaveBlock2, nuzlockeAreas) == 3763, AdventureNuzlockeOffset);
 STATIC_ASSERT(offsetof(struct SaveBlock2, adventureModeRecord) == 3795, AdventureReservedOffset);
 STATIC_ASSERT(sizeof(((struct SaveBlock2 *)0)->adventureModeRecord)
+    + sizeof(((struct SaveBlock2 *)0)->questBookRecord)
     + sizeof(((struct SaveBlock2 *)0)->filler_90) == 173, AdventureReservedCapacity);
 
 static EWRAM_DATA bool8 sPendingClassic = FALSE;

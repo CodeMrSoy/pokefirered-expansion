@@ -122,7 +122,7 @@ const struct SpriteTemplate gItemIconSpriteTemplate = {
 
 void AddBagVisualSprite(u8 bagPocketId)
 {
-    gBagMenu->spriteIds[ITEMMENUSPRITE_BAG] = CreateSprite(&sSpriteTemplate_Bag, IsPokeGlassSessionActive() ? 44 : 40, 68, 0);
+    gBagMenu->spriteIds[ITEMMENUSPRITE_BAG] = CreateSprite(&sSpriteTemplate_Bag, IsPokeGlassSessionActive() ? 54 : 40, IsPokeGlassSessionActive() ? 60 : 68, 0);
     SetBagVisualPocketId(bagPocketId);
 }
 

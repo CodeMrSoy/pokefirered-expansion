@@ -1,4 +1,5 @@
 #include "global.h"
+#include "quest_book.h"
 #include "adventure_mode.h"
 #include <stddef.h>
 #include "malloc.h"
@@ -904,6 +905,7 @@ u8 LoadGameSave(u8 saveType)
             AdventureMode_MigrateLoadedSave();
             QuantumMigrateLoadedPokemon();
             QuantumMigrateLoadedWorld();
+            QuestBook_Load();
         }
         gSaveFileStatus = result;
         gGameContinueCallback = NULL;
