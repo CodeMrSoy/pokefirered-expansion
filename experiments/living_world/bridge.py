@@ -77,6 +77,6 @@ class DialogueBridge:
         except ValueError as error:
             trace.update(validation="rejected", error=str(error))
         except Exception as error:
-            trace.update(validation="error", error=type(error).__name__)
+            trace.update(validation="error", error=f"{type(error).__name__}: {error}"[:320])
         trace["elapsed_ms"] = round((time.perf_counter() - start) * 1000, 3)
         return trace

@@ -1,6 +1,8 @@
 """Run the Pallet dialogue mailbox through the compiled event in mGBA."""
 
+import ctypes as c
 import json
+from pathlib import Path
 import os
 import struct
 import sys
@@ -9,6 +11,7 @@ import quantum_qol_emulator as gba
 
 sys.path.insert(0, str(gba.root / "experiments" / "living_world"))
 from bridge import DialogueBridge, REPLY_OFFSET
+from inference import LocalModel
 
 
 def field_ready():
@@ -69,7 +72,9 @@ def printed_message():
 
 
 def render_expected(ascii_text):
-    charmap = {" ": 0, ".": 0xAD, "!": 0xAB, "\n": 0xFE}
+    charmap = {" ": 0, ".": 0xAD, "!": 0xAB, "?": 0xAC, ",": 0xB8,
+               "'": 0xB4, "-": 0xAE, "\n": 0xFE}
+    charmap.update({str(i): 0xA1 + i for i in range(10)})
     charmap.update({chr(65 + i): 0xBB + i for i in range(26)})
     charmap.update({chr(97 + i): 0xD5 + i for i in range(26)})
     return bytes(charmap[char] for char in ascii_text)
@@ -90,8 +95,8 @@ assert stock == gba.read(text_address, 160).split(b"\xff", 1)[0]
 finish_dialogue()
 native("FlagSet", pokedex_flag)
 
-# The same NPC sees a different follower on a second visit. Synthetic output
-# exercises the production validator while keeping the regression deterministic.
+# The two followers exercise the same ROM hook with either the deterministic
+# regression responder or the isolated local model.
 lines = {
     25: "A Pikachu!\nKeep your PC organized.",
     7: "A Squirtle!\nKeep your PC organized.",
@@ -102,18 +107,32 @@ def fixture_responder(context):
     return json.dumps({"action": "SAY_DIALOGUE", "text": lines[context.visible_species]})
 
 
-for species, reply in lines.items():
+def give_mon(species, slot):
     gba.inject(b"\x23" + struct.pack("<I", gba.symbols["ScrCmd_givegiftmon"] | 1 | 0x02000000)
-               + struct.pack("<BBHHI", 0, 0, species, 5, 0) + b"\x02")
+               + struct.pack("<BBHHI", 0, slot, species, 5, 0) + b"\x02")
+
+
+names = {25: "Pikachu", 7: "Squirtle"}
+runtime = os.environ.get("LIVING_WORLD_INFERENCE_RUNTIME")
+propose = (LocalModel(Path(runtime), {str(key): name for key, name in names.items()}).propose
+           if runtime else fixture_responder)
+for species in lines:
+    give_mon(species, 0)
     enter_pallet()
     native("UpdateFollowingPokemon")
     gba.press(5, 45)
     gba.press(4, 45)
     start_conversation()
-    trace = bridge.poll(fixture_responder)
+    trace = bridge.poll(propose)
     assert trace["context"] == {"npc": "pc_resident", "visible_species": species}, trace
     assert trace["validation"] == "accepted", trace
     assert bridge.poll(lambda context: None) is None
+    reply = json.loads(trace["proposal"])["text"]
+    if runtime:
+        assert reply.startswith(names[species] + ", ")
+        assert reply.splitlines()[1].startswith("Your PC ")
+    else:
+        assert reply == lines[species]
     assert printed_message() == render_expected(reply)
     gba.snap(f"living-world-species-{species}")
     trace["rendered"] = reply
@@ -165,3 +184,22 @@ for failure in ("missing_host", "worker_error", "stale_reply", "bad_wire_text"):
 assert native("FlagGet", pokedex_flag) == 1
 assert native("AdventureMode_Get") == mode
 print(f"Pallet dialogue, context, validator and fallback passed in adventure mode {mode}.")
+
+
+# Create a clearly labeled, independent battery save for the playable demo.
+# Both Pokemon and the post-Oak state are QA fixtures in this save only.
+if os.environ.get("LIVING_WORLD_TEST_SAVE"):
+    give_mon(25, 0)
+    give_mon(7, 6)
+    assert native("CalculatePlayerPartyCount") == 2
+    assert native("AddBagItem", 717, 1) == 1  # ITEM_POKEGLASS
+    native("VarSet", 0x4050, 3)  # VAR_MAP_SCENE_PALLET_TOWN_OAK
+    native("VarSet", 0x4055, 6)  # VAR_MAP_SCENE_PALLET_TOWN_PROFESSOR_OAKS_LAB
+    enter_pallet()
+    assert native("TrySavingData", 0) == 1
+    gba.lib.retro_get_memory_data.restype = c.c_void_p
+    gba.lib.retro_get_memory_size.restype = c.c_size_t
+    size = gba.lib.retro_get_memory_size(0)
+    assert size == 128 * 1024
+    payload = c.string_at(gba.lib.retro_get_memory_data(0), size)
+    Path(os.environ["LIVING_WORLD_TEST_SAVE"]).write_bytes(payload)
