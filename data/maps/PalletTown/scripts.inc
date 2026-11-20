@@ -254,7 +254,18 @@ PalletTown_Movement_SignLadyMoveOutOfWayLeft::
 	step_end
 
 PalletTown_EventScript_FatMan::
-	msgbox PalletTown_Text_CanStoreItemsAndMonsInPC, MSGBOX_NPC
+	lock
+	faceplayer
+	callnative LivingWorld_BeginPalletConversation
+	gotonative LivingWorld_WaitForDialogue
+	goto_if_eq VAR_RESULT, TRUE, PalletTown_EventScript_LivingWorldDialogue
+	msgbox PalletTown_Text_CanStoreItemsAndMonsInPC
+	release
+	end
+
+PalletTown_EventScript_LivingWorldDialogue::
+	msgbox gLivingWorldDialogue
+	release
 	end
 
 PalletTown_EventScript_OaksLabSign::

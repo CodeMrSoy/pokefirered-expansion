@@ -1,0 +1,132 @@
+#include "global.h"
+#include "event_data.h"
+#include "event_object_movement.h"
+#include "quest_log.h"
+#include "script.h"
+#include "text.h"
+#include "constants/characters.h"
+#include "constants/event_objects.h"
+#include "constants/flags.h"
+#include "constants/species.h"
+
+#define LIVING_WORLD_REQUEST_V1 0x3157514C // Bytes "LQW1"
+#define LIVING_WORLD_PC_RESIDENT 1
+#define LIVING_WORLD_TIMEOUT_FRAMES 30
+#define LIVING_WORLD_LINE_LENGTH 28
+#define LIVING_WORLD_TEXT_CAPACITY (LIVING_WORLD_LINE_LENGTH * 2 + 1)
+
+struct LivingWorldMailbox
+{
+    u32 request;
+    u32 sequence;
+    u16 npc;
+    u16 visibleSpecies;
+    u32 responseSequence;
+    u8 length;
+    u8 text[LIVING_WORLD_TEXT_CAPACITY];
+};
+
+STATIC_ASSERT(offsetof(struct LivingWorldMailbox, responseSequence) == 12, LivingWorldReplyOffset);
+STATIC_ASSERT(sizeof(struct LivingWorldMailbox) == 76, LivingWorldMailboxSize);
+
+// The reference host finds this symbol in the ELF from the same build.
+EWRAM_DATA volatile struct LivingWorldMailbox gLivingWorldMailbox = {0};
+EWRAM_DATA u8 gLivingWorldDialogue[LIVING_WORLD_TEXT_CAPACITY + 1] = {0};
+static EWRAM_DATA u8 sFramesRemaining = 0;
+
+static bool8 EncodeCharacter(u8 ascii, u8 *encoded)
+{
+    if (ascii >= 'A' && ascii <= 'Z')
+        *encoded = CHAR_A + ascii - 'A';
+    else if (ascii >= 'a' && ascii <= 'z')
+        *encoded = CHAR_a + ascii - 'a';
+    else if (ascii >= '0' && ascii <= '9')
+        *encoded = CHAR_0 + ascii - '0';
+    else
+    {
+        switch (ascii)
+        {
+        case ' ': *encoded = CHAR_SPACE; break;
+        case '!': *encoded = CHAR_EXCL_MARK; break;
+        case '?': *encoded = CHAR_QUESTION_MARK; break;
+        case '.': *encoded = CHAR_PERIOD; break;
+        case ',': *encoded = CHAR_COMMA; break;
+        case '-': *encoded = CHAR_HYPHEN; break;
+        case '\'': *encoded = CHAR_SGL_QUOTE_RIGHT; break;
+        default: return FALSE;
+        }
+    }
+    return TRUE;
+}
+
+static bool8 ReceiveDialogue(void)
+{
+    u8 length = gLivingWorldMailbox.length;
+    u8 lineStart = 0;
+
+    if (length == 0 || length > LIVING_WORLD_TEXT_CAPACITY)
+        return FALSE;
+
+    for (u8 i = 0; i < length; i++)
+    {
+        u8 ascii = gLivingWorldMailbox.text[i];
+
+        if (ascii == '\n')
+        {
+            if (lineStart != 0 || i == 0 || i + 1 == length)
+                return FALSE;
+            gLivingWorldDialogue[i] = EOS;
+            if (GetStringWidth(FONT_NORMAL, gLivingWorldDialogue, -1) > 198)
+                return FALSE;
+            gLivingWorldDialogue[i] = CHAR_NEWLINE;
+            lineStart = i + 1;
+        }
+        else if (i - lineStart >= LIVING_WORLD_LINE_LENGTH
+              || !EncodeCharacter(ascii, &gLivingWorldDialogue[i]))
+        {
+            return FALSE;
+        }
+    }
+    gLivingWorldDialogue[length] = EOS;
+    return GetStringWidth(FONT_NORMAL, gLivingWorldDialogue + lineStart, -1) <= 198;
+}
+
+void LivingWorld_BeginPalletConversation(struct ScriptContext *ctx)
+{
+    struct ObjectEvent *follower;
+    u16 visibleSpecies = SPECIES_NONE;
+    u32 sequence = gLivingWorldMailbox.sequence + 1;
+
+    gSpecialVar_Result = FALSE;
+    gLivingWorldMailbox.request = 0;
+    sFramesRemaining = 0;
+    if (!FlagGet(FLAG_SYS_POKEDEX_GET) || gQuestLogState == QL_STATE_PLAYBACK)
+        return;
+
+    follower = GetFollowerObject();
+    if (follower != NULL && !follower->invisible && !follower->offScreen)
+        visibleSpecies = OW_SPECIES(follower);
+
+    gLivingWorldMailbox.sequence = sequence != 0 ? sequence : 1;
+    gLivingWorldMailbox.npc = LIVING_WORLD_PC_RESIDENT;
+    gLivingWorldMailbox.visibleSpecies = visibleSpecies;
+    gLivingWorldMailbox.responseSequence = 0;
+    gLivingWorldMailbox.length = 0;
+    sFramesRemaining = LIVING_WORLD_TIMEOUT_FRAMES;
+    gLivingWorldMailbox.request = LIVING_WORLD_REQUEST_V1;
+}
+
+bool8 LivingWorld_WaitForDialogue(void)
+{
+    if (sFramesRemaining == 0)
+        return TRUE;
+
+    if (gLivingWorldMailbox.responseSequence == gLivingWorldMailbox.sequence)
+        gSpecialVar_Result = ReceiveDialogue();
+    else if (--sFramesRemaining != 0)
+        return FALSE;
+
+    gLivingWorldMailbox.request = 0;
+    sFramesRemaining = 0;
+    return TRUE;
+}
