@@ -37,6 +37,7 @@
 #include "wild_encounter.h"
 #include "randomizer.h"
 #include "overworld.h"
+#include "field_weather.h"
 #include "region_map.h"
 #include "constants/characters.h"
 #include "constants/flags.h"
@@ -1958,6 +1959,11 @@ void ShowPokeGlassMap(void)
 void PreparePokeGlassReturn(void)
 {
     if (!sTabletActive || !sTabletNative) return;
+    // This path skips FadeInFromBlack, which normally restores field lighting.
+    // Reapply weather/TOD before capturing the rebuilt map, without a fade.
+    UpdateTimeOfDay();
+    ApplyWeatherColorMapToPals(0, 16);
+    ApplyWeatherColorMapToPals(16, 16);
     // The field is rebuilt now, and the heap reset invalidated its old cache.
     // Capture before OpenTabletWindow installs any new tablet graphics.
     if (sFieldBackdrop == NULL) CapturePokeGlassBackdrop();
