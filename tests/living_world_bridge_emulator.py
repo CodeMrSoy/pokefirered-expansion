@@ -165,11 +165,19 @@ windows_worker = LocalModel(Path("."), {"7": "Squirtle"})
 windows_stdout = b"Squirtle, nice to see you!\r\nYour PC stores items.\r\n"
 with (
     patch("inference.sys.platform", "win32"),
-    patch.dict("inference.os.environ", {"SystemRoot": r"C:\Windows"}),
+    patch.dict("inference.os.environ", {
+        "SystemRoot": r"C:\Windows",
+        "LOCALAPPDATA": r"C:\Users\Tester\AppData\Local",
+        "UNRELATED_VARIABLE": "must stay in the host",
+    }),
     patch("inference.subprocess.CREATE_NO_WINDOW", 0, create=True),
-    patch("inference.subprocess.run", return_value=CompletedProcess([], 0, windows_stdout, b"")),
+    patch("inference.subprocess.run", return_value=CompletedProcess([], 0, windows_stdout, b"")) as launch,
 ):
     windows_trace = bridge.poll(windows_worker.propose)
+assert launch.call_args.kwargs["env"] == {
+    "SystemRoot": r"C:\Windows",
+    "LOCALAPPDATA": r"C:\Users\Tester\AppData\Local",
+}
 assert windows_trace["context"]["visible_species"] == 7, windows_trace
 assert windows_trace["validation"] == "accepted", windows_trace
 assert printed_message() == render_expected("Squirtle, nice to see you!\nYour PC stores items.")

@@ -58,6 +58,7 @@ int wmain(int argc, wchar_t **argv)
     HANDLE job = NULL;
     HANDLE pipes[3] = {0};
     DWORD handles[] = { STD_INPUT_HANDLE, STD_OUTPUT_HANDLE, STD_ERROR_HANDLE };
+    const char *stage = "resolve launcher path";
     DWORD status = 125;
     DWORD error = ERROR_INVALID_PARAMETER;
     HRESULT hr;
@@ -76,29 +77,36 @@ int wmain(int argc, wchar_t **argv)
         goto done;
 
     // Profile creation is scoped to this user. Reuse its SID on later launches.
+    stage = "CreateAppContainerProfile";
     hr = CreateAppContainerProfile(profile, profile, profile, NULL, 0, &sid);
-    if (hr == HRESULT_FROM_WIN32(ERROR_ALREADY_EXISTS))
+    if (hr == HRESULT_FROM_WIN32(ERROR_ALREADY_EXISTS)) {
+        stage = "DeriveAppContainerSidFromAppContainerName";
         hr = DeriveAppContainerSidFromAppContainerName(profile, &sid);
+    }
     if (FAILED(hr)) {
         error = (DWORD)hr;
         goto done;
     }
+    stage = "grant packaged model read/execute access";
     error = AllowReadAndExecute(directory, sid);
     if (error != ERROR_SUCCESS)
         goto done;
     capabilities.AppContainerSid = sid; // No network or other capabilities.
 
+    stage = "duplicate standard handles";
     for (size_t i = 0; i < ARRAYSIZE(pipes); ++i)
         if (!DuplicateHandle(GetCurrentProcess(), GetStdHandle(handles[i]),
                 GetCurrentProcess(), &pipes[i], 0, TRUE, DUPLICATE_SAME_ACCESS))
             goto win_error;
 
+    stage = "initialize process attributes";
     InitializeProcThreadAttributeList(NULL, 3, 0, &attributeBytes);
     startup.lpAttributeList = HeapAlloc(GetProcessHeap(), 0, attributeBytes);
     if (!startup.lpAttributeList
         || !InitializeProcThreadAttributeList(startup.lpAttributeList, 3, 0, &attributeBytes))
         goto win_error;
     initialized = TRUE;
+    stage = "set AppContainer and handle attributes";
     if (!UpdateProcThreadAttribute(startup.lpAttributeList, 0, PROC_THREAD_ATTRIBUTE_SECURITY_CAPABILITIES,
             &capabilities, sizeof(capabilities), NULL, NULL)
         || !UpdateProcThreadAttribute(startup.lpAttributeList, 0, PROC_THREAD_ATTRIBUTE_CHILD_PROCESS_POLICY,
@@ -107,6 +115,7 @@ int wmain(int argc, wchar_t **argv)
             pipes, sizeof(pipes), NULL, NULL))
         goto win_error;
 
+    stage = "configure worker job";
     job = CreateJobObjectW(NULL, NULL);
     limits.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE
                                           | JOB_OBJECT_LIMIT_ACTIVE_PROCESS;
@@ -120,12 +129,18 @@ int wmain(int argc, wchar_t **argv)
     startup.StartupInfo.hStdOutput = pipes[1];
     startup.StartupInfo.hStdError = pipes[2];
 
+    stage = "CreateProcessW";
     if (!CreateProcessW(worker, command, NULL, NULL, TRUE,
             EXTENDED_STARTUPINFO_PRESENT | CREATE_SUSPENDED | CREATE_NO_WINDOW,
             NULL, directory, &startup.StartupInfo, &process))
         goto win_error;
-    if (!AssignProcessToJobObject(job, process.hProcess) || ResumeThread(process.hThread) == (DWORD)-1)
+    stage = "AssignProcessToJobObject";
+    if (!AssignProcessToJobObject(job, process.hProcess))
         goto win_error;
+    stage = "ResumeThread";
+    if (ResumeThread(process.hThread) == (DWORD)-1)
+        goto win_error;
+    stage = "wait for the isolated worker";
     if (WaitForSingleObject(process.hProcess, INFINITE) != WAIT_OBJECT_0
         || !GetExitCodeProcess(process.hProcess, &status))
         goto win_error;
@@ -137,7 +152,7 @@ win_error:
         TerminateProcess(process.hProcess, 125);
 done:
     if (status == 125)
-        fprintf(stderr, "Windows inference isolation failed (0x%08lx).\n", (unsigned long)error);
+        fprintf(stderr, "Windows inference isolation failed at %s (0x%08lx).\n", stage, (unsigned long)error);
     if (job)
         CloseHandle(job);
     if (process.hProcess)

@@ -28,6 +28,16 @@ def dialogue_grammar(species):
     return 'root ::= ' + greeting + r' "\n" tip' + "\n" + PC_LINE
 
 
+def windows_launcher_environment():
+    # Windows resolves the per-user AppContainer using LOCALAPPDATA when
+    # CreateProcessW starts the worker. Pass only the required variables.
+    required = ("SystemRoot", "LOCALAPPDATA")
+    missing = [name for name in required if not os.environ.get(name)]
+    if missing:
+        raise RuntimeError("Windows sandbox launcher needs " + ", ".join(missing))
+    return {name: os.environ[name] for name in required}
+
+
 class LocalModel:
     def __init__(self, runtime: Path, species_names: dict, timeout=8):
         self.runtime = runtime.resolve()
@@ -48,7 +58,7 @@ class LocalModel:
         args = [str(model), dialogue_grammar(species), prompt]
         if sys.platform == "win32":
             command = [str(runtime / "sandbox.exe"), *args]
-            env = {"SystemRoot": os.environ["SystemRoot"]}
+            env = windows_launcher_environment()
             flags = subprocess.CREATE_NO_WINDOW
         elif sys.platform == "linux":
             command = [str(runtime / "offline-worker"), *args]

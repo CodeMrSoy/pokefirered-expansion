@@ -13,7 +13,7 @@ import tempfile
 import time
 
 from bridge import Conversation, DialogueBridge, MAILBOX_SIZE, REPLY_OFFSET, TEXT_CAPACITY, validate
-from inference import LocalModel
+from inference import LocalModel, windows_launcher_environment
 
 ROOT = Path(__file__).resolve().parent
 VOID = c.c_void_p
@@ -198,7 +198,7 @@ def verify_windows_sandbox(runtime):
         sentinel.write_text("protected", encoding="ascii")
         result = subprocess.run(
             [str(runtime / "sandbox.exe"), "--probe", str(sentinel)],
-            cwd=runtime, env={"SystemRoot": os.environ["SystemRoot"]}, stdin=subprocess.DEVNULL,
+            cwd=runtime, env=windows_launcher_environment(), stdin=subprocess.DEVNULL,
             timeout=10, capture_output=True, text=True,
         )
         print(result.stdout.strip() or result.stderr.strip())
