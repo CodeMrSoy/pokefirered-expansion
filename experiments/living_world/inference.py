@@ -66,5 +66,6 @@ class LocalModel:
             raise RuntimeError(f"Offline worker exited {result.returncode}. {reason}")
         if sys.platform == "linux" and not result.stderr.startswith(b"LQW isolation active\n"):
             raise RuntimeError("Linux isolation did not initialize")
-        generated = result.stdout.decode("utf-8").strip()
+        # Windows text-mode stdout expands the worker's line break to CRLF.
+        generated = result.stdout.decode("utf-8").replace("\r\n", "\n").strip()
         return json.dumps({"action": "SAY_DIALOGUE", "text": generated}, ensure_ascii=True)

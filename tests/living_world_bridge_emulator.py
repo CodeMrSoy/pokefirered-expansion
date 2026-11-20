@@ -6,6 +6,8 @@ from pathlib import Path
 import os
 import struct
 import sys
+from subprocess import CompletedProcess
+from unittest.mock import patch
 
 import quantum_qol_emulator as gba
 
@@ -116,12 +118,30 @@ names = {25: "Pikachu", 7: "Squirtle"}
 runtime = os.environ.get("LIVING_WORLD_INFERENCE_RUNTIME")
 propose = (LocalModel(Path(runtime), {str(key): name for key, name in names.items()}).propose
            if runtime else fixture_responder)
+give_mon(25, 6)
+give_mon(7, 6)
+assert native("AddBagItem", 717, 1) == 1  # ITEM_POKEGLASS
+enter_pallet()
+native("UpdateFollowingPokemon")
+party = gba.symbols["gPlayerParty"]
+original_order = gba.read(party, 200)
 for species in lines:
-    give_mon(species, 0)
-    enter_pallet()
-    native("UpdateFollowingPokemon")
-    gba.press(5, 45)
-    gba.press(4, 45)
+    if species == 7:
+        # Switch the existing party through PokéGlass, then return to the
+        # same map. Let the normal return-to-field code refresh the follower.
+        for button in (3, 7, 8, 8, 5, 8, 7, 8):
+            gba.press(button)
+        assert gba.read(party, 200) == original_order[100:] + original_order[:100]
+        gba.press(0)
+        gba.press(0)
+        assert field_ready()
+    # A tap can just turn in place. Hold a direction long enough to
+    # walk and give the refreshed follower time to come out of its ball.
+    for button in (6, 7):
+        gba.keys.add(button)
+        gba.run(24)
+        gba.keys.clear()
+        gba.run(45)
     start_conversation()
     trace = bridge.poll(propose)
     assert trace["context"] == {"npc": "pc_resident", "visible_species": species}, trace
@@ -139,6 +159,22 @@ for species in lines:
     print(json.dumps(trace))
     finish_dialogue()
     bridge.poll(lambda context: None)
+
+start_conversation()
+windows_worker = LocalModel(Path("."), {"7": "Squirtle"})
+windows_stdout = b"Squirtle, nice to see you!\r\nYour PC stores items.\r\n"
+with (
+    patch("inference.sys.platform", "win32"),
+    patch.dict("inference.os.environ", {"SystemRoot": r"C:\Windows"}),
+    patch("inference.subprocess.CREATE_NO_WINDOW", 0, create=True),
+    patch("inference.subprocess.run", return_value=CompletedProcess([], 0, windows_stdout, b"")),
+):
+    windows_trace = bridge.poll(windows_worker.propose)
+assert windows_trace["context"]["visible_species"] == 7, windows_trace
+assert windows_trace["validation"] == "accepted", windows_trace
+assert printed_message() == render_expected("Squirtle, nice to see you!\nYour PC stores items.")
+print("Windows CRLF dialogue rendered successfully.")
+finish_dialogue()
 
 native("RemoveFollowingPokemon")
 start_conversation()
@@ -190,7 +226,7 @@ print(f"Pallet dialogue, context, validator and fallback passed in adventure mod
 # Both Pokemon and the post-Oak state are QA fixtures in this save only.
 if os.environ.get("LIVING_WORLD_TEST_SAVE"):
     give_mon(25, 0)
-    give_mon(7, 6)
+    give_mon(7, 1)
     assert native("CalculatePlayerPartyCount") == 2
     assert native("AddBagItem", 717, 1) == 1  # ITEM_POKEGLASS
     native("VarSet", 0x4050, 3)  # VAR_MAP_SCENE_PALLET_TOWN_OAK
