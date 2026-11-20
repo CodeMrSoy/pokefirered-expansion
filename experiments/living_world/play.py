@@ -15,7 +15,7 @@ import time
 from bridge import Conversation, DialogueBridge, MAILBOX_SIZE, REPLY_OFFSET, TEXT_CAPACITY, validate
 from inference import DialogueReplies, LocalModel, windows_launcher_environment
 from profiles import PROFILES
-from world import WorldMemory
+from world import Encounter, WorldMemory
 
 ROOT = Path(__file__).resolve().parent
 VOID = c.c_void_p
@@ -225,15 +225,22 @@ def main():
     rom = rom_path.read_bytes()
     if hashlib.sha256(rom).hexdigest() != manifest["sha256"]:
         raise RuntimeError("The bundled ROM and mailbox manifest do not match")
-    model = LocalModel(runtime, manifest["species"])
+    model = LocalModel(runtime, manifest["species"], catalog=ROOT / "world-knowledge.sqlite3")
     if args.model_test:
+        expected = {
+            "pc_resident": "watts:pikachu",
+            "oak": "evolution:PIKACHU",
+            "blue": "battle:electric",
+            "daisy": "care:pikachu",
+        }
         try:
-            response = validate(model.propose(Conversation("pc_resident", 25)))
+            for npc, fact in expected.items():
+                proposal = model.plan(Encounter(npc, 25))
+                if fact not in proposal.knowledge:
+                    raise RuntimeError(f"Missing expected Pikachu fact for {npc}")
+                print(PROFILES[npc]["name"], validate(proposal.dialogue).decode("ascii"), proposal.metrics)
         finally:
             model.close()
-        if not response.startswith(b"Pikachu, "):
-            raise RuntimeError("The model test did not return the expected species")
-        print(response.decode("ascii"))
         return 0
     profile = Path(os.environ.get("LOCALAPPDATA", Path.home() / ".local/share")) / "LivingQuantumWorld"
     profile.mkdir(parents=True, exist_ok=True)
@@ -297,6 +304,7 @@ def main():
                         encounter, proposal = staged
                         trace.update(
                             context_sent=proposal.context_sent,
+                            knowledge_facts=proposal.knowledge,
                             proposed_action=proposal.action,
                             metrics=proposal.metrics,
                             action_result="rejected",
@@ -311,6 +319,9 @@ def main():
                             except ValueError as error:
                                 trace["action_error"] = str(error)
                     trace["memory"] = memory.snapshot(trace["context"]["npc"])
+                    trace["acquired_knowledge"] = memory.knowledge(
+                        trace["context"]["npc"], trace["context"]["visible_species"]
+                    )
                     log.write(json.dumps(trace) + "\n")
                 if start >= next_save:
                     current = game.save_bytes()

@@ -14,7 +14,7 @@ ADVENTURE_TEST_MODE=0 python3 tests/living_world_bridge_emulator.py
 ADVENTURE_TEST_MODE=1 python3 tests/living_world_bridge_emulator.py
 ```
 
-Mode 0 is Classic and mode 1 is Quantum. The harness runs the compiled map event through the field script interpreter and verifies the resulting text buffer. Its JSON lines show request context, proposals, host validation, response writes, elapsed time and, for successful cases, the rendered text. Set `LIVING_WORLD_INFERENCE_RUNTIME` to run with the actual worker. The emulator trace measures the host handoff and frames to the text buffer. The desktop log also records model load, inference and IPC overhead. The [playtest guide](PLAYTEST.md) covers the packaged desktop launcher. See [Phase 2](PHASE2.md) for model comparisons, persistent memory, the Pond Survey and its structured inspection log.
+Mode 0 is Classic and mode 1 is Quantum. The harness runs the compiled map event through the field script interpreter and verifies the resulting text buffer. Its JSON lines show request context, proposals, host validation, response writes, elapsed time and, for successful cases, the rendered text. Set `LIVING_WORLD_INFERENCE_RUNTIME` to run with the actual worker. The emulator trace measures the host handoff and frames to the text buffer. The desktop log also records model load, inference and IPC overhead. The [playtest guide](PLAYTEST.md) covers the packaged desktop launcher. See [Phase 2](PHASE2.md) for model comparisons and the Pond Survey, and [Phase 3](PHASE3.md) for the offline catalog, knowledge boundaries, and benchmark results.
 
 ### Build the offline worker and Windows package
 

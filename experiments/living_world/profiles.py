@@ -98,3 +98,18 @@ for key, (name, role, traits, goal, motivation, favorite, knowledge, protected, 
         "seen_lines": seen,
         "greeting_lines": greeting,
     }
+
+# Area comes from each ROM hook, not model output. Blue's lab hook is gated by
+# both the Pokedex and game-clear flags. Other hooks provide no story evidence.
+# Area, familiar regions, expertise, known characters, proven story milestones.
+KNOWLEDGE_PROFILES = {
+    "pc_resident": ("pallet", ("kanto",), ("electronics",), ("oak",), ()),
+    "oak": ("oak_lab", ("kanto",), ("research", "biology"), ("blue", "daisy"), ()),
+    "blue": ("oak_lab", ("kanto",), ("battle",), ("daisy", "oak"), ("league_clear",)),
+    "daisy": ("rival_house", ("kanto",), ("care",), ("blue", "oak"), ()),
+    "mom": ("player_house", ("kanto",), (), ("oak",), ()),
+    "sign_guide": ("pallet", ("kanto",), ("directions",), ("oak",), ()),
+    "lab_aide_1": ("oak_lab", ("kanto",), ("research",), ("oak",), ()),
+    "lab_aide_2": ("oak_lab", ("kanto",), ("care",), ("oak",), ()),
+    "lab_aide_3": ("oak_lab", ("kanto",), ("biology",), ("oak",), ()),
+}

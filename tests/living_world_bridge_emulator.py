@@ -123,7 +123,9 @@ def give_mon(species, slot):
 
 names = {25: "Pikachu", 7: "Squirtle"}
 runtime = os.environ.get("LIVING_WORLD_INFERENCE_RUNTIME")
-model = LocalModel(Path(runtime), {str(key): name for key, name in names.items()}) if runtime else None
+catalog = os.environ.get("LIVING_WORLD_CATALOG")
+catalog = Path(catalog) if catalog else None
+model = LocalModel(Path(runtime), {str(key): name for key, name in names.items()}, catalog=catalog) if runtime else None
 propose = model.propose if model else fixture_responder
 with ThreadPoolExecutor(max_workers=1) as pool:
     replies = DialogueReplies(pool, propose)
@@ -234,7 +236,9 @@ for failure in ("missing_host", "worker_error", "stale_reply", "bad_wire_text"):
     start_conversation()
     sequence = struct.unpack("<I", gba.read(mailbox + 4, 4))[0]
     if failure == "worker_error":
-        trace = bridge.poll(broken_responder)
+        broken_model = LocalModel(Path(runtime), {"25": "Pikachu"},
+                                  catalog=catalog.with_suffix(".missing")) if catalog else None
+        trace = bridge.poll(broken_model.propose if broken_model else broken_responder)
         assert trace["validation"] == "error" and not trace["changes"], trace
         print(json.dumps(trace))
     if failure in {"stale_reply", "bad_wire_text"}:
@@ -260,6 +264,14 @@ def enter_map(name, x, y):
         raise AssertionError(f"Unknown test map {name}")
     gba.inject(b"\x39" + struct.pack("<BBBhh", map_group, number, 255, x, y) + b"\x27\x6b\x02")
     assert field_ready()
+    if catalog:
+        # Native warps withdraw followers, so let the normal walk-out happen.
+        native("UpdateFollowingPokemon")
+        for button in (6, 7):
+            gba.keys.add(button)
+            gba.run(24)
+            gba.keys.clear()
+            gba.run(45)
     return map_group, number
 
 
@@ -288,7 +300,11 @@ def talk(label, npc=None):
     trace = bridge.poll(aside_model.propose if aside_model else stub)
     assert trace["context"]["npc"] == npc, trace
     assert trace["validation"] == "accepted", trace
-    assert printed_message() == render_expected(json.loads(trace["proposal"])["text"])
+    reply = json.loads(trace["proposal"])["text"]
+    assert printed_message() == render_expected(reply)
+    if catalog and npc in ("oak", "blue", "daisy"):
+        assert trace["context"]["visible_species"] == 25, trace
+        print(npc, repr(reply), flush=True)
     finish_dialogue()
     bridge.poll(lambda context: None)
     print(npc, "aside rendered", flush=True)
@@ -304,7 +320,11 @@ for profile in PROFILES.values():
         for line in profile.get(type_, ()):
             assert len(line) <= 28
 
-aside_model = LocalModel(Path(runtime), {"25": "Pikachu", "7": "Squirtle"}) if runtime else None
+if catalog:
+    gba.write(party, original_order)
+    native("UpdateFollowingPokemon")
+
+aside_model = LocalModel(Path(runtime), {"25": "Pikachu", "7": "Squirtle"}, catalog=catalog) if runtime else None
 try:
     lab = "PalletTown_ProfessorOaksLab"
     native("VarSet", 0x4055, 6)

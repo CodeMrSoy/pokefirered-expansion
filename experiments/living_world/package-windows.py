@@ -6,6 +6,7 @@ from pathlib import Path
 import re
 import shutil
 import subprocess
+import sys
 import tempfile
 from zipfile import ZIP_DEFLATED, ZipFile
 
@@ -63,8 +64,10 @@ def main():
         (stage / "python").mkdir()
         shutil.copyfile(ROOT / "pokefirered.gba", stage / "PokemonQuantum.gba")
         shutil.copyfile(inputs / "PalletTest.sav", stage / "PalletTest.sav")
-        for name in ("play.py", "bridge.py", "inference.py", "worker.py", "world.py", "profiles.py", "PLAYTEST.md", "PHASE2.md"):
+        for name in ("play.py", "bridge.py", "inference.py", "worker.py", "world.py", "profiles.py",
+                     "knowledge.py", "PLAYTEST.md", "PHASE2.md", "PHASE3.md"):
             shutil.copyfile(APP / name, stage / name)
+        subprocess.run([sys.executable, APP / "build-knowledge.py", stage / "world-knowledge.sqlite3"], check=True)
         shutil.copyfile(APP / "launch-windows.cmd", stage / "Play.cmd")
         (stage / "Play Pallet Demo.cmd").write_bytes(b'@echo off\r\ncall "%~dp0Play.cmd" --pallet-test\r\n')
 

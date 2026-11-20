@@ -19,6 +19,7 @@ class Encounter:
     trust: int = 0
     quest: str = "none"
     quest_species: int | None = None
+    evidence: tuple[str, ...] = ()
 
     @property
     def completes_quest(self):
@@ -53,7 +54,19 @@ class WorldMemory:
                 PRIMARY KEY (save, npc)
             )
         """)
-        self.db.commit()
+        self.db.executescript("""
+            CREATE TABLE IF NOT EXISTS npc_knowledge (
+                save TEXT NOT NULL, npc TEXT NOT NULL, fact TEXT NOT NULL,
+                origin TEXT NOT NULL CHECK (origin IN ('witnessed', 'conversation')),
+                source TEXT NOT NULL, verified INTEGER NOT NULL CHECK (verified IN (0, 1)),
+                acquired_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                PRIMARY KEY (save, npc, fact, origin)
+            );
+            CREATE TABLE IF NOT EXISTS npc_checkpoint (save TEXT PRIMARY KEY);
+        """)
+        with self.db:
+            self.db.execute("INSERT OR IGNORE INTO npc_checkpoint SELECT DISTINCT save FROM npc_memory")
+            self.db.execute("INSERT OR IGNORE INTO npc_checkpoint VALUES (?)", (self.save,))
 
     def _key(self, battery):
         return self.slot + ":" + hashlib.sha256(battery).hexdigest()
@@ -62,13 +75,39 @@ class WorldMemory:
         next_save = self._key(battery)
         if next_save != self.save:
             with self.db:
-                self.db.execute("""
-                    INSERT OR IGNORE INTO npc_memory (save, npc, state)
-                    SELECT ?, npc, state FROM npc_memory WHERE save = ?
-                """, (next_save, self.save))
-                if self.save.startswith("unsaved:"):
-                    self.db.execute("DELETE FROM npc_memory WHERE save=?", (self.save,))
+                new = self.db.execute("INSERT OR IGNORE INTO npc_checkpoint VALUES (?)", (next_save,))
+                if new.rowcount:
+                    self.db.execute("""
+                        INSERT INTO npc_memory (save, npc, state)
+                        SELECT ?, npc, state FROM npc_memory WHERE save = ?
+                    """, (next_save, self.save))
+                    self.db.execute("""
+                        INSERT INTO npc_knowledge (save, npc, fact, origin, source, verified, acquired_at)
+                        SELECT ?, npc, fact, origin, source, verified, acquired_at
+                        FROM npc_knowledge WHERE save = ?
+                    """, (next_save, self.save))
+                self._discard_unsaved()
             self.save = next_save
+
+    def _discard_unsaved(self):
+        if self.save.startswith("unsaved:"):
+            self.db.execute("DELETE FROM npc_memory WHERE save=?", (self.save,))
+            self.db.execute("DELETE FROM npc_knowledge WHERE save=?", (self.save,))
+            self.db.execute("DELETE FROM npc_checkpoint WHERE save=?", (self.save,))
+
+    def knowledge(self, npc, species):
+        rows = self.db.execute("""
+            SELECT fact, origin, source, verified, acquired_at FROM npc_knowledge
+            WHERE save=? AND npc=? AND fact IN (?, 'pond-survey')
+            ORDER BY fact, origin
+        """, (self.save, npc, str(species))).fetchall()
+        return [dict(zip(("fact", "origin", "source", "verified", "acquired_at"), row)) for row in rows]
+
+    def _witness(self, npc, fact, source):
+        self.db.execute("""
+            INSERT OR IGNORE INTO npc_knowledge (save, npc, fact, origin, source, verified)
+            VALUES (?, ?, ?, 'witnessed', ?, 1)
+        """, (self.save, npc, fact, source))
 
     def snapshot(self, npc):
         row = self.db.execute("SELECT state FROM npc_memory WHERE save=? AND npc=?",
@@ -80,8 +119,13 @@ class WorldMemory:
     def context(self, conversation):
         state = self.snapshot(conversation.npc)
         species = conversation.visible_species
+        evidence = tuple(
+            f"{record['origin']}:{record['fact']}"
+            for record in self.knowledge(conversation.npc, species)
+            if record["verified"] or record["origin"] == "conversation"
+        )
         return Encounter(conversation.npc, species, species in state["seen"],
-                         state["trust"], state["quest"], state["quest_species"])
+                         state["trust"], state["quest"], state["quest_species"], evidence)
 
     def apply(self, encounter, action):
         with self.db:
@@ -95,9 +139,11 @@ class WorldMemory:
 
         state = self.snapshot(current.npc)
         changes = []
-        if current.visible_species is not None and not current.remembered:
-            state["seen"].append(current.visible_species)
-            changes.append("REMEMBER_EVENT")
+        if current.visible_species is not None:
+            self._witness(current.npc, str(current.visible_species), "visible_follower")
+            if not current.remembered:
+                state["seen"].append(current.visible_species)
+                changes.append("REMEMBER_EVENT")
         if action == "ADJUST_RELATIONSHIP":
             state["trust"] += 1
             changes.append("ADJUST_RELATIONSHIP")
@@ -108,6 +154,7 @@ class WorldMemory:
         elif current.completes_quest:
             state["quest"] = "completed"
             state["trust"] += 2
+            self._witness(current.npc, "pond-survey", "validated_quest_completion")
             changes.append(QUEST + ":completed")
         if changes:
             self.db.execute("""
@@ -117,7 +164,6 @@ class WorldMemory:
         return changes
 
     def close(self):
-        if self.save.startswith("unsaved:"):
-            with self.db:
-                self.db.execute("DELETE FROM npc_memory WHERE save=?", (self.save,))
+        with self.db:
+            self._discard_unsaved()
         self.db.close()
