@@ -1,6 +1,6 @@
 """Native Trainer Card page navigation and legacy/new crest rewards in mGBA."""
 import os,pathlib,struct,subprocess
-import havora_emulator_support as m
+import quantum_qol_emulator as m
 source=(m.root/'tests/avatar_wardrobe_emulator.py').read_text()
 exec(source[source.index('native_dir ='):source.index('avatar_var = native')])
 def setvar(v,n):native('VarSet',v,n)
@@ -10,6 +10,16 @@ def state():
 def open_card():
     native('ShowPlayerTrainerCard',m.symbols['CB2_ReturnToFieldContinueScriptPlayMapMusic']|1)
     m.run(180);assert state()==10,('open',state())
+# Even stray Vidra progress in Classic must not expose the island page.
+native('AdventureMode_SelectNewGame',0);native('AdventureMode_NewGame')
+setvar(0x40d8,7);setvar(0x40d9,31)
+open_card();m.snap('classic-card-kanto')
+m.press(7);assert state()==10,'Classic opened Vidra with Right'
+m.press(8);assert state()==11,'Classic did not skip crests for statistics'
+m.snap('classic-card-stats')
+m.press(0);assert state()==10
+m.press(0);m.run(120);assert state() is None
+native('AdventureMode_SelectNewGame',1);native('AdventureMode_NewGame')
 setvar(0x40d7,0);setvar(0x40d8,0);setvar(0x40d9,0)
 assert native('TrainerCard_GetVidraCrests')==0
 setvar(0x40d8,4)
@@ -36,4 +46,4 @@ open_card();m.press(8);assert state()==17;m.snap('vidra-card-earned')
 assert locked.crop((24,60,52,84)).tobytes()!=m.screen.crop((24,60,52,84)).tobytes(),'earned crest did not change color'
 m.press(0);assert state()==10;m.press(0);m.run(120)
 assert state() is None
-print('PASS empty and legacy Harbor reward, five-bit masking, Kanto/Vidra/stats navigation, earned icon, close and reopen')
+print('PASS Classic skips Vidra; Quantum empty and legacy Harbor reward, five-bit masking, Kanto/Vidra/stats navigation, earned icon, close and reopen')

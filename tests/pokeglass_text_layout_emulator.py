@@ -51,8 +51,23 @@ m.press(2,30);capture('dex-alphabetical');border(16,41,118,81)
 m.press(8,60);capture('dex-entry')
 m.press(8,60);capture('dex-habitats')
 open_app(3,'Task_PokeGlassStats')
-capture('stats');border(90,29,134,78)
+capture('stats');border(90,27,134,95)
 assert np.all(pixels()[41,92:222]==6),'Stats header touches separator'
+# Compare each complete label with an isolated render of the same font. This
+# catches row backgrounds erasing descenders even when borders still look fine.
+actual=pixels()
+wid=m.read(m.symbols['sHubWindow'],1)[0]
+window=m.read(m.symbols['gWindows']+wid*12,12)
+buffer=struct.unpack_from('<I',window,8)[0]
+saved=m.read(buffer,19200)
+for row in range(6):
+ m.write(buffer,bytes(19200))
+ template=struct.pack('<IBBBBBBBB',m.symbols['sStatsLabels']+row*12,wid,0,95,42,95,42,0,0)+bytes((0x80,0x40,0,0))
+ m.write(scratch,template);native('AddTextPrinter',scratch,255,0)
+ reference=pixels()[42:55,95:140]==8
+ label=np.isin(actual[42+row*13:55+row*13,95:140],(8,10,6))
+ assert np.array_equal(label,reference),('Stats label clipped or overwritten',row)
+m.write(buffer,saved);native('CopyWindowToVram',wid,3)
 # Exercise the actual font renderer with strings wider than any data field.
 wid=m.read(m.symbols['sHubWindow'],1)[0];scratch=m.symbols['gDecompressionBuffer']+0x1000
 for x,y,width in [(46,43,78),(98,80,126),(76,109,148),(80,14,84),(88,31,119)]:

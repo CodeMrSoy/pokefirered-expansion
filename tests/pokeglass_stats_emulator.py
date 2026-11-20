@@ -62,7 +62,7 @@ def window_pixels():
     data = m.read(ptr, 30 * 20 * 32)
     return lambda x,y: (data[((y//8)*30+x//8)*32+(y%8)*4+(x%8)//2] >> ((x%2)*4)) & 15
 px = window_pixels()
-for y, color in ((52,10),(92,6)):
+for y, color in ((55,10),(107,6)):
     assert any(px(x,yy)==color for x in range(94,132) for yy in range(y,y+11)), ('missing nature label color',y,color)
 print('PASS raised Attack red, lowered Speed blue; field palettes 0..12 preserved')
 m.press(7, 20); assert slot() == 1; m.snap('stats-second')

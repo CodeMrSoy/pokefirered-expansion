@@ -1228,8 +1228,8 @@ static void DrawStatsPage(void)
     StringGet_Nickname(nickname);
     SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(14, 4));
     HubRect(4, 12, 12, 216, 136);
-    StatsText(16, 14, nickname);
-    StatsText(189, 14, COMPOUND_STRING("STATS"));
+    StatsTextFit(16, 13, 166, nickname);
+    StatsText(189, 13, COMPOUND_STRING("STATS"));
     if (!isEgg)
     {
         StatsText(17, 29, sStatsLevel);
@@ -1238,16 +1238,17 @@ static void DrawStatsPage(void)
     StatsNumber(71, 29, sStatsPartySlot + 1);
     StatsText(72, 28, COMPOUND_STRING("/"));
     StatsNumber(87, 29, gPlayerPartyCount);
-    HubRect(6, 90, 29, 134, 78);
-    HubRect(4, 91, 30, 132, 76);
-    StatsText(147, 30, sStatsValueHeader);
-    StatsText(185, 30, sStatsEVHeader);
-    StatsText(210, 30, sStatsIVHeader);
+    HubRect(6, 90, 27, 134, 95);
+    HubRect(4, 91, 28, 132, 93);
+    StatsText(147, 28, sStatsValueHeader);
+    StatsText(185, 28, sStatsEVHeader);
+    StatsText(210, 28, sStatsIVHeader);
     HubRect(6, 92, 41, 130, 1);
     for (row = 0; row < 6; row++)
     {
-        u16 y = 42 + row * 10;
-        HubRect((row & 1) ? 4 : 5, 92, y, 130, 10);
+        // FONT_SMALL occupies 13px; shorter rows erase the preceding glyphs.
+        u16 y = 42 + row * 13;
+        HubRect((row & 1) ? 4 : 5, 92, y, 130, 13);
         if (!isEgg && row && gNaturesInfo[nature].statUp != gNaturesInfo[nature].statDown
             && (statIds[row] == gNaturesInfo[nature].statUp || statIds[row] == gNaturesInfo[nature].statDown))
             AddTextPrinterParameterized3(sHubWindow, FONT_SMALL, 95, y,
@@ -1265,9 +1266,10 @@ static void DrawStatsPage(void)
     StatsText(16, 101, COMPOUND_STRING("EV"));
     StatsText(51, 101, COMPOUND_STRING("IV"));
     if (!isEgg) { StatsNumber(47, 101, evs); StatsNumber(85, 101, ivs); }
-    StatsText(16, 113, sStatsAbility);
-    StatsTextFit(58, 113, 166, isEgg ? sStatsEggAbility : gAbilitiesInfo[GetMonAbility(mon)].name);
-    if (!isEgg) StatsParagraph(16, 125, 208, gAbilitiesInfo[GetMonAbility(mon)].description);
+    StatsText(16, 122, sStatsAbility);
+    StatsTextFit(58, 122, 166, isEgg ? sStatsEggAbility : gAbilitiesInfo[GetMonAbility(mon)].name);
+    // Current ability descriptions all fit one line; bound future longer text.
+    if (!isEgg) StatsTextFit(16, 135, 208, gAbilitiesInfo[GetMonAbility(mon)].description);
     PutWindowTilemap(sHubWindow);
     CopyWindowToVram(sHubWindow, COPYWIN_FULL);
     // Reuse the portrait buffer and OBJ tiles when changing party members.

@@ -1,4 +1,5 @@
 #include "global.h"
+#include "adventure_mode.h"
 #include "poke_glass.h"
 #include "avatar.h"
 #include "decompress.h"
@@ -566,7 +567,8 @@ static void Task_TrainerCard(u8 taskId)
             sTrainerCardDataPtr->timeColonNeedDraw = FALSE;
         }
 
-        if (!sTrainerCardDataPtr->isLink && !gReceivedRemoteLinkPlayers
+        if (AdventureMode_IsQuantum()
+         && !sTrainerCardDataPtr->isLink && !gReceivedRemoteLinkPlayers
          && sTrainerCardDataPtr->cardType == CARD_TYPE_FRLG
          && JOY_NEW(A_BUTTON | DPAD_RIGHT))
         {
