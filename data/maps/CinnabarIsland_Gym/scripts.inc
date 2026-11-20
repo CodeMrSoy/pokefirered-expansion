@@ -58,8 +58,9 @@ CinnabarIsland_Gym_EventScript_DefeatedBlaine::
 	setflag FLAG_DEFEATED_BLAINE
 	setflag FLAG_BADGE07_GET
 	setrespawn HEAL_LOCATION_CINNABAR_ISLAND
-	setvar VAR_MAP_SCENE_CINNABAR_ISLAND, 1
-	clearflag FLAG_HIDE_CINNABAR_BILL
+	setvar VAR_MAP_SCENE_CINNABAR_ISLAND, 4
+	setflag FLAG_HIDE_CINNABAR_BILL
+	setflag FLAG_HIDE_CINNABAR_POKECENTER_BILL
 	set_gym_trainers 7
 	goto CinnabarIsland_Gym_EventScript_GiveTM38
 	end

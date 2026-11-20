@@ -1,4 +1,5 @@
 #include "global.h"
+#include "adventure_mode.h"
 #include "field_tools.h"
 #include "vidra_maps.h"
 #include "quantum_cleanup.h"
@@ -302,6 +303,8 @@ void QuantumRecoverStoredItemsAndPokemon(void)
 
 bool8 QuantumIsRetiredMap(s8 mapGroup, s8 mapNum)
 {
+    if (!AdventureMode_AllowsMap(mapGroup, mapNum))
+        return TRUE;
     switch ((u8)mapNum | ((u8)mapGroup << 8))
     {
     case MAP_BATTLE_COLOSSEUM_2P:
@@ -505,6 +508,7 @@ static bool8 RetiredMap(const struct WarpData *warp)
 
 static void RecoverWarp(struct WarpData *warp)
 {
+    AdventureMode_AdjustWarp(warp);
     if (!RetiredMap(warp)) return;
     warp->mapGroup = MAP_GROUP(MAP_PALLET_TOWN);
     warp->mapNum = MAP_NUM(MAP_PALLET_TOWN);
@@ -534,6 +538,8 @@ void QuantumMigrateLoadedWorld(void)
     FlagClear(FLAG_SYS_PC_STORAGE_DISABLED);
     FlagSet(FLAG_HIDE_CINNABAR_BILL);
     FlagSet(FLAG_HIDE_CINNABAR_POKECENTER_BILL);
+    VarSet(VAR_MAP_SCENE_CINNABAR_ISLAND, 4);
+    VarSet(VAR_MAP_SCENE_CINNABAR_ISLAND_2, 0);
     // Keep retained recap scenes in chronological order; an unavailable map
     // cannot restore its old scenery or NPC snapshot during playback.
     for (readScene = 0; readScene < QUEST_LOG_SCENE_COUNT; readScene++)

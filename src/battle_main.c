@@ -1,4 +1,5 @@
 #include "global.h"
+#include "adventure_progression.h"
 #include "game_modes.h"
 #include "battle.h"
 #include "battle_anim.h"
@@ -2003,6 +2004,7 @@ u8 CreateNPCTrainerPartyFromTrainer(struct Pokemon *party, const struct Trainer 
             u32 fixedOtId = 0;
             u32 abilityNum = 0;
             u16 species = partyData[monIndex].species;
+            u8 level = AdventureMode_TrainerLevel(seed, monIndex, partyData[monIndex].lvl);
 
             #if (RANDOMIZER_AVAILABLE)
                 if (GameModes_PreserveGymTeam(seed))
@@ -2014,7 +2016,7 @@ u8 CreateNPCTrainerPartyFromTrainer(struct Pokemon *party, const struct Trainer 
                         || trainer->trainerClass == TRAINER_CLASS_RIVAL_LATE
                         || trainer->trainerClass == TRAINER_CLASS_CHAMPION))
                     species = GetRivalTrainerSpecies(partyData[monIndex].species,
-                                                      partyData[monIndex].lvl,
+                                                      level,
                                                       VarGet(VAR_STARTER_MON),
                                                       seed);
                 else
@@ -2041,7 +2043,7 @@ u8 CreateNPCTrainerPartyFromTrainer(struct Pokemon *party, const struct Trainer 
                 otIdType = OT_ID_PRESET;
                 fixedOtId = HIHALF(personalityValue) ^ LOHALF(personalityValue);
             }
-            CreateMon(&party[i], species, partyData[monIndex].lvl, 0, TRUE, personalityValue, otIdType, fixedOtId);
+            CreateMon(&party[i], species, level, 0, TRUE, personalityValue, otIdType, fixedOtId);
             SetMonData(&party[i], MON_DATA_HELD_ITEM, &partyData[monIndex].heldItem);
 
             // Keep authored themed teams unless the player opts them in.

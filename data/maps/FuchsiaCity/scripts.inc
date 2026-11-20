@@ -141,6 +141,7 @@ FuchsiaCity_EventScript_OmanyteSign::
 
 
 FuchsiaCity_EventScript_UpdateKogaLookout::
+	goto_if_classic EventScript_Return
 	goto_if_set FLAG_BADGE05_GET, FuchsiaCity_EventScript_KogaLookoutGone
 	goto_if_set FLAG_DEFEATED_KOGA, FuchsiaCity_EventScript_KogaLookoutGone
 	return
@@ -151,6 +152,7 @@ FuchsiaCity_EventScript_KogaLookoutGone::
 	return
 
 FuchsiaCity_EventScript_KogaLookout::
+	goto_if_classic FuchsiaCity_ClassicKogaLookout
 	msgbox FuchsiaCity_Text_KogaLookout, MSGBOX_NPC
 	end
 
@@ -161,3 +163,12 @@ FuchsiaCity_Text_KogaLookout::
 	.string "where he's gone.\p"
 	.string "The GYM will reopen when\n"
 	.string "he returns.$"
+
+FuchsiaCity_ClassicKogaLookout::
+	msgbox FuchsiaCity_ClassicKogaText, MSGBOX_NPC
+	end
+
+FuchsiaCity_ClassicKogaText::
+	.string "KOGA is FUCHSIA's GYM LEADER.\p"
+	.string "His Poison-type POKéMON can be\n"
+	.string "quite a challenge!$"

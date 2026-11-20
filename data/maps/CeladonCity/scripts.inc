@@ -87,6 +87,7 @@ CeladonCity_EventScript_MansionSign::
 	end
 
 CeladonCity_EventScript_DeptStoreSign::
+	goto_if_classic CeladonCity_ClassicDepartmentSign
 	msgbox CeladonCity_DepartmentStoreRelocated_Text, MSGBOX_SIGN
 	end
 
@@ -102,8 +103,31 @@ CeladonCity_EventScript_GameCornerSign::
 	msgbox CeladonCity_Text_GameCornerSign, MSGBOX_SIGN
 	end
 CeladonCity_DepartmentStoreRelocated::
+	goto_if_classic CeladonCity_ClassicDepartmentEntrance
 	msgbox CeladonCity_DepartmentStoreRelocated_Text, MSGBOX_NPC
 	end
 
 CeladonCity_DepartmentStoreRelocated_Text::
 	.string "This store has closed.\pWe have relocated to\nHAVORA CITY, VIDRA!\pVisit our department store\nin the market district.$"
+
+CeladonCity_ClassicDepartmentSign::
+	msgbox CeladonCity_ClassicDepartmentSignText, MSGBOX_SIGN
+	end
+
+CeladonCity_ClassicDepartmentEntrance::
+	lock
+	faceplayer
+	msgbox CeladonCity_ClassicDepartmentText, MSGBOX_YESNO
+	goto_if_eq VAR_RESULT, NO, EventScript_ReleaseEnd
+	warp MAP_CELADON_CITY_DEPARTMENT_STORE_1F, 255, 6, 12
+	waitstate
+	release
+	end
+
+CeladonCity_ClassicDepartmentSignText::
+	.string "CELADON DEPARTMENT STORE\n"
+	.string "Speak to the attendant to enter.$"
+
+CeladonCity_ClassicDepartmentText::
+	.string "The department store is open.\n"
+	.string "Would you like to enter?$"

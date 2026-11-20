@@ -62,6 +62,8 @@ retain their existing AI; they are not campaign trainers.
 - Hazard checks now correctly respect Boots/Magic Guard and include Steelsurge.
   The survival estimate handles lethal hazard damage without unsigned wrap and
   is capped at eight simulated hits to avoid long hypothetical healing loops.
+  A zero-net-damage candidate retains the HP-based estimate instead of being
+  treated as vulnerable after eight turns.
 - Incoming conservative/risky damage reads the defending AI's flags.
 
 ## Information and state
@@ -109,6 +111,45 @@ the removed Tower runtime functions, timer and opponent-set symbols are absent.
 The full legacy suite was not run successfully
 because of the unrelated trainer-control API mismatch noted above. No win-rate
 or device timing benchmark was performed.
+
+## Switching and doubles regression fixes
+
+The follow-up on the V2 `2742860df` baseline addresses the five switching
+failures found by expanded emulator QA:
+
+- Preserve the legacy incoming-move estimates for non-Quantum profiles. Quantum
+  profiles still use revealed moves and the known-information snapshot; these
+  changes do not grant them hidden moves or items.
+- Restore the HP-based survival estimate for candidates taking no net damage.
+  Capping that case at eight turns rejected useful replacements against bulky
+  opponents and blocked the Leech Seed/infatuation switching paths. The actual
+  recurring-damage loop remains bounded.
+- Apply Lightning Rod/Storm Drain partner immunity only to redirectable
+  single-target attacks, in both damage prediction and bad-move scoring. Surf
+  and Discharge can still damage the other opponent. Damage prediction also
+  respects redirection-preventing abilities and a fainted redirector.
+
+The two old known-failing doubles tests had invalid fixtures, not demonstrated
+production failures. The Trace test put two `NOT_EXPECT_MOVE` calls for one
+battler into a single turn; `NOT_EXPECT_MOVES` expresses the intended exclusions
+without adding an expected action. Its copied-Volt-Absorb assertion now runs.
+The generation test passed the numeric `B_REDIRECT_ABILITY_IMMUNITY` value as a
+configuration tag, changing an unrelated setting instead. A dedicated
+`GEN_CONFIG_REDIRECT_ABILITY_IMMUNITY` tag now drives the AI and battle engine;
+its release default still comes from `B_REDIRECT_ABILITY_IMMUNITY`. The test
+uses durable opposing targets so a justified double KO cannot excuse killing
+its ally. Both tests now run normally without `KNOWN_FAILING` markers.
+
+Expanded emulator validation: **127 groups passed, zero failures or known
+failures**. This covers `game_modes.c`, `quantum_ai.c`, `ai_doubles.c`,
+`ai_switching.c`, `ai_trytofaint.c`, `ai_calc_best_move_score.c`,
+`check_bad_move.c` and `ai_choice.c`. Leech Seed and infatuation cases also run
+with the actual Quantum Gym Leader preset. A new four-case regression checks
+Surf/Discharge versus single-target absorption and verifies predicted damage
+against actual damage. All six host profile checks and the assignment audit
+also passed, and the normal FireRed ROM build succeeded.
+This is a focused battle regression run, not a full campaign
+playthrough or a device timing benchmark. Save structures were not changed.
 
 ## Next stage
 

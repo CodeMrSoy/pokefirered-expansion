@@ -1,4 +1,5 @@
 #include "global.h"
+#include "adventure_progression.h"
 #include "random.h"
 #include "battle_debug.h"
 #include "wild_encounter.h"
@@ -208,19 +209,17 @@ static u8 ChooseWildMonLevel(const struct WildPokemon *wildPokemon, u8 wildMonIn
     u8 range;
     u8 rand;
 
+    min = wildPokemon[wildMonIndex].minLevel;
+    max = wildPokemon[wildMonIndex].maxLevel;
+    AdventureMode_WildRange(wildPokemon, wildMonIndex, &min, &max);
+    if (min > max)
+    {
+        u8 swap = min;
+        min = max;
+        max = swap;
+    }
     if (LURE_STEP_COUNT == 0)
     {
-        // Make sure minimum level is less than maximum level
-        if (wildPokemon[wildMonIndex].maxLevel >= wildPokemon[wildMonIndex].minLevel)
-        {
-            min = wildPokemon[wildMonIndex].minLevel;
-            max = wildPokemon[wildMonIndex].maxLevel;
-        }
-        else
-        {
-            min = wildPokemon[wildMonIndex].maxLevel;
-            max = wildPokemon[wildMonIndex].minLevel;
-        }
         range = max - min + 1;
         rand = Random() % range;
 
@@ -246,7 +245,7 @@ static u8 ChooseWildMonLevel(const struct WildPokemon *wildPokemon, u8 wildMonIn
         if (max > 0)
             return max + 1;
         else // Failsafe
-            return wildPokemon[wildMonIndex].maxLevel + 1;
+            return max + 1;
     }
 }
 
@@ -1057,8 +1056,10 @@ static u8 GetMaxLevelOfSpeciesInWildTable(const struct WildPokemon *wildMon, u16
 
     for (i = 0; i < numMon; i++)
     {
-        if (wildMon[i].species == species && wildMon[i].maxLevel > maxLevel)
-            maxLevel = wildMon[i].maxLevel;
+        u8 min = wildMon[i].minLevel, max = wildMon[i].maxLevel;
+        AdventureMode_WildRange(wildMon, i, &min, &max);
+        if (wildMon[i].species == species && max > maxLevel)
+            maxLevel = max;
     }
 
     return maxLevel;

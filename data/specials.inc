@@ -481,4 +481,5 @@ gSpecials::
 	def_special HavoraGym_Control
 	def_special OpenPokeGlassSystemApp
 	def_special ShowVidraArrivalArt
+	def_special AdventureMode_Get
 gSpecialsEnd::

@@ -4,6 +4,7 @@ SafariZone_SecretHouse_MapScripts::
 SafariZone_SecretHouse_EventScript_Attendant::
 	lock
 	faceplayer
+	goto_if_classic SafariZone_SecretHouse_ClassicSurf
 	checkitem ITEM_WAILMER_WAILER, 1
 	goto_if_eq VAR_RESULT, TRUE, SafariZone_SecretHouse_EventScript_ExplainSurf
 	msgbox SafariZone_SecretHouse_Text_AskEirikForWailer
@@ -16,6 +17,7 @@ SafariZone_SecretHouse_EventScript_ExplainSurf::
 	end
 
 SafariZone_SecretHouse_EventScript_StellarTraveler::
+	goto_if_classic SafariZone_SecretHouse_ClassicVisitor
 	goto_if_questlog EventScript_ReleaseEnd
 	lock
 	faceplayer
@@ -74,3 +76,37 @@ SafariZone_SecretHouse_Text_KogaReturned::
 SafariZone_SecretHouse_Text_NoRoomForTicket::
 	.string "Your BAG is full. Make room,\n"
 	.string "then come back for my ticket.$"
+
+SafariZone_SecretHouse_ClassicSurf::
+	goto_if_set FLAG_GOT_HM03, SafariZone_SecretHouse_EventScript_ExplainSurf
+	checkitem ITEM_WAILMER_WAILER, 1
+	goto_if_eq VAR_RESULT, TRUE, SafariZone_SecretHouse_ClassicSurfReceived
+	msgbox SafariZone_SecretHouse_ClassicSurfText
+	giveitem ITEM_WAILMER_WAILER, 1
+	goto_if_eq VAR_RESULT, FALSE, SafariZone_SecretHouse_ClassicNoRoom
+SafariZone_SecretHouse_ClassicSurfReceived::
+	setflag FLAG_GOT_HM03
+	goto SafariZone_SecretHouse_EventScript_ExplainSurf
+
+SafariZone_SecretHouse_ClassicNoRoom::
+	msgbox SafariZone_SecretHouse_ClassicNoRoomText
+	release
+	end
+
+SafariZone_SecretHouse_ClassicVisitor::
+	msgbox SafariZone_SecretHouse_ClassicVisitorText, MSGBOX_NPC
+	end
+
+SafariZone_SecretHouse_ClassicSurfText::
+	.string "You found the SECRET HOUSE!\p"
+	.string "Here, take this WAILMER WAILER.\n"
+	.string "With the SOULBADGE, it lets you\l"
+	.string "SURF across water.$"
+
+SafariZone_SecretHouse_ClassicNoRoomText::
+	.string "Make room for your prize,\n"
+	.string "then speak to me again.$"
+
+SafariZone_SecretHouse_ClassicVisitorText::
+	.string "The SAFARI ZONE is full of\n"
+	.string "rare POKéMON. Good luck!$"

@@ -539,8 +539,13 @@ bool32 IsDamageMoveUnusable(struct DamageContext *ctx)
     if (CanAbilityAbsorbMove(ctx->battlerAtk, ctx->battlerDef, battlerDefAbility, ctx->move, ctx->moveType, ABILITY_CHECK_TRIGGER))
         return TRUE;
 
-    // Limited to Lighning Rod and Storm Drain because otherwise the AI would consider Water Absorb, etc...
-    if (partnerDefAbility == ABILITY_LIGHTNING_ROD || partnerDefAbility == ABILITY_STORM_DRAIN)
+    // Only single-target moves can be redirected to the target's partner.
+    // Spread moves still hit the target even if its ally absorbs that type.
+    if (IsDoubleBattle()
+        && IsBattlerAlive(BATTLE_PARTNER(ctx->battlerDef))
+        && GetBattlerMoveTargetType(ctx->battlerAtk, ctx->move) == MOVE_TARGET_SELECTED
+        && !IsMoveRedirectionPrevented(ctx->battlerAtk, ctx->move, ctx->abilityAtk)
+        && (partnerDefAbility == ABILITY_LIGHTNING_ROD || partnerDefAbility == ABILITY_STORM_DRAIN))
     {
         if (CanAbilityAbsorbMove(ctx->battlerAtk, BATTLE_PARTNER(ctx->battlerDef), partnerDefAbility, ctx->move, ctx->moveType, ABILITY_CHECK_TRIGGER))
             return TRUE;
@@ -4915,7 +4920,7 @@ bool32 ShouldTriggerAbility(u32 battler, u32 ability)
     {
         case ABILITY_LIGHTNING_ROD:
         case ABILITY_STORM_DRAIN:
-            if (B_REDIRECT_ABILITY_IMMUNITY < GEN_5)
+            if (GetGenConfig(GEN_CONFIG_REDIRECT_ABILITY_IMMUNITY) < GEN_5)
                 return FALSE;
             else
                 return (BattlerStatCanRise(battler, ability, STAT_SPATK) && HasMoveWithCategory(battler, DAMAGE_CATEGORY_SPECIAL));

@@ -2369,3 +2369,9 @@
 	msgbox Text_RandomizedGymTMAdvice
 .Lgymtm_explained\@:
 	.endm
+
+	@ Centralized adventure-mode query for mode-specific story seams.
+	.macro goto_if_classic destination:req
+	specialvar VAR_RESULT, AdventureMode_Get
+	goto_if_eq VAR_RESULT, ADVENTURE_MODE_CLASSIC, \destination
+	.endm

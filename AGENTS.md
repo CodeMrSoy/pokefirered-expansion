@@ -2,6 +2,9 @@
 
 ## Branch ownership
 
+- `Pokemon-Quantum-V3`: dual-adventure development based on V2. Keep V3
+  changes on V3; do not merge it back into the stable V2 branch.
+
 - `Pokemon-Quantum-V2`: combined game, merges, cross-region campaign integration
   and release builds.
 - `QOL`: mechanics, shared systems, PokéGlass/UI, field-tool behavior, performance

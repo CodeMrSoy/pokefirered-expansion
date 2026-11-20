@@ -51,6 +51,7 @@ m.press(0);wait('Task_HandleMenuInput')
 # General options must preserve game-mode selections as well.
 m.press(5);m.press(8);m.run(180);m.press(0);m.run(180);wait('Task_HandleMenuInput');assert mask()==81
 m.press(4);m.press(4);m.press(8)
+wait('Task_AdventureSelection');m.press(8);m.press(8);wait('Task_RandomizedOptions');m.press(4);m.press(8)
 wait('Task_OakSpeech_HandleGenderInput');assert mask()==81,'New Game lost mode selections'
 # Complete character setup, as the existing avatar emulator fixtures do.
 m.press(8);wait('Task_AvatarChoice_Input');m.press(8)

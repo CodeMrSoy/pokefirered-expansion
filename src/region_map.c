@@ -1,4 +1,5 @@
 #include "global.h"
+#include "adventure_mode.h"
 #include "poke_glass.h"
 #include "avatar.h"
 #include "decompress.h"
@@ -1002,7 +1003,8 @@ static void InitRegionMapType(void)
 #ifndef QUANTUM_MAPSEC_START
     sRegionMap->permissions[MAPPERM_HAS_SWITCH_BUTTON] = FALSE;
 #else
-    if (!FlagGet(FLAG_QUANTUM_ARRIVED) && PokeGlassPlayerRegion() != REGIONMAP_QUANTUM)
+    if (!AdventureMode_IsQuantum()
+        || (!FlagGet(FLAG_QUANTUM_ARRIVED) && PokeGlassPlayerRegion() != REGIONMAP_QUANTUM))
         sRegionMap->permissions[MAPPERM_HAS_SWITCH_BUTTON] = FALSE;
 #endif
     sRegionMap->playersRegion = PokeGlassPlayerRegion();
@@ -2913,7 +2915,7 @@ static u8 GetMapsecType(u8 mapsec)
 {
 #ifdef QUANTUM_MAPSEC_START
     if (mapsec >= MAPSEC_HAVORA_CITY && mapsec <= MAPSEC_ISKORA_VILLAGE)
-        return FlagGet(FLAG_QUANTUM_ARRIVED)
+        return AdventureMode_IsQuantum() && FlagGet(FLAG_QUANTUM_ARRIVED)
             && FlagGet(FLAG_QUANTUM_PORT_CENTER + mapsec - MAPSEC_HAVORA_CITY)
             ? MAPSECTYPE_VISITED : MAPSECTYPE_NOT_VISITED;
     if (mapsec >= QUANTUM_MAPSEC_START && mapsec <= QUANTUM_MAPSEC_END)
@@ -4058,7 +4060,8 @@ static void SetFlyWarpDestination(u16 mapsec)
 u16 PokeGlassMapSection(u8 region, u8 x, u8 y)
 {
     u16 section;
-    if (region >= REGIONMAP_COUNT || x >= MAP_WIDTH || y >= MAP_HEIGHT) return MAPSEC_NONE;
+    if ((!AdventureMode_IsQuantum() && region != REGIONMAP_KANTO)
+        || region >= REGIONMAP_COUNT || x >= MAP_WIDTH || y >= MAP_HEIGHT) return MAPSEC_NONE;
     section = GetSelectedMapSection(region, LAYER_MAP, y, x);
     if (section == MAPSEC_NONE) section = GetSelectedMapSection(region, LAYER_DUNGEON, y, x);
     return section;
@@ -4067,7 +4070,7 @@ u16 PokeGlassMapSection(u8 region, u8 x, u8 y)
 u8 PokeGlassPlayerRegion(void)
 {
 #ifdef QUANTUM_MAPSEC_START
-    if (gMapHeader.regionMapSectionId >= QUANTUM_MAPSEC_START
+    if (AdventureMode_IsQuantum() && gMapHeader.regionMapSectionId >= QUANTUM_MAPSEC_START
      && gMapHeader.regionMapSectionId <= QUANTUM_MAPSEC_END)
         return REGIONMAP_QUANTUM;
 #endif

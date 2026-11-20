@@ -1,5 +1,6 @@
 #include "global.h"
 #include "game_modes.h"
+#include "adventure_mode.h"
 #include "battle.h"
 #include "event_data.h"
 #include "caps.h"
@@ -47,6 +48,15 @@ u32 GetCurrentLevelCap(void)
         // additional Vidra Gym milestones existed.
         if (FlagGet(FLAG_SYS_GAME_CLEAR))
             return MAX_LEVEL;
+
+        if (!AdventureMode_IsQuantum())
+        {
+            static const u8 sClassicCaps[] = {14, 21, 24, 29, 43, 43, 47, 50};
+            for (i = 0; i < ARRAY_COUNT(sClassicCaps); i++)
+                if (!FlagGet(FLAG_BADGE01_GET + i))
+                    return sClassicCaps[i];
+            return 63; // First FireRed Champion ace; no Sevii postgame gate.
+        }
 
         crests = VarGet(VAR_VIDRA_CRESTS);
 

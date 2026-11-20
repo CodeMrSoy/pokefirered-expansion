@@ -217,6 +217,12 @@ $(DATA_SRC_SUBDIR)/wild_encounters.h: $(DATA_SRC_SUBDIR)/wild_encounters.json $(
 
 $(C_BUILDDIR)/wild_encounter.o: c_dep += $(DATA_SRC_SUBDIR)/wild_encounters.h
 
+$(DATA_SRC_SUBDIR)/adventure_levels.h: tools/progression/generate_adventure_levels.py tools/progression/story-levels.json $(DATA_SRC_SUBDIR)/trainers.party $(DATA_SRC_SUBDIR)/trainers.h $(DATA_SRC_SUBDIR)/wild_encounters.h
+	python3 tools/progression/generate_adventure_levels.py
+
+$(C_BUILDDIR)/adventure_progression.o: c_dep += $(DATA_SRC_SUBDIR)/adventure_levels.h
+
+
 PERL := perl
 SHA1 := $(shell { command -v sha1sum || command -v shasum; } 2>/dev/null) -c
 

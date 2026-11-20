@@ -1,4 +1,5 @@
 #include "global.h"
+#include "adventure_mode.h"
 #include "vidra_arrival.h"
 #include "item.h"
 #include "constants/items.h"
@@ -302,7 +303,8 @@ static void Task_Seagallop_1(u8 taskId)
 static bool8 IsVidraArrival(void)
 {
 #ifdef MAP_HAVORA_HARBOR
-    return gSpecialVar_0x8004 == SEAGALLOP_VERMILION_CITY
+    return AdventureMode_IsQuantum()
+        && gSpecialVar_0x8004 == SEAGALLOP_VERMILION_CITY
         && gSpecialVar_0x8006 == SEAGALLOP_QUANTUM_PORT
         && CheckBagHasItem(ITEM_STELLAR_TICKET, 1);
 #else
@@ -336,11 +338,8 @@ static void Task_Seagallop_3(void)
 {
     const s8 * warpInfo;
 
-    if (gSpecialVar_0x8006 >= NELEMS(sSeag)
-        || (gSpecialVar_0x8006 >= SEAGALLOP_FOUR_ISLAND
-            && gSpecialVar_0x8006 != SEAGALLOP_CINNABAR_ISLAND
-            && gSpecialVar_0x8006 != SEAGALLOP_QUANTUM_PORT))
-        gSpecialVar_0x8006 = 0;
+    gSpecialVar_0x8006 = AdventureMode_FerryDestination(gSpecialVar_0x8004,
+        gSpecialVar_0x8006, CheckBagHasItem(ITEM_STELLAR_TICKET, 1));
 
     if (gSpecialVar_0x8006 == SEAGALLOP_QUANTUM_PORT)
     {

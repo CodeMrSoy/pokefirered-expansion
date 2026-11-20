@@ -49,6 +49,7 @@ VermilionCity_EventScript_OldMan1SSAnneLeft::
 VermilionCity_EventScript_FerrySailor::
 	lock
 	faceplayer
+	goto_if_classic VermilionCity_EventScript_NormalFerry
 	checkitem ITEM_STELLAR_TICKET
 	goto_if_eq VAR_RESULT, TRUE, VermilionCity_EventScript_StellarFerry
 VermilionCity_EventScript_NormalFerry::
@@ -98,8 +99,10 @@ VermilionCity_EventScript_CheckTicket::
 	applymovement LOCALID_VERMILION_FERRY_SAILOR, Common_Movement_WalkInPlaceFasterLeft
 	applymovement LOCALID_PLAYER, Common_Movement_WalkInPlaceFasterRight
 	waitmovement 0
+	goto_if_classic VermilionCity_EventScript_CheckClassicTicket
 	checkitem ITEM_STELLAR_TICKET
 	goto_if_eq VAR_RESULT, TRUE, VermilionCity_EventScript_StellarFerry
+VermilionCity_EventScript_CheckClassicTicket::
 	goto_if_eq VAR_MAP_SCENE_VERMILION_CITY, 3, VermilionCity_EventScript_CheckSeagallopPresentTrigger
 	msgbox VermilionCity_Text_DoYouHaveATicket
 	goto_if_unset FLAG_GOT_SS_TICKET, VermilionCity_EventScript_DontHaveSSTicket
@@ -172,6 +175,7 @@ VermilionCity_EventScript_HarborSign::
 	end
 
 VermilionCity_EventScript_StellarFerry::
+	goto_if_classic VermilionCity_EventScript_NormalFerry
 	msgbox VermilionCity_Text_StellarFerry, MSGBOX_YESNO
 	goto_if_eq VAR_RESULT, NO, VermilionCity_EventScript_NormalFerry
 	checkitem ITEM_STELLAR_TICKET

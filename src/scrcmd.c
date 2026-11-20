@@ -1,4 +1,5 @@
 #include "global.h"
+#include "adventure_progression.h"
 #include "field_tools.h"
 #include "havora_puzzle.h"
 #include "gflib.h"
@@ -2542,6 +2543,9 @@ bool8 ScrCmd_setwildbattle(struct ScriptContext *ctx)
     u16 item2 = ScriptReadHalfword(ctx);
 
     Script_RequestEffects(SCREFF_V1);
+
+    level = AdventureMode_ScriptedLevel(species, level);
+    level2 = AdventureMode_ScriptedLevel(species2, level2);
 
     #if RANDOMIZER_AVAILABLE == TRUE
         u8 mapNum = gSaveBlock1Ptr->location.mapNum;

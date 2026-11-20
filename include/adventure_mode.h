@@ -14,5 +14,8 @@ void AdventureMode_NewGame(void);
 void AdventureMode_MigrateLoadedSave(void);
 bool32 AdventureMode_IsVidraMap(s8 group, s8 number);
 bool32 AdventureMode_AllowsMap(s8 group, s8 number);
+u16 AdventureMode_FerryDestination(u16 origin, u16 destination, bool32 hasTicket);
+void AdventureMode_AdjustWarp(struct WarpData *warp);
+void AdventureMode_AdjustMapHeader(struct MapHeader *header);
 
 #endif

@@ -253,10 +253,11 @@ static bool32 ShouldSwitchIfHasBadOdds(u32 battler)
             typeEffectiveness = uq4_12_multiply(typeEffectiveness, (GetTypeModifier(atkType2, defType2)));
     }
 
+    // Preserve legacy switching estimates; Quantum profiles use revealed moves only.
     // Get max damage mon could take
     for (i = 0; i < MAX_MON_MOVES; i++)
     {
-        playerMove = GetMovesArray(opposingBattler)[i];
+        playerMove = QuantumAI_UsesFairKnowledge() ? GetMovesArray(opposingBattler)[i] : gBattleMons[opposingBattler].moves[i];
         if (playerMove != MOVE_NONE && !IsBattleMoveStatus(playerMove) && GetMoveEffect(playerMove) != EFFECT_FOCUS_PUNCH)
         {
             damageTaken = AI_GetDamage(opposingBattler, battler, i, AI_DEFENDING, gAiLogicData);
@@ -511,14 +512,14 @@ static bool32 FindMonThatAbsorbsOpponentsMove(u32 battler)
     {
         absorbingTypeAbilities[numAbsorbingAbilities++] = ABILITY_WATER_ABSORB;
         absorbingTypeAbilities[numAbsorbingAbilities++] = ABILITY_DRY_SKIN;
-        if (B_REDIRECT_ABILITY_IMMUNITY >= GEN_5)
+        if (GetGenConfig(GEN_CONFIG_REDIRECT_ABILITY_IMMUNITY) >= GEN_5)
             absorbingTypeAbilities[numAbsorbingAbilities++] = ABILITY_STORM_DRAIN;
     }
     else if (incomingType == TYPE_ELECTRIC || (isOpposingBattlerChargingOrInvulnerable && incomingType == TYPE_ELECTRIC))
     {
         absorbingTypeAbilities[numAbsorbingAbilities++] = ABILITY_VOLT_ABSORB;
         absorbingTypeAbilities[numAbsorbingAbilities++] = ABILITY_MOTOR_DRIVE;
-        if (B_REDIRECT_ABILITY_IMMUNITY >= GEN_5)
+        if (GetGenConfig(GEN_CONFIG_REDIRECT_ABILITY_IMMUNITY) >= GEN_5)
             absorbingTypeAbilities[numAbsorbingAbilities++] = ABILITY_LIGHTNING_ROD;
     }
     else if (incomingType == TYPE_GRASS || (isOpposingBattlerChargingOrInvulnerable && incomingType == TYPE_GRASS))
@@ -1806,10 +1807,10 @@ static u32 GetSwitchinHitsToKO(s32 damageTaken, u32 battler)
     if (startingHP <= 0)
         return 0;
 
-    // No damage being dealt. Eight surviving turns is sufficient for ranking
-    // these candidates and avoids unbounded hypothetical healing loops.
+    // A candidate taking no net damage must not be capped to eight turns:
+    // that can wrongly reject it against a bulky foe.
     if ((damageTaken + statusDamage + recurringDamage <= recurringHealing) || damageTaken + statusDamage + recurringDamage == 0)
-        return AI_SWITCH_SURVIVAL_HORIZON;
+        return startingHP;
 
     // Find hits to KO
     while (currentHP > 0 && hitsToKO < AI_SWITCH_SURVIVAL_HORIZON)
@@ -1947,9 +1948,10 @@ static s32 GetMaxDamagePlayerCouldDealToSwitchin(u32 battler, u32 opposingBattle
     u32 playerMove;
     s32 damageTaken = 0, maxDamageTaken = 0;
 
+    // Quantum decisions must not inspect an unrevealed attack.
     for (i = 0; i < MAX_MON_MOVES; i++)
     {
-        playerMove = GetMovesArray(opposingBattler)[i];
+        playerMove = QuantumAI_UsesFairKnowledge() ? GetMovesArray(opposingBattler)[i] : gBattleMons[opposingBattler].moves[i];
         if (playerMove != MOVE_NONE && !IsBattleMoveStatus(playerMove) && GetMoveEffect(playerMove) != EFFECT_FOCUS_PUNCH)
         {
             damageTaken = AI_CalcPartyMonDamage(playerMove, opposingBattler, battler, battleMon, AI_DEFENDING);

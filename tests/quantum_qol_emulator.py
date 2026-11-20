@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Targeted Quantum QOL checks using an mGBA libretro core, Pillow and NumPy."""
+import os
 import struct, subprocess
 import ctypes as c, pathlib, json, sys
 from PIL import Image
-root=pathlib.Path(__file__).resolve().parents[1]; d=root/'build/quantum-qol-tests'; d.mkdir(parents=True, exist_ok=True)
+root=pathlib.Path(__file__).resolve().parents[1]; d=pathlib.Path(os.environ.get('QUANTUM_QA_OUTPUT', str(root/'build/quantum-qol-tests'))); d.mkdir(parents=True, exist_ok=True)
 import os
 lib=c.CDLL(os.environ.get('MGBA_CORE', '/usr/lib/x86_64-linux-gnu/libretro/mgba_libretro.so'))
 ENV=c.CFUNCTYPE(c.c_bool,c.c_uint,c.c_void_p); VIDEO=c.CFUNCTYPE(None,c.c_void_p,c.c_uint,c.c_uint,c.c_size_t); AUDIO=c.CFUNCTYPE(None,c.c_int16,c.c_int16); BATCH=c.CFUNCTYPE(c.c_size_t,c.c_void_p,c.c_size_t); POLL=c.CFUNCTYPE(None); INPUT=c.CFUNCTYPE(c.c_int16,c.c_uint,c.c_uint,c.c_uint,c.c_uint)
@@ -69,6 +70,8 @@ def inject(b):
  addr=symbols['gDecompressionBuffer'];write(addr,b)
  ctx=symbols['sGlobalScriptContext'];write(ctx,b'\x00\x01\x00\x00');write(ctx+8,struct.pack('<I',addr));write(symbols['sGlobalScriptContextStatus'],b'\x00');run(180)
 run(360);press(3);press(8);snap('boot')
+# V3: default Quantum -> confirm -> gameplay settings -> Begin.
+press(8);press(8);press(4);press(8)
 for i in range(9):press(8)
 press(3);press(8)
 for i in range(5):press(8)

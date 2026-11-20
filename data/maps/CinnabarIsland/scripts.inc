@@ -3,6 +3,10 @@ CinnabarIsland_MapScripts::
 	.byte 0
 
 CinnabarIsland_OnTransition::
+	setflag FLAG_HIDE_CINNABAR_BILL
+	setflag FLAG_HIDE_CINNABAR_POKECENTER_BILL
+	setvar VAR_MAP_SCENE_CINNABAR_ISLAND, 4
+	setvar VAR_MAP_SCENE_CINNABAR_ISLAND_2, 0
 	setworldmapflag FLAG_WORLD_MAP_CINNABAR_ISLAND
 	call CinnabarIsland_EventScript_CheckUnlockGym
 	end

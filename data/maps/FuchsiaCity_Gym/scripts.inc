@@ -3,6 +3,7 @@ FuchsiaCity_Gym_MapScripts::
 	.byte 0
 
 FuchsiaCity_Gym_KogaState::
+	goto_if_classic FuchsiaCity_Gym_ClassicKogaPresent
 	goto_if_set FLAG_BADGE05_GET, FuchsiaCity_Gym_KogaPresent
 	goto_if_set FLAG_DEFEATED_KOGA, FuchsiaCity_Gym_KogaPresent
 	goto_if_set FLAG_KOGA_RETURNED_FROM_HAVORA, FuchsiaCity_Gym_KogaPresent
@@ -114,3 +115,7 @@ FuchsiaCity_Gym_Text_KogaAway::
 	.string "KOGA has left for the SAFARI ZONE.\p"
 	.string "Try the house at the far end.\n"
 	.string "Someone there may know more.$"
+
+FuchsiaCity_Gym_ClassicKogaPresent::
+	clearflag FLAG_HIDE_FUCHSIA_GYM_KOGA
+	end

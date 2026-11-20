@@ -1,5 +1,6 @@
 #include "global.h"
 #include "game_modes.h"
+#include "adventure_mode.h"
 #include "quantum_campaign.h"
 #include "quantum_cleanup.h"
 #include "text_window.h"
@@ -581,6 +582,7 @@ struct MapHeader const *const GetDestinationWarpMapHeader(void)
 static void LoadCurrentMapData(void)
 {
     gMapHeader = *Overworld_GetMapHeaderByGroupAndId(gSaveBlock1Ptr->location.mapGroup, gSaveBlock1Ptr->location.mapNum);
+    AdventureMode_AdjustMapHeader(&gMapHeader);
     gSaveBlock1Ptr->mapLayoutId = gMapHeader.mapLayoutId;
     gMapHeader.mapLayout = GetMapLayout();
     gCurrentPrimaryTileset = GetPrimaryTilesetFromLayout(gMapHeader.mapLayout);
@@ -590,6 +592,7 @@ static void LoadCurrentMapData(void)
 static void LoadSaveblockMapHeader(void)
 {
     gMapHeader = *Overworld_GetMapHeaderByGroupAndId(gSaveBlock1Ptr->location.mapGroup, gSaveBlock1Ptr->location.mapNum);
+    AdventureMode_AdjustMapHeader(&gMapHeader);
     gMapHeader.mapLayout = GetMapLayout();
     gCurrentPrimaryTileset = GetPrimaryTilesetFromLayout(gMapHeader.mapLayout);
     gCurrentSecondaryTileset = GetSecondaryTilesetFromLayout(gMapHeader.mapLayout);

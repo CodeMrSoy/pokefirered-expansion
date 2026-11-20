@@ -348,9 +348,44 @@ AI_DOUBLE_BATTLE_TEST("AI sees corresponding absorbing abilities on partners")
     }
 }
 
+AI_DOUBLE_BATTLE_TEST("AI distinguishes spread damage from single-target ability redirection")
+{
+    u32 attacker, defender, ability, move, config;
+    bool32 spread;
+
+    PARAMETRIZE { attacker = SPECIES_AMPHAROS; defender = SPECIES_SEAKING; ability = ABILITY_LIGHTNING_ROD; move = MOVE_DISCHARGE; spread = TRUE; config = GEN_5; }
+    PARAMETRIZE { attacker = SPECIES_AMPHAROS; defender = SPECIES_SEAKING; ability = ABILITY_LIGHTNING_ROD; move = MOVE_THUNDERBOLT; spread = FALSE; config = GEN_5; }
+    PARAMETRIZE { attacker = SPECIES_BLASTOISE; defender = SPECIES_SHELLOS; ability = ABILITY_STORM_DRAIN; move = MOVE_SURF; spread = TRUE; config = GEN_5; }
+    PARAMETRIZE { attacker = SPECIES_BLASTOISE; defender = SPECIES_SHELLOS; ability = ABILITY_STORM_DRAIN; move = MOVE_WATER_GUN; spread = FALSE; config = GEN_5; }
+
+    GIVEN {
+        // Reveal abilities so this tests redirection, rather than ability guessing.
+        AI_FLAGS(AI_FLAG_BASIC_TRAINER | AI_FLAG_HP_AWARE | AI_FLAG_OMNISCIENT);
+        WITH_CONFIG(GEN_CONFIG_REDIRECT_ABILITY_IMMUNITY, config);
+        PLAYER(SPECIES_ZIGZAGOON) { MaxHP(1000); HP(1000); Moves(MOVE_CELEBRATE); }
+        PLAYER(defender) { Ability(ability); MaxHP(1000); HP(1000); Moves(MOVE_CELEBRATE); }
+        OPPONENT(attacker) { Moves(move, MOVE_SCRATCH); }
+        OPPONENT(SPECIES_WOBBUFFET) { Ability(ABILITY_TELEPATHY); Moves(MOVE_ROUND); }
+    } WHEN {
+        if (spread)
+            TURN { EXPECT_MOVE(opponentLeft, move); }
+        else
+            TURN { EXPECT_MOVE(opponentLeft, MOVE_SCRATCH); }
+    } THEN {
+        if (spread)
+        {
+            EXPECT_GT(gAiLogicData->simulatedDmg[B_POSITION_OPPONENT_LEFT][B_POSITION_PLAYER_LEFT][0].maximum, 0);
+            EXPECT_LT(gBattleMons[B_POSITION_PLAYER_LEFT].hp, 1000);
+        }
+        else
+        {
+            EXPECT_EQ(gAiLogicData->simulatedDmg[B_POSITION_OPPONENT_LEFT][B_POSITION_PLAYER_LEFT][0].maximum, 0);
+        }
+    }
+}
+
 AI_DOUBLE_BATTLE_TEST("AI knows if redirection abilities provide immunity to allies")
 {
-    KNOWN_FAILING;
     ASSUME(GetMoveTarget(MOVE_DISCHARGE) == MOVE_TARGET_FOES_AND_ALLY);
     ASSUME(GetMoveType(MOVE_DISCHARGE) == TYPE_ELECTRIC);
     ASSUME(GetMoveTarget(MOVE_SURF) == MOVE_TARGET_FOES_AND_ALLY);
@@ -366,9 +401,9 @@ AI_DOUBLE_BATTLE_TEST("AI knows if redirection abilities provide immunity to all
     GIVEN {
         ASSUME(GetMoveTarget(MOVE_DISCHARGE) == MOVE_TARGET_FOES_AND_ALLY);
         AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_HP_AWARE);
-        WITH_CONFIG(B_REDIRECT_ABILITY_IMMUNITY, config);
-        PLAYER(SPECIES_ZIGZAGOON);
-        PLAYER(SPECIES_ZIGZAGOON);
+        WITH_CONFIG(GEN_CONFIG_REDIRECT_ABILITY_IMMUNITY, config);
+        PLAYER(SPECIES_ZIGZAGOON) { MaxHP(1000); HP(1000); Moves(MOVE_CELEBRATE); }
+        PLAYER(SPECIES_ZIGZAGOON) { MaxHP(1000); HP(1000); Moves(MOVE_CELEBRATE); }
         OPPONENT(SPECIES_SLAKING) { Moves(move, MOVE_SCRATCH); }
         OPPONENT(species) { HP(1); Ability(ability); Moves(MOVE_ROUND); }
     } WHEN {
@@ -381,15 +416,14 @@ AI_DOUBLE_BATTLE_TEST("AI knows if redirection abilities provide immunity to all
 
 AI_DOUBLE_BATTLE_TEST("AI recognizes Volt Absorb received from Trace")
 {
-    KNOWN_FAILING; // MGriffin's PR that switched two turn charging moves in AI tests broke this test, waiting on a fix
     GIVEN {
         AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT);
-        PLAYER(SPECIES_MAGNETON);
-        PLAYER(SPECIES_GARDEVOIR) { Ability(ABILITY_TRACE); }
+        PLAYER(SPECIES_MAGNETON) { Moves(MOVE_CELEBRATE); }
+        PLAYER(SPECIES_GARDEVOIR) { Ability(ABILITY_TRACE); Moves(MOVE_CELEBRATE); }
         OPPONENT(SPECIES_JOLTEON) { Ability(ABILITY_VOLT_ABSORB); Moves(MOVE_THUNDER_WAVE, MOVE_THUNDERSHOCK, MOVE_WATER_GUN); }
         OPPONENT(SPECIES_JOLTEON) { Ability(ABILITY_VOLT_ABSORB); Moves(MOVE_THUNDER_WAVE, MOVE_THUNDERSHOCK, MOVE_WATER_GUN); }
     } WHEN {
-        TURN { NOT_EXPECT_MOVE(opponentLeft, MOVE_THUNDERSHOCK); NOT_EXPECT_MOVE(opponentLeft, MOVE_THUNDER_WAVE); NOT_EXPECT_MOVE(opponentRight, MOVE_THUNDER_WAVE); }
+        TURN { NOT_EXPECT_MOVES(opponentLeft, MOVE_THUNDERSHOCK, MOVE_THUNDER_WAVE); NOT_EXPECT_MOVE(opponentRight, MOVE_THUNDER_WAVE); }
     } THEN {
         EXPECT(gAiLogicData->abilities[B_POSITION_PLAYER_RIGHT] == ABILITY_VOLT_ABSORB);
     }

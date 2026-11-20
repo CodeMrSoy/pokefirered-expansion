@@ -17,6 +17,7 @@ p = root / 'tests/quantum_qol_emulator.py'
 source = p.read_text().split("run(360);press(3);press(8);snap('boot')")[0]
 output = root / 'build/v3-adventure-tests' / ('legacy' if legacy else str(mode))
 source = source.replace("d=root/'build/quantum-qol-tests'", f'd=pathlib.Path({str(output)!r})')
+os.environ.setdefault('QUANTUM_QA_OUTPUT', str(output))
 m = types.ModuleType('adventure_menu_harness'); m.__file__ = str(p)
 exec(compile(source, str(p), 'exec'), m.__dict__)
 
@@ -51,6 +52,12 @@ if legacy:
 m.run(360); m.press(3); wait('Task_HandleMenuInput')
 if legacy:
     assert record() == b'QADV\x01\x01\xfe\xa7'
+    sectors = [flash[i:i+4096] for i in range(0, len(flash), 4096)]
+    valid = [b for b in sectors if struct.unpack_from('<H', b, 4084)[0] == 0
+             and struct.unpack_from('<I', b, 4088)[0] == 0x08012025]
+    old = max(valid, key=lambda b: struct.unpack_from('<I', b, 4092)[0])
+    save = ptr('gSaveBlock2Ptr')
+    assert m.read(save + 3756, 39) == old[3756:3795], 'V2 seed/settings/history changed'
     m.snap('v2-save-migrated-quantum')
     # Existing gameplay settings and encounter history retain their old offsets.
     save = ptr('gSaveBlock2Ptr')

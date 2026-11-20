@@ -1091,6 +1091,10 @@ static void DrawRandomizedOptions(u8 taskId)
     AddTextPrinterParameterized3(window, FONT_SMALL, 6, 108, sTextColor1, -1,
         gTasks[taskId].tModeCursor == count
         ? COMPOUND_STRING("Continue to character selection.")
+        : count == 6 && gTasks[taskId].tModeCursor < 3
+        ? (gTasks[taskId].tModeCursor == 0 ? COMPOUND_STRING("Randomize POKéMON species.")
+            : gTasks[taskId].tModeCursor == 1 ? COMPOUND_STRING("Randomize level-up moves.")
+            : COMPOUND_STRING("Randomize POKéMON abilities."))
         : sModeHints[gTasks[taskId].tModeCursor]);
     AddTextPrinterParameterized3(window, FONT_SMALL, 6, 133, sTextColor1, -1,
         COMPOUND_STRING("A: Select    B: Back"));

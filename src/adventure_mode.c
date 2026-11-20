@@ -1,7 +1,9 @@
 #include "global.h"
 #include "adventure_mode.h"
 #include "constants/region_map_sections.h"
+#include "constants/seagallop.h"
 #include <stddef.h>
+#include "data/map_group_count.h"
 
 // ARM ABI measured on the unmodified V2 2742860df baseline. These assertions
 // guard the actual save layout rather than the stale offset comments in global.h.
@@ -84,13 +86,56 @@ void AdventureMode_MigrateLoadedSave(void)
 
 bool32 AdventureMode_IsVidraMap(s8 group, s8 number)
 {
-    // Dedicated Vidra groups, including their interiors and draft routes. No
-    // header dereference: malformed/stale warp indices cannot overrun a table.
-    return group >= MAP_GROUP(MAP_HAVORA_HARBOR)
-        && group <= MAP_GROUP(MAP_VIDRA_DRAFT_CORVALA);
+    extern const struct MapHeader *const *gMapGroups[];
+    u16 section;
+    if (group < 0 || group >= MAP_GROUPS_COUNT || number < 0
+        || number >= MAP_GROUP_COUNT[(u8)group])
+        return FALSE;
+    // These interiors are shared: Celadon in Classic, Havora in Quantum.
+    if (group == MAP_GROUP(MAP_CELADON_CITY_DEPARTMENT_STORE_1F)
+        && number <= MAP_NUM(MAP_CELADON_CITY_DEPARTMENT_STORE_ELEVATOR))
+        return FALSE;
+    section = gMapGroups[(u8)group][(u8)number]->regionMapSectionId;
+    // Includes draft and future Vidra sections after the original map-page end.
+    return section >= QUANTUM_MAPSEC_START && section < MAPSEC_COUNT;
 }
 
 bool32 AdventureMode_AllowsMap(s8 group, s8 number)
 {
     return AdventureMode_IsQuantum() || !AdventureMode_IsVidraMap(group, number);
+}
+
+// All legacy Sevii ferry IDs resolve to the retained mainland port. The only
+// island destination is Vidra, with both mode and ticket authorization.
+u16 AdventureMode_FerryDestination(u16 origin, u16 destination, bool32 hasTicket)
+{
+    if (destination == SEAGALLOP_QUANTUM_PORT && origin == SEAGALLOP_VERMILION_CITY
+        && AdventureMode_IsQuantum() && hasTicket)
+        return SEAGALLOP_QUANTUM_PORT;
+    return SEAGALLOP_VERMILION_CITY;
+}
+
+void AdventureMode_AdjustWarp(struct WarpData *warp)
+{
+    if (!AdventureMode_IsQuantum()
+        && gSaveBlock1Ptr->location.mapGroup == MAP_GROUP(MAP_CELADON_CITY_DEPARTMENT_STORE_1F)
+        && gSaveBlock1Ptr->location.mapNum == MAP_NUM(MAP_CELADON_CITY_DEPARTMENT_STORE_1F)
+        && warp->mapGroup == MAP_GROUP(MAP_HAVORA_MARKET)
+        && warp->mapNum == MAP_NUM(MAP_HAVORA_MARKET))
+    {
+        warp->mapGroup = MAP_GROUP(MAP_CELADON_CITY);
+        warp->mapNum = MAP_NUM(MAP_CELADON_CITY);
+        warp->warpId = -1;
+        warp->x = 12;
+        warp->y = 14;
+    }
+}
+
+void AdventureMode_AdjustMapHeader(struct MapHeader *header)
+{
+    // The department-store interiors are shared by both adventures. Classic
+    // reaches them from Celadon; Quantum reaches them from Havora Market.
+    if (!AdventureMode_IsQuantum() && header->regionMapSectionId == MAPSEC_HAVORA_CITY
+        && gSaveBlock1Ptr->location.mapGroup == MAP_GROUP(MAP_CELADON_CITY_DEPARTMENT_STORE_1F))
+        header->regionMapSectionId = MAPSEC_CELADON_CITY;
 }

@@ -29,6 +29,8 @@ def wait_task(name, frames=600):
 m.run(360)
 m.press(3)
 m.press(8)
+wait_task('Task_AdventureSelection');m.press(8);m.press(8)
+wait_task('Task_RandomizedOptions');m.press(4);m.press(8)
 for _ in range(12):
     if task_active('Task_OakSpeech_HandleGenderInput'):
         break
