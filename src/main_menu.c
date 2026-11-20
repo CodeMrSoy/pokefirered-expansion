@@ -37,8 +37,6 @@ enum MainMenuWindow
     MAIN_MENU_WINDOW_NEWGAME_ONLY = 0,
     MAIN_MENU_WINDOW_CONTINUE,
     MAIN_MENU_WINDOW_NEWGAME,
-    MAIN_MENU_WINDOW_RANDOMIZER_ONLY,
-    MAIN_MENU_WINDOW_RANDOMIZER,
     MAIN_MENU_WINDOW_MYSTERYGIFT,
     MAIN_MENU_WINDOW_OPTIONS_ONLY,
     MAIN_MENU_WINDOW_OPTIONS,
@@ -119,35 +117,17 @@ static const struct WindowTemplate sWindowTemplate[] = {
         .paletteNum = 15,
         .baseBlock = 0x0f1
     }, 
-    [MAIN_MENU_WINDOW_RANDOMIZER_ONLY] = {
-        .bg = 0,
-        .tilemapLeft = 3,
-        .tilemapTop = 9,
-        .width = 24,
-        .height = 2,
-        .paletteNum = 15,
-        .baseBlock = 0x0f1
-    },
-    [MAIN_MENU_WINDOW_RANDOMIZER] = {
-        .bg = 0,
-        .tilemapLeft = 3,
-        .tilemapTop = 13,
-        .width = 24,
-        .height = 2,
-        .paletteNum = 15,
-        .baseBlock = 0x151
-    },
     [MAIN_MENU_WINDOW_MYSTERYGIFT] = {
         .bg = 0,
         .tilemapLeft = 3,
-        .tilemapTop = 21,
+        .tilemapTop = 17,
         .width = 24,
         .height = 2,
         .paletteNum = 15,
         .baseBlock = 0x1b1
     }, 
-    [MAIN_MENU_WINDOW_OPTIONS_ONLY] = {0, 3, 13, 24, 2, 15, 0x181},
-    [MAIN_MENU_WINDOW_OPTIONS] = {0, 3, 17, 24, 2, 15, 0x181},
+    [MAIN_MENU_WINDOW_OPTIONS_ONLY] = {0, 3, 9, 24, 2, 15, 0x181},
+    [MAIN_MENU_WINDOW_OPTIONS] = {0, 3, 13, 24, 2, 15, 0x181},
     [MAIN_MENU_WINDOW_ERROR] = {
         .bg = 0,
         .tilemapLeft = 3,
@@ -176,7 +156,7 @@ static const struct BgTemplate sBgTemplate[] = {
     }
 };
 
-static const u8 sMenuCursorYMax[] = { 2, 3, 4 };
+static const u8 sMenuCursorYMax[] = { 1, 2, 3 };
 static u8 sOptionsMenuType;
 static void CB2_ReturnFromMainMenuOptions(void);
 static const u8 sOptionsLabel[] = _("OPTIONS");
@@ -456,35 +436,23 @@ static void Task_PrintMainMenuText(u8 taskId)
     case MAIN_MENU_NEWGAME:
     default:
         FillWindowPixelBuffer(MAIN_MENU_WINDOW_NEWGAME_ONLY, PIXEL_FILL(10));
-        FillWindowPixelBuffer(MAIN_MENU_WINDOW_RANDOMIZER_ONLY, PIXEL_FILL(10));
         AddTextPrinterParameterized3(MAIN_MENU_WINDOW_NEWGAME_ONLY, FONT_NORMAL, 2, 2, sTextColor1, -1, gText_NewGame);
-        AddTextPrinterParameterized3(MAIN_MENU_WINDOW_RANDOMIZER_ONLY, FONT_NORMAL, 2, 2, sTextColor1, -1,
-            sRandomizedOptionsLabel);
         MainMenu_DrawWindow(&sWindowTemplate[MAIN_MENU_WINDOW_NEWGAME_ONLY]);
-        MainMenu_DrawWindow(&sWindowTemplate[MAIN_MENU_WINDOW_RANDOMIZER_ONLY]);
         PutWindowTilemap(MAIN_MENU_WINDOW_NEWGAME_ONLY);
-        PutWindowTilemap(MAIN_MENU_WINDOW_RANDOMIZER_ONLY);
         CopyWindowToVram(MAIN_MENU_WINDOW_NEWGAME_ONLY, COPYWIN_GFX);
-        CopyWindowToVram(MAIN_MENU_WINDOW_RANDOMIZER_ONLY, COPYWIN_FULL);
         break;
     case MAIN_MENU_CONTINUE:
         FillWindowPixelBuffer(MAIN_MENU_WINDOW_CONTINUE, PIXEL_FILL(10));
         FillWindowPixelBuffer(MAIN_MENU_WINDOW_NEWGAME, PIXEL_FILL(10));
         AddTextPrinterParameterized3(MAIN_MENU_WINDOW_CONTINUE, FONT_NORMAL, 2, 2, sTextColor1, -1, gText_Continue);
         AddTextPrinterParameterized3(MAIN_MENU_WINDOW_NEWGAME, FONT_NORMAL, 2, 2, sTextColor1, -1, gText_NewGame);
-        FillWindowPixelBuffer(MAIN_MENU_WINDOW_RANDOMIZER, PIXEL_FILL(10));
-        AddTextPrinterParameterized3(MAIN_MENU_WINDOW_RANDOMIZER, FONT_NORMAL, 2, 2, sTextColor1, -1,
-            sRandomizedOptionsLabel);
         PrintContinueStats();
         MainMenu_DrawWindow(&sWindowTemplate[MAIN_MENU_WINDOW_CONTINUE]);
         MainMenu_DrawWindow(&sWindowTemplate[MAIN_MENU_WINDOW_NEWGAME]);
-        MainMenu_DrawWindow(&sWindowTemplate[MAIN_MENU_WINDOW_RANDOMIZER]);
         PutWindowTilemap(MAIN_MENU_WINDOW_CONTINUE);
         PutWindowTilemap(MAIN_MENU_WINDOW_NEWGAME);
-        PutWindowTilemap(MAIN_MENU_WINDOW_RANDOMIZER);
         CopyWindowToVram(MAIN_MENU_WINDOW_CONTINUE, COPYWIN_GFX);
         CopyWindowToVram(MAIN_MENU_WINDOW_NEWGAME, COPYWIN_GFX);
-        CopyWindowToVram(MAIN_MENU_WINDOW_RANDOMIZER, COPYWIN_FULL);
         break;
     case MAIN_MENU_MYSTERYGIFT:
         FillWindowPixelBuffer(MAIN_MENU_WINDOW_CONTINUE, PIXEL_FILL(10));
@@ -492,23 +460,17 @@ static void Task_PrintMainMenuText(u8 taskId)
         FillWindowPixelBuffer(MAIN_MENU_WINDOW_MYSTERYGIFT, PIXEL_FILL(10));
         AddTextPrinterParameterized3(MAIN_MENU_WINDOW_CONTINUE, FONT_NORMAL, 2, 2, sTextColor1, -1, gText_Continue);
         AddTextPrinterParameterized3(MAIN_MENU_WINDOW_NEWGAME, FONT_NORMAL, 2, 2, sTextColor1, -1, gText_NewGame);
-        FillWindowPixelBuffer(MAIN_MENU_WINDOW_RANDOMIZER, PIXEL_FILL(10));
-        AddTextPrinterParameterized3(MAIN_MENU_WINDOW_RANDOMIZER, FONT_NORMAL, 2, 2, sTextColor1, -1,
-            sRandomizedOptionsLabel);
         gTasks[taskId].tMGErrorType = 1;
         AddTextPrinterParameterized3(MAIN_MENU_WINDOW_MYSTERYGIFT, FONT_NORMAL, 2, 2, sTextColor1, -1, gText_MysteryGift);
         PrintContinueStats();
         MainMenu_DrawWindow(&sWindowTemplate[MAIN_MENU_WINDOW_CONTINUE]);
         MainMenu_DrawWindow(&sWindowTemplate[MAIN_MENU_WINDOW_NEWGAME]);
-        MainMenu_DrawWindow(&sWindowTemplate[MAIN_MENU_WINDOW_RANDOMIZER]);
         MainMenu_DrawWindow(&sWindowTemplate[MAIN_MENU_WINDOW_MYSTERYGIFT]);
         PutWindowTilemap(MAIN_MENU_WINDOW_CONTINUE);
         PutWindowTilemap(MAIN_MENU_WINDOW_NEWGAME);
-        PutWindowTilemap(MAIN_MENU_WINDOW_RANDOMIZER);
         PutWindowTilemap(MAIN_MENU_WINDOW_MYSTERYGIFT);
         CopyWindowToVram(MAIN_MENU_WINDOW_CONTINUE, COPYWIN_GFX);
         CopyWindowToVram(MAIN_MENU_WINDOW_NEWGAME, COPYWIN_GFX);
-        CopyWindowToVram(MAIN_MENU_WINDOW_RANDOMIZER, COPYWIN_GFX);
         CopyWindowToVram(MAIN_MENU_WINDOW_MYSTERYGIFT, COPYWIN_FULL);
         break;
     }
@@ -554,7 +516,7 @@ static void Task_ExecuteMainMenuSelection(u8 taskId)
     s32 menuAction;
     if (!gPaletteFade.active)
     {
-        if (gTasks[taskId].tCursorPos == (gTasks[taskId].tMenuType == MAIN_MENU_NEWGAME ? 2 : 3))
+        if (gTasks[taskId].tCursorPos == (gTasks[taskId].tMenuType == MAIN_MENU_NEWGAME ? 1 : 2))
         {
             sOptionsMenuType = gTasks[taskId].tMenuType;
             gMain.savedCallback = CB2_ReturnFromMainMenuOptions;
@@ -579,9 +541,6 @@ static void Task_ExecuteMainMenuSelection(u8 taskId)
             case 1:
                 menuAction = MAIN_MENU_NEWGAME;
                 break;
-            case 2:
-                menuAction = MAIN_MENU_CONTINUE;
-                break;
             }
             break;
         case MAIN_MENU_MYSTERYGIFT:
@@ -594,10 +553,7 @@ static void Task_ExecuteMainMenuSelection(u8 taskId)
             case 1:
                 menuAction = MAIN_MENU_NEWGAME;
                 break;
-            case 2:
-                menuAction = MAIN_MENU_CONTINUE;
-                break;
-            case 4:
+            case 3:
                 if (!IsWirelessAdapterConnected())
                 {
                     SetStdFrame0OnBg(0);
@@ -692,7 +648,7 @@ static void CB2_ReturnFromMainMenuOptions(void)
     MainMenuGpuInit(1);
     taskId = FindTaskIdByFunc(Task_SetWin0BldRegsAndCheckSaveFile);
     gTasks[taskId].tMenuType = sOptionsMenuType;
-    gTasks[taskId].tCursorPos = sOptionsMenuType == MAIN_MENU_NEWGAME ? 2 : 3;
+    gTasks[taskId].tCursorPos = sOptionsMenuType == MAIN_MENU_NEWGAME ? 1 : 2;
     LoadUserFrameToBg(0);
     gTasks[taskId].func = Task_PrintMainMenuText;
     gMain.savedCallback = NULL;
@@ -700,16 +656,13 @@ static void CB2_ReturnFromMainMenuOptions(void)
 
 static void MoveWindowByMenuTypeAndCursorPos(u8 menuType, u8 cursorPos)
 {
-    static const u8 noSaveWindows[] = {MAIN_MENU_WINDOW_NEWGAME_ONLY, MAIN_MENU_WINDOW_RANDOMIZER_ONLY, MAIN_MENU_WINDOW_OPTIONS_ONLY};
-    static const u8 saveWindows[] = {MAIN_MENU_WINDOW_CONTINUE, MAIN_MENU_WINDOW_NEWGAME, MAIN_MENU_WINDOW_RANDOMIZER, MAIN_MENU_WINDOW_OPTIONS, MAIN_MENU_WINDOW_MYSTERYGIFT};
+    static const u8 noSaveWindows[] = {MAIN_MENU_WINDOW_NEWGAME_ONLY, MAIN_MENU_WINDOW_OPTIONS_ONLY};
+    static const u8 saveWindows[] = {MAIN_MENU_WINDOW_CONTINUE, MAIN_MENU_WINDOW_NEWGAME, MAIN_MENU_WINDOW_OPTIONS, MAIN_MENU_WINDOW_MYSTERYGIFT};
     const struct WindowTemplate *window = &sWindowTemplate[menuType == MAIN_MENU_NEWGAME ? noSaveWindows[cursorPos] : saveWindows[cursorPos]];
-    // The optional fifth card scrolls rather than sharing another card's
-    // frame or extending beyond the bottom of the screen.
-    u16 scroll = menuType == MAIN_MENU_MYSTERYGIFT && cursorPos == 4 ? 32 : 0;
-    ChangeBgY(0, scroll << 8, BG_COORD_SET);
+    ChangeBgY(0, 0, BG_COORD_SET);
     SetGpuReg(REG_OFFSET_WIN0H, WIN_RANGE(18, 222));
-    SetGpuReg(REG_OFFSET_WIN0V, WIN_RANGE(window->tilemapTop * 8 - 6 - scroll,
-        (window->tilemapTop + window->height) * 8 + 6 - scroll));
+    SetGpuReg(REG_OFFSET_WIN0V, WIN_RANGE(window->tilemapTop * 8 - 6,
+        (window->tilemapTop + window->height) * 8 + 6));
 }
 
 static bool8 HandleMenuInput(u8 taskId)
@@ -720,14 +673,6 @@ static bool8 HandleMenuInput(u8 taskId)
     {
         PlaySE(SE_SELECT);
         OpenAdventureSelection(taskId);
-    }
-    else if (JOY_NEW(A_BUTTON)
-        && ((gTasks[taskId].tMenuType == MAIN_MENU_NEWGAME && gTasks[taskId].tCursorPos == 1)
-            || (gTasks[taskId].tMenuType != MAIN_MENU_NEWGAME && gTasks[taskId].tCursorPos == 2)))
-    {
-        PlaySE(SE_SELECT);
-        gTasks[taskId].data[15] = FALSE;
-        OpenRandomizedOptions(taskId);
     }
     else if (JOY_NEW(A_BUTTON))
     {
@@ -955,7 +900,9 @@ static void MainMenu_EraseWindow(const struct WindowTemplate * windowTemplate)
 #define tModeWindow data[12]
 #define tAdventureCursor data[13]
 #define tAdventureConfirm data[14]
-#define tNewAdventure data[15]
+// Canceling New Game must retain the loaded playthrough's configuration.
+static EWRAM_DATA u32 sSavedGameSeed;
+static EWRAM_DATA u8 sSavedGameModes;
 
 static const u8 sModeBits[] = {
     GAME_MODE_POKEMON, GAME_MODE_MOVES, GAME_MODE_ABILITIES,
@@ -984,7 +931,7 @@ static const struct WindowTemplate sModeWindowTemplate = {
 
 static u32 AdventureOptionCount(u8 taskId)
 {
-    u8 mode = gTasks[taskId].tNewAdventure ? AdventureMode_GetPending() : AdventureMode_Get();
+    u8 mode = AdventureMode_GetPending();
     return ARRAY_COUNT(sModeBits) - (mode == ADVENTURE_MODE_CLASSIC);
 }
 
@@ -1018,10 +965,11 @@ static void DrawAdventureSelection(u8 taskId)
 
 static void OpenAdventureSelection(u8 taskId)
 {
+    sSavedGameSeed = gSaveBlock2Ptr->randomizerSeed;
+    sSavedGameModes = gSaveBlock2Ptr->gameModes;
     AdventureMode_ResetPending();
     gTasks[taskId].tAdventureCursor = ADVENTURE_MODE_QUANTUM;
     gTasks[taskId].tAdventureConfirm = FALSE;
-    gTasks[taskId].tNewAdventure = TRUE;
     gTasks[taskId].tModeWindow = AddWindow(&sModeWindowTemplate);
     FillBgTilemapBufferRect_Palette0(0, 0, 0, 0, 32, 32);
     ChangeBgY(0, 0, BG_COORD_SET);
@@ -1044,7 +992,9 @@ static void Task_AdventureSelection(u8 taskId)
         }
         else
         {
-            gTasks[taskId].tNewAdventure = FALSE;
+            gSaveBlock2Ptr->randomizerSeed = sSavedGameSeed;
+            gSaveBlock2Ptr->gameModes = sSavedGameModes;
+            GameModes_Apply();
             RemoveWindow(gTasks[taskId].tModeWindow);
             FillBgTilemapBufferRect_Palette0(0, 0, 0, 0, 32, 32);
             Task_PrintMainMenuText(taskId);
@@ -1077,7 +1027,7 @@ static void Task_AdventureSelection(u8 taskId)
 static void DrawRandomizedOptions(u8 taskId)
 {
     u32 i, count = AdventureOptionCount(taskId);
-    u32 rows = count + (gTasks[taskId].tNewAdventure != FALSE);
+    u32 rows = count + 1;
     u32 first = gTasks[taskId].tModeCursor >= 6 ? gTasks[taskId].tModeCursor - 5 : 0;
     u8 window = gTasks[taskId].tModeWindow;
     FillWindowPixelBuffer(window, PIXEL_FILL(10));
@@ -1123,23 +1073,14 @@ static void OpenRandomizedOptions(u8 taskId)
 static void Task_RandomizedOptions(u8 taskId)
 {
     u32 count = AdventureOptionCount(taskId);
-    u32 rows = count + (gTasks[taskId].tNewAdventure != FALSE);
+    u32 rows = count + 1;
     u32 cursor = gTasks[taskId].tModeCursor;
     if (JOY_NEW(B_BUTTON))
     {
         PlaySE(SE_SELECT);
-        if (gTasks[taskId].tNewAdventure)
-        {
-            gTasks[taskId].tAdventureConfirm = FALSE;
-            DrawAdventureSelection(taskId);
-            gTasks[taskId].func = Task_AdventureSelection;
-        }
-        else
-        {
-            RemoveWindow(gTasks[taskId].tModeWindow);
-            FillBgTilemapBufferRect_Palette0(0, 0, 0, 0, 32, 32);
-            Task_PrintMainMenuText(taskId);
-        }
+        gTasks[taskId].tAdventureConfirm = FALSE;
+        DrawAdventureSelection(taskId);
+        gTasks[taskId].func = Task_AdventureSelection;
         return;
     }
     if (JOY_NEW(A_BUTTON) && cursor == count)

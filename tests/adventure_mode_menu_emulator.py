@@ -39,6 +39,10 @@ def wait(name):
 def record():
     return m.read(ptr('gSaveBlock2Ptr') + 3795, 8)
 
+def main_cursor():
+    t = wait('Task_HandleMenuInput')
+    return struct.unpack('<h', m.read(m.symbols['gTasks'] + t * 40 + 10, 2))[0]
+
 def check_menu_margins():
     # Check rendered GBA pixels, including the last two rows inside the frame.
     # Text reaching these gutters can be truncated by the window tile buffer.
@@ -77,6 +81,12 @@ if legacy:
     assert m.read(ptr('gSaveBlock2Ptr') + 3756, 39) == before
     m.press(4); m.press(8); m.run(500)
 else:
+    # Fresh main menu has only New Game and the ordinary Options screen.
+    m.snap('main-menu-no-save')
+    m.press(5); m.press(5); assert main_cursor() == 1
+    m.press(8); wait('Task_OptionMenu'); m.snap('main-menu-standard-options')
+    m.press(0); wait('Task_HandleMenuInput'); assert main_cursor() == 1
+    m.press(4)
     m.press(8); t = wait('Task_AdventureSelection')
     assert struct.unpack('<h', m.read(m.symbols['gTasks'] + t * 40 + 8 + 13 * 2, 2))[0] == 1
     original = record()
@@ -84,6 +94,11 @@ else:
     m.snap('adventure-default-quantum')
     m.press(8); m.snap('adventure-confirmation'); m.press(0); m.press(0)
     wait('Task_HandleMenuInput'); assert record() == original
+    before_settings = m.read(ptr('gSaveBlock2Ptr') + 3756, 39)
+    m.press(8); wait('Task_AdventureSelection'); m.press(8); m.press(8)
+    wait('Task_RandomizedOptions'); m.press(8)  # Change species and generate a pending seed.
+    m.press(0); wait('Task_AdventureSelection'); m.press(0); wait('Task_HandleMenuInput')
+    assert m.read(ptr('gSaveBlock2Ptr') + 3756, 39) == before_settings, 'Canceled New Game retained settings/seed'
     m.press(8); wait('Task_AdventureSelection')
     if mode == 0:
         m.press(4)
@@ -148,12 +163,21 @@ assert record() == expected_record
 assert m.read(ptr('gSaveBlock2Ptr') + 3763, 32) == history
 assert m.read(ptr('gSaveBlock2Ptr') + 3756, 4) == seed
 m.snap('adventure-continue-label')
-# Read-only adventure: Randomized Options on a loaded save has no Begin/choice.
-m.press(5); m.press(5); m.press(8); wait('Task_RandomizedOptions')
-m.snap('adventure-loaded-options')
+# Continue menu has Continue, New Game, and ordinary Options only.
+m.press(5); m.press(5); m.press(5); assert main_cursor() == 2
+m.snap('main-menu-save-options-selected')
+m.press(8); wait('Task_OptionMenu'); m.snap('adventure-loaded-standard-options')
 m.press(0); wait('Task_HandleMenuInput')
+assert main_cursor() == 2
 assert record() == expected_record
-m.press(4); m.press(4); m.press(8); m.run(500)
+# Canceling new-playthrough settings cannot edit the existing playthrough.
+saved_settings = m.read(ptr('gSaveBlock2Ptr') + 3756, 39)
+m.press(4); m.press(8); wait('Task_AdventureSelection'); m.press(8); m.press(8)
+wait('Task_RandomizedOptions'); m.press(8)
+m.press(0); wait('Task_AdventureSelection'); m.press(0); wait('Task_HandleMenuInput')
+assert m.read(ptr('gSaveBlock2Ptr') + 3756, 39) == saved_settings
+assert record() == expected_record
+m.press(4); m.press(8); m.run(500)
 assert native('AdventureMode_Get') == (1 if legacy else mode)
 assert m.read(ptr('gSaveBlock2Ptr') + 3763, 32) == history
 print('PASS: adventure flow, cancellation, immutable loaded mode, options, avatar intro, Flash save/reset/Continue', 'legacy V2' if legacy else mode)
