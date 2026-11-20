@@ -1,4 +1,5 @@
 #include "global.h"
+#include "adventure_mode.h"
 #include <stddef.h>
 #include "malloc.h"
 #include "event_data.h"
@@ -900,6 +901,7 @@ u8 LoadGameSave(u8 saveType)
         CopyPartyAndObjectsFromSave();
         if (result == SAVE_STATUS_OK)
         {
+            AdventureMode_MigrateLoadedSave();
             QuantumMigrateLoadedPokemon();
             QuantumMigrateLoadedWorld();
         }

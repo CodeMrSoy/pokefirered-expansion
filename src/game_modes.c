@@ -1,12 +1,13 @@
 #include "global.h"
 #include "game_modes.h"
+#include "adventure_mode.h"
 #include "randomizer.h"
 #include "constants/battle.h"
 #include "constants/region_map_sections.h"
 #include "constants/opponents.h"
 
 STATIC_ASSERT(MAPSEC_COUNT <= NUZLOCKE_AREA_BYTES * 8, NuzlockeAreaCapacity);
-STATIC_ASSERT(sizeof(((struct SaveBlock2 *)0)->filler_90) + 2 + NUZLOCKE_AREA_BYTES == 207, GameModesReservedSize);
+STATIC_ASSERT(sizeof(((struct SaveBlock2 *)0)->filler_90) + 8 + 2 + NUZLOCKE_AREA_BYTES == 207, GameModesReservedSize);
 
 static EWRAM_DATA bool8 sNuzlockeEncounterAllowed = FALSE;
 
@@ -60,7 +61,7 @@ bool32 GameModes_PreserveGymTeam(u16 trainerId)
 {
     // Current Vidra gym battles are the eight Havora trial/leader encounters.
     return trainerId >= TRAINER_HAVORA_DOCK_CREW && trainerId <= TRAINER_HAVORA_LOCKKEEPER
-        && !GameModes_Enabled(GAME_MODE_VIDRA_GYMS);
+        && (!AdventureMode_IsQuantum() || !GameModes_Enabled(GAME_MODE_VIDRA_GYMS));
 }
 
 void Nuzlocke_BeginEncounter(u16 area, u32 battleFlags)

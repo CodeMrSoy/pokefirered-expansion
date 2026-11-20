@@ -1,4 +1,5 @@
 #include "global.h"
+#include "adventure_mode.h"
 #include "game_modes.h"
 #include "avatar.h"
 #include "constants/vars.h"
@@ -167,6 +168,7 @@ void NewGameInitData(void)
     StringCopy(gSaveBlock1Ptr->rivalName, rivalName);
     ResetItemFlags();
     ResetDexNav();
+    AdventureMode_NewGame();
     GameModes_NewGame();
     gCachedRandomizerSeed = gSaveBlock2Ptr->randomizerSeed;
     MgbaPrintf(MGBA_LOG_DEBUG, "NewGameInit: Cached Seed = 0x%08X", gCachedRandomizerSeed);

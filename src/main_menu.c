@@ -1,5 +1,6 @@
 #include "global.h"
 #include "game_modes.h"
+#include "adventure_mode.h"
 
 #include "gflib.h"
 
@@ -64,6 +65,9 @@ static void Task_PrintMainMenuText(u8 taskId);
 static void Task_WaitDma3AndFadeIn(u8 taskId);
 static void Task_UpdateVisualSelection(u8 taskId);
 static void OpenRandomizedOptions(u8 taskId);
+static void OpenAdventureSelection(u8 taskId);
+static void Task_AdventureSelection(u8 taskId);
+static void DrawAdventureSelection(u8 taskId);
 static void Task_RandomizedOptions(u8 taskId);
 static void Task_HandleMenuInput(u8 taskId);
 static void Task_ExecuteMainMenuSelection(u8 taskId);
@@ -711,10 +715,18 @@ static void MoveWindowByMenuTypeAndCursorPos(u8 menuType, u8 cursorPos)
 static bool8 HandleMenuInput(u8 taskId)
 {
     if (JOY_NEW(A_BUTTON)
+        && ((gTasks[taskId].tMenuType == MAIN_MENU_NEWGAME && gTasks[taskId].tCursorPos == 0)
+            || (gTasks[taskId].tMenuType != MAIN_MENU_NEWGAME && gTasks[taskId].tCursorPos == 1)))
+    {
+        PlaySE(SE_SELECT);
+        OpenAdventureSelection(taskId);
+    }
+    else if (JOY_NEW(A_BUTTON)
         && ((gTasks[taskId].tMenuType == MAIN_MENU_NEWGAME && gTasks[taskId].tCursorPos == 1)
             || (gTasks[taskId].tMenuType != MAIN_MENU_NEWGAME && gTasks[taskId].tCursorPos == 2)))
     {
         PlaySE(SE_SELECT);
+        gTasks[taskId].data[15] = FALSE;
         OpenRandomizedOptions(taskId);
     }
     else if (JOY_NEW(A_BUTTON))
@@ -763,6 +775,8 @@ static void PrintContinueStats(void)
     PrintDexCount();
     PrintPlayTime();
     PrintBadgeCount();
+    AddTextPrinterParameterized3(MAIN_MENU_WINDOW_CONTINUE, FONT_SMALL, 82, 4,
+        sTextColor2, -1, AdventureMode_Name(AdventureMode_Get()));
 }
 
 static void PrintPlayerName(void)
@@ -939,6 +953,9 @@ static void MainMenu_EraseWindow(const struct WindowTemplate * windowTemplate)
 
 #define tModeCursor data[11]
 #define tModeWindow data[12]
+#define tAdventureCursor data[13]
+#define tAdventureConfirm data[14]
+#define tNewAdventure data[15]
 
 static const u8 sModeBits[] = {
     GAME_MODE_POKEMON, GAME_MODE_MOVES, GAME_MODE_ABILITIES,
@@ -965,25 +982,118 @@ static const struct WindowTemplate sModeWindowTemplate = {
     .paletteNum = 15, .baseBlock = 0x201,
 };
 
+static u32 AdventureOptionCount(u8 taskId)
+{
+    u8 mode = gTasks[taskId].tNewAdventure ? AdventureMode_GetPending() : AdventureMode_Get();
+    return ARRAY_COUNT(sModeBits) - (mode == ADVENTURE_MODE_CLASSIC);
+}
+
+static void DrawAdventureSelection(u8 taskId)
+{
+    u8 window = gTasks[taskId].tModeWindow;
+    u8 mode = gTasks[taskId].tAdventureCursor;
+    u32 i;
+    FillWindowPixelBuffer(window, PIXEL_FILL(10));
+    AddTextPrinterParameterized3(window, FONT_NORMAL, 8, 0, sTextColor1, -1,
+        COMPOUND_STRING("Choose your adventure"));
+    for (i = 0; i < ADVENTURE_MODE_COUNT; i++)
+        AddTextPrinterParameterized3(window, FONT_NORMAL, 10, 28 + i * 23,
+            i == mode ? sTextColor2 : sTextColor1, -1, AdventureMode_Name(i));
+    AddTextPrinterParameterized3(window, FONT_SMALL, 6, 81, sTextColor1, -1,
+        mode == ADVENTURE_MODE_CLASSIC
+        ? COMPOUND_STRING("The Kanto journey with modern\nenhancements. Eight Kanto Gyms.\nNo Vidra island campaign.")
+        : COMPOUND_STRING("The expanded Kanto and Vidra\nadventure, with new locations\nand additional Gym Leaders."));
+    AddTextPrinterParameterized3(window, FONT_SMALL, 6, 123, sTextColor1, -1,
+        gTasks[taskId].tAdventureConfirm
+        ? COMPOUND_STRING("This choice lasts for this save.\nA: Confirm    B: Choose again")
+        : COMPOUND_STRING("A: Select    B: Back"));
+    MainMenu_DrawWindow(&sModeWindowTemplate);
+    PutWindowTilemap(window);
+    CopyWindowToVram(window, COPYWIN_FULL);
+}
+
+static void OpenAdventureSelection(u8 taskId)
+{
+    AdventureMode_ResetPending();
+    gTasks[taskId].tAdventureCursor = ADVENTURE_MODE_QUANTUM;
+    gTasks[taskId].tAdventureConfirm = FALSE;
+    gTasks[taskId].tNewAdventure = TRUE;
+    gTasks[taskId].tModeWindow = AddWindow(&sModeWindowTemplate);
+    FillBgTilemapBufferRect_Palette0(0, 0, 0, 0, 32, 32);
+    ChangeBgY(0, 0, BG_COORD_SET);
+    SetGpuReg(REG_OFFSET_WIN0H, WIN_RANGE(0, DISPLAY_WIDTH));
+    SetGpuReg(REG_OFFSET_WIN0V, WIN_RANGE(0, DISPLAY_HEIGHT));
+    SetGpuReg(REG_OFFSET_BLDY, 0);
+    DrawAdventureSelection(taskId);
+    gTasks[taskId].func = Task_AdventureSelection;
+}
+
+static void Task_AdventureSelection(u8 taskId)
+{
+    if (JOY_NEW(B_BUTTON))
+    {
+        PlaySE(SE_SELECT);
+        if (gTasks[taskId].tAdventureConfirm)
+        {
+            gTasks[taskId].tAdventureConfirm = FALSE;
+            DrawAdventureSelection(taskId);
+        }
+        else
+        {
+            gTasks[taskId].tNewAdventure = FALSE;
+            RemoveWindow(gTasks[taskId].tModeWindow);
+            FillBgTilemapBufferRect_Palette0(0, 0, 0, 0, 32, 32);
+            Task_PrintMainMenuText(taskId);
+        }
+        return;
+    }
+    if (JOY_NEW(A_BUTTON))
+    {
+        PlaySE(SE_SELECT);
+        if (!gTasks[taskId].tAdventureConfirm)
+        {
+            gTasks[taskId].tAdventureConfirm = TRUE;
+            DrawAdventureSelection(taskId);
+        }
+        else
+        {
+            AdventureMode_SelectNewGame(gTasks[taskId].tAdventureCursor);
+            RemoveWindow(gTasks[taskId].tModeWindow);
+            OpenRandomizedOptions(taskId);
+        }
+    }
+    else if (!gTasks[taskId].tAdventureConfirm && JOY_NEW(DPAD_UP | DPAD_DOWN))
+    {
+        PlaySE(SE_SELECT);
+        gTasks[taskId].tAdventureCursor ^= 1;
+        DrawAdventureSelection(taskId);
+    }
+}
+
 static void DrawRandomizedOptions(u8 taskId)
 {
-    u32 i;
+    u32 i, count = AdventureOptionCount(taskId);
+    u32 rows = count + (gTasks[taskId].tNewAdventure != FALSE);
     u32 first = gTasks[taskId].tModeCursor >= 6 ? gTasks[taskId].tModeCursor - 5 : 0;
     u8 window = gTasks[taskId].tModeWindow;
     FillWindowPixelBuffer(window, PIXEL_FILL(10));
     AddTextPrinterParameterized3(window, FONT_NORMAL, 8, 0, sTextColor1, -1, sRandomizedOptionsLabel);
-    for (i = first; i < ARRAY_COUNT(sModeBits) && i < first + 6; i++)
+    for (i = first; i < rows && i < first + 6; i++)
     {
         u32 y = 21 + (i - first) * 14;
         const u8 *color = i == gTasks[taskId].tModeCursor ? sTextColor2 : sTextColor1;
-        AddTextPrinterParameterized3(window, FONT_SMALL, 6, y, color, -1, sModeLabels[i]);
-        AddTextPrinterParameterized3(window, FONT_SMALL, 164, y, color, -1,
-            GameModes_Enabled(sModeBits[i]) ? COMPOUND_STRING("ON") : COMPOUND_STRING("OFF"));
+        AddTextPrinterParameterized3(window, FONT_SMALL, 6, y, color, -1,
+            i == count ? COMPOUND_STRING("Begin adventure") : sModeLabels[i]);
+        if (i < count)
+            AddTextPrinterParameterized3(window, FONT_SMALL, 164, y, color, -1,
+                GameModes_Enabled(sModeBits[i]) ? COMPOUND_STRING("ON") : COMPOUND_STRING("OFF"));
     }
     AddTextPrinterParameterized3(window, FONT_SMALL, 6, 108, sTextColor1, -1,
-        sModeHints[gTasks[taskId].tModeCursor]);
+        gTasks[taskId].tModeCursor == count
+        ? COMPOUND_STRING("Continue to character selection.")
+        : sModeHints[gTasks[taskId].tModeCursor]);
     AddTextPrinterParameterized3(window, FONT_SMALL, 6, 133, sTextColor1, -1,
-        COMPOUND_STRING("A: Toggle    B: Back"));
+        COMPOUND_STRING("A: Select    B: Back"));
     MainMenu_DrawWindow(&sModeWindowTemplate);
     PutWindowTilemap(window);
     CopyWindowToVram(window, COPYWIN_FULL);
@@ -1004,22 +1114,41 @@ static void OpenRandomizedOptions(u8 taskId)
 
 static void Task_RandomizedOptions(u8 taskId)
 {
-    u8 bit = sModeBits[gTasks[taskId].tModeCursor];
+    u32 count = AdventureOptionCount(taskId);
+    u32 rows = count + (gTasks[taskId].tNewAdventure != FALSE);
+    u32 cursor = gTasks[taskId].tModeCursor;
     if (JOY_NEW(B_BUTTON))
     {
         PlaySE(SE_SELECT);
+        if (gTasks[taskId].tNewAdventure)
+        {
+            gTasks[taskId].tAdventureConfirm = FALSE;
+            DrawAdventureSelection(taskId);
+            gTasks[taskId].func = Task_AdventureSelection;
+        }
+        else
+        {
+            RemoveWindow(gTasks[taskId].tModeWindow);
+            FillBgTilemapBufferRect_Palette0(0, 0, 0, 0, 32, 32);
+            Task_PrintMainMenuText(taskId);
+        }
+        return;
+    }
+    if (JOY_NEW(A_BUTTON) && cursor == count)
+    {
+        PlaySE(SE_SELECT);
         RemoveWindow(gTasks[taskId].tModeWindow);
-        FillBgTilemapBufferRect_Palette0(0, 0, 0, 0, 32, 32);
-        Task_PrintMainMenuText(taskId);
-        gTasks[taskId].func = Task_UpdateVisualSelection;
+        BeginNormalPaletteFade(PALETTES_ALL, 0, 0, 16, RGB_BLACK);
+        gTasks[taskId].func = Task_ExecuteMainMenuSelection;
         return;
     }
     if (JOY_NEW(DPAD_UP))
-        gTasks[taskId].tModeCursor = (gTasks[taskId].tModeCursor + ARRAY_COUNT(sModeBits) - 1) % ARRAY_COUNT(sModeBits);
+        gTasks[taskId].tModeCursor = (cursor + rows - 1) % rows;
     else if (JOY_NEW(DPAD_DOWN))
-        gTasks[taskId].tModeCursor = (gTasks[taskId].tModeCursor + 1) % ARRAY_COUNT(sModeBits);
-    else if (JOY_NEW(A_BUTTON | DPAD_LEFT | DPAD_RIGHT))
-        GameModes_Set(bit, JOY_NEW(DPAD_LEFT) ? FALSE : JOY_NEW(DPAD_RIGHT) ? TRUE : !GameModes_Enabled(bit));
+        gTasks[taskId].tModeCursor = (cursor + 1) % rows;
+    else if (cursor < count && JOY_NEW(A_BUTTON | DPAD_LEFT | DPAD_RIGHT))
+        GameModes_Set(sModeBits[cursor], JOY_NEW(DPAD_LEFT) ? FALSE
+            : JOY_NEW(DPAD_RIGHT) ? TRUE : !GameModes_Enabled(sModeBits[cursor]));
     else
         return;
     PlaySE(SE_SELECT);

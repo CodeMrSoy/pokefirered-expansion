@@ -437,7 +437,9 @@ struct SaveBlock2
     u8 gameModesVersion;
     u8 gameModes;
     u8 nuzlockeAreas[32];
-    /*0x???*/ u8 filler_90[173];
+    // V3: tagged adventure choice, entirely within V2 reserved padding.
+    u8 adventureModeRecord[8];
+    /*0x???*/ u8 filler_90[165];
 }; // size: 0xF24
 
 extern struct SaveBlock2 *gSaveBlock2Ptr;
