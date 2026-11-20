@@ -7,14 +7,15 @@ from pathlib import Path
 import os
 import struct
 import sys
-from subprocess import CompletedProcess
-from unittest.mock import patch
+from io import BytesIO
+from queue import Queue
 
 import quantum_qol_emulator as gba
 
 sys.path.insert(0, str(gba.root / "experiments" / "living_world"))
 from bridge import Conversation, DialogueBridge, REPLY_OFFSET
 from inference import DialogueReplies, LocalModel
+from worker import ResidentWorker
 
 
 def field_ready():
@@ -117,8 +118,8 @@ def give_mon(species, slot):
 
 names = {25: "Pikachu", 7: "Squirtle"}
 runtime = os.environ.get("LIVING_WORLD_INFERENCE_RUNTIME")
-propose = (LocalModel(Path(runtime), {str(key): name for key, name in names.items()}).propose
-           if runtime else fixture_responder)
+model = LocalModel(Path(runtime), {str(key): name for key, name in names.items()}) if runtime else None
+propose = model.propose if model else fixture_responder
 with ThreadPoolExecutor(max_workers=1) as pool:
     replies = DialogueReplies(pool, propose)
     requests = {species: Conversation("pc_resident", species) for species in lines}
@@ -126,6 +127,8 @@ with ThreadPoolExecutor(max_workers=1) as pool:
     for species, context in requests.items():
         prefetched[species].result()
         assert replies.prepare(context) is prefetched[species]
+if model:
+    model.close()
 print("Prefetched replies are reused by species.")
 propose = lambda context: prefetched[context.visible_species].result()
 give_mon(25, 6)
@@ -166,7 +169,15 @@ for species in lines:
             assert any(word in reply for word in ("pond", "swim", "shell", "dip"))
     else:
         assert reply == lines[species]
-    assert printed_message() == render_expected(reply)
+    expected_text = render_expected(reply)
+    for frame in range(1, 120):
+        gba.run(1)
+        if gba.read(gba.symbols["gStringVar4"], 256).split(b"\xff", 1)[0] == expected_text:
+            break
+    else:
+        raise AssertionError("Timed out waiting for the ROM to publish the dialogue")
+    trace["frames_to_text_buffer"] = frame
+    gba.run(120)
     gba.snap(f"living-world-species-{species}")
     trace["rendered"] = reply
     print(json.dumps(trace))
@@ -174,23 +185,14 @@ for species in lines:
     bridge.poll(lambda context: None)
 
 start_conversation()
-windows_worker = LocalModel(Path("."), {"7": "Squirtle"})
-windows_stdout = b"Squirtle, nice to see you!\r\nYour PC stores items.\r\n"
-with (
-    patch("inference.sys.platform", "win32"),
-    patch.dict("inference.os.environ", {
-        "SystemRoot": r"C:\Windows",
-        "LOCALAPPDATA": r"C:\Users\Tester\AppData\Local",
-        "UNRELATED_VARIABLE": "must stay in the host",
-    }),
-    patch("inference.subprocess.run", return_value=CompletedProcess([], 0, windows_stdout, b"")) as launch,
-):
-    windows_trace = bridge.poll(windows_worker.propose)
-assert launch.call_args.kwargs.get("creationflags", 0) == 0
-assert launch.call_args.kwargs["env"] == {
-    "SystemRoot": r"C:\Windows",
-    "LOCALAPPDATA": r"C:\Users\Tester\AppData\Local",
-}
+windows_stdout = b"Squirtle, nice to see you!\nYour PC stores items."
+windows_pipe = Queue()
+ResidentWorker._read(BytesIO(b"ok 0.10 " + windows_stdout.hex().encode() + b"\r\n"), windows_pipe)
+assert windows_pipe.get() == b"ok 0.10 " + windows_stdout.hex().encode()
+assert windows_pipe.get() is None
+windows_trace = bridge.poll(lambda _: json.dumps({
+    "action": "SAY_DIALOGUE", "text": windows_stdout.decode("ascii"),
+}))
 assert windows_trace["context"]["visible_species"] == 7, windows_trace
 assert windows_trace["validation"] == "accepted", windows_trace
 assert printed_message() == render_expected("Squirtle, nice to see you!\nYour PC stores items.")

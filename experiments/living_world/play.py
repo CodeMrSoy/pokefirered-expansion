@@ -14,6 +14,7 @@ import time
 
 from bridge import Conversation, DialogueBridge, MAILBOX_SIZE, REPLY_OFFSET, TEXT_CAPACITY, validate
 from inference import DialogueReplies, LocalModel, windows_launcher_environment
+from world import PROFILE, WorldMemory
 
 ROOT = Path(__file__).resolve().parent
 VOID = c.c_void_p
@@ -225,7 +226,10 @@ def main():
         raise RuntimeError("The bundled ROM and mailbox manifest do not match")
     model = LocalModel(runtime, manifest["species"])
     if args.model_test:
-        response = validate(model.propose(Conversation("pc_resident", 25)))
+        try:
+            response = validate(model.propose(Conversation("pc_resident", 25)))
+        finally:
+            model.close()
         if not response.startswith(b"Pikachu, "):
             raise RuntimeError("The model test did not return the expected species")
         print(response.decode("ascii"))
@@ -236,34 +240,46 @@ def main():
     core_path = ROOT / ("mgba_libretro.dll" if sys.platform == "win32" else "mgba_libretro.so")
     display = Display()
     game = Game(core_path, rom_path, rom, manifest["mailbox"], display)
+    memory = None
+    previous = None
     try:
         if save_path.is_file():
             game.load_save(save_path.read_bytes())
         elif args.pallet_test:
             game.load_save((ROOT / "PalletTest.sav").read_bytes())
         previous = game.save_bytes()
+        memory = WorldMemory(profile / "living-world.sqlite3", save_path.name, previous,
+                             unsaved=not args.pallet_test and not save_path.is_file())
         bridge = DialogueBridge(game.read_request, game.write_reply, game.mailbox)
         with ThreadPoolExecutor(max_workers=1) as pool, (profile / "dialogue.jsonl").open(
             "a", encoding="utf-8", buffering=1
         ) as log:
-            replies = DialogueReplies(pool, model.propose)
-            if args.pallet_test:
-                # The demo starts with these two Pokemon. Generate their
-                # dialogue while the title screen and field stay responsive.
-                for species in (25, 7):
-                    replies.prepare(Conversation("pc_resident", species))
+            replies = DialogueReplies(pool, model.plan)
+            staged = None
+            def prepare_demo():
+                if args.pallet_test:
+                    for species in (25, 7):
+                        replies.prepare(memory.context(Conversation("pc_resident", species)))
+
+            # Prepare likely replies while the title screen and field stay responsive.
+            prepare_demo()
 
             def propose(context):
-                work = replies.prepare(context)
-                if work.done():
-                    return work.result()
-                display.title(display.window, b"Living Quantum World - NPC is thinking")
+                nonlocal staged
+                encounter = memory.context(context)
+                work = replies.prepare(encounter)
+                if not work.done():
+                    display.title(display.window, b"Living Quantum World - NPC is thinking")
                 try:
                     while not work.done():
                         if not display.pump():
                             raise RuntimeError("Window closed")
                         time.sleep(0.015)
-                    return work.result()
+                    proposal = work.result()
+                    staged = (encounter, proposal)
+                    if proposal.action not in encounter.allowed():
+                        raise ValueError("Rejected action outside the encounter allowlist")
+                    return proposal.dialogue
                 finally:
                     display.title(display.window, b"Living Quantum World")
 
@@ -271,26 +287,54 @@ def main():
             while display.pump():
                 start = time.monotonic()
                 game.core.retro_run()
+                staged = None
                 trace = bridge.poll(propose)
                 if trace:
+                    trace["profile"] = PROFILE
+                    trace["fallback"] = trace["validation"] != "accepted"
+                    if staged:
+                        encounter, proposal = staged
+                        trace.update(
+                            context_sent=proposal.context_sent,
+                            proposed_action=proposal.action,
+                            metrics=proposal.metrics,
+                            action_result="rejected",
+                        )
+                        if not trace["fallback"]:
+                            try:
+                                updates = memory.apply(encounter, proposal.action)
+                                trace["changes"].extend(updates)
+                                trace["action_result"] = "approved"
+                                if updates:
+                                    prepare_demo()
+                            except ValueError as error:
+                                trace["action_error"] = str(error)
+                    trace["memory"] = memory.snapshot(trace["context"]["npc"])
                     log.write(json.dumps(trace) + "\n")
                 if start >= next_save:
                     current = game.save_bytes()
                     if current != previous:
                         if save_path.exists():
                             atomic_write(save_path.with_suffix(".bak"), previous)
+                        memory.checkpoint(current)
                         atomic_write(save_path, current)
                         previous = current
                     next_save = start + 2
                 time.sleep(max(0, game.frame_period - (time.monotonic() - start)))
     finally:
-        current = game.save_bytes()
-        if current != previous:
-            if save_path.exists():
-                atomic_write(save_path.with_suffix(".bak"), previous)
-            atomic_write(save_path, current)
-        game.close()
-        display.sdl.SDL_Quit()
+        model.close()
+        try:
+            current = game.save_bytes()
+            if memory is not None and current != previous:
+                if save_path.exists():
+                    atomic_write(save_path.with_suffix(".bak"), previous)
+                memory.checkpoint(current)
+                atomic_write(save_path, current)
+        finally:
+            if memory is not None:
+                memory.close()
+            game.close()
+            display.sdl.SDL_Quit()
     return 0
 
 

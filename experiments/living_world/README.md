@@ -14,7 +14,7 @@ ADVENTURE_TEST_MODE=0 python3 tests/living_world_bridge_emulator.py
 ADVENTURE_TEST_MODE=1 python3 tests/living_world_bridge_emulator.py
 ```
 
-Mode 0 is Classic and mode 1 is Quantum. The harness runs the compiled map event through the field script interpreter and verifies the resulting text buffer. Its JSON lines show request context, proposals, host validation, response writes, elapsed time and, for successful cases, the rendered text. Set `LIVING_WORLD_INFERENCE_RUNTIME` to run with the actual worker. Elapsed time includes model load, generation and validation. The [playtest guide](PLAYTEST.md) covers the packaged desktop launcher. SQLite, quest actions and the graphical inspection panel are future milestones.
+Mode 0 is Classic and mode 1 is Quantum. The harness runs the compiled map event through the field script interpreter and verifies the resulting text buffer. Its JSON lines show request context, proposals, host validation, response writes, elapsed time and, for successful cases, the rendered text. Set `LIVING_WORLD_INFERENCE_RUNTIME` to run with the actual worker. The emulator trace measures the host handoff and frames to the text buffer. The desktop log also records model load, inference and IPC overhead. The [playtest guide](PLAYTEST.md) covers the packaged desktop launcher. See [Phase 2](PHASE2.md) for model comparisons, persistent memory, the Pond Survey and its structured inspection log.
 
 ### Build the offline worker and Windows package
 
@@ -59,9 +59,7 @@ Sources are the map objects and associated scripts under [data/maps](../../data/
 
 The audit describes **nine distinct NPCs** across the town and interiors. The profile concepts are proposed content. At Level 1, give each NPC only expression actions and put the hook in a freestanding conversation or after an existing script has completed its required work. Preserve mandatory text verbatim for the first expansion. New memory and relationship rules start with per-NPC baselines and consume only validated game observations.
 
-## Next vertical slice
+## Next verification
 
-- **Windows verification.** Run the included probe and play through both follower variants on Windows. Measure cold load, resident memory, warm p50 and p95, timeout rate and proposal rejection rate. Confirm model behavior on CPU-only systems.
-- **Memory and a first quest.** Enable Level 2 only for the PC-storage resident. Give the model two reachable fact-finding objectives drawn from existing town signs, such as checking the Trainer Tips sign or confirming the lab's location. Let the model choose or decline an objective based on what the player has already checked and supply the resident's reason. After player acceptance, only an actual sign interaction followed by a return visit can complete it. Limit the reward to a capped trust increase and a distinct follow-up conversation in the first test. Use engine-owned objective IDs and completion checks. Add an item reward only after the save and reward transaction can survive retries safely.
-- **Persistence and tooling.** Put compact observations, bounded relationship values and quest records in SQLite. Tie records to the active battery-save slot and a host-managed checkpoint. Commit durable state with a recoverable save/checkpoint transaction and disable save-state rewind for this slice until database rollback can be paired with the ROM checkpoint. Record the prompt-visible facts, model revision, timing, proposal, validation result and applied effect in the developer panel. Compare outcomes across independent saves.
-- **Distribution.** Review redistribution rights for the game assets before any public release. Keep the private playtest build confined to the requested test audience.
+Run the Phase 2 save, restart, survey and Windows isolation checks on a native
+Windows machine before extending resident behavior to any other Pallet NPC.

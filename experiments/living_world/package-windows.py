@@ -63,7 +63,7 @@ def main():
         (stage / "python").mkdir()
         shutil.copyfile(ROOT / "pokefirered.gba", stage / "PokemonQuantum.gba")
         shutil.copyfile(inputs / "PalletTest.sav", stage / "PalletTest.sav")
-        for name in ("play.py", "bridge.py", "inference.py", "PLAYTEST.md"):
+        for name in ("play.py", "bridge.py", "inference.py", "worker.py", "world.py", "PLAYTEST.md"):
             shutil.copyfile(APP / name, stage / name)
         shutil.copyfile(APP / "launch-windows.cmd", stage / "Play.cmd")
         (stage / "Play Pallet Demo.cmd").write_bytes(b'@echo off\r\ncall "%~dp0Play.cmd" --pallet-test\r\n')
