@@ -1,5 +1,7 @@
 #ifndef GUARD_POKE_GLASS_H
 #define GUARD_POKE_GLASS_H
+u16 PokeGlassPrintTextPageWithFont(u8 window, u16 x, u16 y, u16 width, u16 rows, u16 page, const u8 *text, u8 font);
+u16 PokeGlassPrintBagDescription(u8 window, u16 item, u16 page);
 u16 PokeGlassPrintTextPage(u8 window, u16 x, u16 y, u16 width, u16 rows, u16 page, const u8 *text);
 
 void FitPokeGlassText(u8 *text, u8 font, u16 width);

@@ -6,7 +6,7 @@
 
 // Word-wrapped pages share the actual small-font metrics across native apps.
 // The caller owns clearing its panel. Never print beyond the requested rows.
-u16 PokeGlassPrintTextPage(u8 window, u16 x, u16 y, u16 width, u16 rows, u16 page, const u8 *text)
+u16 PokeGlassPrintTextPageWithFont(u8 window, u16 x, u16 y, u16 width, u16 rows, u16 page, const u8 *text, u8 font)
 {
     static const u8 colors[] = {0, 8, 4};
     u8 clean[512], line[256];
@@ -26,7 +26,7 @@ u16 PokeGlassPrintTextPage(u8 window, u16 x, u16 y, u16 width, u16 rows, u16 pag
         {
             line[count] = clean[start + count];
             line[count + 1] = EOS;
-            if (GetStringWidth(FONT_SMALL, line, 0) > width) break;
+            if (GetStringWidth(font, line, 0) > width) break;
             if (line[count] == CHAR_SPACE) split = count;
             count++;
         }
@@ -34,12 +34,17 @@ u16 PokeGlassPrintTextPage(u8 window, u16 x, u16 y, u16 width, u16 rows, u16 pag
         if (!count) count = 1;
         memcpy(line, clean + start, count);
         line[count] = EOS;
-        FitPokeGlassText(line, FONT_SMALL, width);
-        if (row / rows == page)
-            AddTextPrinterParameterized3(window, FONT_SMALL, x, y + (row % rows) * 13, colors, TEXT_SKIP_DRAW, line);
+        FitPokeGlassText(line, font, width);
+        if (window != WINDOW_NONE && row / rows == page)
+            AddTextPrinterParameterized3(window, font, x, y + (row % rows) * 13, colors, TEXT_SKIP_DRAW, line);
         start += count;
         while (clean[start] == CHAR_SPACE || clean[start] == CHAR_NEWLINE) start++;
         row++;
     }
     return max(1, (row + rows - 1) / rows);
+}
+
+u16 PokeGlassPrintTextPage(u8 window, u16 x, u16 y, u16 width, u16 rows, u16 page, const u8 *text)
+{
+    return PokeGlassPrintTextPageWithFont(window, x, y, width, rows, page, text, FONT_SMALL);
 }

@@ -31,7 +31,11 @@ static void GlassGridDestroy(void)
     for (i = 0; i < 9; i++)
         if (sGlassGridSprites[i] < MAX_SPRITES)
         {
-            DestroySpriteAndFreeResources(&gSprites[sGlassGridSprites[i]]);
+            // AddItemIconSprite uses a temporary template. Free by our stable
+            // tags instead of dereferencing its expired template pointer.
+            FreeSpriteTilesByTag(GLASS_GRID_TAG + i);
+            FreeSpritePaletteByTag(GLASS_GRID_TAG + i);
+            DestroySprite(&gSprites[sGlassGridSprites[i]]);
             sGlassGridSprites[i] = MAX_SPRITES;
         }
     sGlassGridPocket = 0xFF;
@@ -41,27 +45,25 @@ static void GlassGridDescription(s32 selected)
 {
     static const u8 colors[] = {0, 8, 4};
     u8 name[ITEM_NAME_LENGTH + 1];
-    const u8 *description;
+    u16 item = ITEMS_COUNT;
     u32 i;
     FillWindowPixelBuffer(WIN_DESCRIPTION, PIXEL_FILL(0));
     FillWindowPixelBuffer(WIN_GLASS_ITEM_NAME, PIXEL_FILL(0));
     if (selected == LIST_CANCEL)
     {
         StringCopy(name, COMPOUND_STRING("Back"));
-        description = COMPOUND_STRING("Return to PokéGlass.");
     }
     else
     {
-        u16 item = GetBagItemId(gBagPosition.pocket, selected);
+        item = GetBagItemId(gBagPosition.pocket, selected);
         CopyItemName(item, name);
-        description = GetItemDescription(item);
     }
     FitPokeGlassText(name, FONT_SMALL, 84);
     AddTextPrinterParameterized3(WIN_GLASS_ITEM_NAME, FONT_SMALL, 2, 0, colors, TEXT_SKIP_DRAW, name);
     // Own the border with the text so native popup cleanup cannot obscure it.
     FillWindowPixelRect(WIN_DESCRIPTION, 6, 0, 0, 88, 40);
     FillWindowPixelRect(WIN_DESCRIPTION, 0, 1, 1, 86, 38);
-    sGlassInfoPages = PokeGlassPrintTextPage(WIN_DESCRIPTION, 2, 0, 84, 3, sGlassInfoPage, description);
+    sGlassInfoPages = PokeGlassPrintBagDescription(WIN_DESCRIPTION, item, sGlassInfoPage);
     for (i = 0; i < sGlassInfoPages && i < 20; i++)
         FillWindowPixelRect(WIN_GLASS_ITEM_NAME, i == sGlassInfoPage ? 8 : 6, i * 4, 13, 3, 2);
     PutWindowTilemap(WIN_GLASS_ITEM_NAME);

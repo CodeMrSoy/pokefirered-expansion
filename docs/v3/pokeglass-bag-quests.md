@@ -29,7 +29,7 @@ or copied Crown assets are used.
 | Screen | Controls |
 | --- | --- |
 | Bag | D-pad: grid; L/R: pockets; A: item actions; B: return |
-| Bag descriptions | Hold L+R together to cycle full wrapped description pages |
+| Bag descriptions | All current Bag items fit one page; L+R is a fallback for future oversized text |
 | Bag sorting | START: native sort menu; SELECT: native manual reorder |
 | Quest Book | Up/Down: quests; Left/Right: objective/story/location/reward pages |
 | Quest Book filters | SELECT: All, Main, Side, Done; undiscovered entries stay hidden |
@@ -130,7 +130,7 @@ Native ARM build passed. mGBA libretro executed these focused suites:
 | `pokeglass_time_return_emulator.py` | Repeated Party/hub/field returns in day/evening/night, outdoors/indoors and rain |
 
 Build footprint: EWRAM 238,896 / 262,144 bytes; IWRAM 27,573 / 32,768 bytes;
-linked ROM 21,924,184 / 33,554,432 bytes, padded to 32 MiB. Relative to the source
+linked ROM 21,924,804 / 33,554,432 bytes, padded to 32 MiB. Relative to the source
 baseline, persistent EWRAM grew 64 bytes; save-block sizes did not grow. Up to
 nine grid sprites/palettes supplement the existing Bag sprite. Windows use
 separate tile ranges; normal native action windows keep their existing allocator.
@@ -164,3 +164,26 @@ pocket changes and native item actions; changing pockets resets description
 paging. The extra title window adds 352 bytes of transient window graphics after
 accounting for the smaller description window, with no save-layout change.
 The build and grid/item-action emulator checks passed for this layout.
+
+## Complete Bag description audit
+
+The Bag reflows original wide-screen line breaks and chooses the largest of
+Small, Small Narrow and Small Narrower that fits its three lines. Only Power
+Lens, Power Band and PokéGlass use shorter Bag-only wording; their effects and
+features remain stated. Native descriptions and Field Item Case text are
+unchanged. Field tools remain exclusively in their existing case.
+
+`tests/pokeglass_bag_descriptions_emulator.py` executes the real compiled text
+renderer for all 656 Bag-grid table entries (including the empty-item fallback).
+Every entry fits on one page and leaves all four pixel gutters clear. The 176
+entries using TM, Berry or Field Item Case interfaces are excluded from this
+small-box audit. No original description exceeds the normalization buffer, and
+no original word exceeds the narrowest available font's panel width.
+
+The same audit compares actual OBJ VRAM tiles with the selected item's real
+graphics after pocket switches. It exposed stale sprites caused by cleanup
+through temporary icon-template pointers. Grid resources now free their stable
+tile/palette tags explicitly before replacement. The exhaustive description and
+icon checks, ordinary grid suite, native item-action suite and Quest Book
+regression passed. Existing future-content paging remains as a fallback; no
+current Bag-grid description requires it.
