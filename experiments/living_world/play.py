@@ -28,6 +28,7 @@ from world import Encounter, WorldMemory
 from society import PERSONAS, Ticket
 from region import RESEARCHER_PRESENCE, TRAINER_PRESENCE
 from planning import Proposal, choose_plan
+from population import choose_commitment
 
 ROOT = Path(__file__).resolve().parent
 VOID = c.c_void_p
@@ -398,6 +399,9 @@ def main():
 
             society = memory.society
             population = memory.population if args.phase11_demo else None
+            if population:
+                population.model_decisions = model.style == "qwen3"
+            resident_work = None
             society.demo = args.pewter_society or args.pewter_regional
             society.regional_demo = args.pewter_regional
             director = memory.director
@@ -416,6 +420,11 @@ def main():
                 else:
                     plan, metrics = chooser(model, request, available, PERSONAS[request.actor], planner)
                 return plan, {**metrics, "queue_ms": delay}
+
+            def run_commitment(ticket, queued):
+                wait = (time.perf_counter() - queued) * 1000
+                choice, metrics = choose_commitment(model, ticket)
+                return choice, {**metrics, "queue_ms": wait}
 
             def propose(context):
                 nonlocal staged, scene, lookup, guide_turn, guide_work, guide_result, last_guide
@@ -579,6 +588,25 @@ def main():
                             society.tick(fresh.local_second, fresh.area, fresh.busy)
                             if population:
                                 population.tick(fresh.local_second)
+                                if resident_work:
+                                    ticket, future = resident_work
+                                    if future.done():
+                                        resident_work = None
+                                        if population.decision(ticket.request) == ticket:
+                                            try:
+                                                choice, metrics = future.result()
+                                            except (OSError, ValueError, RuntimeError, TimeoutError) as error:
+                                                choice, metrics = "HELP", {"fallback": str(error)[:220]}
+                                            population.submit(ticket, choice)
+                                            log.write(json.dumps({"regional_commitment": ticket.request,
+                                                                  "resident": ticket.actor, "choice": choice,
+                                                                  "ready_wait_seconds": population.state["clock"] - ticket.ready,
+                                                                  **metrics}) + "\n")
+                                    elif population.decision(ticket.request) != ticket and future.cancel():
+                                        resident_work = None
+                                if (not resident_work and not planning and not fresh.busy
+                                        and replies.worker_idle() and (ticket := population.decision())):
+                                    resident_work = ticket, pool.submit(run_commitment, ticket, time.perf_counter())
                             director.notice = society.notice_for_brock()
                             director.offscreen = society.state["visited"] and not director.demo
                             society.reconcile_brock(director.state.get("last_notice_result"))
@@ -621,7 +649,7 @@ def main():
                                         log.write(json.dumps({"director_rejection": str(error)}) + "\n")
                                 elif request != ready_now and future.cancel():
                                     planning = None
-                            if planning is None and start >= plan_retry_after and game.brock_ptr:
+                            if not resident_work and planning is None and start >= plan_retry_after and game.brock_ptr:
                                 request = (society.decision() if society.demo and not director.notice
                                            else director.decision()) or society.decision()
                                 if request is not None and replies.worker_idle():
@@ -655,7 +683,7 @@ def main():
                             game.publish_brock(fresh.frame, director.location)
                             game.publish_trainer(fresh.frame, society.state["agents"]["trainer"]["location"])
                             game.publish_researcher(fresh.frame, society.state["agents"]["researcher"]["location"])
-                        predicted = None if args.no_predict or planning else replies.predict(fresh, start)
+                        predicted = None if args.no_predict or planning or resident_work else replies.predict(fresh, start)
                         if predicted:
                             log.write(json.dumps({"prefetched": predicted.state.encounter.npc,
                                                   "species": predicted.state.encounter.visible_species,

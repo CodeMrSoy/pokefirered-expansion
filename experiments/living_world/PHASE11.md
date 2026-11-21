@@ -44,3 +44,34 @@ the objective and NPC resolution can independently complete, expire, or
 withdraw it. The dedicated projection has a fixed size and source code.
 Classic and Quantum mGBA validated all four display states, rollback,
 and preservation of the 144-byte native quest record.
+
+## 11F
+
+The model queue handles only survey-assistance decisions where the volunteer
+can spare the time. Other shift and relationship choices use deterministic
+rules. It allows three eligible requests per regional day and one per actor
+per day, with a cap of four pending and 32 processed transitions per tick.
+Old decisions become invalid on deadline, save change or response. If the
+worker times out, the scheduler retains the already permissible default.
+Current foreground actions take priority over queued plans. A resident's
+in-flight request can still occupy the one offline worker. Logs record
+ready-to-dispatch wait separately from Qwen and executor timings.
+
+Forty-day synthetic measurements under Python allocation tracing on Linux:
+
+| Residents | Transitions | p95 tick | Traced peak | SQLite |
+| --- | ---: | ---: | ---: | ---: |
+| 20 | 1370 | 4.534 ms | 140 KiB | 128 KiB |
+| 50 | 3436 | 6.062 ms | 270 KiB | 160 KiB |
+| 100 | 6878 | 11.574 ms | 492 KiB | 208 KiB |
+| 250 | 17155 | 27.299 ms | 1089 KiB | 336 KiB |
+
+These workloads made zero model calls. The 250-resident burst exceeded a
+60 FPS frame budget with tracing active, and the package uses 24 people.
+The size is for one battery history. Separate checkpoint snapshots retain
+their own state, so the file can grow as the player makes additional saves.
+The roster keeps eight memories and twelve relationships per resident,
+24 open requests and 48 events. A simultaneous burst admitted three
+distinct volunteers to the real Qwen worker. All three chose to continue
+their work in that fixture. Cooperation and refusal were both exercised
+by the deterministic simulations. No larger model was adopted.

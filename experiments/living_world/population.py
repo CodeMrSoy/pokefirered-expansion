@@ -2,12 +2,17 @@
 from dataclasses import dataclass
 import heapq
 import json
+from time import perf_counter
 
 DAY = 86400
 TRANSITIONS = 32
 GOAL_WINDOW = 10 * DAY
 OPEN_REQUESTS = 24
 EVENT_LIMIT = 48
+BOND_LIMIT = 12
+DECISIONS_PER_DAY = 3
+PENDING_DECISIONS = 4
+DECISION_WINDOW = 20 * 60
 DEPENDENCIES = {"researcher": "volunteer", "curator": "researcher", "trainer": "attendant",
                 "guide": "volunteer", "volunteer": "guide", "attendant": "trainer"}
 LOCATIONS = frozenset(("pewter", "museum", "route_2", "gym"))
@@ -58,9 +63,37 @@ def residents():
                  for i, (id_, name, role) in enumerate(ROSTER))
 
 
+@dataclass(frozen=True)
+class Commitment:
+    save: str
+    request: str
+    actor: str
+    owner: str
+    role: str
+    motive: str
+    relationship: int
+    ready: int
+    deadline: int
+
+
+def choose_commitment(model, ticket):
+    prompt = model.render_prompt(
+        "Choose HELP or CONTINUE. Give only one choice. Consider a real work request and your own obligations.",
+        f"You are a {ticket.role}. Your goal is to {ticket.motive}. A Museum colleague asks "
+        f"for a survey check. You have helped this colleague {ticket.relationship} times. "
+        "You have time for the check and can continue your own work afterward.")
+    start = perf_counter()
+    raw, metrics = model.worker.generate('root ::= "HELP" | "CONTINUE"\n', prompt)
+    choice = raw.strip()
+    if choice not in ("HELP", "CONTINUE"):
+        raise ValueError("Invalid commitment decision")
+    return choice, {**metrics, "inference_wall_ms": (perf_counter() - start) * 1000}
+
+
 class Population:
     def __init__(self, world, roster=None):
         self.world = world
+        self.model_decisions = False
         self.db = world.db
         profiles = tuple(residents() if roster is None else roster)
         self.people = {person.id: person for person in profiles}
@@ -191,15 +224,60 @@ class Population:
         self.remember(actor, when, "requested_help", peer=preferred, request=request)
         return False
 
+    def queue_decision(self, person, actor, request, when):
+        if not self.model_decisions or person.role != "volunteer" or self.people[request["owner"]].role != "researcher":
+            return False
+        day = when // DAY
+        budget = self.state.get("decision_budget", {})
+        used = budget.get("used", 0) if budget.get("day") == day else 0
+        if (actor.get("decision_day") == day or used >= DECISIONS_PER_DAY
+                or sum("decision" in r for r in self.state["requests"].values()) >= PENDING_DECISIONS):
+            return False
+        deadline = min(request["deadline"], when + DECISION_WINDOW)
+        if deadline <= self.state["clock"]:
+            return False
+        request["decision"] = {"ready": when, "deadline": deadline}
+        actor["decision_day"] = day
+        self.state["decision_budget"] = {"day": day, "used": used + 1}
+        return True
+
+    def decision(self, request_id=None):
+        candidates = []
+        for id_, request in self.state["requests"].items():
+            decision = request.get("decision")
+            if (not decision or self.state["clock"] >= decision["deadline"]
+                    or (request_id is not None and id_ != request_id)):
+                continue
+            actor, owner = request["recipient"], request["owner"]
+            profile = self.people[actor]
+            trust = self.state["actors"][actor]["bonds"].get(owner, 0)
+            candidates.append(Commitment(self.world.save, id_, actor, owner, profile.role, profile.motive,
+                                         trust, decision["ready"], decision["deadline"]))
+        return min(candidates, key=lambda ticket: (ticket.deadline, ticket.ready, ticket.actor), default=None)
+
+    def submit(self, ticket, choice):
+        if choice not in ("HELP", "CONTINUE") or ticket != self.decision(ticket.request):
+            raise ValueError("Stale or invalid commitment")
+        self.settle_request(ticket.request, choice == "HELP", self.state["clock"])
+        self.persist()
+
+    @staticmethod
+    def improve_bond(actor, peer):
+        bonds = actor["bonds"]
+        if peer not in bonds and len(bonds) >= BOND_LIMIT:
+            del bonds[min(bonds, key=lambda id_: (bonds[id_], id_))]
+        bonds[peer] = min(bonds.get(peer, 0) + 1, 20)
+
     def respond(self, person, actor, when):
         for id_, request in list(self.state["requests"].items()):
-            if request["recipient"] != person.id or when >= request["deadline"]:
+            if request["recipient"] != person.id or when >= request["deadline"] or "decision" in request:
                 continue
             owner_id = request["owner"]
             trust = actor["bonds"].get(owner_id, 0)
             available = when % DAY < person.shift + (person.patience + 1) * 1800
             willing = available or trust > 0
-            self.settle_request(id_, willing, when)
+            if not willing or not self.queue_decision(person, actor, request, when):
+                self.settle_request(id_, willing, when)
             return
 
     def settle_request(self, id_, willing, when):
@@ -213,8 +291,8 @@ class Population:
                 "source": peer_id, "origin": peer_id, "kind": "reported", "received": when,
             }
             goal["verified"] = True
-            owner["bonds"][peer_id] = min(owner["bonds"].get(peer_id, 0) + 1, 20)
-            peer["bonds"][owner_id] = min(peer["bonds"].get(owner_id, 0) + 1, 20)
+            self.improve_bond(owner, peer_id)
+            self.improve_bond(peer, owner_id)
         label = "helped" if honored else "declined"
         self.close_event(id_, "completed" if honored else "withdrawn", when, peer_id)
         self.remember(owner, when, label, peer=peer_id, request=id_)
@@ -245,6 +323,11 @@ class Population:
                 self.remember(self.state["actors"][request["owner"]], second, "missed_commitment", request=id_)
                 self.close_event(id_, "expired", second, request["owner"])
                 del self.state["requests"][id_]
+                processed += 1
+            elif request.get("decision", {}).get("deadline", second + 1) <= second:
+                # No worker or stale reply: apply the legal choice already
+                # established when the volunteer made time for the task.
+                self.settle_request(id_, True, second)
                 processed += 1
         while self.queue and self.queue[0][0] <= second and processed < TRANSITIONS:
             due, id_ = heapq.heappop(self.queue)
