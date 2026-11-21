@@ -1641,7 +1641,14 @@ static void DoItemSwap(u8 taskId)
         gBagMenu->toSwapPos = NOT_SWAPPING;
         DestroyListMenuTask(tListTaskId, scrollPos, cursorPos);
         if (tListPosition < realPos)
-            gBagPosition.cursorPosition[gBagPosition.pocket]--;
+        {
+            // The grid keeps an absolute index in scrollPos and row zero.
+            // Decrementing that unsigned row would wrap it to 65535.
+            if (GlassBagGrid())
+                (*scrollPos)--;
+            else
+                (*cursorPos)--;
+        }
         LoadBagItemListBuffers(gBagPosition.pocket);
         tListTaskId = ListMenuInit(&gMultiuseListMenuTemplate, *scrollPos, *cursorPos);
         SetItemMenuSwapLineInvisibility(TRUE);
@@ -1658,8 +1665,8 @@ static void CancelItemSwap(u8 taskId)
 
     gBagMenu->toSwapPos = NOT_SWAPPING;
     DestroyListMenuTask(tListTaskId, scrollPos, cursorPos);
-    if (tListPosition < *scrollPos + *cursorPos)
-        gBagPosition.cursorPosition[gBagPosition.pocket]--;
+    if (!GlassBagGrid() && tListPosition < *scrollPos + *cursorPos)
+        (*cursorPos)--;
     LoadBagItemListBuffers(gBagPosition.pocket);
     tListTaskId = ListMenuInit(&gMultiuseListMenuTemplate, *scrollPos, *cursorPos);
     SetItemMenuSwapLineInvisibility(TRUE);

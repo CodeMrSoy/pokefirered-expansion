@@ -130,7 +130,7 @@ Native ARM build passed. mGBA libretro executed these focused suites:
 | `pokeglass_time_return_emulator.py` | Repeated Party/hub/field returns in day/evening/night, outdoors/indoors and rain |
 
 Build footprint: EWRAM 238,896 / 262,144 bytes; IWRAM 27,573 / 32,768 bytes;
-linked ROM 21,924,804 / 33,554,432 bytes, padded to 32 MiB. Relative to the source
+linked ROM 21,924,844 / 33,554,432 bytes, padded to 32 MiB. Relative to the source
 baseline, persistent EWRAM grew 64 bytes; save-block sizes did not grow. Up to
 nine grid sprites/palettes supplement the existing Bag sprite. Windows use
 separate tile ranges; normal native action windows keep their existing allocator.
@@ -139,7 +139,7 @@ separate tile ranges; normal native action windows keep their existing allocator
 
 This is a test build, not a certification of a full campaign playthrough. No
 complete Classic/Quantum run, every randomizer combination, every battle item,
-physical-GBA test, link session, or exhaustive full-capacity inventory was run.
+physical-GBA test, link session, or full-capacity TM/Berry Case stress run was performed.
 The focused checks exercise actual UI, scripts, gameplay events and Flash saves;
 compilation alone is not counted as gameplay verification. Existing campaign,
 AI, Nuzlocke and randomizer code remains shared and otherwise unchanged.
@@ -187,3 +187,18 @@ tile/palette tags explicitly before replacement. The exhaustive description and
 icon checks, ordinary grid suite, native item-action suite and Quest Book
 regression passed. Existing future-content paging remains as a fallback; no
 current Bag-grid description requires it.
+
+## Broader QC follow-up
+
+See [the QC report](pokeglass-qc-2026-11-21.md). Fresh Classic and Quantum saves
+passed 52 repeated Bag/Quest Book app visits with stable field lighting, heap
+usage, sprite cleanup and field controls. Nighttime aide offers and the postgame
+aide branch passed in both modes. Full 42/30/27-stack Bag pockets were traversed
+and exercised through sorting, reordering and toss confirmation.
+
+The full-Bag test found an incorrect native shift-loop condition that overwrote
+stacks when moving items multiple slots. It also exposed unsigned grid-row
+underflow on downward moves/cancellation. The loop now shifts every intervening
+stack, while the grid adjusts its absolute index and keeps row zero valid.
+Regression checks preserve item IDs and quantities on downward/upward moves,
+cross-page cancellation and insertion at the end.
