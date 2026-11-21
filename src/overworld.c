@@ -1696,7 +1696,7 @@ void CB2_Overworld(void)
     OverworldBasic();
     LivingWorld_UpdateFieldHint();
     if (!fading)
-        LivingWorld_ReconcileBrock();
+        LivingWorld_ReconcileAgents();
     if (fading)
         SetFieldVBlankCallback();
 }

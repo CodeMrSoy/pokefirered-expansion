@@ -46,7 +46,10 @@ class Ticket:
 
 DURATIONS = {"WORK": 24, "REST": 16, "INVESTIGATE": 32, "TRAIN_POKEMON": 28,
              "REQUEST_ASSISTANCE": 4, "ACCEPT_REQUEST": 4, "DECLINE_REQUEST": 4,
-             "ARRANGE_MEETING": 6, "VISIT_NPC": 6, "SHARE_INFORMATION": 4}
+             "ARRANGE_MEETING": 6, "VISIT_NPC": 6, "SHARE_INFORMATION": 4,
+             "TRAVEL_TO": 16, "RETURN_TO_DUTY": 16}
+TRAVEL_STEPS = ("TRAVEL_TO", "RETURN_TO_DUTY")
+TRAINER_PRESENCE = {"pewter": 0, "in_transit": 1, "route_2": 2}
 LINKS = {
     "researcher": {"assistant", "brock"},
     "assistant": {"researcher", "trainer"},
@@ -115,6 +118,9 @@ class Society:
         self.busy = busy
         if second is None or second < self.now:
             self.busy = True
+            for actor, agent in self.state["agents"].items():
+                if agent["active"]:
+                    self.abort(actor, "clock unavailable or reversed")
             return
         self.now = second
         if not self.state["visited"] and area in ("pewter", "pewter_gym"):
@@ -184,7 +190,9 @@ class Society:
                 return (*variations, inspect + (Step("REQUEST_ASSISTANCE", "assistant"),))
             return variations
         if actor == "trainer":
-            return (routine, (Step("TRAIN_POKEMON", persona.duty), Step("REST", persona.duty)))
+            return (routine, (Step("TRAIN_POKEMON", persona.duty), Step("REST", persona.duty)),
+                    (Step("TRAVEL_TO", "route_2"), Step("TRAIN_POKEMON", "route_2"),
+                     Step("RETURN_TO_DUTY", persona.duty)))
         return (routine, (Step("REST", persona.duty), Step("WORK", persona.duty)))
 
     def followup(self, actor):
@@ -229,6 +237,9 @@ class Society:
             if key == "researcher":
                 context += ("You noticed a cast comparison worth checking at the Museum. "
                             "Ask the assistant if an independent second check would help.")
+            elif key == "trainer":
+                context += ("You can practice on the public north end of Route 2 or stay here. "
+                            "The north path is clear. A short field practice is useful today. ")
             else:
                 context += "You have heard no request. Continue your own routine. "
             context += f"You normally prefer {persona.preferred}. Past firsthand checks: " + str(
@@ -252,9 +263,15 @@ class Society:
         self.start(ticket.actor)
         self.persist()
 
-    def valid(self, actor, action, target, active):
+    def valid(self, actor, action, target, active, *, finishing=False):
         agent = self.state["agents"][actor]
-        if action in ("WORK", "REST", "TRAIN_POKEMON"):
+        if action in TRAVEL_STEPS:
+            destination, origin = ("route_2", "pewter") if action == "TRAVEL_TO" else ("pewter", "route_2")
+            return actor == "trainer" and target == destination and agent["location"] == (
+                "in_transit" if finishing else origin)
+        if action == "TRAIN_POKEMON" and actor == "trainer":
+            return target == agent["location"] and target in ("pewter", "route_2")
+        if action in ("WORK", "REST"):
             return target == agent["location"] == PERSONAS[actor].duty
         if action == "INVESTIGATE":
             return target == "cast" and (actor == "researcher" or
@@ -292,6 +309,10 @@ class Society:
         if not self.valid(actor, action, target, active):
             self.abort(actor, f"{action} precondition changed")
             return
+        if action in TRAVEL_STEPS:
+            active["journey"] = dict(origin=agent["location"], destination=target, departed=self.now,
+                                     arrival=self.now + DURATIONS[action])
+            agent["location"] = "in_transit"
         agent["activity"] = action
         active["due"] = self.now + DURATIONS[action]
 
@@ -299,11 +320,14 @@ class Society:
         agent = self.state["agents"][actor]
         active = agent["active"]
         action, target = active["steps"][active["index"]]
-        if not self.valid(actor, action, target, active):
+        if not self.valid(actor, action, target, active, finishing=True):
             self.abort(actor, f"{action} precondition changed")
             return
         requests = self.state["requests"]
-        if action == "INVESTIGATE":
+        if action in TRAVEL_STEPS:
+            agent["location"] = target
+            active.pop("journey")
+        elif action == "INVESTIGATE":
             checks = agent["facts"].get(target, {}).get("checks", 0) + 1
             agent["facts"][target] = dict(source=actor, origin=actor, kind="firsthand",
                                           checks=checks, second=self.now)

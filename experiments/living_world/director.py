@@ -121,6 +121,7 @@ class WorldDirector:
         self.demo = False
         self.notice_required = False
         self.notice = None
+        self.offscreen = False
         self.db = memory.db
         with self.db:
             self.db.execute("CREATE TABLE IF NOT EXISTS director_state (save TEXT PRIMARY KEY, state TEXT NOT NULL)")
@@ -182,7 +183,8 @@ class WorldDirector:
         if self.context is None or self.state["active"]:
             return None
         second, area, protected, busy = self.context
-        if (second is None or area != "pewter" or protected or busy or
+        if (second is None or (area != "pewter" and not (self.offscreen and area != "pewter_gym"))
+                or protected or busy or
                 second < self.state["clock"] or second < self.state["busy_until"]):
             return None
         hour = second % DAY // 3600

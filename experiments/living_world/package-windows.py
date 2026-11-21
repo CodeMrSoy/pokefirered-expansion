@@ -55,6 +55,8 @@ def main():
                       if line.endswith(" gLivingWorldFieldHint"))
     brock_presence = next(int(line.split()[0], 16) for line in symbols.splitlines()
                           if line.endswith(" gLivingWorldBrockPresence"))
+    trainer_presence = next(int(line.split()[0], 16) for line in symbols.splitlines()
+                            if line.endswith(" gLivingWorldTrainerPresence"))
     names = {}
     header = (ROOT / "include/constants/species.h").read_text()
     for key, id_ in re.findall(r"^#define SPECIES_([A-Z0-9_]+)\s+(\d+)\b", header, re.MULTILINE):
@@ -103,6 +105,7 @@ def main():
             "mailbox": mailbox,
             "field_hint": field_hint,
             "brock_presence": brock_presence,
+            "trainer_presence": trainer_presence,
             "sha256": sha256(stage / "PokemonQuantum.gba"),
             "model_sha256": model_sha,
             "species": names,

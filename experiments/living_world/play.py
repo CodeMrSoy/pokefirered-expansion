@@ -22,7 +22,7 @@ from hybrid import FIELD_SIZE, FieldHint, HybridDialogue, prepare
 from reasoning import BALANCED_SHA256, LIGHTWEIGHT_SHA256, GuideTurn, guide_reply, reported_fact
 from profiles import PROFILES
 from world import Encounter, WorldMemory
-from society import Ticket, choose_agent
+from society import TRAINER_PRESENCE, Ticket, choose_agent
 
 ROOT = Path(__file__).resolve().parent
 VOID = c.c_void_p
@@ -121,7 +121,7 @@ class Display:
 
 
 class Game:
-    def __init__(self, core_path, rom_path, rom, mailbox, display, *, field_hint=None, brock_presence=None):
+    def __init__(self, core_path, rom_path, rom, mailbox, display, *, field_hint=None, brock_presence=None, trainer_presence=None):
         self.display = display
         self.mailbox = mailbox
         self.core = core = c.CDLL(str(core_path))
@@ -152,14 +152,17 @@ class Game:
             self.close()
             raise RuntimeError("Invalid field hint location")
         self.hint_ptr = None if field_hint is None else ram + field_hint - 0x02000000
-        if brock_presence is not None and (
-                brock_presence % 4 or not 0x02000000 <= brock_presence <= 0x02040000 - BROCK_PRESENCE.size
-                or any(start is not None and brock_presence < start + length
-                       and start < brock_presence + BROCK_PRESENCE.size
-                       for start, length in ((mailbox, MAILBOX_SIZE), (field_hint, FIELD_SIZE)))):
-            self.close()
-            raise RuntimeError("Invalid Brock presence location")
-        self.brock_ptr = None if brock_presence is None else ram + brock_presence - 0x02000000
+        ranges = [(mailbox, MAILBOX_SIZE), (field_hint, FIELD_SIZE)]
+        for name, address in (("brock_ptr", brock_presence), ("trainer_ptr", trainer_presence)):
+            size = BROCK_PRESENCE.size
+            if address is not None and (
+                    address % 4 or not 0x02000000 <= address <= 0x02040000 - size
+                    or any(start is not None and address < start + length and start < address + size
+                           for start, length in ranges)):
+                self.close()
+                raise RuntimeError(f"Invalid position projection: {name}")
+            setattr(self, name, None if address is None else ram + address - 0x02000000)
+            ranges.append((address, size))
         av = AvInfo()
         core.retro_get_system_av_info(c.byref(av))
         self.frame_period = 1 / av.fps
@@ -192,6 +195,12 @@ class Game:
             code = PRESENCE[location]
             data = BROCK_PRESENCE.pack(b"LWB1", frame, code, code ^ 255)
             c.memmove(self.brock_ptr, data, BROCK_PRESENCE.size)
+
+    def publish_trainer(self, frame, location):
+        if self.trainer_ptr is not None:
+            code = TRAINER_PRESENCE[location]
+            data = BROCK_PRESENCE.pack(b"LWS1", frame, code, code ^ 255)
+            c.memmove(self.trainer_ptr, data, BROCK_PRESENCE.size)
 
     def write_reply(self, address, data):
         offset = address - self.mailbox
@@ -306,7 +315,8 @@ def main():
     core_path = ROOT / ("mgba_libretro.dll" if sys.platform == "win32" else "mgba_libretro.so")
     display = Display()
     game = Game(core_path, rom_path, rom, manifest["mailbox"], display,
-                field_hint=manifest.get("field_hint"), brock_presence=manifest.get("brock_presence"))
+                field_hint=manifest.get("field_hint"), brock_presence=manifest.get("brock_presence"),
+                trainer_presence=manifest.get("trainer_presence"))
     memory = None
     previous = None
     try:
@@ -482,10 +492,11 @@ def main():
                         if fresh:
                             for change in memory.routines.tick(fresh.local_second):
                                 log.write(json.dumps({"world_event": change}) + "\n")
-                            protected = bool(fresh.story) if fresh.area in ("", "pewter", "pewter_gym") else False
+                            protected = bool(fresh.story) if fresh.area in ("", "pewter", "pewter_gym", "route_2") else False
                             director.observe(fresh.local_second, fresh.area, protected, fresh.busy)
                             society.tick(fresh.local_second, fresh.area, fresh.busy)
                             director.notice = society.notice_for_brock()
+                            director.offscreen = society.state["visited"] and not director.demo
                             if planning is not None:
                                 request, future = planning
                                 social_plan = isinstance(request, Ticket)
@@ -532,6 +543,7 @@ def main():
                                         log.write(json.dumps({"directive": "routine",
                                                               "fallback": "decision retry limit"}) + "\n")
                             game.publish_brock(fresh.frame, director.location)
+                            game.publish_trainer(fresh.frame, society.state["agents"]["trainer"]["location"])
                         predicted = None if args.no_predict or planning else replies.predict(fresh, start)
                         if predicted:
                             log.write(json.dumps({"prefetched": predicted.state.encounter.npc,

@@ -75,6 +75,7 @@ struct LivingWorldBrockPresence
 
 STATIC_ASSERT(sizeof(struct LivingWorldBrockPresence) == 8, LivingWorldBrockPresenceSize);
 EWRAM_DATA volatile struct LivingWorldBrockPresence gLivingWorldBrockPresence = {0};
+EWRAM_DATA volatile struct LivingWorldBrockPresence gLivingWorldTrainerPresence = {0};
 
 static bool8 BrockProtected(void)
 {
@@ -82,72 +83,97 @@ static bool8 BrockProtected(void)
         || FlagGet(FLAG_DEFEATED_BROCK) || gQuestLogState == QL_STATE_PLAYBACK;
 }
 
-static u8 BrockLocation(void)
+static u8 ProjectedLocation(volatile const struct LivingWorldBrockPresence *presence, u32 magic)
 {
-    struct LivingWorldBrockPresence view = gLivingWorldBrockPresence;
-    if (BrockProtected() || view.magic != 0x3142574C  // Bytes "LWB1".
-     || (u16)(gLivingWorldFieldHint.frame - view.frame) >= 90
-     || view.location > BROCK_AT_FORECOURT || (view.location ^ view.inverse) != 255)
-        return BROCK_AT_GYM;
+    struct LivingWorldBrockPresence view = *presence;
+    if (view.magic != magic || (u16)(gLivingWorldFieldHint.frame - view.frame) >= 90
+     || view.location > 2 || (view.location ^ view.inverse) != 255)
+        return 0;
     return view.location;
 }
 
-static bool8 IsBrockObject(u16 map, u8 localId)
+static u8 BrockLocation(void)
 {
-    return (map == MAP_PEWTER_CITY_GYM && localId == 1)
-        || (map == MAP_PEWTER_CITY && localId == 7);
+    return BrockProtected() ? BROCK_AT_GYM : ProjectedLocation(&gLivingWorldBrockPresence, 0x3142574C);
+}
+
+static u8 TrainerLocation(void)
+{
+    if (!FlagGet(FLAG_SYS_POKEDEX_GET) || gQuestLogState == QL_STATE_PLAYBACK)
+        return 0;
+    return ProjectedLocation(&gLivingWorldTrainerPresence, 0x3153574C); // LWS1
+}
+
+struct LivingWorldSlot
+{
+    u16 map;
+    u8 id, x, y, location;
+    bool8 trainer;
+};
+
+static const struct LivingWorldSlot sSlots[] = {
+    {MAP_PEWTER_CITY_GYM, 1, 6, 5, BROCK_AT_GYM, FALSE},
+    {MAP_PEWTER_CITY, 7, 19, 9, BROCK_AT_FORECOURT, FALSE},
+    {MAP_PEWTER_CITY, 4, 33, 27, 0, TRUE},
+    {MAP_ROUTE2, 8, 7, 6, 2, TRUE},
+};
+
+static bool8 WantsSlot(const struct LivingWorldSlot *slot)
+{
+    u8 current = slot->trainer ? TrainerLocation() : BrockLocation();
+    return current == slot->location;
 }
 
 bool8 LivingWorld_AllowsObject(u8 localId, u8 mapNum, u8 mapGroup)
 {
     u16 map = (mapGroup << 8) | mapNum;
-    if (!IsBrockObject(map, localId))
-        return TRUE;
-    if (map == MAP_PEWTER_CITY && BrockLocation() != BROCK_AT_FORECOURT)
-        return FALSE;
-    if (map == MAP_PEWTER_CITY_GYM && BrockLocation() != BROCK_AT_GYM)
-        return FALSE;
-
-    // A late arrival may coincide with the player or follower crossing the
-    // slot. Wait for both current and previous movement tiles to clear.
-    const s16 x = (map == MAP_PEWTER_CITY ? 19 : 6) + MAP_OFFSET;
-    const s16 y = (map == MAP_PEWTER_CITY ? 9 : 5) + MAP_OFFSET;
-    for (u8 i = 0; i < OBJECT_EVENTS_COUNT; i++)
+    for (u8 slotId = 0; slotId < ARRAY_COUNT(sSlots); slotId++)
     {
-        const struct ObjectEvent *object = &gObjectEvents[i];
-        if (object->active && ((object->currentCoords.x == x && object->currentCoords.y == y)
-                           || (object->previousCoords.x == x && object->previousCoords.y == y)))
+        const struct LivingWorldSlot *slot = &sSlots[slotId];
+        if (slot->map != map || slot->id != localId)
+            continue;
+        if (!WantsSlot(slot))
             return FALSE;
+        const s16 x = slot->x + MAP_OFFSET;
+        const s16 y = slot->y + MAP_OFFSET;
+        for (u8 i = 0; i < OBJECT_EVENTS_COUNT; i++)
+        {
+            const struct ObjectEvent *object = &gObjectEvents[i];
+            if (object->active && ((object->currentCoords.x == x && object->currentCoords.y == y)
+                               || (object->previousCoords.x == x && object->previousCoords.y == y)))
+                return FALSE;
+        }
+        break;
     }
     return TRUE;
 }
 
-void LivingWorld_ReconcileBrock(void)
+void LivingWorld_ReconcileAgents(void)
 {
     u8 group = gSaveBlock1Ptr->location.mapGroup;
     u8 number = gSaveBlock1Ptr->location.mapNum;
     u16 map = (group << 8) | number;
-    if ((map != MAP_PEWTER_CITY && map != MAP_PEWTER_CITY_GYM)
+    if ((map != MAP_PEWTER_CITY && map != MAP_PEWTER_CITY_GYM && map != MAP_ROUTE2)
      || gLivingWorldFieldHint.frame % 8 != 0
      || ScriptContext_IsEnabled() || ArePlayerFieldControlsLocked())
         return;
 
-    u8 localId = map == MAP_PEWTER_CITY ? 7 : 1;
-    u8 object = GetObjectEventIdByLocalIdAndMap(localId, number, group);
-    u8 wanted = map == MAP_PEWTER_CITY ? BROCK_AT_FORECOURT : BROCK_AT_GYM;
-    if (BrockLocation() != wanted)
+    const struct ObjectEvent *player = &gObjectEvents[gPlayerAvatar.objectEventId];
+    for (u8 i = 0; i < ARRAY_COUNT(sSlots); i++)
     {
-        if (object < OBJECT_EVENTS_COUNT)
-            RemoveObjectEventByLocalIdAndMap(localId, number, group);
-        return;
-    }
-    if (object >= OBJECT_EVENTS_COUNT)
-    {
-        const struct ObjectEvent *player = &gObjectEvents[gPlayerAvatar.objectEventId];
-        s16 x = (map == MAP_PEWTER_CITY ? 19 : 6) + MAP_OFFSET;
-        s16 y = (map == MAP_PEWTER_CITY ? 9 : 5) + MAP_OFFSET;
-        if (player->active && abs(player->currentCoords.x - x) <= 8 && abs(player->currentCoords.y - y) <= 6)
-            TrySpawnObjectEvent(localId, number, group);
+        const struct LivingWorldSlot *slot = &sSlots[i];
+        if (slot->map != map)
+            continue;
+        u8 object = GetObjectEventIdByLocalIdAndMap(slot->id, number, group);
+        if (!WantsSlot(slot))
+        {
+            if (object < OBJECT_EVENTS_COUNT)
+                RemoveObjectEventByLocalIdAndMap(slot->id, number, group);
+        }
+        else if (object >= OBJECT_EVENTS_COUNT && player->active
+              && abs(player->currentCoords.x - (slot->x + MAP_OFFSET)) <= 8
+              && abs(player->currentCoords.y - (slot->y + MAP_OFFSET)) <= 6)
+            TrySpawnObjectEvent(slot->id, number, group);
     }
 }
 
@@ -250,6 +276,10 @@ void LivingWorld_UpdateFieldHint(void)
             hint.area = 7;
             hint.story = BrockProtected();
             break;
+        case MAP_ROUTE2:
+            hint.area = 8;
+            hint.story = BrockProtected();
+            break;
         case MAP_ROUTE1:
             hint.area = 4;
             if (idle)
@@ -265,11 +295,9 @@ void LivingWorld_UpdateFieldHint(void)
         if (!hint.area)
             hint.story = BrockProtected();
         if (hint.area)
-        {
             hint.species = VisibleSpecies();
-            if (!idle)
-                hint.distance = 255;
-        }
+        if (!idle)
+            hint.distance = 255;
     }
     gLivingWorldFieldHint = hint;
 }
