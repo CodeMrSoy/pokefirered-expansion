@@ -63,6 +63,7 @@ with TemporaryDirectory() as folder:
     world = memory.society
     event = world.state["museum_objective"]["event"]
     memory.checkpoint(b"npc-resolution")
+    world.tick(world.now, "viridian")
     actor = world.decision("assistant")
     world.submit(actor, actor.choices[1])
     while active := world.state["agents"]["assistant"]["active"]:

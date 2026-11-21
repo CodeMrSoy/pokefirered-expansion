@@ -1,11 +1,12 @@
 """Pewter agents advance at decisions and deadlines on the battery checkpoint."""
+from collections import deque
 from copy import copy, deepcopy
 from dataclasses import dataclass
 import json
 from time import perf_counter
 
 from dynamic_quests import settle_museum
-from planning import GOALS, Proposal
+from planning import Proposal, goals_for
 from region import TRAINER_PRESENCE, TRAVEL_PERMISSIONS, route
 
 DAY = 86400
@@ -102,6 +103,7 @@ class Society:
     def __init__(self, memory):
         self.memory = memory
         self.demo = False
+        self.regional_demo = False
         self.db = memory.db
         self.db.execute("CREATE TABLE IF NOT EXISTS society_state (save TEXT PRIMARY KEY, state TEXT NOT NULL)")
         self.load()
@@ -143,6 +145,8 @@ class Society:
             for actor, agent in self.state["agents"].items():
                 if agent["active"]:
                     self.abort(actor, "clock unavailable or reversed")
+            return
+        if second == self.now and self.state["visited"]:
             return
         self.now = second
         if not self.state["visited"] and area in ("pewter", "pewter_gym"):
@@ -309,6 +313,10 @@ class Society:
                 plans = ((Step("WORK", persona.duty),),)
                 plans += tuple((Step("EXCHANGE_INFORMATION", peer),) for peer in contacts)
                 return Ticket(self.memory.save, key, "report_field_observation", day, context, plans)
+            if agent.get("retry_at") is not None and self.now >= agent["retry_at"]:
+                context = (f"Your earlier plan was interrupted. You are back at {persona.duty}. "
+                           "Assess the current situation and choose a short feasible recovery.")
+                return Ticket(self.memory.save, key, "recover_plan", day, context, self.options(key))
             peers = self.followups(key)
             if peers and agent["shift"] == day and agent["followup_count"] < 2:
                 context = ("You completed a cast comparison. A colleague may be able to check it. "
@@ -323,7 +331,10 @@ class Society:
                 continue
             context = f"You are at {persona.duty}. Your shift is open. "
             if key == "researcher":
-                context += ("You noticed a cast comparison worth checking at the Museum. "
+                context += ("The Museum is interested in signs of Pokemon on the north Route 2 path. "
+                            "Your best chance to examine the field signs is this shift, with time to return. "
+                            "Prefer a route survey if it can fit. An exhibit task can also be done locally." if self.regional_demo else
+                            "You noticed a cast comparison worth checking at the Museum. "
                             "Ask the assistant if an independent second check would help.")
             elif key == "trainer":
                 context += ("You can practice on the public north end of Route 2 or stay here. "
@@ -357,19 +368,75 @@ class Society:
             options += [Step("OFFER_ASSISTANCE", peer) for peer in sorted(LINKS[actor]) if self.can_offer(actor, peer)]
         if actor == "trainer":
             options += [Step("TRAIN_POKEMON", duty), Step("TRAIN_POKEMON", "route_2")]
-        if actor == "researcher" and ticket.cause == "open_shift":
+        if actor == "researcher" and ticket.cause in ("open_shift", "recover_plan"):
             options.append(Step("INVESTIGATE", "tracks"))
         if actor in TRAVEL_PERMISSIONS:
             options += [Step("TRAVEL_TO", place) for place in sorted(TRAVEL_PERMISSIONS[actor] - {duty})]
             options.append(Step("RETURN_TO_DUTY", duty))
+        if actor == "researcher" and self.regional_demo:
+            priority = {Step("TRAVEL_TO", "route_2"): 0, Step("INVESTIGATE", "tracks"): 1,
+                        Step("RETURN_TO_DUTY", duty): 2}
+            options.sort(key=lambda step: priority.get(step, 3))
         return tuple(options)
+
+    def planning_snapshot(self):
+        result = copy(self)
+        result.state = deepcopy(self.state)
+        result.persist = lambda: None
+        return result
+
+    def plan_paths(self, ticket, available):
+        """Explore feasible action transitions using the live executor on a copy.
+
+        A bounded breadth-first pass preserves short alternatives. It happens
+        in the worker thread; published plans are still independently checked.
+        """
+        root = self.state
+        start = self.now
+        queue = deque([((), root, start)])
+        paths = {}
+        deadline = start + MAX_PLAN_SECONDS
+        remaining = 256
+        actor = ticket.actor
+        while queue and remaining:
+            path, state, second = queue.popleft()
+            remaining -= 1
+            self.state, self.now = state, second
+            agent = state["agents"][actor]
+            if path and agent["location"] == PERSONAS[actor].duty and not self.qualifies(
+                    actor, ticket.cause, "accepted"):
+                for goal in dict.fromkeys(goal for step in path for goal in goals_for(step)):
+                    paths.setdefault(goal, []).append(path)
+            if len(path) == 6:
+                continue
+            for step in available:
+                if step in path:
+                    continue
+                self.state, self.now = state, second
+                active = dict(steps=[(step.action, step.target)], index=0, due=second,
+                              deadline=deadline, event=ticket.cause)
+                if not self.valid(actor, step.action, step.target, active):
+                    continue
+                self.state = deepcopy(state)
+                working = self.state["agents"][actor]
+                working["active"] = active
+                self.start(actor)
+                due = working["active"]["due"]
+                if due >= deadline:
+                    continue
+                self.now = due
+                self.advance(actor, start_next=False)
+                if working["memory"][-1]["outcome"] == "completed":
+                    queue.append(((*path, step), self.state, due))
+        self.state, self.now = root, start
+        return paths
 
     def validate_proposal(self, ticket, proposal):
         steps = proposal.steps
         if proposal.available != self.primitives(ticket) or not 1 <= len(steps) <= 6 or len(set(steps)) != len(steps):
             raise ValueError("Plan contains changed capabilities or duplicate steps")
         if any(step not in proposal.available for step in steps) or not any(
-                GOALS.get(step.action) == proposal.goal for step in steps):
+                proposal.goal in goals_for(step) for step in steps):
             raise ValueError("Unauthorized action or unmet goal")
 
         # Use a shadow copy and the same transition code as execution.
@@ -409,6 +476,9 @@ class Society:
         if not 1 <= len(plan) <= 6:
             raise ValueError("Plan exceeds Pewter action or time bounds")
         agent = self.state["agents"][ticket.actor]
+        if ticket.cause == "recover_plan":
+            agent["retry_at"] = None
+            agent["last_replan"] = ticket.window
         if ticket.cause == "open_shift":
             agent["shift"] = ticket.window
             agent["followup_count"] = 0
@@ -471,7 +541,10 @@ class Society:
 
     def abort(self, actor, reason):
         agent = self.state["agents"][actor]
-        event = agent["active"].get("event")
+        active = agent["active"]
+        event = active.get("event")
+        if (active.get("goal") and self.now >= 0 and agent.get("last_replan") != self.now // DAY):
+            agent["retry_at"] = self.now + 10
         if self.qualifies(actor, event, "accepted"):
             self.state["requests"][event]["status"] = "interrupted"
         self.record(actor, "interrupted", reason=reason)

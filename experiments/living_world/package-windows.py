@@ -84,9 +84,12 @@ def main():
         shutil.copyfile(inputs / "PewterSocietyTest.sav", stage / "PewterSocietyTest.sav")
         (stage / "Play Pewter Society Demo.cmd").write_bytes(
             b'@echo off\r\ncall "%~dp0Play.cmd" --pewter-society\r\n')
+        shutil.copyfile(inputs / "PewterSocietyTest.sav", stage / "PewterRegionalTest.sav")
+        (stage / "Play Pewter Regional Demo.cmd").write_bytes(
+            b'@echo off\r\ncall "%~dp0Play.cmd" --pewter-regional\r\n')
         for name in ("play.py", "bridge.py", "inference.py", "worker.py", "world.py", "profiles.py",
                      "knowledge.py", "social.py", "reasoning.py", "hybrid.py", "routines.py", "director.py", "society.py", "planning.py", "region.py", "dynamic_quests.py", "PLAYTEST.md",
-                     "PHASE2.md", "PHASE3.md", "PHASE4.md", "PHASE5.md", "PHASE6.md", "PHASE7.md", "PHASE8.md", "PHASE9.md"):
+                     "PHASE2.md", "PHASE3.md", "PHASE4.md", "PHASE5.md", "PHASE6.md", "PHASE7.md", "PHASE8.md", "PHASE9.md", "PHASE10.md"):
             shutil.copyfile(APP / name, stage / name)
         subprocess.run([sys.executable, APP / "build-knowledge.py", stage / "world-knowledge.sqlite3"], check=True)
         shutil.copyfile(APP / "launch-windows.cmd", stage / "Play.cmd")

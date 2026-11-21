@@ -1,6 +1,6 @@
 """Minimal SDL2/libretro desktop player for the Living Quantum World test."""
 import argparse
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import Future, ThreadPoolExecutor
 import ctypes as c
 import ctypes.util
 import hashlib
@@ -275,6 +275,7 @@ def main():
     mode.add_argument("--pallet-social", action="store_true")
     mode.add_argument("--pewter-demo", action="store_true")
     mode.add_argument("--pewter-society", action="store_true")
+    mode.add_argument("--pewter-regional", action="store_true")
     parser.add_argument("--lightweight", action="store_true", help="Use short dialogue and skip optional prose")
     parser.add_argument("--no-predict", action="store_true", help="Disable approach prefetch for comparison")
     args = parser.parse_args()
@@ -327,7 +328,9 @@ def main():
     profile = Path(os.environ.get("LOCALAPPDATA", Path.home() / ".local/share")) / "LivingQuantumWorld"
     profile.mkdir(parents=True, exist_ok=True)
     demo = "PalletSocialTest.sav" if args.pallet_social else "PalletTest.sav" if args.pallet_test else None
-    if args.pewter_society:
+    if args.pewter_regional:
+        demo = "PewterRegionalTest.sav"
+    elif args.pewter_society:
         demo = "PewterSocietyTest.sav"
     elif args.pewter_demo:
         demo = "PewterTest.sav"
@@ -366,21 +369,23 @@ def main():
             prediction_error = None
 
             society = memory.society
-            society.demo = args.pewter_society
+            society.demo = args.pewter_society or args.pewter_regional
+            society.regional_demo = args.pewter_regional
             director = memory.director
             director.demo = args.pewter_demo
-            director.society_demo = args.pewter_society
+            director.society_demo = society.demo
             director.notice_required = True
             planning = None
             plan_retry_after = 0.0
             plan_budget = {}
+            plan_cache = {}
 
-            def run_decision(chooser, request, queued, available=None):
+            def run_decision(chooser, request, queued, available=None, planner=None):
                 delay = (time.perf_counter() - queued) * 1000
                 if available is None:
                     plan, metrics = chooser(model, request)
                 else:
-                    plan, metrics = chooser(model, request, available, PERSONAS[request.actor])
+                    plan, metrics = chooser(model, request, available, PERSONAS[request.actor], planner)
                 return plan, {**metrics, "queue_ms": delay}
 
             def propose(context):
@@ -561,6 +566,11 @@ def main():
                                                 raise
                                             selected, failure = request.choices[0], str(error)
                                             authority.submit(request, selected, fallback=failure)
+                                        if isinstance(selected, Proposal) and request.cause == "open_shift":
+                                            key = (request.save, request.actor, request.context, selected.available)
+                                            plan_cache[key] = selected
+                                            if len(plan_cache) > 16:
+                                                del plan_cache[next(iter(plan_cache))]
                                         if not social_plan:
                                             society.respond_brock(request.notice, selected == TRIP)
                                         steps = selected.steps if isinstance(selected, Proposal) else selected
@@ -574,7 +584,7 @@ def main():
                                 elif request != ready_now and future.cancel():
                                     planning = None
                             if planning is None and start >= plan_retry_after and game.brock_ptr:
-                                request = (society.decision() if args.pewter_society and not director.notice
+                                request = (society.decision() if society.demo and not director.notice
                                            else director.decision()) or society.decision()
                                 if request is not None and replies.worker_idle():
                                     social_plan = isinstance(request, Ticket)
@@ -588,8 +598,15 @@ def main():
                                         plan_retry_after = start + 5
                                         chooser = choose_plan if social_plan else choose_brock
                                         available = society.primitives(request) if social_plan else None
-                                        planning = request, pool.submit(run_decision, chooser, request,
-                                                                        time.perf_counter(), available)
+                                        cache_key = (request.save, request.actor, request.context, available) if available else None
+                                        cached = plan_cache.get(cache_key) if social_plan and request.cause == "open_shift" else None
+                                        if cached:
+                                            future = Future()
+                                            future.set_result((cached, {"cache_hit": True, "queue_ms": 0}))
+                                        else:
+                                            future = pool.submit(run_decision, chooser, request, time.perf_counter(), available,
+                                                                 society.planning_snapshot() if social_plan else None)
+                                        planning = request, future
                                     else:
                                         authority = society if social_plan else director
                                         fallback_plan = request.choices[0] if social_plan else DUTY

@@ -67,3 +67,38 @@ dynamic entries coexist with the original seven native definitions and
 cannot invoke tracking, reward or offer mutations. Classic and Quantum
 mGBA tested both rows, dialogue-derived discovery, active and completed
 presentation, independent resolution, expiry and checkpoint rollback.
+
+## 10E · Scheduling and measured results
+
+The planning thread explores at most 256 world-state prefixes and builds a
+compact grammar from feasible transitions. This narrows semantic errors
+before inference while preserving distinct compositions, targets and goals.
+The first unrestricted sample led the researcher to investigate before
+traveling and led the trainer to submit actions unrelated to practice.
+Both were rejected. A longer prompt also exceeded the worker's input
+capacity in the researcher case. The release uses compact prompt text,
+transitions from the simulated graph and final authoritative revalidation.
+
+One shared Qwen3 0.6B worker still serves all NPCs. Only one background
+decision is pending, and foreground dialogue takes priority over queued
+background work. An in-flight inference remains non-preemptible. Routine
+plans have a bounded 16-entry in-session, checkpoint-scoped cache. Timed
+actions use field clock updates; repeated frames within the same second
+avoid scanning unchanged events. A composed plan interrupted by a missed
+deadline or clock problem may retry once with a fresh ticket.
+
+On AMD EPYC Linux the final real-model sample accepted four composed
+ordinary-agent plans and Brock's protected decision. The volunteer selected
+the Route 2 survey, investigating tracks, returning and resting. Decision
+latency was 1.45–2.85 s, including a cold Brock call. The largest graph
+took 71.5 ms off the emulator thread. These are five measured decisions,
+not a population-wide acceptance-rate estimate.
+
+120 seeded policy runs produced 72 regional surveys, 36 local checks and
+12 interruptions followed by a new planning ticket. Under allocation
+tracing, validation and transition calls measured 0.69 ms p95 and peak
+Python allocations were about 203 KiB. The Phase 9 100-day soak retained
+100 checks and reopened a 108 KiB database. The 250-resident Phase 7
+synthetic workload reran at 0.288 ms p95, 500 KiB SQLite and zero duplicate
+events. That workload scales the routine scheduler, not 250 inference
+clients. No model calls were made inside the seeded or synthetic loops.
