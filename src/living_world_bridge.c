@@ -76,6 +76,7 @@ struct LivingWorldBrockPresence
 STATIC_ASSERT(sizeof(struct LivingWorldBrockPresence) == 8, LivingWorldBrockPresenceSize);
 EWRAM_DATA volatile struct LivingWorldBrockPresence gLivingWorldBrockPresence = {0};
 EWRAM_DATA volatile struct LivingWorldBrockPresence gLivingWorldTrainerPresence = {0};
+EWRAM_DATA volatile struct LivingWorldBrockPresence gLivingWorldResearcherPresence = {0};
 
 struct LivingWorldQuestView
 {
@@ -107,44 +108,57 @@ static bool8 BrockProtected(void)
         || FlagGet(FLAG_DEFEATED_BROCK) || gQuestLogState == QL_STATE_PLAYBACK;
 }
 
-static u8 ProjectedLocation(volatile const struct LivingWorldBrockPresence *presence, u32 magic)
+static u8 ProjectedLocation(volatile const struct LivingWorldBrockPresence *presence, u32 magic, u8 maxLocation)
 {
     struct LivingWorldBrockPresence view = *presence;
     if (view.magic != magic || (u16)(gLivingWorldFieldHint.frame - view.frame) >= 90
-     || view.location > 2 || (view.location ^ view.inverse) != 255)
+     || view.location > maxLocation || (view.location ^ view.inverse) != 255)
         return 0;
     return view.location;
 }
 
 static u8 BrockLocation(void)
 {
-    return BrockProtected() ? BROCK_AT_GYM : ProjectedLocation(&gLivingWorldBrockPresence, 0x3142574C);
+    return BrockProtected() ? BROCK_AT_GYM : ProjectedLocation(&gLivingWorldBrockPresence, 0x3142574C, 2);
 }
 
 static u8 TrainerLocation(void)
 {
     if (!FlagGet(FLAG_SYS_POKEDEX_GET) || gQuestLogState == QL_STATE_PLAYBACK)
         return 0;
-    return ProjectedLocation(&gLivingWorldTrainerPresence, 0x3153574C); // LWS1
+    return ProjectedLocation(&gLivingWorldTrainerPresence, 0x3153574C, 2); // LWS1
+}
+
+enum { AGENT_BROCK, AGENT_TRAINER, AGENT_RESEARCHER };
+
+static u8 ResearcherLocation(void)
+{
+    if (!FlagGet(FLAG_SYS_POKEDEX_GET) || gQuestLogState == QL_STATE_PLAYBACK)
+        return 0;
+    return ProjectedLocation(&gLivingWorldResearcherPresence, 0x3152574C, 3); // LWR1
 }
 
 struct LivingWorldSlot
 {
     u16 map;
     u8 id, x, y, location;
-    bool8 trainer;
+    u8 actor;
 };
 
 static const struct LivingWorldSlot sSlots[] = {
-    {MAP_PEWTER_CITY_GYM, 1, 6, 5, BROCK_AT_GYM, FALSE},
-    {MAP_PEWTER_CITY, 7, 19, 9, BROCK_AT_FORECOURT, FALSE},
-    {MAP_PEWTER_CITY, 4, 33, 27, 0, TRUE},
-    {MAP_ROUTE2, 8, 7, 6, 2, TRUE},
+    {MAP_PEWTER_CITY_GYM, 1, 6, 5, BROCK_AT_GYM, AGENT_BROCK},
+    {MAP_PEWTER_CITY, 7, 19, 9, BROCK_AT_FORECOURT, AGENT_BROCK},
+    {MAP_PEWTER_CITY, 4, 33, 27, 0, AGENT_TRAINER},
+    {MAP_ROUTE2, 8, 7, 6, 2, AGENT_TRAINER},
+    {MAP_PEWTER_CITY_MUSEUM_1F, 2, 2, 4, 0, AGENT_RESEARCHER},
+    {MAP_PEWTER_CITY, 8, 18, 9, 2, AGENT_RESEARCHER},
+    {MAP_ROUTE2, 9, 9, 6, 3, AGENT_RESEARCHER},
 };
 
 static bool8 WantsSlot(const struct LivingWorldSlot *slot)
 {
-    u8 current = slot->trainer ? TrainerLocation() : BrockLocation();
+    u8 current = slot->actor == AGENT_RESEARCHER ? ResearcherLocation()
+               : slot->actor == AGENT_TRAINER ? TrainerLocation() : BrockLocation();
     return current == slot->location;
 }
 
@@ -177,7 +191,8 @@ void LivingWorld_ReconcileAgents(void)
     u8 group = gSaveBlock1Ptr->location.mapGroup;
     u8 number = gSaveBlock1Ptr->location.mapNum;
     u16 map = (group << 8) | number;
-    if ((map != MAP_PEWTER_CITY && map != MAP_PEWTER_CITY_GYM && map != MAP_ROUTE2)
+    if ((map != MAP_PEWTER_CITY && map != MAP_PEWTER_CITY_GYM && map != MAP_ROUTE2
+      && map != MAP_PEWTER_CITY_MUSEUM_1F)
      || gLivingWorldFieldHint.frame % 8 != 0
      || ScriptContext_IsEnabled() || ArePlayerFieldControlsLocked())
         return;

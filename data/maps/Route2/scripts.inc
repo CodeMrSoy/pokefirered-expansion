@@ -22,3 +22,10 @@ Route2_EventScript_PewterTrainerRelease::
 Route2_Text_PewterTrainerPractice::
 	.string "I'm practicing near the rocks.\n"
 	.string "I'll head back to Pewter soon.$"
+
+Route2_EventScript_Volunteer::
+	msgbox Route2_Text_Volunteer, MSGBOX_NPC
+	end
+
+Route2_Text_Volunteer::
+	.string "I'm taking notes for the Museum.$"

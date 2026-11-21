@@ -33,3 +33,13 @@ used by live steps to validate dependencies, time, result and end location.
 Invalid plans leave the live state unchanged and the host applies a safe
 routine where the ticket is still current. Brock keeps the separate
 protected Gym contract and its bounded choice interface.
+
+## 10B · Regional routes
+
+The public Museum wing, Pewter and north Route 2 form the new graph. Graph
+search respects actor-specific locations and persists its chosen legs,
+arrival time and destination. The volunteer uses the existing Museum
+visitor slot and two authored alternate slots. Geometry is checked from
+the ROM layouts, including the public door and the open Route 2 border.
+Classic and Quantum mGBA exercised departure, offscreen investigation,
+arrival and return. Intermediate legs are simulated offscreen.

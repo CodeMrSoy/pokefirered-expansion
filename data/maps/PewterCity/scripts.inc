@@ -668,3 +668,10 @@ PewterCity_EventScript_BrockForecourtRelease::
 
 PewterCity_Text_BrockForecourt::
 	.string "I'll meet you at the Gym.$"
+
+PewterCity_EventScript_Volunteer::
+	msgbox PewterCity_Text_Volunteer, MSGBOX_NPC
+	end
+
+PewterCity_Text_Volunteer::
+	.string "I'm taking notes for the Museum.$"

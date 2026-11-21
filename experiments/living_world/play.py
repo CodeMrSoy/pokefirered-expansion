@@ -23,7 +23,8 @@ from hybrid import FIELD_SIZE, FieldHint, HybridDialogue, prepare
 from reasoning import BALANCED_SHA256, LIGHTWEIGHT_SHA256, GuideTurn, guide_reply, reported_fact
 from profiles import PROFILES
 from world import Encounter, WorldMemory
-from society import PERSONAS, TRAINER_PRESENCE, Ticket
+from society import PERSONAS, Ticket
+from region import RESEARCHER_PRESENCE, TRAINER_PRESENCE
 from planning import Proposal, choose_plan
 
 ROOT = Path(__file__).resolve().parent
@@ -123,7 +124,7 @@ class Display:
 
 
 class Game:
-    def __init__(self, core_path, rom_path, rom, mailbox, display, *, field_hint=None, brock_presence=None, trainer_presence=None, quest_view=None):
+    def __init__(self, core_path, rom_path, rom, mailbox, display, *, field_hint=None, brock_presence=None, trainer_presence=None, quest_view=None, researcher_presence=None):
         self.display = display
         self.mailbox = mailbox
         self.core = core = c.CDLL(str(core_path))
@@ -157,6 +158,7 @@ class Game:
         ranges = [(mailbox, MAILBOX_SIZE), (field_hint, FIELD_SIZE)]
         for name, address, size in (("brock_ptr", brock_presence, BROCK_PRESENCE.size),
                                     ("trainer_ptr", trainer_presence, BROCK_PRESENCE.size),
+                                    ("researcher_ptr", researcher_presence, BROCK_PRESENCE.size),
                                     ("quest_ptr", quest_view, QUEST_VIEW.size)):
             if address is not None and (
                     address % 4 or not 0x02000000 <= address <= 0x02040000 - size
@@ -204,6 +206,12 @@ class Game:
             code = TRAINER_PRESENCE[location]
             data = BROCK_PRESENCE.pack(b"LWS1", frame, code, code ^ 255)
             c.memmove(self.trainer_ptr, data, BROCK_PRESENCE.size)
+
+    def publish_researcher(self, frame, location):
+        if self.researcher_ptr is not None:
+            code = RESEARCHER_PRESENCE[location]
+            payload = BROCK_PRESENCE.pack(b"LWR1", frame, code, code ^ 255)
+            c.memmove(self.researcher_ptr, payload, len(payload))
 
     def publish_quest(self, director):
         if self.quest_ptr is not None:
@@ -326,7 +334,8 @@ def main():
     display = Display()
     game = Game(core_path, rom_path, rom, manifest["mailbox"], display,
                 field_hint=manifest.get("field_hint"), brock_presence=manifest.get("brock_presence"),
-                trainer_presence=manifest.get("trainer_presence"), quest_view=manifest.get("quest_view"))
+                trainer_presence=manifest.get("trainer_presence"), quest_view=manifest.get("quest_view"),
+                researcher_presence=manifest.get("researcher_presence"))
     memory = None
     previous = None
     try:
@@ -586,6 +595,7 @@ def main():
                             game.publish_quest(director)
                             game.publish_brock(fresh.frame, director.location)
                             game.publish_trainer(fresh.frame, society.state["agents"]["trainer"]["location"])
+                            game.publish_researcher(fresh.frame, society.state["agents"]["researcher"]["location"])
                         predicted = None if args.no_predict or planning else replies.predict(fresh, start)
                         if predicted:
                             log.write(json.dumps({"prefetched": predicted.state.encounter.npc,

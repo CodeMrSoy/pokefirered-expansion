@@ -59,6 +59,8 @@ def main():
                             if line.endswith(" gLivingWorldTrainerPresence"))
     quest_view = next(int(line.split()[0], 16) for line in symbols.splitlines()
                       if line.endswith(" gLivingWorldQuestView"))
+    researcher_presence = next(int(line.split()[0], 16) for line in symbols.splitlines()
+                               if line.endswith(" gLivingWorldResearcherPresence"))
     names = {}
     header = (ROOT / "include/constants/species.h").read_text()
     for key, id_ in re.findall(r"^#define SPECIES_([A-Z0-9_]+)\s+(\d+)\b", header, re.MULTILINE):
@@ -81,7 +83,7 @@ def main():
         (stage / "Play Pewter Society Demo.cmd").write_bytes(
             b'@echo off\r\ncall "%~dp0Play.cmd" --pewter-society\r\n')
         for name in ("play.py", "bridge.py", "inference.py", "worker.py", "world.py", "profiles.py",
-                     "knowledge.py", "social.py", "reasoning.py", "hybrid.py", "routines.py", "director.py", "society.py", "planning.py", "dynamic_quests.py", "PLAYTEST.md",
+                     "knowledge.py", "social.py", "reasoning.py", "hybrid.py", "routines.py", "director.py", "society.py", "planning.py", "region.py", "dynamic_quests.py", "PLAYTEST.md",
                      "PHASE2.md", "PHASE3.md", "PHASE4.md", "PHASE5.md", "PHASE6.md", "PHASE7.md", "PHASE8.md", "PHASE9.md"):
             shutil.copyfile(APP / name, stage / name)
         subprocess.run([sys.executable, APP / "build-knowledge.py", stage / "world-knowledge.sqlite3"], check=True)
@@ -111,6 +113,7 @@ def main():
             "field_hint": field_hint,
             "brock_presence": brock_presence,
             "trainer_presence": trainer_presence,
+            "researcher_presence": researcher_presence,
             "quest_view": quest_view,
             "sha256": sha256(stage / "PokemonQuantum.gba"),
             "model_sha256": model_sha,

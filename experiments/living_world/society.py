@@ -4,7 +4,8 @@ from dataclasses import dataclass
 import json
 from time import perf_counter
 
-from planning import GOALS, Proposal, choose_plan
+from planning import GOALS, Proposal
+from region import TRAINER_PRESENCE, TRAVEL_PERMISSIONS, route
 
 DAY = 86400
 
@@ -20,7 +21,7 @@ class Persona:
 
 
 PERSONAS = {
-    "researcher": Persona("Pewter fossil researcher", "compare casts with care",
+    "researcher": Persona("Pewter Museum volunteer and fossil researcher", "compare casts with care",
                           "curious and methodical", "museum", (9, 17), "INVESTIGATE"),
     "assistant": Persona("Pewter Museum assistant", "keep verified notes for the exhibit",
                          "helpful but careful", "museum", (9, 18), "WORK"),
@@ -52,7 +53,6 @@ DURATIONS = {"WORK": 24, "REST": 16, "INVESTIGATE": 32, "TRAIN_POKEMON": 28,
              "ARRANGE_MEETING": 6, "VISIT_NPC": 6, "SHARE_INFORMATION": 4,
              "TRAVEL_TO": 16, "RETURN_TO_DUTY": 16}
 TRAVEL_STEPS = ("TRAVEL_TO", "RETURN_TO_DUTY")
-TRAINER_PRESENCE = {"pewter": 0, "in_transit": 1, "route_2": 2}
 LINKS = {
     "researcher": {"assistant", "brock"},
     "assistant": {"researcher", "trainer"},
@@ -320,8 +320,12 @@ class Society:
         else:
             options += [Step("REQUEST_ASSISTANCE", peer) for peer in self.followups(actor)]
         if actor == "trainer":
-            options += [Step("TRAIN_POKEMON", duty), Step("TRAVEL_TO", "route_2"),
-                        Step("TRAIN_POKEMON", "route_2"), Step("RETURN_TO_DUTY", duty)]
+            options += [Step("TRAIN_POKEMON", duty), Step("TRAIN_POKEMON", "route_2")]
+        if actor == "researcher" and ticket.cause == "open_shift":
+            options.append(Step("INVESTIGATE", "tracks"))
+        if actor in TRAVEL_PERMISSIONS:
+            options += [Step("TRAVEL_TO", place) for place in sorted(TRAVEL_PERMISSIONS[actor] - {duty})]
+            options.append(Step("RETURN_TO_DUTY", duty))
         return tuple(options)
 
     def validate_proposal(self, ticket, proposal):
@@ -331,8 +335,6 @@ class Society:
         if any(step not in proposal.available for step in steps) or not any(
                 GOALS.get(step.action) == proposal.goal for step in steps):
             raise ValueError("Unauthorized action or unmet goal")
-        if sum(DURATIONS[step.action] for step in steps) >= MAX_PLAN_SECONDS:
-            raise ValueError("Plan exceeds time budget")
 
         # Use a shadow copy and the same transition code as execution.
         # Nothing runs against SQLite or the actual world while validating.
@@ -348,6 +350,8 @@ class Society:
             if active is None:
                 raise ValueError(f"{step.action} precondition is not met")
             shadow.now = active["due"]
+            if shadow.now >= active["deadline"]:
+                raise ValueError("Plan exceeds time budget")
             shadow.advance(ticket.actor, start_next=False)
             last = agent["memory"][-1]
             if last["outcome"] != "completed":
@@ -366,7 +370,7 @@ class Society:
             goal, plan = plan.goal, plan.steps
         elif plan not in ticket.choices:
             raise ValueError("Rejected unauthorized recovery plan")
-        if not 1 <= len(plan) <= 6 or sum(DURATIONS[step.action] for step in plan) >= MAX_PLAN_SECONDS:
+        if not 1 <= len(plan) <= 6:
             raise ValueError("Plan exceeds Pewter action or time bounds")
         agent = self.state["agents"][ticket.actor]
         if ticket.cause == "open_shift":
@@ -383,16 +387,21 @@ class Society:
     def valid(self, actor, action, target, active, *, finishing=False):
         agent = self.state["agents"][actor]
         if action in TRAVEL_STEPS:
-            destination, origin = ("route_2", "pewter") if action == "TRAVEL_TO" else ("pewter", "route_2")
-            return actor == "trainer" and target == destination and agent["location"] == (
-                "in_transit" if finishing else origin)
+            if finishing:
+                journey = active.get("journey", {})
+                return agent["location"] == "in_transit" and journey.get("destination") == target
+            if (action == "RETURN_TO_DUTY") != (target == PERSONAS[actor].duty):
+                return False
+            return route(actor, agent["location"], target) is not None
         if action == "TRAIN_POKEMON" and actor == "trainer":
             return target == agent["location"] and target in ("pewter", "route_2")
         if action in ("WORK", "REST"):
             return target == agent["location"] == PERSONAS[actor].duty
         if action == "INVESTIGATE":
-            return target == "cast" and (actor == "researcher" or
-                   self.qualifies(actor, active.get("event"), "accepted"))
+            if target == "tracks":
+                return actor == "researcher" and agent["location"] == "route_2"
+            return (target == "cast" and agent["location"] == PERSONAS[actor].duty and
+                    (actor == "researcher" or self.qualifies(actor, active.get("event"), "accepted")))
         if action == "REQUEST_ASSISTANCE":
             return self.can_request(actor, target)
         if action in ("ACCEPT_REQUEST", "DECLINE_REQUEST"):
@@ -434,12 +443,14 @@ class Society:
         if not self.valid(actor, action, target, active):
             self.abort(actor, f"{action} precondition changed")
             return
+        duration = DURATIONS[action]
         if action in TRAVEL_STEPS:
+            legs, duration = route(actor, agent["location"], target)
             active["journey"] = dict(origin=agent["location"], destination=target, departed=self.now,
-                                     arrival=self.now + DURATIONS[action])
+                                     arrival=self.now + duration, legs=legs)
             agent["location"] = "in_transit"
         agent["activity"] = action
-        active["due"] = self.now + DURATIONS[action]
+        active["due"] = self.now + duration
 
     def advance(self, actor, *, start_next=True):
         agent = self.state["agents"][actor]
