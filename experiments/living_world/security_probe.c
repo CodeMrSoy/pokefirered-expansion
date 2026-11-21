@@ -5,17 +5,55 @@
 #include <ws2tcpip.h>
 #include <windows.h>
 
+// A nonblocking connect may remain pending even when an eventual completion
+// will be denied. Only an explicit access error counts as a restriction.
+static int ProbeInternet(void)
+{
+    struct sockaddr_in address = {0};
+    address.sin_family = AF_INET;
+    address.sin_port = htons(443);
+    if (InetPtonW(AF_INET, L"1.1.1.1", &address.sin_addr) != 1)
+        return WSAEINVAL;
+    SOCKET net = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    if (net == INVALID_SOCKET)
+        return WSAGetLastError();
+
+    WSAEVENT event = WSACreateEvent();
+    int error = 0;
+    if (event == WSA_INVALID_EVENT || WSAEventSelect(net, event, FD_CONNECT) == SOCKET_ERROR) {
+        error = WSAGetLastError();
+    } else if (connect(net, (struct sockaddr *)&address, sizeof(address)) == SOCKET_ERROR) {
+        error = WSAGetLastError();
+        if (error == WSAEWOULDBLOCK) {
+            DWORD wait = WSAWaitForMultipleEvents(1, &event, FALSE, 4000, FALSE);
+            if (wait == WSA_WAIT_TIMEOUT) {
+                error = WSAETIMEDOUT;
+            } else if (wait != WSA_WAIT_EVENT_0) {
+                error = WSAGetLastError();
+            } else {
+                WSANETWORKEVENTS events = {0};
+                if (WSAEnumNetworkEvents(net, event, &events) == SOCKET_ERROR)
+                    error = WSAGetLastError();
+                else if (events.lNetworkEvents & FD_CONNECT)
+                    error = events.iErrorCode[FD_CONNECT_BIT];
+            }
+        }
+    }
+    closesocket(net);
+    if (event != WSA_INVALID_EVENT)
+        WSACloseEvent(event);
+    return error;
+}
+
 int wmain(int argc, wchar_t **argv)
 {
     WSADATA data;
-    struct sockaddr_in address = {0};
     STARTUPINFOW startup = { .cb = sizeof(startup) };
     PROCESS_INFORMATION child = {0};
     wchar_t shell[MAX_PATH];
     wchar_t command[] = L"cmd.exe /d /c exit 0";
     HANDLE file;
-    SOCKET net;
-    BOOL readDenied, writeDenied, processDenied, netDenied;
+    BOOL readDenied, writeDenied, processDenied;
 
     if (argc != 3 || WSAStartup(MAKEWORD(2, 2), &data))
         return 2;
@@ -42,18 +80,10 @@ int wmain(int argc, wchar_t **argv)
         CloseHandle(child.hProcess);
     }
 
-    address.sin_family = AF_INET;
-    address.sin_port = htons(443);
-    InetPtonW(AF_INET, L"1.1.1.1", &address.sin_addr);
-    net = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-    netDenied = net == INVALID_SOCKET && WSAGetLastError() == WSAEACCES;
-    if (net != INVALID_SOCKET) {
-        u_long nonblocking = 1;
-        ioctlsocket(net, FIONBIO, &nonblocking);
-        netDenied = connect(net, (struct sockaddr *)&address, sizeof(address)) == SOCKET_ERROR
-            && WSAGetLastError() == WSAEACCES;
-        closesocket(net);
-    }
+    int netError = ProbeInternet();
+    BOOL netDenied = netError == WSAEACCES;
+    printf("Internet connection: %s (Winsock %d)\n",
+        netDenied ? "access denied" : netError ? "inconclusive" : "connected", netError);
     WSACleanup();
     printf("Read denied=%d, write denied=%d, process denied=%d, internet denied=%d\n",
         readDenied, writeDenied, processDenied, netDenied);

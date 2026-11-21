@@ -92,6 +92,8 @@ def main():
         shutil.copyfile(inputs / "PewterSocietyTest.sav", stage / "Phase11RegionalSociety.sav")
         (stage / "Play Phase 11 Society Demo.cmd").write_bytes(
             b'@echo off\r\ncall "%~dp0Play.cmd" --phase11-demo\r\n')
+        (stage / "Play Pewter Regional Retest.cmd").write_bytes(
+            b'@echo off\r\ncall "%~dp0Play.cmd" --pewter-regional-retest\r\n')
         validator = (APP / "validate-offline-windows.cmd").read_text(encoding="ascii")
         (stage / "Validate Offline Runtime.cmd").write_bytes(validator.replace("\n", "\r\n").encode("ascii"))
         for name in ("play.py", "controls.py", "population.py", "bridge.py", "inference.py", "worker.py", "world.py", "profiles.py",
