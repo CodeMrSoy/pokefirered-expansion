@@ -122,6 +122,7 @@ class WorldDirector:
         self.notice_required = False
         self.notice = None
         self.offscreen = False
+        self.society_demo = False
         self.db = memory.db
         with self.db:
             self.db.execute("CREATE TABLE IF NOT EXISTS director_state (save TEXT PRIMARY KEY, state TEXT NOT NULL)")
@@ -191,7 +192,7 @@ class WorldDirector:
         day = second // DAY
         # A curator working the exhibit, an expected Gym challenge, and
         # scheduled training are distinct causal triggers.
-        if 10 <= hour < 16 or (self.demo and self.state["number"] == 0):
+        if 10 <= hour < 16 or (self.demo and self.state["number"] == 0) or (self.society_demo and self.notice):
             trigger = "research_request"
         else:
             trigger = "practice" if 16 <= hour < 20 else "gym_duty"
@@ -237,7 +238,7 @@ class WorldDirector:
         self.state["number"] += 1
         self.state["active"] = dict(id=self.state["number"], goal=plan.goal, steps=[asdict(s) for s in plan.steps],
                                     index=0, due=now, deadline=now + MAX_ABSENCE,
-                                    trigger=decision.trigger, report_source=SOURCE if decision.report else None,
+                                    trigger=decision.trigger, notice=decision.notice, report_source=SOURCE if decision.report else None,
                                     departure_notice=plan == TRIP)
         self.record("approved", plan=plan.goal, cause=decision.trigger, fallback=fallback)
         self.start_step(now)
@@ -283,6 +284,8 @@ class WorldDirector:
     def finish(self, reason):
         active = self.state["active"]
         self.record(reason, plan=active["goal"] if active else None)
+        if active and active.get("notice"):
+            self.state["last_notice_result"] = (active["notice"], reason == "completed")
         self.state.update(active=None, location=GYM, activity="gym_duty")
         if self.state["research"] and self.state["research"]["status"] == "reported":
             self.state["research"]["status"] = "expired"

@@ -12,7 +12,10 @@ Route2_EventScript_DiglettsCaveSign::
 Route2_EventScript_PewterTrainer::
 	lock
 	faceplayer
+	living_world_aside LIVING_WORLD_SOCIETY_TRAINER
+	goto_if_eq VAR_RESULT, TRUE, Route2_EventScript_PewterTrainerRelease
 	msgbox Route2_Text_PewterTrainerPractice
+Route2_EventScript_PewterTrainerRelease::
 	release
 	end
 

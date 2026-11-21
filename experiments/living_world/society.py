@@ -65,8 +65,24 @@ def choose_agent(model, ticket):
     labels = tuple("ABCDEF"[:len(ticket.choices)])
     instructions = (f"You are the {persona.role}, {persona.temperament}. Your long-term goal is to "
                     f"{persona.motive}. Select an available plan. Output only the choice letter.")
-    plans = "\n".join(f"{letter}: " + ", then ".join(f"{s.action} at or with {s.target}" for s in plan)
-                      for letter, plan in zip(labels, ticket.choices))
+    descriptions = {
+        "DECLINE_REQUEST": "Decline and continue your duties",
+        "ACCEPT_REQUEST": "Help the colleague: book a short meeting, check the cast and send your result",
+        "INVESTIGATE": "Check the Museum cast firsthand",
+        "TRAIN_POKEMON": "Train your Pokemon",
+        "TRAVEL_TO": "Travel to the public north end of Route 2, train, then return to Pewter",
+        "WORK": "Stay on routine duty",
+        "REST": "Rest briefly and resume duty",
+    }
+    def describe(plan):
+        first = plan[0]
+        if first.action == "REQUEST_ASSISTANCE":
+            return f"Ask {first.target} to check your result"
+        phrase = descriptions[first.action]
+        if plan[-1].action == "REQUEST_ASSISTANCE":
+            return f"{phrase}, then ask {plan[-1].target} to check it"
+        return phrase
+    plans = "\n".join(f"{letter}: {describe(plan)}" for letter, plan in zip(labels, ticket.choices))
     if model.style != "qwen3":
         raise ValueError("Pewter agent requires the bundled Qwen3 worker")
     prompt = model.render_prompt(instructions, ticket.context + "\n" + plans)
@@ -80,6 +96,7 @@ def choose_agent(model, ticket):
 class Society:
     def __init__(self, memory):
         self.memory = memory
+        self.demo = False
         self.db = memory.db
         self.db.execute("CREATE TABLE IF NOT EXISTS society_state (save TEXT PRIMARY KEY, state TEXT NOT NULL)")
         self.load()
@@ -90,7 +107,7 @@ class Society:
         for key, persona in PERSONAS.items():
             self.state["agents"].setdefault(key, dict(location=persona.duty, shift=-1, active=None,
                                                       activity="WORK", facts={}, bonds={}, memory=[]))
-            self.state["agents"][key].setdefault("followup", -1)
+            self.state["agents"][key].setdefault("followup_count", 0)
         self.state.setdefault("requests", {})
         self.now = self.state["clock"]
         self.busy = True
@@ -143,6 +160,21 @@ class Society:
         if dirty:
             self.persist()
 
+    def message(self, actor):
+        if not self.state["visited"]:
+            return None
+        agent = self.state["agents"][actor]
+        if actor == "assistant":
+            if agent["facts"].get("cast", {}).get("kind") == "firsthand":
+                return "I checked the cast myself.\nThe Museum has my notes."
+            if self.pending(actor)[1]:
+                return "The researcher asked me\nfor a second look."
+        if actor == "trainer" and agent["location"] == "route_2":
+            if agent["facts"].get("cast", {}).get("kind") == "firsthand":
+                return "I checked the Museum cast.\nNow I'm training here."
+            return "A short field practice.\nI head back to Pewter soon."
+        return None
+
     def pending(self, actor):
         return next(((key, request) for key, request in self.state["requests"].items()
                      if request["recipient"] == actor and request["status"] == "pending"
@@ -157,6 +189,21 @@ class Society:
             request = self.state["requests"][key]
             request["status"] = "accepted" if accepted else "declined"
             self.record(request["sender"], request["status"], peer="brock", event=key)
+            self.persist()
+
+    def reconcile_brock(self, result):
+        if not result:
+            return
+        key, completed = result
+        notice = self.state["requests"].get(key)
+        if notice and notice["recipient"] == "brock" and notice["status"] == "accepted":
+            notice["status"] = "resolved" if completed else "interrupted"
+            researcher = self.state["agents"][notice["sender"]]
+            if completed:
+                researcher["facts"]["colleague_cast"] = dict(
+                    source="brock", origin="brock", kind="reported", second=self.now)
+                researcher["bonds"]["brock"] = min(20, researcher["bonds"].get("brock", 0) + 1)
+            self.record(notice["sender"], notice["status"], event=key, peer="brock")
             self.persist()
 
     def request_key(self, actor, recipient):
@@ -195,20 +242,19 @@ class Society:
                      Step("RETURN_TO_DUTY", persona.duty)))
         return (routine, (Step("REST", persona.duty), Step("WORK", persona.duty)))
 
-    def followup(self, actor):
+    def followups(self, actor):
         agent = self.state["agents"][actor]
         fact = agent["facts"].get("cast")
         if not fact or self.now - fact["second"] >= REQUEST_SECONDS:
-            return None
-        recipient = {"researcher": "brock", "assistant": "trainer", "trainer": "attendant"}.get(actor)
-        if recipient and self.can_request(actor, recipient):
-            return recipient
-        return None
+            return ()
+        recipients = {"researcher": ("brock", "assistant"), "assistant": ("trainer",),
+                      "trainer": ("attendant",)}.get(actor, ())
+        return tuple(peer for peer in recipients if self.can_request(actor, peer))
 
     def decision(self, actor=None):
         if self.busy or not self.state["visited"]:
             return None
-        hour = self.now % DAY // 3600
+        hour = 11 if self.demo else self.now % DAY // 3600
         day = self.now // DAY
         for key in (actor,) if actor else sorted(PERSONAS, key=lambda key: self.pending(key)[0] is None):
             persona = PERSONAS[key]
@@ -219,18 +265,25 @@ class Society:
             if notice:
                 trust = agent["bonds"].get(notice["sender"], 0)
                 workload = hour >= persona.hours[1] - 1
+                closing = workload and trust < 2
                 context = (f"{notice['sender']} asks you to compare a fossil cast. "
                            f"The notice names {notice['origin']} as the source. "
-                           f"You have trust {trust} in the sender and "
-                           + ("your shift is almost over. Prefer declining to an unkept promise."
-                              if workload else "time to help. Prefer accepting useful work from a colleague."))
+                           f"You have worked successfully with this sender {trust} times. "
+                           + ("Your shift is nearly over. You must close the desk. Decline rather than break your promise."
+                              if closing else "You have spare time and your job is to verify exhibits. "
+                              "A short meeting and independent check would help the Museum."))
+
                 return Ticket(self.memory.save, key, event, day, context, self.options(key, event))
-            followup = self.followup(key)
-            if followup and agent["shift"] == day and agent["followup"] != day:
-                context = (f"You completed a cast comparison. {followup} could use your result. "
-                           "Choose cooperation if it helps verify your work.")
-                return Ticket(self.memory.save, key, "share_findings", day, context,
-                              ((Step("WORK", persona.duty),), (Step("REQUEST_ASSISTANCE", followup),)))
+            peers = self.followups(key)
+            if peers and agent["shift"] == day and agent["followup_count"] < 2:
+                context = ("You completed a cast comparison. A colleague may be able to check it. "
+                           + ("Brock can compare Rock-type exhibits and the Museum assistant can do a second count. "
+                              if key == "researcher" else "")
+                           + "Choose cooperation if it helps verify the work. "
+                           + ", ".join(f"{peer} has helped {agent['bonds'].get(peer, 0)} times" for peer in peers))
+                plans = ((Step("WORK", persona.duty),),)
+                plans += tuple((Step("REQUEST_ASSISTANCE", peer),) for peer in peers)
+                return Ticket(self.memory.save, key, "share_findings", day, context, plans)
             if agent["shift"] >= day:
                 continue
             context = f"You are at {persona.duty}. Your shift is open. "
@@ -255,8 +308,9 @@ class Society:
         agent = self.state["agents"][ticket.actor]
         if ticket.cause == "open_shift":
             agent["shift"] = ticket.window
+            agent["followup_count"] = 0
         elif ticket.cause == "share_findings":
-            agent["followup"] = ticket.window
+            agent["followup_count"] = agent["followup_count"] + 1 if plan[0].action == "REQUEST_ASSISTANCE" else 2
         agent["active"] = dict(steps=[(s.action, s.target) for s in plan], index=0, due=self.now,
                                deadline=self.now + MAX_PLAN_SECONDS, event=ticket.cause)
         self.record(ticket.actor, "accepted", steps=agent["active"]["steps"], fallback=fallback)
@@ -280,12 +334,20 @@ class Society:
             return self.can_request(actor, target)
         if action in ("ACCEPT_REQUEST", "DECLINE_REQUEST"):
             return self.qualifies(actor, target, "pending")
-        if action in ("ARRANGE_MEETING", "SHARE_INFORMATION"):
+        if action == "ARRANGE_MEETING":
+            request = self.state["requests"].get(target)
+            sender = self.state["agents"].get(request["sender"]) if request else None
+            return (self.qualifies(actor, target, "accepted") and sender is not None
+                    and sender["location"] == PERSONAS[request["sender"]].duty
+                    and agent["location"] == PERSONAS[actor].duty)
+        if action == "SHARE_INFORMATION":
             return self.qualifies(actor, target, "accepted")
         if action == "VISIT_NPC":
             request = self.state["requests"].get(active.get("event"))
-            return (request and request["sender"] == target
-                    and self.qualifies(actor, active["event"], "accepted"))
+            return (request and request["sender"] == target and "meeting" in request
+                    and self.qualifies(actor, active["event"], "accepted")
+                    and self.state["agents"][target]["location"] == PERSONAS[target].duty
+                    and agent["location"] == PERSONAS[actor].duty)
         return False
 
     def qualifies(self, actor, event, status):

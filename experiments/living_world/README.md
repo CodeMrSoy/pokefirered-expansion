@@ -27,6 +27,7 @@ ADVENTURE_TEST_MODE=1 python3 tests/living_world_bridge_emulator.py
 Mode 0 is Classic and mode 1 is Quantum. The harness runs the compiled map event through the field script interpreter and verifies the resulting text buffer. Its JSON lines show request context, proposals, host validation, response writes, elapsed time and, for successful cases, the rendered text. Set `LIVING_WORLD_INFERENCE_RUNTIME` to run with the actual worker. The emulator trace measures the host handoff and frames to the text buffer. The desktop log also records model load, inference and IPC overhead. The [playtest guide](PLAYTEST.md) covers the packaged desktop launcher. See [Phase 7](PHASE7.md) for regional routines, automation results and the Windows playtest. See [Phase 2](PHASE2.md) for model comparisons and the Pond Survey, and [Phase 3](PHASE3.md) for the offline catalog, knowledge boundaries, and benchmark results.
 
 [Phase 8](PHASE8.md) covers the Pewter World Director, Brock’s optional objective and the Pewter demo.
+[Phase 9](PHASE9.md) covers the five-agent Pewter Society and the runtime PokéGlass objective.
 
 ### Build the offline worker and Windows package
 

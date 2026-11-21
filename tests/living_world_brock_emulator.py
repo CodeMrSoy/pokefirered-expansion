@@ -92,6 +92,8 @@ with TemporaryDirectory() as directory:
     native("RtcInitLocalTimeOffset", 11, 0)
     if os.environ.get("LIVING_WORLD_PEWTER_FIXTURE"):
         (gba.d / "PewterTest.sav").write_bytes(battery())
+        assert native("AddBagItem", 717, 1)
+        (gba.d / "PewterSocietyTest.sav").write_bytes(battery())
     gba.run(65)
     hint = FieldHint.decode(gba.read(hint_address, FIELD_SIZE))
     assert hint.area == "pewter" and hint.story == 0 and hint.local_second is not None, hint

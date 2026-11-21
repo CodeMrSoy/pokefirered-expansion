@@ -263,6 +263,7 @@ def main():
     mode.add_argument("--pallet-test", action="store_true")
     mode.add_argument("--pallet-social", action="store_true")
     mode.add_argument("--pewter-demo", action="store_true")
+    mode.add_argument("--pewter-society", action="store_true")
     parser.add_argument("--lightweight", action="store_true", help="Use short dialogue and skip optional prose")
     parser.add_argument("--no-predict", action="store_true", help="Disable approach prefetch for comparison")
     args = parser.parse_args()
@@ -315,7 +316,9 @@ def main():
     profile = Path(os.environ.get("LOCALAPPDATA", Path.home() / ".local/share")) / "LivingQuantumWorld"
     profile.mkdir(parents=True, exist_ok=True)
     demo = "PalletSocialTest.sav" if args.pallet_social else "PalletTest.sav" if args.pallet_test else None
-    if args.pewter_demo:
+    if args.pewter_society:
+        demo = "PewterSocietyTest.sav"
+    elif args.pewter_demo:
         demo = "PewterTest.sav"
     save_path = profile / (demo or "PokemonQuantum.sav")
     core_path = ROOT / ("mgba_libretro.dll" if sys.platform == "win32" else "mgba_libretro.so")
@@ -351,15 +354,26 @@ def main():
             prediction_error = None
 
             society = memory.society
+            society.demo = args.pewter_society
             director = memory.director
             director.demo = args.pewter_demo
+            director.society_demo = args.pewter_society
             director.notice_required = True
             planning = None
             plan_retry_after = 0.0
-            plan_budget = (None, 0)
+            plan_budget = {}
+
+            def run_decision(chooser, request, queued):
+                delay = (time.perf_counter() - queued) * 1000
+                plan, metrics = chooser(model, request)
+                return plan, {**metrics, "queue_ms": delay}
 
             def propose(context):
                 nonlocal staged, scene, lookup, guide_turn, guide_work, guide_result, last_guide
+                if context.npc in ("society_assistant", "society_trainer"):
+                    actor = context.npc.removeprefix("society_")
+                    message = society.message(actor)
+                    return json.dumps({"action": "SAY_DIALOGUE", "text": message}) if message else SKIP
                 if context.npc in BROCK_REQUESTS:
                     message = director.message(context.npc)
                     return json.dumps({"action": "SAY_DIALOGUE", "text": message}) if message else SKIP
@@ -417,6 +431,10 @@ def main():
                 if next_title != title:
                     display.title(display.window, next_title)
                     title = next_title
+                if trace and trace["context"]["npc"] in ("society_assistant", "society_trainer"):
+                    trace["route"] = "attributed_society_memory"
+                    log.write(json.dumps(trace) + "\n")
+                    trace = None
                 if trace and trace["context"]["npc"] in BROCK_REQUESTS:
                     if trace["validation"] == "accepted":
                         director.message(trace["context"]["npc"], accepted=True)
@@ -503,6 +521,7 @@ def main():
                             society.tick(fresh.local_second, fresh.area, fresh.busy)
                             director.notice = society.notice_for_brock()
                             director.offscreen = society.state["visited"] and not director.demo
+                            society.reconcile_brock(director.state.get("last_notice_result"))
                             if planning is not None:
                                 request, future = planning
                                 social_plan = isinstance(request, Ticket)
@@ -531,17 +550,20 @@ def main():
                                 elif request != ready_now and future.cancel():
                                     planning = None
                             if planning is None and start >= plan_retry_after and game.brock_ptr:
-                                request = director.decision() or society.decision()
+                                request = (society.decision() if args.pewter_society and not director.notice
+                                           else director.decision()) or society.decision()
                                 if request is not None and replies.worker_idle():
                                     social_plan = isinstance(request, Ticket)
                                     key = ((request.save, request.actor, request.window, request.cause) if social_plan else
                                            (request.checkpoint, "brock", request.number))
-                                    attempts = plan_budget[1] if plan_budget[0] == key else 0
+                                    attempts = plan_budget.get(key, 0)
                                     if attempts < 2:
-                                        plan_budget = key, attempts + 1
+                                        plan_budget[key] = attempts + 1
+                                        if len(plan_budget) > 24:
+                                            del plan_budget[next(iter(plan_budget))]
                                         plan_retry_after = start + 5
                                         chooser = choose_agent if social_plan else choose_brock
-                                        planning = request, pool.submit(chooser, model, request)
+                                        planning = request, pool.submit(run_decision, chooser, request, time.perf_counter())
                                     else:
                                         authority = society if social_plan else director
                                         fallback_plan = request.choices[0] if social_plan else DUTY

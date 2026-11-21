@@ -398,7 +398,7 @@ static void BeginConversation(u8 npc)
     gLivingWorldMailbox.request = 0;
     sFramesRemaining = 0;
     sDeferred = FALSE;
-    if (npc < LIVING_WORLD_PC_RESIDENT || npc > LIVING_WORLD_BROCK_RETURN
+    if (npc < LIVING_WORLD_PC_RESIDENT || npc > LIVING_WORLD_SOCIETY_TRAINER
      || !FlagGet(FLAG_SYS_POKEDEX_GET) || gQuestLogState == QL_STATE_PLAYBACK)
         return;
 

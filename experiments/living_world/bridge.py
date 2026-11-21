@@ -14,7 +14,8 @@ TEXT_CAPACITY = 115
 MAILBOX_SIZE = 132
 LINE = re.compile(r"[A-Za-z0-9 !?.,':-]{1,28}")
 REQUEST_IDS = {**NPC_IDS, 10: "pallet_exchange", 11: "guide_followup",
-               14: "brock_attendant", 15: "brock_contact", 16: "brock_return"}
+               14: "brock_attendant", 15: "brock_contact", 16: "brock_return",
+               17: "society_assistant", 18: "society_trainer"}
 WAIT = object()
 SKIP = object()
 
