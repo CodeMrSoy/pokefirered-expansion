@@ -1,0 +1,83 @@
+name: Living World Platform
+
+on:
+  push:
+    branches: [Living-World-Infrastructure]
+  workflow_dispatch:
+    inputs:
+      package_url:
+        description: HTTPS URL of the release ZIP for this commit
+        type: string
+      package_sha256:
+        description: SHA-256 of the release ZIP
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  parity:
+    strategy:
+      matrix:
+        os: [ubuntu-24.04, windows-2022]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compare deterministic scenario against the same fixture
+        run: |
+          python -B experiments/living_world/platform_scenario.py platform-trace.json
+          python -c "import json; from pathlib import Path; assert json.loads(Path('platform-trace.json').read_bytes()) == json.loads(Path('tests/living_world_platform_expected.json').read_bytes())"
+          python -B tests/living_world_population.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: living-world-parity-${{ matrix.os }}
+          path: platform-trace.json
+
+  windows-package:
+    runs-on: windows-2022
+    timeout-minutes: 20
+    env:
+      PACKAGE_URL: ${{ inputs.package_url || vars.LIVING_WORLD_PACKAGE_URL }}
+      PACKAGE_SHA256: ${{ inputs.package_sha256 || vars.LIVING_WORLD_PACKAGE_SHA256 }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Require the exact release candidate
+        shell: pwsh
+        run: |
+          if (!$env:PACKAGE_URL -or !$env:PACKAGE_SHA256) {
+            @{native_windows='unverified'; error='No package URL and SHA configured'} |
+              ConvertTo-Json | Out-File -Encoding utf8 native-smoke.json
+            throw 'Native validation requires the release ZIP URL and SHA-256.'
+          }
+          if (([uri]$env:PACKAGE_URL).Scheme -ne 'https' -or $env:PACKAGE_SHA256 -notmatch '^[a-fA-F0-9]{64}$') {
+            throw 'An HTTPS package URL and SHA-256 digest are required.'
+          }
+          Invoke-WebRequest -Uri $env:PACKAGE_URL -OutFile release.zip
+          if ((Get-FileHash release.zip -Algorithm SHA256).Hash -ne $env:PACKAGE_SHA256) {
+            throw 'Release ZIP SHA-256 mismatch.'
+          }
+          Expand-Archive release.zip -DestinationPath extracted
+          $release = Get-Content extracted/LivingQuantumWorld/release.json -Raw | ConvertFrom-Json
+          if ($release.commit -ne $env:GITHUB_SHA) { throw 'Package commit does not match this run.' }
+      - name: Validate the extracted Windows package
+        shell: pwsh
+        run: |
+          $root = (Resolve-Path extracted/LivingQuantumWorld).Path
+          $syntaxErrors = $null
+          $tokens = $null
+          [System.Management.Automation.Language.Parser]::ParseFile(
+            (Join-Path $root 'launcher-windows.ps1'), [ref]$tokens, [ref]$syntaxErrors) | Out-Null
+          if ($syntaxErrors) { throw ($syntaxErrors | Out-String) }
+          $env:LOCALAPPDATA = Join-Path $env:RUNNER_TEMP 'QuantumSmokeProfile'
+          New-Item -ItemType Directory -Force $env:LOCALAPPDATA | Out-Null
+          & "$root/python/python.exe" -B "$root/package_smoke.py" "$PWD/native-smoke.json"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: living-world-native-windows-report
+          path: native-smoke.json

@@ -14,6 +14,7 @@ from reasoning import BALANCED_SHA256, LIGHTWEIGHT_SHA256
 
 ROOT = Path(__file__).resolve().parents[2]
 APP = Path(__file__).resolve().parent
+RELEASE_VERSION = "11.1.0-infrastructure"
 INPUTS = {
     "mgba-win.zip": "a7ae453b739d3f9117537e8ca7275ecebd923d9035b52435f556470bf58a268f",
     "python-win.zip": "4acbed6dd1c744b0376e3b1cf57ce906f9dc9e95e68824584c8099a63025a3c3",
@@ -40,6 +41,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("inputs", type=Path)
     parser.add_argument("output", type=Path)
+    parser.add_argument("--test-report", type=Path, help="Attach a test report for this exact release")
     parser.add_argument("--nm", default="arm-none-eabi-nm")
     parser.add_argument("--legacy-weights", action="store_true", help="Bundle Phase 4 Qwen 2.5 weights")
     args = parser.parse_args()
@@ -96,12 +98,15 @@ def main():
             b'@echo off\r\ncall "%~dp0Play.cmd" --pewter-regional-retest\r\n')
         validator = (APP / "validate-offline-windows.cmd").read_text(encoding="ascii")
         (stage / "Validate Offline Runtime.cmd").write_bytes(validator.replace("\n", "\r\n").encode("ascii"))
-        for name in ("play.py", "controls.py", "population.py", "bridge.py", "inference.py", "worker.py", "world.py", "profiles.py",
+        for name in ("play.py", "controls.py", "platform_io.py", "platform_scenario.py",
+                     "package_smoke.py", "launcher-windows.ps1", "population.py", "bridge.py", "inference.py", "worker.py", "world.py", "profiles.py",
                      "knowledge.py", "social.py", "reasoning.py", "hybrid.py", "routines.py", "director.py", "society.py", "planning.py", "region.py", "dynamic_quests.py", "PLAYTEST.md",
-                     "PHASE2.md", "PHASE3.md", "PHASE4.md", "PHASE5.md", "PHASE6.md", "PHASE7.md", "PHASE8.md", "PHASE9.md", "PHASE10.md", "PHASE11.md"):
+                     "PHASE2.md", "PHASE3.md", "PHASE4.md", "PHASE5.md", "PHASE6.md", "PHASE7.md", "PHASE8.md", "PHASE9.md", "PHASE10.md", "PHASE11.md", "PLATFORM.md"):
             shutil.copyfile(APP / name, stage / name)
         subprocess.run([sys.executable, APP / "build-knowledge.py", stage / "world-knowledge.sqlite3"], check=True)
         shutil.copyfile(APP / "launch-windows.cmd", stage / "Play.cmd")
+        launcher = (APP / "open-launcher-windows.cmd").read_text(encoding="ascii")
+        (stage / "Open Pokemon Quantum.cmd").write_bytes(launcher.replace("\n", "\r\n").encode("ascii"))
         (stage / "Play Pallet Demo.cmd").write_bytes(b'@echo off\r\ncall "%~dp0Play.cmd" --pallet-test\r\n')
         (stage / "Play Pallet Social Demo.cmd").write_bytes(b'@echo off\r\ncall "%~dp0Play.cmd" --pallet-social\r\n')
 
@@ -138,6 +143,26 @@ def main():
             "revision": revision,
         }
         (stage / "rom.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+        release = {
+            "version": RELEASE_VERSION, "commit": revision, "rom_sha256": manifest["sha256"],
+            "dependencies": {
+                "python": "3.12.10", "sdl": "2.32.10",
+                "mgba": "7a12d6d4b9acb14c0ae62c9166b6a2f3d08007f6", "llama_cpp": "b6500",
+                "model": "Qwen2.5-0.5B Q4_0" if args.legacy_weights else "Qwen3-0.6B Q4_K_M",
+                "model_sha256": model_sha, "upstream_archive_hashes": INPUTS,
+            },
+            "files": {file.relative_to(stage).as_posix(): sha256(file)
+                      for file in sorted(stage.rglob("*")) if file.is_file()},
+            "test_status": {"native_windows": "unverified"},
+        }
+        if args.test_report:
+            evidence = json.loads(args.test_report.read_text(encoding="utf-8"))
+            if evidence.get("commit") != revision:
+                raise ValueError("Test report commit does not match the package")
+            release["test_status"].update(evidence["test_status"])
+            (stage / "TEST-RESULTS.json").write_text(json.dumps(evidence, indent=2) + "\n", encoding="utf-8")
+            release["files"]["TEST-RESULTS.json"] = sha256(stage / "TEST-RESULTS.json")
+        (stage / "release.json").write_text(json.dumps(release, indent=2) + "\n", encoding="utf-8")
         with ZipFile(args.output, "w", ZIP_DEFLATED, compresslevel=1) as archive:
             for file in sorted(stage.rglob("*")):
                 if file.is_file():

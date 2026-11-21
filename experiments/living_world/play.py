@@ -1,5 +1,6 @@
 """Minimal SDL2/libretro desktop player for the Living Quantum World test."""
 import argparse
+from collections import deque
 from concurrent.futures import Future, ThreadPoolExecutor
 import ctypes as c
 import ctypes.util
@@ -17,6 +18,7 @@ from bridge import (
     Conversation, DialogueBridge, MAILBOX_SIZE, REPLY_OFFSET, SKIP, TEXT_CAPACITY, WAIT, validate,
 )
 from controls import Controls
+from platform_io import atomic_write, backup_profile, profile_directory, profile_lock, publish_monitor
 from director import DUTY, PRESENCE, TRIP, choose_brock
 from dynamic_quests import (QUEST_VIEW, museum_exchange, project_brock, project_museum,
                             project_regional, regional_exchange)
@@ -275,19 +277,6 @@ class Game:
         self.core.retro_deinit()
 
 
-def atomic_write(path, data):
-    with tempfile.NamedTemporaryFile(dir=path.parent, delete=False) as output:
-        temp = Path(output.name)
-        try:
-            output.write(data)
-            output.flush()
-            os.fsync(output.fileno())
-            output.close()
-            os.replace(temp, path)
-        finally:
-            temp.unlink(missing_ok=True)
-
-
 def verify_windows_sandbox(runtime):
     with tempfile.TemporaryDirectory() as directory:
         sentinel = Path(directory) / "user-data.txt"
@@ -304,6 +293,8 @@ def verify_windows_sandbox(runtime):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--profile-backup", action="store_true")
+    mode.add_argument("--controls", action="store_true")
     mode.add_argument("--sandbox-test", action="store_true")
     mode.add_argument("--model-test", action="store_true")
     mode.add_argument("--pallet-test", action="store_true")
@@ -324,6 +315,23 @@ def main():
         return int(verify_windows_sandbox(runtime))
 
     manifest = json.loads((ROOT / "rom.json").read_text(encoding="utf-8"))
+    version = 11 if args.phase11_demo else manifest.get("profile_version")
+    profile = profile_directory(version)
+    if args.profile_backup:
+        print(backup_profile(profile))
+        return 0
+    if args.controls:
+        with profile_lock(profile):
+            display = Display(profile / "controls.json")
+            try:
+                display.title(display.window, b"Controls: F1 configure | Close window to exit")
+                display.controls.pending_menu = True
+                while display.pump():
+                    time.sleep(0.02)
+            finally:
+                display.controls.close()
+                display.sdl.SDL_Quit()
+        return 0
     rom_path = ROOT / "PokemonQuantum.gba"
     rom = rom_path.read_bytes()
     if hashlib.sha256(rom).hexdigest() != manifest["sha256"]:
@@ -377,9 +385,11 @@ def main():
             smoke_memory.close()
             model.close()
         return int(guide_failed)
-    profile_name = "LivingQuantumWorldPhase11" if args.phase11_demo or manifest.get("profile_version") == 11 else "LivingQuantumWorld"
-    profile = Path(os.environ.get("LOCALAPPDATA", Path.home() / ".local/share")) / profile_name
-    profile.mkdir(parents=True, exist_ok=True)
+    with profile_lock(profile):
+        return play(args, profile, manifest, rom_path, rom, model, regional_demo)
+
+
+def play(args, profile, manifest, rom_path, rom, model, regional_demo):
     demo = "PalletSocialTest.sav" if args.pallet_social else "PalletTest.sav" if args.pallet_test else None
     if args.phase11_demo:
         demo = "Phase11RegionalSociety.sav"
@@ -399,6 +409,8 @@ def main():
                 regional_view=manifest.get("regional_view"))
     memory = None
     previous = None
+    population = None
+    decisions = deque(maxlen=16)
     try:
         if save_path.is_file():
             game.load_save(save_path.read_bytes())
@@ -415,6 +427,15 @@ def main():
             log.write(json.dumps({"session": {"rom_revision": manifest.get("revision"),
                                               "save_slot": save_path.name, "model": model.style,
                                               "worker_timing": "split-startup-and-planning"}}) + "\n")
+            def record(entry):
+                log.write(json.dumps(entry) + "\n")
+                if any(key in entry for key in ("directive", "regional_commitment", "metrics", "error",
+                                               "planning_retry", "director_rejection", "prediction_error")):
+                    keys = ("context", "route", "actor", "resident", "directive", "choice",
+                            "cause", "metrics", "fallback", "error", "planning_retry",
+                            "director_rejection", "prediction_error")
+                    decisions.append({key: entry[key] for key in keys if key in entry})
+
             replies = HybridDialogue(memory, model, pool)
             staged = None
             scene = None
@@ -526,6 +547,8 @@ def main():
 
             next_frame = time.monotonic()
             next_save = next_frame + 2
+            next_monitor = next_frame
+            monitor_error = False
             while True:
                 remaining = next_frame - time.monotonic()
                 if remaining > 0:
@@ -571,7 +594,7 @@ def main():
                         if exchange is regional_exchange:
                             trace["survey_objective"] = population.state.get("objective")
                     trace["route"] = "attributed_society_memory"
-                    log.write(json.dumps(trace) + "\n")
+                    record(trace)
                     trace = None
                 if trace and trace["context"]["npc"] in BROCK_REQUESTS:
                     if trace["validation"] == "accepted":
@@ -580,14 +603,14 @@ def main():
                         director.challenger()
                     trace["route"] = "world_director"
                     trace["objective"] = director.state["quest"]
-                    log.write(json.dumps(trace) + "\n")
+                    record(trace)
                     trace = None
                 if trace and trace["context"]["npc"] == "pallet_exchange":
                     if scene and trace["validation"] == "accepted":
                         memory.social.displayed(scene[0])
                         trace["event"] = scene[0]
                     trace["route"] = "scheduled_exchange"
-                    log.write(json.dumps(trace) + "\n")
+                    record(trace)
                     trace = None
                 if trace and trace["context"]["npc"] == "guide_followup":
                     if guide_result and trace["validation"] == "accepted":
@@ -600,7 +623,7 @@ def main():
                                 trace["changes"].append("guide_requested_verification")
                         except ValueError as error:
                             trace["action_error"] = str(error)
-                    log.write(json.dumps(trace) + "\n")
+                    record(trace)
                     trace = None
                 if trace:
                     trace["profile"] = PROFILES[trace["context"]["npc"]]
@@ -638,7 +661,7 @@ def main():
                     trace["acquired_knowledge"] = memory.knowledge(
                         trace["context"]["npc"], trace["context"]["visible_species"]
                     )
-                    log.write(json.dumps(trace) + "\n")
+                    record(trace)
                 if not bridge.pending and memory.social.deadline is not None:
                     simulation_start = time.perf_counter()
                     event = memory.social.tick(time.time())
@@ -646,24 +669,24 @@ def main():
                         if event["status"] == "shared":
                             memory.routines.discovery_pending = True
                         event["simulation_ms"] = (time.perf_counter() - simulation_start) * 1000
-                        log.write(json.dumps({"social": event}) + "\n")
+                        record({"social": event})
                 if start >= next_prediction:
                     hint = game.read_hint()
                     fresh = hint if hint and hint.frame != previous_hint_frame else None
                     try:
                         if fresh and not bridge.pending:
                             for change in memory.routines.tick(fresh.local_second):
-                                log.write(json.dumps({"world_event": change}) + "\n")
+                                record({"world_event": change})
                             protected = bool(fresh.story) if fresh.area in ("", "pewter", "pewter_gym", "route_2") else False
                             director.observe(fresh.local_second, fresh.area, protected, fresh.busy)
                             society.tick(fresh.local_second, fresh.area, fresh.busy)
                             if population:
                                 transitions = population.demo_tick(fresh.local_second)
                                 if transitions:
-                                    log.write(json.dumps({"regional_transitions": transitions,
+                                    record({"regional_transitions": transitions,
                                                           "residents": len(population.state["actors"]),
                                                           "regional_clock": population.state["clock"],
-                                                          "area": fresh.area}) + "\n")
+                                                          "area": fresh.area})
                                 if resident_work:
                                     ticket, future = resident_work
                                     if future.done():
@@ -674,10 +697,10 @@ def main():
                                             except (OSError, ValueError, RuntimeError, TimeoutError) as error:
                                                 choice, metrics = "HELP", {"fallback": str(error)[:220]}
                                             population.submit(ticket, choice)
-                                            log.write(json.dumps({"regional_commitment": ticket.request,
+                                            record({"regional_commitment": ticket.request,
                                                                   "resident": ticket.actor, "choice": choice,
                                                                   "ready_wait_seconds": population.state["clock"] - ticket.ready,
-                                                                  **metrics}) + "\n")
+                                                                  **metrics})
                                     elif population.decision(ticket.request) != ticket and future.cancel():
                                         resident_work = None
                                 if (not resident_work and not planning and not fresh.busy
@@ -704,8 +727,8 @@ def main():
                                                 and plan_budget.get(decision_key(request), 0) < 2):
                                             selected = None
                                             plan_retry_after = start + 5
-                                            log.write(json.dumps({"planning_retry": request.actor,
-                                                                  "cause": request.cause, "error": failure}) + "\n")
+                                            record({"planning_retry": request.actor,
+                                                                  "cause": request.cause, "error": failure})
                                     if selected is not None:
                                         try:
                                             try:
@@ -724,12 +747,12 @@ def main():
                                                 society.respond_brock(request.notice, selected == TRIP)
                                             steps = selected.steps if isinstance(selected, Proposal) else selected
                                             directive = [step.action for step in steps] if social_plan else selected.goal
-                                            log.write(json.dumps({"directive": directive,
+                                            record({"directive": directive,
                                                                   "actor": request.actor if social_plan else "brock",
                                                                   "cause": request.cause if social_plan else request.trigger,
-                                                                  "metrics": metrics, "fallback": failure}) + "\n")
+                                                                  "metrics": metrics, "fallback": failure})
                                         except ValueError as error:
-                                            log.write(json.dumps({"director_rejection": str(error)}) + "\n")
+                                            record({"director_rejection": str(error)})
                                 elif not fresh.busy and request != ready_now and future.cancel():
                                     planning = None
                             if not resident_work and planning is None and start >= plan_retry_after and game.brock_ptr:
@@ -759,25 +782,35 @@ def main():
                                         authority = society if social_plan else director
                                         fallback_plan = request.choices[0] if social_plan else DUTY
                                         authority.submit(request, fallback_plan, fallback="decision retry limit")
-                                        log.write(json.dumps({"directive": "routine",
-                                                              "fallback": "decision retry limit"}) + "\n")
+                                        record({"directive": "routine",
+                                                              "fallback": "decision retry limit"})
                             game.publish_quest(director, society, population)
                         predicted = None if bridge.pending or args.no_predict or planning or resident_work else replies.predict(fresh, start)
                         if predicted:
-                            log.write(json.dumps({"prefetched": predicted.state.encounter.npc,
+                            record({"prefetched": predicted.state.encounter.npc,
                                                   "species": predicted.state.encounter.visible_species,
-                                                  "topic": predicted.state.topic}) + "\n")
+                                                  "topic": predicted.state.topic})
                         prediction_error = None
                     except (ValueError, RuntimeError, OSError) as error:
                         if str(error) != prediction_error:
                             prediction_error = str(error)
-                            log.write(json.dumps({"prediction_error": prediction_error}) + "\n")
+                            record({"prediction_error": prediction_error})
                     if fresh:
                         game.publish_brock(fresh.frame, director.location)
                         game.publish_trainer(fresh.frame, society.state["agents"]["trainer"]["location"])
                         game.publish_researcher(fresh.frame, society.state["agents"]["researcher"]["location"])
                     previous_hint_frame = hint.frame if hint else None
                     next_prediction = start + 0.10
+                if start >= next_monitor:
+                    try:
+                        publish_monitor(profile, memory, game.read_hint(), population, bool(bridge.pending),
+                                        decisions, save_path.name)
+                        monitor_error = False
+                    except OSError as error:
+                        if not monitor_error:
+                            record({"error": f"Monitor snapshot: {error}"})
+                        monitor_error = True
+                    next_monitor = start + 2
                 if start >= next_save:
                     current = game.save_bytes()
                     if current != previous:
@@ -799,6 +832,11 @@ def main():
                 atomic_write(save_path, current)
         finally:
             if memory is not None:
+                try:
+                    publish_monitor(profile, memory, game.read_hint(), population, False,
+                                    decisions, save_path.name, running=False)
+                except OSError:
+                    pass
                 memory.close()
             game.close()
             display.controls.close()
