@@ -57,13 +57,21 @@ def continue_to(game, area):
 
 def pallet_bridge(game):
     continue_to(game, "pallet")
-    tap(game, 4, 16)
-    run_frames(game, 2, 8)
     bridge = DialogueBridge(game.read_request, game.write_reply, game.mailbox, deferred=True)
-    for _ in range(120):
-        if game.read_request(game.mailbox, REPLY_OFFSET).startswith(b"LQW1"):
+
+    def requested():
+        for _ in range(16):
+            if game.read_request(game.mailbox, REPLY_OFFSET).startswith(b"LQW1"):
+                return True
+            run_frames(game, 1)
+        return False
+
+    # The field hint can appear during the Continue fade while input is blocked.
+    for _ in range(5):
+        tap(game, 4, 16)
+        run_frames(game, 2, 8)
+        if requested():
             break
-        run_frames(game, 1)
     else:
         raise AssertionError("Watts did not send a real ROM mailbox request")
 
@@ -220,18 +228,29 @@ def validate_worker(report):
 def main():
     report_path = Path(sys.argv[1]).resolve()
     report = {"platform": sys.platform, "checks": {}, "native_windows": "unverified"}
+    failures = {}
+
+    def check(name, action):
+        try:
+            report["checks"][name] = action() or "passed"
+            return True
+        except Exception as error:
+            failures[name] = f"{type(error).__name__}: {error}"
+            return False
+
     try:
         report["commit"] = check_files(ROOT)["commit"]
         report["checks"]["integrity"] = "passed"
         if sys.platform != "win32":
             raise RuntimeError("The bundled Windows executables require a Windows runner")
         with TemporaryDirectory() as directory:
-            launcher_smoke(Path(directory))
-            report["checks"]["launcher"] = "passed"
-            report["checks"]["host"] = runtime_smoke(Path(directory), ROOT / "mgba_libretro.dll")
-        validate_worker(report)
-        worker_failure_smoke()
-        report["checks"]["worker_failure"] = "passed"
+            check("launcher", lambda: launcher_smoke(Path(directory)))
+            check("host", lambda: runtime_smoke(Path(directory), ROOT / "mgba_libretro.dll"))
+        if check("worker", lambda: validate_worker(report)):
+            check("worker_failure", worker_failure_smoke)
+        if failures:
+            report["failed_checks"] = failures
+            raise RuntimeError(f"Windows smoke failures: {failures}")
         report["native_windows"] = "passed"
     except Exception as error:
         report["error"] = f"{type(error).__name__}: {error}"
