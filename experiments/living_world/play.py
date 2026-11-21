@@ -22,6 +22,7 @@ from hybrid import FIELD_SIZE, FieldHint, HybridDialogue, prepare
 from reasoning import BALANCED_SHA256, LIGHTWEIGHT_SHA256, GuideTurn, guide_reply, reported_fact
 from profiles import PROFILES
 from world import Encounter, WorldMemory
+from society import Ticket, choose_agent
 
 ROOT = Path(__file__).resolve().parent
 VOID = c.c_void_p
@@ -333,6 +334,7 @@ def main():
             previous_hint_frame = None
             prediction_error = None
 
+            society = memory.society
             director = memory.director
             director.demo = args.pewter_demo
             planning = None
@@ -481,8 +483,12 @@ def main():
                                 log.write(json.dumps({"world_event": change}) + "\n")
                             protected = bool(fresh.story) if fresh.area in ("", "pewter", "pewter_gym") else False
                             director.observe(fresh.local_second, fresh.area, protected, fresh.busy)
+                            society.tick(fresh.local_second, fresh.area, fresh.busy)
                             if planning is not None:
                                 request, future = planning
+                                social_plan = isinstance(request, Ticket)
+                                ready_now = society.decision(request.actor) if social_plan else director.decision()
+                                authority = society if social_plan else director
                                 if future.done():
                                     planning = None
                                     metrics = {}
@@ -490,27 +496,36 @@ def main():
                                     try:
                                         selected, metrics = future.result()
                                     except (OSError, ValueError, RuntimeError, TimeoutError) as error:
-                                        selected, failure = DUTY, str(error)[:220]
+                                        selected = request.choices[0] if social_plan else DUTY
+                                        failure = str(error)[:220]
                                     try:
-                                        director.submit(request, selected, fallback=failure)
-                                        log.write(json.dumps({"directive": selected.goal, "cause": request.trigger,
+                                        authority.submit(request, selected, fallback=failure)
+                                        directive = [step.action for step in selected] if social_plan else selected.goal
+                                        log.write(json.dumps({"directive": directive,
+                                                              "actor": request.actor if social_plan else "brock",
+                                                              "cause": request.cause if social_plan else request.trigger,
                                                               "metrics": metrics, "fallback": failure}) + "\n")
                                     except ValueError as error:
                                         log.write(json.dumps({"director_rejection": str(error)}) + "\n")
-                                elif request != director.decision() and future.cancel():
+                                elif request != ready_now and future.cancel():
                                     planning = None
                             if planning is None and start >= plan_retry_after and game.brock_ptr:
-                                request = director.decision()
+                                request = director.decision() or society.decision()
                                 if request is not None and replies.worker_idle():
-                                    key = (request.checkpoint, request.number)
+                                    social_plan = isinstance(request, Ticket)
+                                    key = ((request.save, request.actor, request.window, request.cause) if social_plan else
+                                           (request.checkpoint, "brock", request.number))
                                     attempts = plan_budget[1] if plan_budget[0] == key else 0
                                     if attempts < 2:
                                         plan_budget = key, attempts + 1
                                         plan_retry_after = start + 5
-                                        planning = request, pool.submit(choose_brock, model, request)
+                                        chooser = choose_agent if social_plan else choose_brock
+                                        planning = request, pool.submit(chooser, model, request)
                                     else:
-                                        director.submit(request, DUTY, fallback="decision retry limit")
-                                        log.write(json.dumps({"directive": DUTY.goal,
+                                        authority = society if social_plan else director
+                                        fallback_plan = request.choices[0] if social_plan else DUTY
+                                        authority.submit(request, fallback_plan, fallback="decision retry limit")
+                                        log.write(json.dumps({"directive": "routine",
                                                               "fallback": "decision retry limit"}) + "\n")
                             game.publish_brock(fresh.frame, director.location)
                         predicted = None if args.no_predict or planning else replies.predict(fresh, start)
