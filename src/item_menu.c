@@ -90,7 +90,8 @@ enum {
 enum {
     WIN_ITEM_LIST,
     WIN_DESCRIPTION,
-    WIN_POCKET_NAME
+    WIN_POCKET_NAME,
+    WIN_GLASS_ITEM_NAME
 };
 
 // Item list ID for toSwapPos to indicate an item is not currently being swapped
@@ -1500,6 +1501,7 @@ static void SwitchBagPocket(u8 taskId, s16 deltaBagPocketId, bool16 skipEraseLis
     {
         ClearWindowTilemap(WIN_ITEM_LIST);
         ClearWindowTilemap(WIN_DESCRIPTION);
+        if (GlassBagGrid()) ClearWindowTilemap(WIN_GLASS_ITEM_NAME);
         ClearWindowTilemap(WIN_POCKET_NAME);
         DestroyListMenuTask(tListTaskId, &gBagPosition.scrollPosition[gBagPosition.pocket], &gBagPosition.cursorPosition[gBagPosition.pocket]);
         ScheduleBgCopyTilemapToVram(0);
@@ -3048,17 +3050,22 @@ static void LoadBagMenuTextWindows(void)
 
     if (IsPokeGlassSessionActive() && gBagPosition.location != ITEMMENULOCATION_ITEMPC)
     {
-        struct WindowTemplate windows[ARRAY_COUNT(sDefaultBagWindows)];
-        memcpy(windows, sDefaultBagWindows, sizeof(windows));
+        struct WindowTemplate windows[ARRAY_COUNT(sDefaultBagWindows) + 1];
+        memcpy(windows, sDefaultBagWindows, sizeof(sDefaultBagWindows));
+        windows[WIN_GLASS_ITEM_NAME + 1] = windows[WIN_GLASS_ITEM_NAME];
+        windows[WIN_GLASS_ITEM_NAME] = (struct WindowTemplate){
+            .bg = 0, .tilemapLeft = 2, .tilemapTop = 11,
+            .width = 11, .height = 2, .paletteNum = 15, .baseBlock = 0x1E8,
+        };
         windows[WIN_ITEM_LIST].tilemapLeft = 14;
         windows[WIN_ITEM_LIST].tilemapTop = 4;
         windows[WIN_ITEM_LIST].width = 14;
         windows[WIN_ITEM_LIST].height = 14;
         windows[WIN_ITEM_LIST].baseBlock = 0x90;
         windows[WIN_DESCRIPTION].tilemapLeft = 2;
-        windows[WIN_DESCRIPTION].tilemapTop = 12;
+        windows[WIN_DESCRIPTION].tilemapTop = 13;
         windows[WIN_DESCRIPTION].width = 11;
-        windows[WIN_DESCRIPTION].height = 6;
+        windows[WIN_DESCRIPTION].height = 5;
         windows[WIN_DESCRIPTION].baseBlock = 0x160;
         windows[WIN_POCKET_NAME].tilemapLeft = 2;
         windows[WIN_POCKET_NAME].tilemapTop = 2;

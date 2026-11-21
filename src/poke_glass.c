@@ -624,7 +624,7 @@ static void DrawPokeGlassInventoryFrame(bool8 tmCase)
     else
     {
         DrawGlassBagPanel(13, 4, 15, 14);
-        DrawGlassBagPanel(2, 12, 11, 6);
+        DrawGlassBagPanel(2, 13, 11, 5);
     }
     ScheduleBgCopyTilemapToVram(1);
     SetGpuReg(REG_OFFSET_BLDALPHA, tmCase ? BLDALPHA_BLEND(14, 4) : BLDALPHA_BLEND(15, 2));

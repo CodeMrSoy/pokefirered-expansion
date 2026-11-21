@@ -130,7 +130,7 @@ Native ARM build passed. mGBA libretro executed these focused suites:
 | `pokeglass_time_return_emulator.py` | Repeated Party/hub/field returns in day/evening/night, outdoors/indoors and rain |
 
 Build footprint: EWRAM 238,896 / 262,144 bytes; IWRAM 27,573 / 32,768 bytes;
-linked ROM 21,924,032 / 33,554,432 bytes, padded to 32 MiB. Relative to the source
+linked ROM 21,924,184 / 33,554,432 bytes, padded to 32 MiB. Relative to the source
 baseline, persistent EWRAM grew 64 bytes; save-block sizes did not grow. Up to
 nine grid sprites/palettes supplement the existing Bag sprite. Windows use
 separate tile ranges; normal native action windows keep their existing allocator.
@@ -155,3 +155,12 @@ with an active-tab background and underline. The pocket name and control hints
 were removed from the bar; L/R and L+R behavior remains available. Item artwork
 is centered above its quantity by accounting for the 24×24 art in its 32×32
 sprite canvas. The ARM build and grid/action emulator suites passed again.
+
+The Bag illustration is shifted eight pixels right to center its visible artwork
+in the left panel. The item name has a separate window above the description
+box, which now holds three wrapped description lines. Page dots sit below the
+name. The description window draws its own border, keeping it visible after
+pocket changes and native item actions; changing pockets resets description
+paging. The extra title window adds 352 bytes of transient window graphics after
+accounting for the smaller description window, with no save-layout change.
+The build and grid/item-action emulator checks passed for this layout.

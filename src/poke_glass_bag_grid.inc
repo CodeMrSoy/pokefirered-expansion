@@ -44,6 +44,7 @@ static void GlassGridDescription(s32 selected)
     const u8 *description;
     u32 i;
     FillWindowPixelBuffer(WIN_DESCRIPTION, PIXEL_FILL(0));
+    FillWindowPixelBuffer(WIN_GLASS_ITEM_NAME, PIXEL_FILL(0));
     if (selected == LIST_CANCEL)
     {
         StringCopy(name, COMPOUND_STRING("Back"));
@@ -55,11 +56,16 @@ static void GlassGridDescription(s32 selected)
         CopyItemName(item, name);
         description = GetItemDescription(item);
     }
-    FitPokeGlassText(name, FONT_SMALL, 88);
-    AddTextPrinterParameterized3(WIN_DESCRIPTION, FONT_SMALL, 0, 0, colors, TEXT_SKIP_DRAW, name);
-    sGlassInfoPages = PokeGlassPrintTextPage(WIN_DESCRIPTION, 0, 13, 88, 2, sGlassInfoPage, description);
+    FitPokeGlassText(name, FONT_SMALL, 84);
+    AddTextPrinterParameterized3(WIN_GLASS_ITEM_NAME, FONT_SMALL, 2, 0, colors, TEXT_SKIP_DRAW, name);
+    // Own the border with the text so native popup cleanup cannot obscure it.
+    FillWindowPixelRect(WIN_DESCRIPTION, 6, 0, 0, 88, 40);
+    FillWindowPixelRect(WIN_DESCRIPTION, 0, 1, 1, 86, 38);
+    sGlassInfoPages = PokeGlassPrintTextPage(WIN_DESCRIPTION, 2, 0, 84, 3, sGlassInfoPage, description);
     for (i = 0; i < sGlassInfoPages && i < 20; i++)
-        FillWindowPixelRect(WIN_DESCRIPTION, i == sGlassInfoPage ? 8 : 6, i * 4, 44, 3, 2);
+        FillWindowPixelRect(WIN_GLASS_ITEM_NAME, i == sGlassInfoPage ? 8 : 6, i * 4, 13, 3, 2);
+    PutWindowTilemap(WIN_GLASS_ITEM_NAME);
+    CopyWindowToVram(WIN_GLASS_ITEM_NAME, COPYWIN_FULL);
     CopyWindowToVram(WIN_DESCRIPTION, COPYWIN_FULL);
 }
 
@@ -77,6 +83,11 @@ static void GlassGridDraw(s32 selected, struct ListMenu *list)
     }
     if (rebuild)
     {
+        if (gBagPosition.pocket != sGlassGridPocket)
+        {
+            sGlassInfoPage = 0;
+            sGlassGridSelection = -2;
+        }
         GlassGridDestroy();
         for (i = 0; i < 9; i++)
             if (items[i])
