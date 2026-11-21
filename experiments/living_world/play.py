@@ -106,9 +106,8 @@ class Display:
             self.clear_audio(self.device)
             self.audio_started = False
 
-    def audio_backlogged(self):
-        # Let the device drain excess audio before running another GBA frame.
-        return self.device and self.queued(self.device) >= self.audio_block * 5
+    def audio_queue_blocks(self):
+        return self.queued(self.device) / self.audio_block if self.device else 0
 
     def audio(self, samples, count):
         if self.device:
@@ -493,7 +492,9 @@ def main():
                     time.sleep(game.frame_period)
                     next_frame = time.monotonic()
                     continue
-                if display.audio_backlogged():
+                queued_blocks = display.audio_queue_blocks()
+                if queued_blocks >= 5:
+                    # Drain excess audio before running another GBA frame.
                     time.sleep(game.frame_period / 4)
                     next_frame = time.monotonic()
                     continue
@@ -502,7 +503,10 @@ def main():
                 # a long stall to avoid fast-forwarding through stale input.
                 if start - next_frame > game.frame_period * 3:
                     next_frame = start
-                next_frame += game.frame_period
+                # Correct small differences between the device clock and frame
+                # clock before the next audio callback runs out of samples.
+                pace = 0.98 if display.audio_started and queued_blocks < 2 else 1
+                next_frame += game.frame_period * pace
                 game.core.retro_run()
                 staged = None
                 scene = None
