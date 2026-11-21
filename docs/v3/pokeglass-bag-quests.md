@@ -130,7 +130,7 @@ Native ARM build passed. mGBA libretro executed these focused suites:
 | `pokeglass_time_return_emulator.py` | Repeated Party/hub/field returns in day/evening/night, outdoors/indoors and rain |
 
 Build footprint: EWRAM 238,896 / 262,144 bytes; IWRAM 27,573 / 32,768 bytes;
-linked ROM 21,923,924 / 33,554,432 bytes, padded to 32 MiB. Relative to the source
+linked ROM 21,924,032 / 33,554,432 bytes, padded to 32 MiB. Relative to the source
 baseline, persistent EWRAM grew 64 bytes; save-block sizes did not grow. Up to
 nine grid sprites/palettes supplement the existing Bag sprite. Windows use
 separate tile ranges; normal native action windows keep their existing allocator.
@@ -147,3 +147,11 @@ AI, Nuzlocke and randomizer code remains shared and otherwise unchanged.
 More side quests, additional implemented Vidra Gym definitions and a gameplay
 performance profile can build on this registry. Historical five-row Bag visual
 tests need grid-specific expectations; the new grid suite supplies those checks.
+
+## Bag visual follow-up
+
+The header now consists only of three icon tabs for the actual inventory pockets,
+with an active-tab background and underline. The pocket name and control hints
+were removed from the bar; L/R and L+R behavior remains available. Item artwork
+is centered above its quantity by accounting for the 24×24 art in its 32×32
+sprite canvas. The ARM build and grid/action emulator suites passed again.

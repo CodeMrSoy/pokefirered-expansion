@@ -3001,19 +3001,38 @@ static void PrintPocketName(void)
     FillWindowPixelBuffer(WIN_POCKET_NAME, PIXEL_FILL(0));
     if (IsPokeGlassSessionActive())
     {
-        static const u8 colors[] = {0, 8, 4};
         u8 i;
-        AddTextPrinterParameterized3(WIN_POCKET_NAME, FONT_SMALL, 0, 0, colors, TEXT_SKIP_DRAW, str);
+        // Pocket categories alone fill the bar, matching the icon-led layout.
         for (i = 0; i < POCKETS_COUNT_NO_CASES; i++)
         {
-            u8 x = 75 + i * 18;
-            FillWindowPixelRect(WIN_POCKET_NAME, i == gBagPosition.pocket ? 8 : 6, x, 2, 14, 12);
-            FillWindowPixelRect(WIN_POCKET_NAME, 4, x + 1, 3, 12, 10);
-            if (i == POCKET_POKE_BALLS) { FillWindowPixelRect(WIN_POCKET_NAME, 8, x + 3, 6, 8, 2); FillWindowPixelRect(WIN_POCKET_NAME, 8, x + 6, 4, 2, 6); }
-            else if (i == POCKET_KEY_ITEMS) { FillWindowPixelRect(WIN_POCKET_NAME, 8, x + 3, 5, 4, 4); FillWindowPixelRect(WIN_POCKET_NAME, 8, x + 6, 7, 5, 2); }
-            else FillWindowPixelRect(WIN_POCKET_NAME, 8, x + 4, 5, 6, 6);
+            u8 left = i * 69, x = left + 28;
+            u8 background = i == gBagPosition.pocket ? 5 : 4;
+            FillWindowPixelRect(WIN_POCKET_NAME, background, left, 0, 68, 16);
+            FillWindowPixelRect(WIN_POCKET_NAME, i == gBagPosition.pocket ? 8 : 6, left, 14, 68, 2);
+            if (i == POCKET_POKE_BALLS)
+            {
+                FillWindowPixelRect(WIN_POCKET_NAME, 8, x + 3, 2, 6, 12);
+                FillWindowPixelRect(WIN_POCKET_NAME, 8, x + 1, 4, 10, 8);
+                FillWindowPixelRect(WIN_POCKET_NAME, background, x + 3, 4, 6, 8);
+                FillWindowPixelRect(WIN_POCKET_NAME, 8, x + 1, 7, 10, 2);
+                FillWindowPixelRect(WIN_POCKET_NAME, background, x + 4, 6, 4, 4);
+                FillWindowPixelRect(WIN_POCKET_NAME, 8, x + 5, 7, 2, 2);
+            }
+            else if (i == POCKET_KEY_ITEMS)
+            {
+                FillWindowPixelRect(WIN_POCKET_NAME, 8, x, 3, 6, 6);
+                FillWindowPixelRect(WIN_POCKET_NAME, background, x + 2, 5, 2, 2);
+                FillWindowPixelRect(WIN_POCKET_NAME, 8, x + 5, 7, 7, 2);
+                FillWindowPixelRect(WIN_POCKET_NAME, 8, x + 9, 8, 2, 3);
+            }
+            else
+            {
+                FillWindowPixelRect(WIN_POCKET_NAME, 8, x + 4, 2, 5, 3);
+                FillWindowPixelRect(WIN_POCKET_NAME, 8, x + 2, 5, 9, 8);
+                FillWindowPixelRect(WIN_POCKET_NAME, background, x + 4, 8, 5, 3);
+                FillWindowPixelRect(WIN_POCKET_NAME, 8, x + 5, 9, 3, 1);
+            }
         }
-        AddTextPrinterParameterized3(WIN_POCKET_NAME, FONT_SMALL, 134, 0, colors, TEXT_SKIP_DRAW, COMPOUND_STRING("L/R  L+R:Info"));
         CopyWindowToVram(WIN_POCKET_NAME, COPYWIN_FULL);
     }
     else

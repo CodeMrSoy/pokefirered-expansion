@@ -85,8 +85,10 @@ static void GlassGridDraw(s32 selected, struct ListMenu *list)
                 sGlassGridSprites[i] = sprite;
                 if (sprite < MAX_SPRITES)
                 {
-                    gSprites[sprite].x = 130 + (i % 3) * 36;
-                    gSprites[sprite].y = 46 + (i / 3) * 36;
+                    // Item art occupies the top-left 24x24 of a 32x32 sprite.
+                    // Offset its canvas so the art is centered above the quantity.
+                    gSprites[sprite].x = 134 + (i % 3) * 36;
+                    gSprites[sprite].y = 50 + (i / 3) * 36;
                     gSprites[sprite].oam.priority = 1;
                 }
             }
