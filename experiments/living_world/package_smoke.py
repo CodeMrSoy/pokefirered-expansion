@@ -39,6 +39,45 @@ def run_frames(game, count, button=None):
         game.core.retro_run()
 
 
+def tap(game, button, settle=40):
+    run_frames(game, 2, button)
+    run_frames(game, settle)
+
+
+def continue_to(game, area):
+    run_frames(game, 180)
+    for _ in range(10):
+        for key in (3, 8):
+            tap(game, key)
+        hint = game.read_hint()
+        if hint and hint.area == area and not hint.busy:
+            return hint
+    raise AssertionError(f"Packaged ROM failed to enter {area}")
+
+
+def pallet_bridge(game):
+    continue_to(game, "pallet")
+    tap(game, 4, 16)
+    run_frames(game, 2, 8)
+    bridge = DialogueBridge(game.read_request, game.write_reply, game.mailbox, deferred=True)
+    for _ in range(120):
+        if game.read_request(game.mailbox, REPLY_OFFSET).startswith(b"LQW1"):
+            break
+        run_frames(game, 1)
+    else:
+        raise AssertionError("Watts did not send a real ROM mailbox request")
+
+    def answer(context):
+        assert context.npc == "pc_resident"
+        return json.dumps({"action": "SAY_DIALOGUE", "text": "Offline bridge ready."})
+
+    trace = bridge.poll(answer)
+    assert trace and trace["validation"] == "accepted"
+    run_frames(game, 40)
+    assert bridge.poll(answer) is None
+    assert not game.read_request(game.mailbox, REPLY_OFFSET).startswith(b"LQW1")
+
+
 def key_check(display):
     controls = display.controls
     controls.draft = dict(controls.keys)
@@ -80,21 +119,9 @@ def runtime_smoke(directory, core):
         try:
             fixture = (ROOT / "Phase11RegionalSociety.sav").read_bytes()
             game.load_save(fixture)
-            run_frames(game, 180)
-            for _ in range(10):
-                for key in (3, 8):
-                    run_frames(game, 2, key)
-                    run_frames(game, 40)
-                hint = game.read_hint()
-                if hint and hint.area == "pewter" and not hint.busy:
-                    break
-            else:
-                raise AssertionError("Packaged ROM failed to enter the Pewter field")
+            hint = continue_to(game, "pewter")
             assert display.texture and display.device
             assert game.save_bytes() == fixture
-            target = directory / "Phase11RegionalSociety.sav"
-            atomic_write(target, game.save_bytes())
-
             # Keep all writes inside the authorized host response window.
             bridge = DialogueBridge(game.read_request, game.write_reply, game.mailbox, deferred=True)
             assert bridge.poll(lambda _: SKIP) is None
@@ -107,7 +134,7 @@ def runtime_smoke(directory, core):
             game.publish_researcher(hint.frame, "museum")
             with TemporaryDirectory() as world_directory:
                 scenario(Path(world_directory))
-            memory = WorldMemory(directory / "test.sqlite3", target.name, fixture)
+            memory = WorldMemory(directory / "test.sqlite3", "Phase11RegionalSociety.sav", fixture)
             try:
                 game.publish_quest(memory.director, memory.society, memory.population)
             finally:
@@ -116,14 +143,34 @@ def runtime_smoke(directory, core):
             game.close()
         game = open_game()
         try:
+            pallet_save = (ROOT / "PalletTest.sav").read_bytes()
+            game.load_save(pallet_save)
+            pallet_bridge(game)
+            tap(game, 8, 40)  # Close the bridge reply before opening PokéGlass.
+            tap(game, 3, 110)
+            for key in (6, 5, 6, 8):
+                tap(game, key, 110)
+            for _ in range(8):
+                if game.save_bytes() != pallet_save:
+                    break
+                tap(game, 8, 110)
+            saved = game.save_bytes()
+            assert saved != pallet_save, "The ROM did not write a new flash save"
+            target = directory / "PalletTest.sav"
+            atomic_write(target, saved)
+        finally:
+            game.close()
+        game = open_game()
+        try:
             game.load_save(target.read_bytes())
-            assert game.save_bytes() == fixture
+            assert game.save_bytes() == saved
+            continue_to(game, "pallet")
         finally:
             game.close()
     finally:
         display.controls.close()
         display.sdl.SDL_Quit()
-    return "SDL video/audio, virtual controller, remap, ROM hint and bounded mailbox, battery write/reload, SQLite quest lifecycle"
+    return "SDL video/audio, virtual controller, remap, ROM hint and Watts mailbox round trip, native flash write/reload, SQLite quest lifecycle"
 
 
 def worker_failure_smoke():

@@ -10,8 +10,17 @@ inputs="$work/inputs"
 mkdir -p "$inputs/licenses"
 
 fetch() {
+    echo "Fetching ${2##*/}"
     curl -fLsS --retry 3 --output "$2" "$1"
 }
+
+fetch https://raw.githubusercontent.com/libsdl-org/SDL/release-2.32.10/LICENSE.txt "$inputs/licenses/SDL-LICENSE.txt"
+fetch https://www.python.org/ftp/python/3.12.10/python-3.12.10-embed-amd64.zip "$inputs/python-win.zip"
+fetch https://libsdl.org/release/SDL2-2.32.10-win32-x64.zip "$inputs/sdl-win.zip"
+weights=https://huggingface.co/unsloth/Qwen3-0.6B-GGUF
+model=626eb58354de1127ccd7a9dc213485a3b716534c
+fetch "$weights/resolve/$model/Qwen3-0.6B-Q4_K_M.gguf" "$inputs/model-q4.gguf"
+fetch https://huggingface.co/Qwen/Qwen3-0.6B/raw/main/LICENSE "$inputs/licenses/Qwen-LICENSE.txt"
 
 mingw=llvm-mingw-20251007-ucrt-ubuntu-22.04-x86_64
 fetch "https://github.com/mstorsjo/llvm-mingw/releases/download/20251007/$mingw.tar.xz" "$work/mingw.tar.xz"
@@ -51,13 +60,7 @@ cmake --build "$work/llama-win" --target llama --parallel 4
 "$target-clang" -std=c11 -O2 -municode "$app/security_probe.c" -lws2_32 -o "$inputs/sandbox-probe.exe"
 cp "$work/llama/LICENSE" "$inputs/licenses/llama.cpp-LICENSE.txt"
 cp "$work/mgba/LICENSE" "$inputs/licenses/mGBA-LICENSE.txt"
-fetch https://raw.githubusercontent.com/libsdl-org/SDL/release-2.32.10/LICENSE.txt "$inputs/licenses/SDL-LICENSE.txt"
-fetch https://www.python.org/ftp/python/3.12.10/python-3.12.10-embed-amd64.zip "$inputs/python-win.zip"
-fetch https://libsdl.org/release/SDL2-2.32.10-win32-x64.zip "$inputs/sdl-win.zip"
-weights=https://huggingface.co/unsloth/Qwen3-0.6B-GGUF
-model=626eb58354de1127ccd7a9dc213485a3b716534c
-fetch "$weights/resolve/$model/Qwen3-0.6B-Q4_K_M.gguf" "$inputs/model-q4.gguf"
-fetch https://raw.githubusercontent.com/QwenLM/Qwen3/main/LICENSE "$inputs/licenses/Qwen-LICENSE.txt"
+
 
 make -j4 > "$root/rom-build.log" 2>&1 || { tail -80 "$root/rom-build.log"; exit 1; }
 export MGBA_CORE="$work/mgba-linux/mgba_libretro.so" ADVENTURE_TEST_MODE=1
