@@ -87,6 +87,10 @@ def main():
         shutil.copyfile(inputs / "PewterSocietyTest.sav", stage / "PewterRegionalTest.sav")
         (stage / "Play Pewter Regional Demo.cmd").write_bytes(
             b'@echo off\r\ncall "%~dp0Play.cmd" --pewter-regional\r\n')
+        (stage / "Validate Offline Runtime.cmd").write_bytes(
+            b'@echo off\r\nsetlocal\r\ncd /d "%~dp0"\r\n'
+            b'python\\python.exe -B play.py --sandbox-test\r\nif errorlevel 1 exit /b 1\r\n'
+            b'python\\python.exe -B play.py --model-test\r\nexit /b %errorlevel%\r\n')
         for name in ("play.py", "bridge.py", "inference.py", "worker.py", "world.py", "profiles.py",
                      "knowledge.py", "social.py", "reasoning.py", "hybrid.py", "routines.py", "director.py", "society.py", "planning.py", "region.py", "dynamic_quests.py", "PLAYTEST.md",
                      "PHASE2.md", "PHASE3.md", "PHASE4.md", "PHASE5.md", "PHASE6.md", "PHASE7.md", "PHASE8.md", "PHASE9.md", "PHASE10.md"):

@@ -321,6 +321,15 @@ def main():
             print("Watts survey", action, metrics)
             reply = model.guide(GuideTurn("pallet-sighting:25", True))
             print("Guide follow-up", validate(reply.dialogue).decode("ascii"), reply.intention, reply.metrics)
+            if model.style == "qwen3":
+                society = smoke_memory.society
+                society.regional_demo = True
+                society.tick(39600, "pewter")
+                ticket = society.decision("researcher")
+                plan, metrics = choose_plan(model, ticket, society.primitives(ticket),
+                                            PERSONAS[ticket.actor], society.planning_snapshot())
+                society.submit(ticket, plan)
+                print("Regional:", plan.goal, [(step.action, step.target) for step in plan.steps], metrics)
         finally:
             smoke_memory.close()
             model.close()
