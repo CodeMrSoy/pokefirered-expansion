@@ -13,6 +13,8 @@ BOND_LIMIT = 12
 DECISIONS_PER_DAY = 3
 PENDING_DECISIONS = 4
 DECISION_WINDOW = 20 * 60
+DEMO_START = 3 * DAY + 9 * 3600
+DEMO_SPEED = 60
 DEPENDENCIES = {"researcher": "volunteer", "curator": "researcher", "trainer": "attendant",
                 "guide": "volunteer", "volunteer": "guide", "attendant": "trainer"}
 LOCATIONS = frozenset(("pewter", "museum", "route_2", "gym"))
@@ -309,6 +311,22 @@ class Population:
             category = {"researcher": "research_result", "trainer": "training_milestone"}.get(person.role, "work_result")
             self.event(goal["id"], category, person.id, when, status="completed")
             self.remember(actor, when, "goal_completed", goal=goal["id"])
+
+    def demo_tick(self, second):
+        if type(second) is not int:
+            return 0
+        if "demo_anchor" not in self.state:
+            # Give the residents working history by running the ordinary
+            # rules for two days before beginning the playable clock.
+            shifts = sorted({person.shift for person in self.people.values()})
+            for day in (1, 2):
+                for shift in shifts:
+                    for offset in (0, 24):
+                        while self.tick(day * DAY + shift + offset) == TRANSITIONS:
+                            pass
+            self.state["demo_anchor"] = second
+            self.persist()
+        return self.tick(DEMO_START + (second - self.state["demo_anchor"]) * DEMO_SPEED)
 
     def tick(self, second):
         if type(second) is not int or second < self.state["clock"]:

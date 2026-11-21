@@ -89,6 +89,9 @@ def main():
         shutil.copyfile(inputs / "PewterSocietyTest.sav", stage / "PewterRegionalTest.sav")
         (stage / "Play Pewter Regional Demo.cmd").write_bytes(
             b'@echo off\r\ncall "%~dp0Play.cmd" --pewter-regional\r\n')
+        shutil.copyfile(inputs / "PewterSocietyTest.sav", stage / "Phase11RegionalSociety.sav")
+        (stage / "Play Phase 11 Society Demo.cmd").write_bytes(
+            b'@echo off\r\ncall "%~dp0Play.cmd" --phase11-demo\r\n')
         (stage / "Validate Offline Runtime.cmd").write_bytes(
             b'@echo off\r\nsetlocal\r\ncd /d "%~dp0"\r\n'
             b'python\\python.exe -B play.py --sandbox-test\r\nif errorlevel 1 exit /b 1\r\n'
@@ -128,6 +131,7 @@ def main():
             "quest_view": quest_view,
             "museum_view": museum_view,
             "regional_view": regional_view,
+            "profile_version": 11,
             "sha256": sha256(stage / "PokemonQuantum.gba"),
             "model_sha256": model_sha,
             "species": names,

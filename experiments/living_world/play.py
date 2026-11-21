@@ -351,7 +351,8 @@ def main():
             smoke_memory.close()
             model.close()
         return 0
-    profile = Path(os.environ.get("LOCALAPPDATA", Path.home() / ".local/share")) / "LivingQuantumWorld"
+    profile_name = "LivingQuantumWorldPhase11" if args.phase11_demo or manifest.get("profile_version") == 11 else "LivingQuantumWorld"
+    profile = Path(os.environ.get("LOCALAPPDATA", Path.home() / ".local/share")) / profile_name
     profile.mkdir(parents=True, exist_ok=True)
     demo = "PalletSocialTest.sav" if args.pallet_social else "PalletTest.sav" if args.pallet_test else None
     if args.phase11_demo:
@@ -402,8 +403,8 @@ def main():
             if population:
                 population.model_decisions = model.style == "qwen3"
             resident_work = None
-            society.demo = args.pewter_society or args.pewter_regional
-            society.regional_demo = args.pewter_regional
+            society.demo = args.pewter_society or args.pewter_regional or args.phase11_demo
+            society.regional_demo = args.pewter_regional or args.phase11_demo
             director = memory.director
             director.demo = args.pewter_demo
             director.society_demo = society.demo
@@ -587,7 +588,12 @@ def main():
                             director.observe(fresh.local_second, fresh.area, protected, fresh.busy)
                             society.tick(fresh.local_second, fresh.area, fresh.busy)
                             if population:
-                                population.tick(fresh.local_second)
+                                transitions = population.demo_tick(fresh.local_second)
+                                if transitions:
+                                    log.write(json.dumps({"regional_transitions": transitions,
+                                                          "residents": len(population.state["actors"]),
+                                                          "regional_clock": population.state["clock"],
+                                                          "area": fresh.area}) + "\n")
                                 if resident_work:
                                     ticket, future = resident_work
                                     if future.done():

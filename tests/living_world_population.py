@@ -53,8 +53,29 @@ def event_test(db):
     w.close()
 
 
+def demo_test(db):
+    memory = WorldMemory(db, "demo", b"early")
+    run = memory.population
+    run.demo_tick(39600)
+    assert run.state["demo_anchor"] == 39600
+    assert len(run.state["actors"]) == 24
+    assert run.state["actors"]["ada"]["goal"]["progress"] == 2
+    for second in range(39601, 39790):
+        run.demo_tick(second)
+    assert any(event["kind"] == "survey_support" for event in run.state["events"].values())
+    memory.checkpoint(b"later")
+    clock = run.state["clock"]
+    memory.close()
+    memory = WorldMemory(db, "demo", b"later")
+    assert memory.population.state["clock"] == clock
+    memory.population.demo_tick(39800)
+    assert memory.population.state["clock"] > clock
+    memory.close()
+
+
 if __name__ == "__main__":
     with TemporaryDirectory() as directory:
         checkpoint_test(Path(directory) / "world.sqlite")
         event_test(Path(directory) / "events.sqlite")
+        demo_test(Path(directory) / "demo.sqlite")
     print("PASS 24 residents, multi-day goal, checkpoint fork and backward-clock guard, autonomous regional events and provenance")

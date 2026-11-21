@@ -29,6 +29,7 @@ Mode 0 is Classic and mode 1 is Quantum. The harness runs the compiled map event
 [Phase 8](PHASE8.md) covers the Pewter World Director, Brock’s optional objective and the Pewter demo.
 [Phase 9](PHASE9.md) covers Pewter Society. [Phase 10](PHASE10.md) covers composed plans,
 regional travel, two dynamic PokéGlass entries and the offline demo.
+[Phase 11](PHASE11.md) documents the separate regional society prototype.
 
 ### Build the offline worker and Windows package
 

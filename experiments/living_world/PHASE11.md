@@ -75,3 +75,58 @@ The roster keeps eight memories and twelve relationships per resident,
 distinct volunteers to the real Qwen worker. All three chose to continue
 their work in that fixture. Cooperation and refusal were both exercised
 by the deterministic simulations. No larger model was adopted.
+
+## 11G · Demo, regression and merge readiness
+
+Extract the Phase 11 archive into its own folder and run **Play Phase 11
+Society Demo.cmd**. Choose **Continue**. The fixture starts in Pewter with
+PokéGlass. The population runs two prior days through the normal simulation
+rules to establish working history. Then one ROM-clock second advances one
+population minute. This acceleration applies to the Phase 11 society only.
+The ROM clock and existing Phase 10 travel stay at their normal speed.
+The Phase 11 package uses the separate local profile
+`%LOCALAPPDATA%\LivingQuantumWorldPhase11`.
+
+Give the society some field time, then ask the assistant at the public
+Pewter Museum desk about outstanding survey work. Museum admission still
+uses the existing game script. You can carry a disclosed notice to the
+volunteer or let the region resolve it first. Return later to see the
+objective update. The route traveler, Museum volunteer, and Brock still
+use the Phase 10 projection system. The 24 new identities live in the host
+simulation and use existing Museum representatives for player interaction.
+
+The Classic and Quantum Linux mGBA suite passed 18 mode-specific runs plus
+three shared checks, including the native story paths, Brock battle launch
+and separate award continuation, travel geometry and exclusive presence,
+controllers, Bag, the seven static quests and all three dynamic categories.
+The Linux probe denied unrelated file access, child process execution and
+socket creation. These fixtures did not play an entire Brock fight. Native
+Windows execution and AppContainer behavior are still unverified.
+
+To reproduce, build the ROM with `make -j8`, set `ARM_NM` and `MGBA_CORE`
+to the ARM symbols tool and Linux mGBA core, and run:
+
+- `python -B tests/living_world_population.py`
+- `python -B tests/living_world_population_bench.py` for deterministic scaling.
+- Set `LIVING_WORLD_PHASE5_RUNTIME` to the bundled offline runtime and run
+  the benchmark again for the real-Qwen contention test.
+- `QUEST_QC_ADVENTURE=0 python -B tests/living_world_regional_quest_emulator.py`,
+  then repeat with mode 1.
+- Run the existing regional, Museum, PokéGlass, Bag, Gym and story suites
+  against the same ROM. Generate the Pewter save fixtures with
+  `LIVING_WORLD_PEWTER_FIXTURE=1` on the Brock emulator test.
+- Build the separate Windows package with
+  `experiments/living_world/package-windows.py`, the two Pewter fixtures
+  and the existing pinned Windows inputs.
+
+### Merge-readiness decision
+
+The current `Living-Quantum-World` tip matched the recorded Phase 10 baseline
+at review. Phase 11 already includes its controller and remapping fix. There
+were no newer Phase 10 commits to bring over. The branch comparison is additive.
+The new SQLite table and isolated package profile avoid changing Phase 10
+demo state. Native ROM quest storage retains the same layout and seven
+compiled quests. Phase 11 is suitable for isolated integration testing.
+Before promoting it to the primary Windows playtest, validate the native
+launcher, controller, AppContainer and save/restart flow. Keep the Phase 10
+branch and release usable in parallel. No merge was performed.
