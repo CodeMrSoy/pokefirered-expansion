@@ -63,6 +63,8 @@ def main():
                                if line.endswith(" gLivingWorldResearcherPresence"))
     museum_view = next(int(line.split()[0], 16) for line in symbols.splitlines()
                        if line.endswith(" gLivingWorldMuseumQuestView"))
+    regional_view = next(int(line.split()[0], 16) for line in symbols.splitlines()
+                         if line.endswith(" gLivingWorldRegionalQuestView"))
     names = {}
     header = (ROOT / "include/constants/species.h").read_text()
     for key, id_ in re.findall(r"^#define SPECIES_([A-Z0-9_]+)\s+(\d+)\b", header, re.MULTILINE):
@@ -93,7 +95,7 @@ def main():
             b'python\\python.exe -B play.py --model-test\r\nexit /b %errorlevel%\r\n')
         for name in ("play.py", "controls.py", "population.py", "bridge.py", "inference.py", "worker.py", "world.py", "profiles.py",
                      "knowledge.py", "social.py", "reasoning.py", "hybrid.py", "routines.py", "director.py", "society.py", "planning.py", "region.py", "dynamic_quests.py", "PLAYTEST.md",
-                     "PHASE2.md", "PHASE3.md", "PHASE4.md", "PHASE5.md", "PHASE6.md", "PHASE7.md", "PHASE8.md", "PHASE9.md", "PHASE10.md"):
+                     "PHASE2.md", "PHASE3.md", "PHASE4.md", "PHASE5.md", "PHASE6.md", "PHASE7.md", "PHASE8.md", "PHASE9.md", "PHASE10.md", "PHASE11.md"):
             shutil.copyfile(APP / name, stage / name)
         subprocess.run([sys.executable, APP / "build-knowledge.py", stage / "world-knowledge.sqlite3"], check=True)
         shutil.copyfile(APP / "launch-windows.cmd", stage / "Play.cmd")
@@ -125,6 +127,7 @@ def main():
             "researcher_presence": researcher_presence,
             "quest_view": quest_view,
             "museum_view": museum_view,
+            "regional_view": regional_view,
             "sha256": sha256(stage / "PokemonQuantum.gba"),
             "model_sha256": model_sha,
             "species": names,

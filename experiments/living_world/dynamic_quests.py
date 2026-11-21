@@ -74,3 +74,36 @@ def project_museum(society):
     else:
         status, source = 1, 1
     return QUEST_VIEW.pack(b"LQM1", crc32(objective["event"].encode()) or 1, status, source, 0)
+
+
+REGIONAL_STATES = {"active": 1, "completed": 3, "expired": 4, "withdrawn": 5}
+
+
+def regional_exchange(population, actor, *, accepted=False):
+    state = population.state
+    objective = state.get("objective")
+    if actor == "assistant" and (not objective or objective["status"] != "active"):
+        for id_, event in state["events"].items():
+            if event["kind"] != "survey_support" or event["audience"] != "museum_desk" or event["status"] != "active":
+                continue
+            if objective and objective["event"] == id_:
+                continue
+            if accepted:
+                state["objective"] = {"event": id_, "status": "active", "source": "museum_desk"}
+                population.persist()
+            return "A survey team needs help.\nPass word to the volunteer.\fSurvey Notes added\nto your Quest Book."
+    if actor == "researcher" and objective and objective["status"] == "active":
+        if accepted:
+            objective["status"] = "completed"
+            objective["delivered"] = True
+            population.persist()
+        return "Thanks for the survey note.\nI'll tell the field team."
+    return None
+
+
+def project_regional(population):
+    objective = population.state.get("objective") if population else None
+    if not objective or objective["source"] != "museum_desk" or objective["status"] not in REGIONAL_STATES:
+        return bytes(QUEST_VIEW.size)
+    return QUEST_VIEW.pack(b"LW11", crc32(objective["event"].encode()) or 1,
+                           REGIONAL_STATES[objective["status"]], 1, 0)

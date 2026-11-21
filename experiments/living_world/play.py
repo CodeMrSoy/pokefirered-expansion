@@ -18,7 +18,8 @@ from bridge import (
 )
 from controls import Controls
 from director import DUTY, PRESENCE, TRIP, choose_brock
-from dynamic_quests import QUEST_VIEW, museum_exchange, project_brock, project_museum
+from dynamic_quests import (QUEST_VIEW, museum_exchange, project_brock, project_museum,
+                            project_regional, regional_exchange)
 from inference import LocalModel, windows_launcher_environment
 from hybrid import FIELD_SIZE, FieldHint, HybridDialogue, prepare
 from reasoning import BALANCED_SHA256, LIGHTWEIGHT_SHA256, GuideTurn, guide_reply, reported_fact
@@ -135,7 +136,7 @@ class Display:
 
 
 class Game:
-    def __init__(self, core_path, rom_path, rom, mailbox, display, *, field_hint=None, brock_presence=None, trainer_presence=None, quest_view=None, researcher_presence=None, museum_view=None):
+    def __init__(self, core_path, rom_path, rom, mailbox, display, *, field_hint=None, brock_presence=None, trainer_presence=None, quest_view=None, researcher_presence=None, museum_view=None, regional_view=None):
         self.display = display
         self.mailbox = mailbox
         self.core = core = c.CDLL(str(core_path))
@@ -170,7 +171,8 @@ class Game:
         for name, address, size in (("brock_ptr", brock_presence, BROCK_PRESENCE.size),
                                     ("trainer_ptr", trainer_presence, BROCK_PRESENCE.size),
                                     ("researcher_ptr", researcher_presence, BROCK_PRESENCE.size),
-                                    ("quest_ptr", quest_view, QUEST_VIEW.size), ("museum_ptr", museum_view, QUEST_VIEW.size)):
+                                    ("quest_ptr", quest_view, QUEST_VIEW.size), ("museum_ptr", museum_view, QUEST_VIEW.size),
+                                    ("regional_ptr", regional_view, QUEST_VIEW.size)):
             if address is not None and (
                     address % 4 or not 0x02000000 <= address <= 0x02040000 - size
                     or any(start is not None and address < start + length and start < address + size
@@ -224,11 +226,13 @@ class Game:
             payload = BROCK_PRESENCE.pack(b"LWR1", frame, code, code ^ 255)
             c.memmove(self.researcher_ptr, payload, len(payload))
 
-    def publish_quest(self, director, society):
+    def publish_quest(self, director, society, population=None):
         if self.quest_ptr is not None:
             c.memmove(self.quest_ptr, project_brock(director), QUEST_VIEW.size)
         if self.museum_ptr is not None:
             c.memmove(self.museum_ptr, project_museum(society), QUEST_VIEW.size)
+        if self.regional_ptr is not None:
+            c.memmove(self.regional_ptr, project_regional(population), QUEST_VIEW.size)
 
     def write_reply(self, address, data):
         offset = address - self.mailbox
@@ -287,6 +291,7 @@ def main():
     mode.add_argument("--pewter-demo", action="store_true")
     mode.add_argument("--pewter-society", action="store_true")
     mode.add_argument("--pewter-regional", action="store_true")
+    mode.add_argument("--phase11-demo", action="store_true")
     parser.add_argument("--lightweight", action="store_true", help="Use short dialogue and skip optional prose")
     parser.add_argument("--no-predict", action="store_true", help="Disable approach prefetch for comparison")
     args = parser.parse_args()
@@ -348,7 +353,9 @@ def main():
     profile = Path(os.environ.get("LOCALAPPDATA", Path.home() / ".local/share")) / "LivingQuantumWorld"
     profile.mkdir(parents=True, exist_ok=True)
     demo = "PalletSocialTest.sav" if args.pallet_social else "PalletTest.sav" if args.pallet_test else None
-    if args.pewter_regional:
+    if args.phase11_demo:
+        demo = "Phase11RegionalSociety.sav"
+    elif args.pewter_regional:
         demo = "PewterRegionalTest.sav"
     elif args.pewter_society:
         demo = "PewterSocietyTest.sav"
@@ -360,7 +367,8 @@ def main():
     game = Game(core_path, rom_path, rom, manifest["mailbox"], display,
                 field_hint=manifest.get("field_hint"), brock_presence=manifest.get("brock_presence"),
                 trainer_presence=manifest.get("trainer_presence"), quest_view=manifest.get("quest_view"),
-                researcher_presence=manifest.get("researcher_presence"), museum_view=manifest.get("museum_view"))
+                researcher_presence=manifest.get("researcher_presence"), museum_view=manifest.get("museum_view"),
+                regional_view=manifest.get("regional_view"))
     memory = None
     previous = None
     try:
@@ -389,6 +397,7 @@ def main():
             prediction_error = None
 
             society = memory.society
+            population = memory.population if args.phase11_demo else None
             society.demo = args.pewter_society or args.pewter_regional
             society.regional_demo = args.pewter_regional
             director = memory.director
@@ -412,7 +421,8 @@ def main():
                 nonlocal staged, scene, lookup, guide_turn, guide_work, guide_result, last_guide
                 if context.npc in ("society_assistant", "society_trainer", "society_researcher"):
                     actor = context.npc.removeprefix("society_")
-                    message = museum_exchange(society, actor) or society.message(actor)
+                    message = (regional_exchange(population, actor) if population else None)
+                    message = message or museum_exchange(society, actor) or society.message(actor)
                     return json.dumps({"action": "SAY_DIALOGUE", "text": message}) if message else SKIP
                 if context.npc in BROCK_REQUESTS:
                     message = director.message(context.npc)
@@ -477,7 +487,9 @@ def main():
                     title = next_title
                 if trace and trace["context"]["npc"] in ("society_assistant", "society_trainer", "society_researcher"):
                     if trace["validation"] == "accepted":
-                        museum_exchange(society, trace["context"]["npc"].removeprefix("society_"), accepted=True)
+                        actor = trace["context"]["npc"].removeprefix("society_")
+                        if not population or not regional_exchange(population, actor, accepted=True):
+                            museum_exchange(society, actor, accepted=True)
                     trace["route"] = "attributed_society_memory"
                     log.write(json.dumps(trace) + "\n")
                     trace = None
@@ -565,6 +577,8 @@ def main():
                             protected = bool(fresh.story) if fresh.area in ("", "pewter", "pewter_gym", "route_2") else False
                             director.observe(fresh.local_second, fresh.area, protected, fresh.busy)
                             society.tick(fresh.local_second, fresh.area, fresh.busy)
+                            if population:
+                                population.tick(fresh.local_second)
                             director.notice = society.notice_for_brock()
                             director.offscreen = society.state["visited"] and not director.demo
                             society.reconcile_brock(director.state.get("last_notice_result"))
@@ -637,7 +651,7 @@ def main():
                                         authority.submit(request, fallback_plan, fallback="decision retry limit")
                                         log.write(json.dumps({"directive": "routine",
                                                               "fallback": "decision retry limit"}) + "\n")
-                            game.publish_quest(director, society)
+                            game.publish_quest(director, society, population)
                             game.publish_brock(fresh.frame, director.location)
                             game.publish_trainer(fresh.frame, society.state["agents"]["trainer"]["location"])
                             game.publish_researcher(fresh.frame, society.state["agents"]["researcher"]["location"])
@@ -659,7 +673,7 @@ def main():
                         if save_path.exists():
                             atomic_write(save_path.with_suffix(".bak"), previous)
                         memory.checkpoint(current)
-                        game.publish_quest(director, society)
+                        game.publish_quest(director, society, population)
                         atomic_write(save_path, current)
                         previous = current
                     next_save = start + 2

@@ -35,3 +35,12 @@ Requests can complete, expire, or be withdrawn without a player action.
 The capped ledger preserves the active entries and their true origin.
 Only researchers' outstanding survey requests are published at the Museum
 desk. Other resident memories and internal events remain private.
+
+## 11E
+
+An outstanding, published survey request can produce one Survey Notes
+objective after an accepted Museum desk dialogue. Player delivery completes
+the objective and NPC resolution can independently complete, expire, or
+withdraw it. The dedicated projection has a fixed size and source code.
+Classic and Quantum mGBA validated all four display states, rollback,
+and preservation of the 144-byte native quest record.

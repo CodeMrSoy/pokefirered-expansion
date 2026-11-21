@@ -1,8 +1,9 @@
 // Shared field overlay: the launcher and NPC offers use the same window owner.
 #define QUEST_UI_LOCATE_BROCK 254
 #define QUEST_UI_MUSEUM_FOLLOWUP 253
-static EWRAM_DATA u8 sQuestIds[QUEST_DEFINITION_COUNT + 2];
-static EWRAM_DATA u8 sLivingQuestView, sMuseumQuestView;
+#define QUEST_UI_REGIONAL_SURVEY 252
+static EWRAM_DATA u8 sQuestIds[QUEST_DEFINITION_COUNT + 3];
+static EWRAM_DATA u8 sLivingQuestView, sMuseumQuestView, sRegionalQuestView;
 static const u8 *const sLocateBrockMuseum[] = {
     COMPOUND_STRING("The attendant says Brock intended to visit the Museum forecourt. Find Brock or check back at the Gym."),
 };
@@ -47,9 +48,32 @@ static const struct QuantumQuestDefinition sMuseumFollowUp[] = {
 };
 #undef MUSEUM_ROW
 
+static const u8 *const sRegionalActive[] = {
+    COMPOUND_STRING("The Museum desk reported a request from a survey team. Let the volunteer know."),
+};
+static const u8 *const sRegionalComplete[] = {
+    COMPOUND_STRING("The request reached the volunteer, or the survey team found the help it needed."),
+};
+static const u8 *const sRegionalExpired[] = {
+    COMPOUND_STRING("The team missed its deadline. This request has expired."),
+};
+static const u8 *const sRegionalWithdrawn[] = {
+    COMPOUND_STRING("The team withdrew this request. It is no longer taking volunteers."),
+};
+#define REGIONAL_ROW(text) {COMPOUND_STRING("Survey Notes"), \
+    COMPOUND_STRING("A request shared by the Pewter Museum desk."), \
+    COMPOUND_STRING("Pewter and north Route 2"), text, 0, 0, 1, TRUE, FALSE}
+static const struct QuantumQuestDefinition sRegionalSurvey[] = {
+    [0] = REGIONAL_ROW(sRegionalActive),
+    [2] = REGIONAL_ROW(sRegionalComplete),
+    [3] = REGIONAL_ROW(sRegionalExpired),
+    [4] = REGIONAL_ROW(sRegionalWithdrawn),
+};
+#undef REGIONAL_ROW
+
 static bool8 QuestUiIsDynamic(u16 id)
 {
-    return id == QUEST_UI_LOCATE_BROCK || id == QUEST_UI_MUSEUM_FOLLOWUP;
+    return id == QUEST_UI_LOCATE_BROCK || id == QUEST_UI_MUSEUM_FOLLOWUP || id == QUEST_UI_REGIONAL_SURVEY;
 }
 
 static const struct QuantumQuestDefinition *QuestUiDefinition(u16 id)
@@ -58,6 +82,8 @@ static const struct QuantumQuestDefinition *QuestUiDefinition(u16 id)
         return &sLocateBrock[sLivingQuestView - 1];
     if (id == QUEST_UI_MUSEUM_FOLLOWUP && sMuseumQuestView)
         return &sMuseumFollowUp[sMuseumQuestView - 1];
+    if (id == QUEST_UI_REGIONAL_SURVEY && sRegionalQuestView)
+        return &sRegionalSurvey[sRegionalQuestView - 1];
     return QuestBook_GetDefinition(id);
 }
 
@@ -65,10 +91,11 @@ static u8 QuestUiState(u16 id)
 {
     if (!QuestUiIsDynamic(id))
         return QuestBook_GetState(id);
-    u8 view = id == QUEST_UI_LOCATE_BROCK ? sLivingQuestView : sMuseumQuestView;
+    u8 view = id == QUEST_UI_LOCATE_BROCK ? sLivingQuestView
+            : id == QUEST_UI_MUSEUM_FOLLOWUP ? sMuseumQuestView : sRegionalQuestView;
     if (view == 3)
         return QUEST_COMPLETED;
-    return view == 4 ? QUEST_FAILED : QUEST_ACTIVE;
+    return view >= 4 ? QUEST_FAILED : QUEST_ACTIVE;
 }
 
 
@@ -101,6 +128,7 @@ static void QuestUiList(void)
     sQuestCount = 0;
     sLivingQuestView = LivingWorld_BrockQuestView();
     sMuseumQuestView = LivingWorld_MuseumQuestView();
+    sRegionalQuestView = LivingWorld_RegionalQuestView();
     for (id = 0; id < QUEST_DEFINITION_COUNT; id++)
     {
         const struct QuantumQuestDefinition *q = QuestBook_GetDefinition(id);
@@ -116,6 +144,8 @@ static void QuestUiList(void)
         sQuestIds[sQuestCount++] = QUEST_UI_LOCATE_BROCK;
     if (sMuseumQuestView && sQuestFilter != 1 && (sQuestFilter != 3 || sMuseumQuestView == 3))
         sQuestIds[sQuestCount++] = QUEST_UI_MUSEUM_FOLLOWUP;
+    if (sRegionalQuestView && sQuestFilter != 1 && (sQuestFilter != 3 || sRegionalQuestView == 3))
+        sQuestIds[sQuestCount++] = QUEST_UI_REGIONAL_SURVEY;
     if (sQuestCursor >= sQuestCount) sQuestCursor = 0;
 }
 static const u8 *QuestStatus(u8 state)
@@ -132,7 +162,7 @@ static void QuestRewardText(u16 id, u8 *text)
         StringCopy(text, COMPOUND_STRING("No extra reward. Challenge Brock normally at the Gym."));
         return;
     }
-    if (id == QUEST_UI_MUSEUM_FOLLOWUP)
+    if (id == QUEST_UI_MUSEUM_FOLLOWUP || id == QUEST_UI_REGIONAL_SURVEY)
     {
         StringCopy(text, COMPOUND_STRING("No item reward."));
         return;
@@ -272,7 +302,8 @@ static void Task_GlassQuestBook(u8 taskId)
     u8 old = sQuestCursor;
     if (gPaletteFade.active) return;
     if (JOY_NEW(B_BUTTON)) { QuestUiClose(taskId); return; }
-    if (LivingWorld_BrockQuestView() != sLivingQuestView || LivingWorld_MuseumQuestView() != sMuseumQuestView)
+    if (LivingWorld_BrockQuestView() != sLivingQuestView || LivingWorld_MuseumQuestView() != sMuseumQuestView
+     || LivingWorld_RegionalQuestView() != sRegionalQuestView)
     {
         QuestUiList();
         sQuestDetail = sQuestTextPage = 0;

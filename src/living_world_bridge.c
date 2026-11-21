@@ -115,6 +115,17 @@ u8 LivingWorld_MuseumQuestView(void)
     return view.state == 3 && view.source == 3 ? 3 : 0;
 }
 
+EWRAM_DATA volatile struct LivingWorldQuestView gLivingWorldRegionalQuestView = {0};
+
+u8 LivingWorld_RegionalQuestView(void)
+{
+    struct LivingWorldQuestView view = gLivingWorldRegionalQuestView;
+    if (view.magic != 0x3131574C || !view.plan || view.reserved || view.source != 1
+     || !FlagGet(FLAG_SYS_POKEDEX_GET) || gQuestLogState == QL_STATE_PLAYBACK)
+        return 0;
+    return view.state == 1 || (view.state >= 3 && view.state <= 5) ? view.state : 0;
+}
+
 static bool8 BrockProtected(void)
 {
     return !FlagGet(FLAG_SYS_POKEDEX_GET) || FlagGet(FLAG_BADGE01_GET)
