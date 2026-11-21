@@ -84,7 +84,10 @@ class Display:
         self.title = bind(sdl, "SDL_SetWindowTitle", None, VOID, c.c_char_p)
         self.queue = bind(sdl, "SDL_QueueAudio", INT, UINT, VOID, UINT)
         self.queued = bind(sdl, "SDL_GetQueuedAudioSize", UINT, UINT)
+        self.pause_device = bind(sdl, "SDL_PauseAudioDevice", None, UINT, INT)
+        self.clear_audio = bind(sdl, "SDL_ClearQueuedAudio", None, UINT)
         self.device = 0
+        self.audio_started = False
         self.texture = None
         self.pixel = 0
         self.event = (c.c_uint64 * 8)()
@@ -93,15 +96,32 @@ class Display:
         self.closed = False
 
     def open_audio(self, rate):
-        request = AudioSpec(round(rate), 0x8010, 2, 0, 1024)
+        request = AudioSpec(round(rate), 0x8010, 2, 0, 2048)
+        obtained = AudioSpec()
         self.device = bind(self.sdl, "SDL_OpenAudioDevice", UINT, c.c_char_p, INT, VOID, VOID, INT)(
-            None, 0, c.byref(request), None, 0)
-        if self.device:
-            self.sdl.SDL_PauseAudioDevice(self.device, 0)
+            None, 0, c.byref(request), c.byref(obtained), 0)
+        self.audio_block = obtained.samples * 4  # Signed 16-bit stereo.
+
+    def pause_audio(self):
+        if self.device and (self.audio_started or self.queued(self.device)):
+            self.pause_device(self.device, 1)
+            self.clear_audio(self.device)
+            self.audio_started = False
+
+    def audio_backlogged(self):
+        # Let the device drain excess audio before running another GBA frame.
+        return self.device and self.queued(self.device) >= self.audio_block * 5
 
     def audio(self, samples, count):
-        if self.device and self.queued(self.device) < 16000:
-            self.queue(self.device, samples, count * 4)
+        if self.device:
+            buffered = self.queued(self.device)
+            if self.audio_started and not buffered:
+                self.pause_device(self.device, 1)
+                self.audio_started = False
+            if self.queue(self.device, samples, count * 4) == 0:
+                if not self.audio_started and buffered + count * 4 >= self.audio_block * 3:
+                    self.pause_device(self.device, 0)
+                    self.audio_started = True
         return count
 
     def draw(self, data, width, height, pitch):
@@ -479,13 +499,30 @@ def main():
                 staged = (lookup, proposal, route, (time.perf_counter() - checking) * 1000)
                 return proposal.dialogue
 
-            next_save = time.monotonic() + 2
-            while display.pump():
+            next_frame = time.monotonic()
+            next_save = next_frame + 2
+            while True:
+                remaining = next_frame - time.monotonic()
+                if remaining > 0:
+                    time.sleep(remaining)
+                if not display.pump():
+                    break
                 if display.controls.draft is not None:
                     title = None  # Restore the game title when keyboard capture ends.
+                    display.pause_audio()
                     time.sleep(game.frame_period)
+                    next_frame = time.monotonic()
+                    continue
+                if display.audio_backlogged():
+                    time.sleep(game.frame_period / 4)
+                    next_frame = time.monotonic()
                     continue
                 start = time.monotonic()
+                # Carry small scheduling overruns into the next frame. Reset after
+                # a long stall to avoid fast-forwarding through stale input.
+                if start - next_frame > game.frame_period * 3:
+                    next_frame = start
+                next_frame += game.frame_period
                 game.core.retro_run()
                 staged = None
                 scene = None
@@ -711,7 +748,6 @@ def main():
                         atomic_write(save_path, current)
                         previous = current
                     next_save = start + 2
-                time.sleep(max(0, game.frame_period - (time.monotonic() - start)))
     finally:
         model.close()
         try:
