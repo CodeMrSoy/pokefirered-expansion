@@ -71,7 +71,7 @@ def choose_plan(model, ticket, available, persona, planner=None):
     prompt = model.render_prompt(instructions,
                                  f"{ticket.context[:300]}\nGoals: {motives}.\nActions: {methods}.")
     start = perf_counter()
-    raw, metrics = model.worker.generate(grammar, prompt)
+    raw, metrics = model.worker.generate(grammar, prompt, timeout=20)
     label, separator, atoms = raw.strip().partition(":")
     codes_used = atoms.split()
     if not separator or label not in purposes or not 1 <= len(codes_used) <= 6 or any(

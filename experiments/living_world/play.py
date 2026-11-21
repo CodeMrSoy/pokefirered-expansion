@@ -394,6 +394,9 @@ def main():
         with ThreadPoolExecutor(max_workers=1) as pool, (profile / "dialogue.jsonl").open(
             "a", encoding="utf-8", buffering=1
         ) as log:
+            log.write(json.dumps({"session": {"rom_revision": manifest.get("revision"),
+                                              "save_slot": save_path.name, "model": model.style,
+                                              "worker_timing": "split-startup-and-planning"}}) + "\n")
             replies = HybridDialogue(memory, model, pool)
             staged = None
             scene = None
@@ -418,6 +421,11 @@ def main():
             plan_retry_after = 0.0
             plan_budget = {}
             plan_cache = {}
+
+            def decision_key(request):
+                if isinstance(request, Ticket):
+                    return request.save, request.actor, request.window, request.cause
+                return request.checkpoint, "brock", request.number
 
             def run_decision(chooser, request, queued, available=None, planner=None):
                 delay = (time.perf_counter() - queued) * 1000
@@ -614,7 +622,7 @@ def main():
                                 social_plan = isinstance(request, Ticket)
                                 ready_now = society.decision(request.actor) if social_plan else director.decision()
                                 authority = society if social_plan else director
-                                if future.done():
+                                if future.done() and not fresh.busy:
                                     planning = None
                                     metrics = {}
                                     failure = None
@@ -623,38 +631,44 @@ def main():
                                     except (OSError, ValueError, RuntimeError, TimeoutError) as error:
                                         selected = request.choices[0] if social_plan else DUTY
                                         failure = str(error)[:220]
-                                    try:
+                                        if (isinstance(error, TimeoutError) and social_plan and request == ready_now
+                                                and plan_budget.get(decision_key(request), 0) < 2):
+                                            selected = None
+                                            plan_retry_after = start + 5
+                                            log.write(json.dumps({"planning_retry": request.actor,
+                                                                  "cause": request.cause, "error": failure}) + "\n")
+                                    if selected is not None:
                                         try:
-                                            authority.submit(request, selected, fallback=failure)
+                                            try:
+                                                authority.submit(request, selected, fallback=failure)
+                                            except ValueError as error:
+                                                if not isinstance(selected, Proposal) or request != ready_now:
+                                                    raise
+                                                selected, failure = request.choices[0], str(error)
+                                                authority.submit(request, selected, fallback=failure)
+                                            if isinstance(selected, Proposal) and request.cause == "open_shift":
+                                                key = (request.save, request.actor, request.context, selected.available)
+                                                plan_cache[key] = selected
+                                                if len(plan_cache) > 16:
+                                                    del plan_cache[next(iter(plan_cache))]
+                                            if not social_plan:
+                                                society.respond_brock(request.notice, selected == TRIP)
+                                            steps = selected.steps if isinstance(selected, Proposal) else selected
+                                            directive = [step.action for step in steps] if social_plan else selected.goal
+                                            log.write(json.dumps({"directive": directive,
+                                                                  "actor": request.actor if social_plan else "brock",
+                                                                  "cause": request.cause if social_plan else request.trigger,
+                                                                  "metrics": metrics, "fallback": failure}) + "\n")
                                         except ValueError as error:
-                                            if not isinstance(selected, Proposal) or request != ready_now:
-                                                raise
-                                            selected, failure = request.choices[0], str(error)
-                                            authority.submit(request, selected, fallback=failure)
-                                        if isinstance(selected, Proposal) and request.cause == "open_shift":
-                                            key = (request.save, request.actor, request.context, selected.available)
-                                            plan_cache[key] = selected
-                                            if len(plan_cache) > 16:
-                                                del plan_cache[next(iter(plan_cache))]
-                                        if not social_plan:
-                                            society.respond_brock(request.notice, selected == TRIP)
-                                        steps = selected.steps if isinstance(selected, Proposal) else selected
-                                        directive = [step.action for step in steps] if social_plan else selected.goal
-                                        log.write(json.dumps({"directive": directive,
-                                                              "actor": request.actor if social_plan else "brock",
-                                                              "cause": request.cause if social_plan else request.trigger,
-                                                              "metrics": metrics, "fallback": failure}) + "\n")
-                                    except ValueError as error:
-                                        log.write(json.dumps({"director_rejection": str(error)}) + "\n")
-                                elif request != ready_now and future.cancel():
+                                            log.write(json.dumps({"director_rejection": str(error)}) + "\n")
+                                elif not fresh.busy and request != ready_now and future.cancel():
                                     planning = None
                             if planning is None and start >= plan_retry_after and game.brock_ptr:
                                 request = (society.decision() if society.demo and not director.notice
                                            else director.decision()) or society.decision()
                                 if request is not None and replies.worker_idle():
                                     social_plan = isinstance(request, Ticket)
-                                    key = ((request.save, request.actor, request.window, request.cause) if social_plan else
-                                           (request.checkpoint, "brock", request.number))
+                                    key = decision_key(request)
                                     attempts = plan_budget.get(key, 0)
                                     if attempts < 2:
                                         plan_budget[key] = attempts + 1
