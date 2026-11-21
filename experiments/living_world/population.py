@@ -5,6 +5,7 @@ import json
 
 DAY = 86400
 TRANSITIONS = 32
+GOAL_WINDOW = 10 * DAY
 LOCATIONS = frozenset(("pewter", "museum", "route_2", "gym"))
 
 
@@ -108,9 +109,40 @@ class Population:
     def remember(self, actor, when, kind, **details):
         actor["memory"] = [*actor["memory"][-7:], {"second": when, "kind": kind, **details}]
 
+    def start_goal(self, person, actor, when):
+        old = actor.get("goal")
+        generation = old["generation"] + 1 if old else 1
+        return {"id": f"{person.id}:{generation}", "generation": generation, "priority": person.patience + 1,
+                "progress": 0, "target": 3 + person.patience,
+                "deadline": when + GOAL_WINDOW, "status": "active"}
+
     def step(self, person, actor, when):
-        actor.update(day=when // DAY, activity=person.role, due=self.morning(person, when // DAY + 1))
+        goal = actor.get("goal")
+        day = when // DAY
+        if actor["activity"] == person.role:
+            if actor["day"] == day and goal and when < goal["deadline"]:
+                self.advance_goal(person, actor, when)
+            else:
+                self.remember(actor, when, "missed_shift")
+            actor.update(activity="off_shift", due=self.morning(person, day + 1))
+            return
+        if day % 7 in person.days_off:
+            actor["due"] = self.morning(person, day + 1)
+            return
+        if goal and goal["status"] == "active" and when >= goal["deadline"]:
+            goal["status"] = "expired"
+            self.remember(actor, when, "goal_expired", goal=goal["id"])
+        if not goal or goal["status"] != "active":
+            actor["goal"] = self.start_goal(person, actor, when)
+        actor.update(day=day, activity=person.role, due=when + 24)
         self.remember(actor, when, "shift", location=person.home)
+
+    def advance_goal(self, person, actor, when):
+        goal = actor["goal"]
+        goal["progress"] += 1
+        if goal["progress"] >= goal["target"]:
+            goal["status"] = "completed"
+            self.remember(actor, when, "goal_completed", goal=goal["id"])
 
     def tick(self, second):
         if type(second) is not int or second < self.state["clock"]:
