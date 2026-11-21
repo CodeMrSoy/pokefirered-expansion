@@ -64,6 +64,7 @@ cp "$work/mgba/LICENSE" "$inputs/licenses/mGBA-LICENSE.txt"
 
 make -j4 > "$root/rom-build.log" 2>&1 || { tail -80 "$root/rom-build.log"; exit 1; }
 export MGBA_CORE="$work/mgba-linux/mgba_libretro.so" ADVENTURE_TEST_MODE=1
+export ARM_NM=arm-none-eabi-nm
 export QUANTUM_QA_OUTPUT="$work/fixture-logs"
 LIVING_WORLD_TEST_SAVE="$inputs/PalletTest.sav" python -B tests/living_world_bridge_emulator.py
 LIVING_WORLD_TEST_SAVE="$inputs/PalletSocialTest.sav" LIVING_WORLD_SOCIAL_FIXTURE=1 python -B tests/living_world_bridge_emulator.py
