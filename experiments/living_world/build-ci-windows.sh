@@ -30,7 +30,7 @@ git init -q "$work/llama"
 git -C "$work/llama" fetch -q --depth=1 https://github.com/ggml-org/llama.cpp.git "$llama"
 git -C "$work/llama" checkout -q FETCH_HEAD
 
-mgba_options=(-DBUILD_LIBRETRO=ON -DBUILD_SDL=OFF -DBUILD_QT=OFF -DBUILD_GL=OFF -DBUILD_GLES2=OFF
+mgba_options=(-DSKIP_LIBRARY=ON -DBUILD_LIBRETRO=ON -DDISABLE_DEPS=ON -DBUILD_SDL=OFF -DBUILD_QT=OFF -DBUILD_GL=OFF -DBUILD_GLES2=OFF
               -DBUILD_GLES3=OFF -DBUILD_LTO=OFF -DUSE_PNG=OFF -DUSE_ZLIB=OFF -DUSE_LIBZIP=OFF
               -DUSE_MINIZIP=OFF -DUSE_FFMPEG=OFF -DUSE_LUA=OFF -DUSE_SQLITE3=OFF -DUSE_ELF=OFF)
 cmake -S "$work/mgba" -B "$work/mgba-win" "${win_cmake[@]}" "${mgba_options[@]}"
