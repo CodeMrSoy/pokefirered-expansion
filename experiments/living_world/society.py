@@ -1,7 +1,10 @@
 """Pewter agents advance at decisions and deadlines on the battery checkpoint."""
+from copy import copy, deepcopy
 from dataclasses import dataclass
 import json
 from time import perf_counter
+
+from planning import GOALS, Proposal, choose_plan
 
 DAY = 86400
 
@@ -300,9 +303,69 @@ class Society:
             return Ticket(self.memory.save, key, "open_shift", day, context, self.options(key))
         return None
 
+    def primitives(self, ticket):
+        """Authorize atomic targets from the actor's situation, never from generated text."""
+        actor = ticket.actor
+        duty = PERSONAS[actor].duty
+        options = [Step("WORK", duty), Step("REST", duty)]
+        if ticket.cause in self.state["requests"]:
+            notice = self.state["requests"][ticket.cause]
+            options += [Step(action, ticket.cause) for action in (
+                "DECLINE_REQUEST", "ACCEPT_REQUEST", "ARRANGE_MEETING", "SHARE_INFORMATION")]
+            options += [Step("VISIT_NPC", notice["sender"]), Step("INVESTIGATE", "cast")]
+        elif actor == "researcher":
+            options.append(Step("INVESTIGATE", "cast"))
+            options += [Step("REQUEST_ASSISTANCE", peer) for peer in sorted(LINKS[actor])
+                        if self.can_send(actor, peer)]
+        else:
+            options += [Step("REQUEST_ASSISTANCE", peer) for peer in self.followups(actor)]
+        if actor == "trainer":
+            options += [Step("TRAIN_POKEMON", duty), Step("TRAVEL_TO", "route_2"),
+                        Step("TRAIN_POKEMON", "route_2"), Step("RETURN_TO_DUTY", duty)]
+        return tuple(options)
+
+    def validate_proposal(self, ticket, proposal):
+        steps = proposal.steps
+        if proposal.available != self.primitives(ticket) or not 1 <= len(steps) <= 6 or len(set(steps)) != len(steps):
+            raise ValueError("Plan contains changed capabilities or duplicate steps")
+        if any(step not in proposal.available for step in steps) or not any(
+                GOALS.get(step.action) == proposal.goal for step in steps):
+            raise ValueError("Unauthorized action or unmet goal")
+        if sum(DURATIONS[step.action] for step in steps) >= MAX_PLAN_SECONDS:
+            raise ValueError("Plan exceeds time budget")
+
+        # Use a shadow copy and the same transition code as execution.
+        # Nothing runs against SQLite or the actual world while validating.
+        shadow = copy(self)
+        shadow.state = deepcopy(self.state)
+        shadow.persist = lambda: None
+        agent = shadow.state["agents"][ticket.actor]
+        agent["active"] = dict(steps=[(s.action, s.target) for s in steps], index=0, due=self.now,
+                               deadline=self.now + MAX_PLAN_SECONDS, event=ticket.cause)
+        for step in steps:
+            shadow.start(ticket.actor)
+            active = agent["active"]
+            if active is None:
+                raise ValueError(f"{step.action} precondition is not met")
+            shadow.now = active["due"]
+            shadow.advance(ticket.actor, start_next=False)
+            last = agent["memory"][-1]
+            if last["outcome"] != "completed":
+                raise ValueError(f"{step.action} cannot finish within the current commitments")
+        if agent["location"] != PERSONAS[ticket.actor].duty:
+            raise ValueError("Plan must end at the actor's duty location")
+        if shadow.qualifies(ticket.actor, ticket.cause, "accepted"):
+            raise ValueError("Cooperation needs a feasible completion before expiry")
+
     def submit(self, ticket, plan, fallback=None):
-        if self.decision(ticket.actor) != ticket or plan not in ticket.choices:
-            raise ValueError("Rejected stale or unauthorized Pewter plan")
+        if self.decision(ticket.actor) != ticket:
+            raise ValueError("Rejected stale Pewter decision")
+        goal = None
+        if isinstance(plan, Proposal):
+            self.validate_proposal(ticket, plan)
+            goal, plan = plan.goal, plan.steps
+        elif plan not in ticket.choices:
+            raise ValueError("Rejected unauthorized recovery plan")
         if not 1 <= len(plan) <= 6 or sum(DURATIONS[step.action] for step in plan) >= MAX_PLAN_SECONDS:
             raise ValueError("Plan exceeds Pewter action or time bounds")
         agent = self.state["agents"][ticket.actor]
@@ -312,7 +375,7 @@ class Society:
         elif ticket.cause == "share_findings":
             agent["followup_count"] = agent["followup_count"] + 1 if plan[0].action == "REQUEST_ASSISTANCE" else 2
         agent["active"] = dict(steps=[(s.action, s.target) for s in plan], index=0, due=self.now,
-                               deadline=self.now + MAX_PLAN_SECONDS, event=ticket.cause)
+                               deadline=self.now + MAX_PLAN_SECONDS, event=ticket.cause, goal=goal)
         self.record(ticket.actor, "accepted", steps=agent["active"]["steps"], fallback=fallback)
         self.start(ticket.actor)
         self.persist()
@@ -378,7 +441,7 @@ class Society:
         agent["activity"] = action
         active["due"] = self.now + DURATIONS[action]
 
-    def advance(self, actor):
+    def advance(self, actor, *, start_next=True):
         agent = self.state["agents"][actor]
         active = agent["active"]
         action, target = active["steps"][active["index"]]
@@ -425,6 +488,6 @@ class Society:
         if active["index"] == len(active["steps"]):
             agent["active"] = None
             agent["activity"] = "WORK"
-        else:
+        elif start_next:
             self.start(actor)
         self.persist()

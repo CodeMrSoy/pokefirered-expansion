@@ -23,7 +23,8 @@ from hybrid import FIELD_SIZE, FieldHint, HybridDialogue, prepare
 from reasoning import BALANCED_SHA256, LIGHTWEIGHT_SHA256, GuideTurn, guide_reply, reported_fact
 from profiles import PROFILES
 from world import Encounter, WorldMemory
-from society import TRAINER_PRESENCE, Ticket, choose_agent
+from society import PERSONAS, TRAINER_PRESENCE, Ticket
+from planning import Proposal, choose_plan
 
 ROOT = Path(__file__).resolve().parent
 VOID = c.c_void_p
@@ -363,9 +364,12 @@ def main():
             plan_retry_after = 0.0
             plan_budget = {}
 
-            def run_decision(chooser, request, queued):
+            def run_decision(chooser, request, queued, available=None):
                 delay = (time.perf_counter() - queued) * 1000
-                plan, metrics = chooser(model, request)
+                if available is None:
+                    plan, metrics = chooser(model, request)
+                else:
+                    plan, metrics = chooser(model, request, available, PERSONAS[request.actor])
                 return plan, {**metrics, "queue_ms": delay}
 
             def propose(context):
@@ -537,10 +541,17 @@ def main():
                                         selected = request.choices[0] if social_plan else DUTY
                                         failure = str(error)[:220]
                                     try:
-                                        authority.submit(request, selected, fallback=failure)
+                                        try:
+                                            authority.submit(request, selected, fallback=failure)
+                                        except ValueError as error:
+                                            if not isinstance(selected, Proposal) or request != ready_now:
+                                                raise
+                                            selected, failure = request.choices[0], str(error)
+                                            authority.submit(request, selected, fallback=failure)
                                         if not social_plan:
                                             society.respond_brock(request.notice, selected == TRIP)
-                                        directive = [step.action for step in selected] if social_plan else selected.goal
+                                        steps = selected.steps if isinstance(selected, Proposal) else selected
+                                        directive = [step.action for step in steps] if social_plan else selected.goal
                                         log.write(json.dumps({"directive": directive,
                                                               "actor": request.actor if social_plan else "brock",
                                                               "cause": request.cause if social_plan else request.trigger,
@@ -562,8 +573,10 @@ def main():
                                         if len(plan_budget) > 24:
                                             del plan_budget[next(iter(plan_budget))]
                                         plan_retry_after = start + 5
-                                        chooser = choose_agent if social_plan else choose_brock
-                                        planning = request, pool.submit(run_decision, chooser, request, time.perf_counter())
+                                        chooser = choose_plan if social_plan else choose_brock
+                                        available = society.primitives(request) if social_plan else None
+                                        planning = request, pool.submit(run_decision, chooser, request,
+                                                                        time.perf_counter(), available)
                                     else:
                                         authority = society if social_plan else director
                                         fallback_plan = request.choices[0] if social_plan else DUTY
