@@ -71,6 +71,11 @@ def backup_profile(profile):
 def publish_monitor(profile, memory, hint, population, pending, decisions, slot, *, running=True):
     regional = population.state if population else {}
     society = memory.society.state
+    requests = regional.get("requests", {})
+    events = sorted(regional.get("events", {}).items(),
+                    key=lambda row: (row[1]["updated"], row[0]))[-12:]
+    objective = regional.get("objective")
+    survey_event = regional.get("events", {}).get(objective["event"]) if objective else None
     data = {
         "updated": time.time(), "running": running, "save_slot": slot,
         "bridge": {"area": hint.area, "frame": hint.frame, "busy": hint.busy,
@@ -88,9 +93,10 @@ def publish_monitor(profile, memory, hint, population, pending, decisions, slot,
              **{key: actor.get(key) for key in ("location", "activity", "goal", "due", "bonds", "facts")}}
             for id_, actor in regional.get("actors", {}).items() if id_ in population.people
         ],
-        "recent_events": list(regional.get("events", {}).items())[-12:] +
-                         list(society.get("log", ()))[-8:],
-        "dynamic_quests": {"Survey Notes": regional.get("objective"),
+        "recent_events": events + list(society.get("log", ()))[-8:],
+        "pending_resident_requests": requests,
+        "survey_event": survey_event,
+        "dynamic_quests": {"Survey Notes": objective,
                            "Museum Follow-up": society.get("museum_objective"),
                            "Locate Brock": memory.director.state.get("quest")},
         "decisions_and_failures": list(decisions),

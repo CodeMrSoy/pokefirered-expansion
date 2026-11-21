@@ -40,10 +40,11 @@ actual ROM field hints, mailbox write boundaries, battery reload, SQLite
 quest lifecycle, sandbox denials, Qwen decisions and worker failure fallback.
 It does not drive the full Museum script through Windows SDL.
 
-Provide the exact ZIP through `LIVING_WORLD_PACKAGE_URL` and
-`LIVING_WORLD_PACKAGE_SHA256` repository variables before pushing to trigger
-the native check. A missing ZIP fails the native job with an unverified report.
-Until the workflow exists on the default branch, use the branch push trigger.
+On branch pushes the Linux build job stages one candidate ZIP, which the
+native job downloads, verifies by hash, extracts, and starts. A published
+exact-commit ZIP can also be selected with the package URL and SHA-256
+repository variables. The native job verifies that the WinForms launcher
+showed a window before testing the packaged Python and mGBA host.
 On a Windows machine you can run the same smoke from the extracted directory
 with `python\python.exe -B package_smoke.py native-smoke.json`. The report
 contains the commit and actual check output. Make a report for this exact ZIP,
@@ -54,3 +55,15 @@ their own evidence.
 Release status is in `TEST-RESULTS.json` and `release.json`. Do not merge or
 promote the release until the exact Windows candidate and manual launcher and
 controller checks pass.
+
+## NPC-originated release scenario
+
+Run `python -B tests/living_world_release_scenario.py`. Ada originates
+survey `ada:1:1` during her scheduled work. It is visible as an event in
+the monitor before the player has a quest. The assistant discloses it
+and a second visit confirms the same open request. Wren cooperates
+during the existing simulation schedule. The monitor attributes the
+outcome to Wren and both the Quest Book projection and the saved
+checkpoint report the survey as completed after reload. The scenario
+uses the same scheduler, dialogue decisions and persistence as gameplay,
+with model inference disabled to make the cooperation replayable.

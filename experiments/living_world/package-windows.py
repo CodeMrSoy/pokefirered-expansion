@@ -43,11 +43,15 @@ def main():
     parser.add_argument("output", type=Path)
     parser.add_argument("--test-report", type=Path, help="Attach a test report for this exact release")
     parser.add_argument("--nm", default="arm-none-eabi-nm")
+    parser.add_argument("--built-mgba", action="store_true", help="Use the core built by build-ci-windows.sh")
     parser.add_argument("--legacy-weights", action="store_true", help="Bundle Phase 4 Qwen 2.5 weights")
     args = parser.parse_args()
     inputs = args.inputs
     model_sha = LIGHTWEIGHT_SHA256 if args.legacy_weights else BALANCED_SHA256
-    for filename, expected in {**INPUTS, "model-q4.gguf": model_sha}.items():
+    input_hashes = {**INPUTS, "model-q4.gguf": model_sha}
+    if args.built_mgba:
+        del input_hashes["mgba-win.zip"]
+    for filename, expected in input_hashes.items():
         if sha256(inputs / filename) != expected:
             raise ValueError(f"SHA-256 mismatch for {filename}")
     symbols = subprocess.check_output([args.nm, ROOT / "pokefirered.elf"], text=True)
@@ -113,7 +117,10 @@ def main():
         extract_flat(inputs / "python-win.zip", stage / "python")
         pth = stage / "python" / "python312._pth"
         pth.write_text(pth.read_text() + "\n..\n", encoding="ascii")
-        extract_flat(inputs / "mgba-win.zip", stage, {"mgba_libretro.dll"})
+        if args.built_mgba:
+            shutil.copyfile(inputs / "mgba_libretro.dll", stage / "mgba_libretro.dll")
+        else:
+            extract_flat(inputs / "mgba-win.zip", stage, {"mgba_libretro.dll"})
         extract_flat(inputs / "sdl-win.zip", stage, {"SDL2.dll"})
 
         for exe in ("sandbox.exe", "sandbox-probe.exe", "offline-worker.exe"):
@@ -149,7 +156,8 @@ def main():
                 "python": "3.12.10", "sdl": "2.32.10",
                 "mgba": "7a12d6d4b9acb14c0ae62c9166b6a2f3d08007f6", "llama_cpp": "b6500",
                 "model": "Qwen2.5-0.5B Q4_0" if args.legacy_weights else "Qwen3-0.6B Q4_K_M",
-                "model_sha256": model_sha, "upstream_archive_hashes": INPUTS,
+                "model_sha256": model_sha, "input_hashes": input_hashes,
+                "mgba_origin": "source-build" if args.built_mgba else "pinned-archive",
             },
             "files": {file.relative_to(stage).as_posix(): sha256(file)
                       for file in sorted(stage.rglob("*")) if file.is_file()},

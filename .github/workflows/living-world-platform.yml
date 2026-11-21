@@ -31,13 +31,40 @@ jobs:
           python -B experiments/living_world/platform_scenario.py platform-trace.json
           python -c "import json; from pathlib import Path; assert json.loads(Path('platform-trace.json').read_bytes()) == json.loads(Path('tests/living_world_platform_expected.json').read_bytes())"
           python -B tests/living_world_population.py
+          python -B tests/living_world_release_scenario.py > release-scenario.json
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: living-world-parity-${{ matrix.os }}
-          path: platform-trace.json
+          path: |
+            platform-trace.json
+            release-scenario.json
 
+  build-candidate:
+    if: ${{ !inputs.package_url && !vars.LIVING_WORLD_PACKAGE_URL }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install ROM build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-arm-none-eabi libnewlib-arm-none-eabi libpng-dev
+          python3 -m pip install Pillow numpy
+      - name: Build and stage the exact validation ZIP
+        run: bash experiments/living_world/build-ci-windows.sh Living-World-11.1.0-Infrastructure-Windows-x64.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: living-world-windows-candidate
+          path: Living-World-11.1.0-Infrastructure-Windows-x64.zip*
+          compression-level: 0
+          if-no-files-found: error
   windows-package:
+    needs: build-candidate
+    if: ${{ !cancelled() && (needs.build-candidate.result == 'success' || needs.build-candidate.result == 'skipped') }}
     runs-on: windows-2022
     timeout-minutes: 20
     env:
@@ -45,19 +72,25 @@ jobs:
       PACKAGE_SHA256: ${{ inputs.package_sha256 || vars.LIVING_WORLD_PACKAGE_SHA256 }}
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        if: needs.build-candidate.result == 'success'
+        with:
+          name: living-world-windows-candidate
       - name: Require the exact release candidate
         shell: pwsh
         run: |
-          if (!$env:PACKAGE_URL -or !$env:PACKAGE_SHA256) {
-            @{native_windows='unverified'; error='No package URL and SHA configured'} |
-              ConvertTo-Json | Out-File -Encoding utf8 native-smoke.json
-            throw 'Native validation requires the release ZIP URL and SHA-256.'
+          if ($env:PACKAGE_URL) {
+            if (([uri]$env:PACKAGE_URL).Scheme -ne 'https' -or $env:PACKAGE_SHA256 -notmatch '^[a-fA-F0-9]{64}$') {
+              throw 'An HTTPS package URL and SHA-256 digest are required.'
+            }
+            Invoke-WebRequest -Uri $env:PACKAGE_URL -OutFile release.zip
+            $hash = $env:PACKAGE_SHA256
+          } else {
+            $candidate = 'Living-World-11.1.0-Infrastructure-Windows-x64.zip'
+            $hash = (Get-Content "$candidate.sha256" -Raw).Split()[0]
+            Move-Item $candidate release.zip
           }
-          if (([uri]$env:PACKAGE_URL).Scheme -ne 'https' -or $env:PACKAGE_SHA256 -notmatch '^[a-fA-F0-9]{64}$') {
-            throw 'An HTTPS package URL and SHA-256 digest are required.'
-          }
-          Invoke-WebRequest -Uri $env:PACKAGE_URL -OutFile release.zip
-          if ((Get-FileHash release.zip -Algorithm SHA256).Hash -ne $env:PACKAGE_SHA256) {
+          if ((Get-FileHash release.zip -Algorithm SHA256).Hash -ne $hash) {
             throw 'Release ZIP SHA-256 mismatch.'
           }
           Expand-Archive release.zip -DestinationPath extracted

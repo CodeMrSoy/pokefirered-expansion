@@ -103,6 +103,13 @@ $timer.Add_Tick({
     $view.SelectionStart = [Math]::Min($position, $view.TextLength)
     if ($position -gt 0) { $view.ScrollToCaret() }
 })
+# The release check launches the actual form and records when Windows shows it.
+if ($env:LQW_LAUNCHER_SMOKE) {
+    $form.Add_Shown({
+        [IO.File]::WriteAllText($env:LQW_LAUNCHER_SMOKE, 'shown')
+        $form.Close()
+    })
+}
 $view.Text = $intro
 $timer.Start()
 try { [void]$form.ShowDialog() } finally { $timer.Dispose(); $form.Dispose() }

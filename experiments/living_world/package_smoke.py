@@ -152,6 +152,15 @@ def worker_failure_smoke():
         world.close()
 
 
+def launcher_smoke(directory):
+    ready = directory / "launcher-shown.txt"
+    result = subprocess.run([os.environ["ComSpec"], "/d", "/c", "Open Pokemon Quantum.cmd"],
+                            cwd=ROOT, env={**os.environ, "LQW_LAUNCHER_SMOKE": str(ready)},
+                            capture_output=True, text=True, timeout=30)
+    if result.returncode or not ready.is_file() or ready.read_text() != "shown":
+        raise RuntimeError(f"WinForms launcher did not show: {result.stderr or result.stdout}")
+
+
 def validate_worker(report):
     for flag in ("--sandbox-test", "--model-test"):
         result = subprocess.run([sys.executable, "-B", "play.py", flag], cwd=ROOT,
@@ -170,6 +179,8 @@ def main():
         if sys.platform != "win32":
             raise RuntimeError("The bundled Windows executables require a Windows runner")
         with TemporaryDirectory() as directory:
+            launcher_smoke(Path(directory))
+            report["checks"]["launcher"] = "passed"
             report["checks"]["host"] = runtime_smoke(Path(directory), ROOT / "mgba_libretro.dll")
         validate_worker(report)
         worker_failure_smoke()
