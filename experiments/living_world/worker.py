@@ -14,6 +14,7 @@ class ResidentWorker:
         self.model = Path(model).resolve() if model else self.runtime / "model.gguf"
         self.windows_environment = windows_environment
         self.timeout = timeout
+        self.startup_timeout = max(timeout, 30)
         self.process = None
         self.load_ms = None
         self.launch_ms = None
@@ -26,11 +27,11 @@ class ResidentWorker:
         finally:
             records.put(None)
 
-    def _receive(self):
+    def _receive(self, timeout, stage):
         try:
-            line = self.records.get(timeout=self.timeout)
+            line = self.records.get(timeout=timeout)
         except Empty as error:
-            raise TimeoutError("Offline worker timed out") from error
+            raise TimeoutError(f"Offline worker timed out during {stage} ({timeout:g}s)") from error
         if line is None:
             raise RuntimeError(f"Offline worker closed the pipe, exit {self.process.poll()}")
         return line
@@ -54,11 +55,11 @@ class ResidentWorker:
         self.reader = Thread(target=self._read, args=(self.process.stdout, self.records), daemon=True)
         self.reader.start()
         try:
-            line = self._receive()
+            line = self._receive(self.startup_timeout, "startup")
             if sys.platform == "linux":
                 if line != b"LQW isolation active":
                     raise RuntimeError(f"Linux isolation did not initialize: {line[:240]!r}")
-                line = self._receive()
+                line = self._receive(self.startup_timeout, "startup")
             marker, separator, time_ms = line.partition(b" ")
             if not separator or marker != b"ready":
                 raise RuntimeError(f"Worker startup failed: {line[:240]!r}")
@@ -68,7 +69,7 @@ class ResidentWorker:
             self.close()
             raise
 
-    def generate(self, grammar, prompt):
+    def generate(self, grammar, prompt, *, timeout=None):
         fields = [field.encode("utf-8") for field in (grammar, prompt)]
         if any(not field or len(field) > 4096 or b"\0" in field for field in fields):
             raise ValueError("Inference request outside protocol limits")
@@ -77,7 +78,7 @@ class ResidentWorker:
         try:
             self.process.stdin.write(b"\t".join(field.hex().encode("ascii") for field in fields) + b"\n")
             self.process.stdin.flush()
-            record = self._receive()
+            record = self._receive(self.timeout if timeout is None else timeout, "generation")
             parts = record.split(b" ", 2)
             if len(parts) != 3 or parts[0] != b"ok":
                 raise RuntimeError(f"Worker did not generate a complete response: {record[:240]!r}")
