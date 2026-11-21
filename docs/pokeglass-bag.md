@@ -1,3 +1,12 @@
+# V3 Bag update
+
+The current V3 Bag uses a 3×3 icon grid, original 64×64 Bag illustration,
+three highlighted pockets and paged item descriptions. See
+[V3 Bag and Quest Book](v3/pokeglass-bag-quests.md) for controls, architecture,
+save compatibility and current emulator results.
+
+The notes below describe the historical V2 five-row implementation.
+
 # Glass Bag — 2026-10-31
 
 The Bag app uses the PokéGlass palette, translucent captured field, tablet

@@ -90,7 +90,8 @@ enum {
 enum {
     WIN_ITEM_LIST,
     WIN_DESCRIPTION,
-    WIN_POCKET_NAME
+    WIN_POCKET_NAME,
+    WIN_GLASS_ITEM_NAME
 };
 
 // Item list ID for toSwapPos to indicate an item is not currently being swapped
@@ -787,6 +788,8 @@ static void CB2_Bag(void)
         {};
 }
 
+#include "poke_glass_bag_grid.inc"
+
 static bool8 SetupBagMenu(void)
 {
     u8 taskId;
@@ -794,6 +797,7 @@ static bool8 SetupBagMenu(void)
     switch (gMain.state)
     {
     case 0:
+        GlassGridReset();
         SetVBlankHBlankCallbacksToNull();
         ClearScheduledBgCopiesToVram();
         gMain.state++;
@@ -1038,6 +1042,15 @@ static void LoadBagItemListBuffers(u8 pocketId)
         gMultiuseListMenuTemplate.upText_Y = 0;
         gMultiuseListMenuTemplate.cursorPal = 8;
         gMultiuseListMenuTemplate.cursorShadowPal = 4;
+        if (GlassBagGrid())
+        {
+            gMultiuseListMenuTemplate.maxShowed = 1;
+            gMultiuseListMenuTemplate.item_X = 0;
+            for (i = 0; i < gMultiuseListMenuTemplate.totalItems; i++)
+                sListBuffer1->subBuffers[i].name = sGlassGridEmpty;
+            gMultiuseListMenuTemplate.cursorKind = 1;
+            gMultiuseListMenuTemplate.itemPrintFunc = NULL;
+        }
     }
 }
 
@@ -1065,6 +1078,7 @@ static void BagListMenuGetItemNameColored(u8 *dest, u16 itemId)
 
 static void BagMenu_MoveCursorCallback(s32 itemIndex, bool8 onInit, struct ListMenu *list)
 {
+    if (GlassBagGrid()) { GlassGridDraw(itemIndex, list); return; }
     if (onInit != TRUE)
     {
         PlaySE(SE_BAG_CURSOR);
@@ -1119,7 +1133,7 @@ static void BagMenu_ItemPrintCallback(u8 windowId, u32 itemIndex, u8 y)
 static void PrintItemDescription(s32 itemIndex)
 {
     const u8 *str;
-    
+    if (GlassBagGrid()) { GlassGridDescription(itemIndex); return; }
     if (itemIndex != LIST_CANCEL)
         str = GetItemDescription(GetBagItemId(gBagPosition.pocket, itemIndex));
     else
@@ -1136,6 +1150,7 @@ static void BagMenu_PrintCursor(u8 listTaskId, u8 colorIndex)
 
 static void BagMenu_PrintCursorAtPos(u8 y, u8 colorIndex)
 {
+    if (GlassBagGrid()) return;
     if (colorIndex == COLORID_NONE)
         FillWindowPixelRect(WIN_ITEM_LIST, PIXEL_FILL(0), 1, y, GetMenuCursorDimensionByFont(FONT_NORMAL, 0), GetMenuCursorDimensionByFont(FONT_NORMAL, 1));
     else
@@ -1174,6 +1189,7 @@ static void CreatePocketScrollArrowPair_QuantitySelect(void)
 
 static void CreatePocketScrollArrowPair(void)
 {
+    if (GlassBagGrid()) return;
     if (gBagMenu->pocketScrollArrowsTask == TASK_NONE)
         gBagMenu->pocketScrollArrowsTask = AddScrollIndicatorArrowPairParameterized(
             SCROLL_ARROW_UP,
@@ -1198,6 +1214,7 @@ static void BagDestroyPocketScrollArrowPair(void)
 
 static void CreatePocketSwitchArrowPair(void)
 {
+    if (GlassBagGrid()) return;
     if (gBagMenu->pocketSwitchMode != SWITCHMODE_PC && gBagMenu->pocketSwitchArrowsTask == TASK_NONE)
     {
         struct ScrollArrowsTemplate arrows = sBagScrollArrowsTemplate;
@@ -1242,6 +1259,7 @@ static void Task_CloseBagMenu(u8 taskId)
             SetMainCallback2(gBagPosition.exitCallback);
 
         BagDestroyPocketScrollArrowPair();
+        GlassGridDestroy();
         ResetSpriteData();
         FreeAllSpritePalettes();
         FreeBagMenu();
@@ -1264,8 +1282,8 @@ void UpdatePocketItemList(enum Pocket pocketId)
     if (!gBagMenu->hideCloseBagText)
         gBagMenu->numItemStacks[pocketId]++;
 
-    if (gBagMenu->numItemStacks[pocketId] > (IsPokeGlassSessionActive() ? 5 : MAX_ITEMS_SHOWN))
-        gBagMenu->numShownItems[pocketId] = IsPokeGlassSessionActive() ? 5 : MAX_ITEMS_SHOWN;
+    if (gBagMenu->numItemStacks[pocketId] > (GlassBagGrid() ? 1 : IsPokeGlassSessionActive() ? 5 : MAX_ITEMS_SHOWN))
+        gBagMenu->numShownItems[pocketId] = GlassBagGrid() ? 1 : IsPokeGlassSessionActive() ? 5 : MAX_ITEMS_SHOWN;
     else
         gBagMenu->numShownItems[pocketId] = gBagMenu->numItemStacks[pocketId];
 }
@@ -1354,6 +1372,12 @@ static void Task_BagMenu_HandleInput(u8 taskId)
     if (IsActiveOverworldLinkBusy() == TRUE)
         return;
 
+    if (GlassBagGrid() && JOY_HELD(L_BUTTON) && JOY_HELD(R_BUTTON) && JOY_NEW(L_BUTTON | R_BUTTON))
+    {
+        sGlassInfoPage = (sGlassInfoPage + 1) % max(1, sGlassInfoPages);
+        GlassGridDescription(sGlassGridSelection);
+        return;
+    }
     switch (GetSwitchBagPocketDirection(gBagPosition.pocket))
     {
     case SWITCH_POCKET_LEFT:
@@ -1395,7 +1419,7 @@ static void Task_BagMenu_HandleInput(u8 taskId)
         break;
     }
 
-    listPosition = ListMenu_ProcessInput(tListTaskId);
+    listPosition = GlassBagGrid() ? GlassGridInput(tListTaskId) : ListMenu_ProcessInput(tListTaskId);
     ListMenuGetScrollAndRow(tListTaskId, scrollPos, cursorPos);
     switch (listPosition)
     {
@@ -1433,7 +1457,12 @@ static void OpenSortMenu(u8 taskId)
 
 static void ReturnToItemList(u8 taskId)
 {
-    if (IsPokeGlassSessionActive()) PrintPocketName();
+    if (GlassBagGrid())
+    {
+        struct ListMenu *list = (void *)gTasks[gTasks[taskId].tListTaskId].data;
+        GlassGridDraw(list->template.items[list->scrollOffset + list->selectedRow].id, list);
+    }
+    else if (IsPokeGlassSessionActive()) PrintPocketName();
     CreatePocketScrollArrowPair();
     CreatePocketSwitchArrowPair();
     gTasks[taskId].func = Task_BagMenu_HandleInput;
@@ -1444,15 +1473,15 @@ static u8 GetSwitchBagPocketDirection(u8 pocketId)
     u8 lrState;
     if (gBagMenu->pocketSwitchMode != SWITCHMODE_NORMAL)
         return SWITCH_POCKET_NONE;
-    lrState = GetLRKeysPressed();
-    if (JOY_NEW(DPAD_LEFT) || lrState == MENU_L_PRESSED)
+    lrState = GlassBagGrid() ? (JOY_NEW(L_BUTTON) ? MENU_L_PRESSED : JOY_NEW(R_BUTTON) ? MENU_R_PRESSED : 0) : GetLRKeysPressed();
+    if ((!GlassBagGrid() && JOY_NEW(DPAD_LEFT)) || lrState == MENU_L_PRESSED)
     {
         if (pocketId == POCKET_ITEMS)
             return SWITCH_POCKET_NONE;
         PlaySE(SE_BAG_POCKET);
         return SWITCH_POCKET_LEFT;
     }
-    if (JOY_NEW(DPAD_RIGHT) || lrState == MENU_R_PRESSED)
+    if ((!GlassBagGrid() && JOY_NEW(DPAD_RIGHT)) || lrState == MENU_R_PRESSED)
     {
         if (pocketId >= POCKET_POKE_BALLS)
             return SWITCH_POCKET_NONE;
@@ -1472,6 +1501,7 @@ static void SwitchBagPocket(u8 taskId, s16 deltaBagPocketId, bool16 skipEraseLis
     {
         ClearWindowTilemap(WIN_ITEM_LIST);
         ClearWindowTilemap(WIN_DESCRIPTION);
+        if (GlassBagGrid()) ClearWindowTilemap(WIN_GLASS_ITEM_NAME);
         ClearWindowTilemap(WIN_POCKET_NAME);
         DestroyListMenuTask(tListTaskId, &gBagPosition.scrollPosition[gBagPosition.pocket], &gBagPosition.cursorPosition[gBagPosition.pocket]);
         ScheduleBgCopyTilemapToVram(0);
@@ -1571,9 +1601,9 @@ static void Task_HandleSwappingItemsInput(u8 taskId)
     }
     else
     {
-        s32 input = ListMenu_ProcessInput(tListTaskId);
+        s32 input = GlassBagGrid() ? GlassGridInput(tListTaskId) : ListMenu_ProcessInput(tListTaskId);
         ListMenuGetScrollAndRow(tListTaskId, &gBagPosition.scrollPosition[gBagPosition.pocket], &gBagPosition.cursorPosition[gBagPosition.pocket]);
-        SetItemMenuSwapLineInvisibility(FALSE);
+        SetItemMenuSwapLineInvisibility(GlassBagGrid());
         UpdateItemMenuSwapLinePos(ListMenuGetYCoordForPrintingArrowCursor(tListTaskId));
         switch (input)
         {
@@ -1611,7 +1641,14 @@ static void DoItemSwap(u8 taskId)
         gBagMenu->toSwapPos = NOT_SWAPPING;
         DestroyListMenuTask(tListTaskId, scrollPos, cursorPos);
         if (tListPosition < realPos)
-            gBagPosition.cursorPosition[gBagPosition.pocket]--;
+        {
+            // The grid keeps an absolute index in scrollPos and row zero.
+            // Decrementing that unsigned row would wrap it to 65535.
+            if (GlassBagGrid())
+                (*scrollPos)--;
+            else
+                (*cursorPos)--;
+        }
         LoadBagItemListBuffers(gBagPosition.pocket);
         tListTaskId = ListMenuInit(&gMultiuseListMenuTemplate, *scrollPos, *cursorPos);
         SetItemMenuSwapLineInvisibility(TRUE);
@@ -1628,8 +1665,8 @@ static void CancelItemSwap(u8 taskId)
 
     gBagMenu->toSwapPos = NOT_SWAPPING;
     DestroyListMenuTask(tListTaskId, scrollPos, cursorPos);
-    if (tListPosition < *scrollPos + *cursorPos)
-        gBagPosition.cursorPosition[gBagPosition.pocket]--;
+    if (!GlassBagGrid() && tListPosition < *scrollPos + *cursorPos)
+        (*cursorPos)--;
     LoadBagItemListBuffers(gBagPosition.pocket);
     tListTaskId = ListMenuInit(&gMultiuseListMenuTemplate, *scrollPos, *cursorPos);
     SetItemMenuSwapLineInvisibility(TRUE);
@@ -2973,12 +3010,38 @@ static void PrintPocketName(void)
     FillWindowPixelBuffer(WIN_POCKET_NAME, PIXEL_FILL(0));
     if (IsPokeGlassSessionActive())
     {
-        static const u8 colors[] = {0, 8, 4};
-        u8 number[8];
-        AddTextPrinterParameterized3(WIN_POCKET_NAME, FONT_SMALL, 0, 0, colors, TEXT_SKIP_DRAW, COMPOUND_STRING("BAG"));
-        AddTextPrinterParameterized3(WIN_POCKET_NAME, FONT_SMALL, 80, 0, colors, TEXT_SKIP_DRAW, str);
-        ConvertIntToDecimalStringN(number, gBagMenu->numItemStacks[gBagPosition.pocket] - 1, STR_CONV_MODE_LEFT_ALIGN, 3);
-        AddTextPrinterParameterized3(WIN_POCKET_NAME, FONT_SMALL, 208 - GetStringWidth(FONT_SMALL, number, 0), 0, colors, TEXT_SKIP_DRAW, number);
+        u8 i;
+        // Pocket categories alone fill the bar, matching the icon-led layout.
+        for (i = 0; i < POCKETS_COUNT_NO_CASES; i++)
+        {
+            u8 left = i * 69, x = left + 28;
+            u8 background = i == gBagPosition.pocket ? 5 : 4;
+            FillWindowPixelRect(WIN_POCKET_NAME, background, left, 0, 68, 16);
+            FillWindowPixelRect(WIN_POCKET_NAME, i == gBagPosition.pocket ? 8 : 6, left, 14, 68, 2);
+            if (i == POCKET_POKE_BALLS)
+            {
+                FillWindowPixelRect(WIN_POCKET_NAME, 8, x + 3, 2, 6, 12);
+                FillWindowPixelRect(WIN_POCKET_NAME, 8, x + 1, 4, 10, 8);
+                FillWindowPixelRect(WIN_POCKET_NAME, background, x + 3, 4, 6, 8);
+                FillWindowPixelRect(WIN_POCKET_NAME, 8, x + 1, 7, 10, 2);
+                FillWindowPixelRect(WIN_POCKET_NAME, background, x + 4, 6, 4, 4);
+                FillWindowPixelRect(WIN_POCKET_NAME, 8, x + 5, 7, 2, 2);
+            }
+            else if (i == POCKET_KEY_ITEMS)
+            {
+                FillWindowPixelRect(WIN_POCKET_NAME, 8, x, 3, 6, 6);
+                FillWindowPixelRect(WIN_POCKET_NAME, background, x + 2, 5, 2, 2);
+                FillWindowPixelRect(WIN_POCKET_NAME, 8, x + 5, 7, 7, 2);
+                FillWindowPixelRect(WIN_POCKET_NAME, 8, x + 9, 8, 2, 3);
+            }
+            else
+            {
+                FillWindowPixelRect(WIN_POCKET_NAME, 8, x + 4, 2, 5, 3);
+                FillWindowPixelRect(WIN_POCKET_NAME, 8, x + 2, 5, 9, 8);
+                FillWindowPixelRect(WIN_POCKET_NAME, background, x + 4, 8, 5, 3);
+                FillWindowPixelRect(WIN_POCKET_NAME, 8, x + 5, 9, 3, 1);
+            }
+        }
         CopyWindowToVram(WIN_POCKET_NAME, COPYWIN_FULL);
     }
     else
@@ -2994,22 +3057,27 @@ static void LoadBagMenuTextWindows(void)
 
     if (IsPokeGlassSessionActive() && gBagPosition.location != ITEMMENULOCATION_ITEMPC)
     {
-        struct WindowTemplate windows[ARRAY_COUNT(sDefaultBagWindows)];
-        memcpy(windows, sDefaultBagWindows, sizeof(windows));
-        windows[WIN_ITEM_LIST].tilemapLeft = 12;
+        struct WindowTemplate windows[ARRAY_COUNT(sDefaultBagWindows) + 1];
+        memcpy(windows, sDefaultBagWindows, sizeof(sDefaultBagWindows));
+        windows[WIN_GLASS_ITEM_NAME + 1] = windows[WIN_GLASS_ITEM_NAME];
+        windows[WIN_GLASS_ITEM_NAME] = (struct WindowTemplate){
+            .bg = 0, .tilemapLeft = 2, .tilemapTop = 11,
+            .width = 11, .height = 2, .paletteNum = 15, .baseBlock = 0x1E8,
+        };
+        windows[WIN_ITEM_LIST].tilemapLeft = 14;
         windows[WIN_ITEM_LIST].tilemapTop = 4;
-        windows[WIN_ITEM_LIST].width = 16;
-        windows[WIN_ITEM_LIST].height = 8;
+        windows[WIN_ITEM_LIST].width = 14;
+        windows[WIN_ITEM_LIST].height = 14;
         windows[WIN_ITEM_LIST].baseBlock = 0x90;
-        windows[WIN_DESCRIPTION].tilemapLeft = 7;
+        windows[WIN_DESCRIPTION].tilemapLeft = 2;
         windows[WIN_DESCRIPTION].tilemapTop = 13;
-        windows[WIN_DESCRIPTION].width = 20;
+        windows[WIN_DESCRIPTION].width = 11;
         windows[WIN_DESCRIPTION].height = 5;
-        windows[WIN_DESCRIPTION].baseBlock = 0x120;
+        windows[WIN_DESCRIPTION].baseBlock = 0x160;
         windows[WIN_POCKET_NAME].tilemapLeft = 2;
         windows[WIN_POCKET_NAME].tilemapTop = 2;
         windows[WIN_POCKET_NAME].width = 26;
-        windows[WIN_POCKET_NAME].baseBlock = 0x190;
+        windows[WIN_POCKET_NAME].baseBlock = 0x1B0;
         InitWindows(windows);
     }
     else if (gBagPosition.location != ITEMMENULOCATION_ITEMPC)

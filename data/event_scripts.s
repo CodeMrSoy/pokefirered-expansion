@@ -2,6 +2,7 @@
 #include "config/battle.h"
 #include "constants/global.h"
 #include "constants/adventure_mode.h"
+#include "constants/quest_book.h"
 #include "constants/flags.h"
 #include "constants/living_world.h"
 #include "constants/battle_tower.h"

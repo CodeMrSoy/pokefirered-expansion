@@ -400,7 +400,7 @@ void MoveItemSlotInPocket(enum Pocket pocketId, u32 from, u32 to)
             shift = 1;
         }
 
-        for (i = from; i == to - shift; i += shift)
+        for (i = from; i != to; i += shift)
         {
             SetBagItemIdPocket(pocket, i, GetBagItemIdPocket(pocket, i + shift));
             SetBagItemQuantityPocket(pocket, i, GetBagItemQuantityPocket(pocket, i + shift));

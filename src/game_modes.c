@@ -7,7 +7,7 @@
 #include "constants/opponents.h"
 
 STATIC_ASSERT(MAPSEC_COUNT <= NUZLOCKE_AREA_BYTES * 8, NuzlockeAreaCapacity);
-STATIC_ASSERT(sizeof(((struct SaveBlock2 *)0)->filler_90) + 8 + 2 + NUZLOCKE_AREA_BYTES == 207, GameModesReservedSize);
+STATIC_ASSERT(sizeof(((struct SaveBlock2 *)0)->filler_90) + sizeof(((struct SaveBlock2 *)0)->questBookRecord) + 8 + 2 + NUZLOCKE_AREA_BYTES == 207, GameModesReservedSize);
 
 static EWRAM_DATA bool8 sNuzlockeEncounterAllowed = FALSE;
 

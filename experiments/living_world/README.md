@@ -2,6 +2,16 @@
 
 This branch starts from Pokémon Quantum V3 at `c3a7e53bed3055d9d78a3a28e55db907661efa97`. Its first slice uses the existing PC-storage conversation in Pallet Town. The guest exports an NPC identifier and the species of an onscreen follower, if present, after the player has received the Pokédex. An mGBA host can return up to two short pages. If it stays silent, returns unusable text, or replies with the wrong sequence, the ROM falls back to the original PC-storage tip within 30 script ticks. The desktop player runs an offline Qwen3-0.6B model through llama.cpp. The test can use either the actual worker or a deterministic responder.
 
+## V3 Bag and Quest Book integration
+
+The V3 changes through `0dedb6d` are merged into Living World. The grid Bag,
+Quest Book app and inventory reordering fixes coexist with the current NPC
+routines, dialogue bridge and Brock travel code. Oak's first aide completes
+his Living World aside before offering the engine-owned Field Notes quest.
+A button-release guard prevents a dialogue-advance press from accepting it.
+Host permissions and existing host-managed objectives retain their own flow.
+See [integration checks](../../docs/v3/living-world-merge-2026-11-21.md).
+
 ## Run the bridge in mGBA
 
 Build the standard FireRed target with the repository's [build prerequisites](../../INSTALL.md). Use the mGBA libretro core and the Python dependencies for the existing emulator harness (Pillow and NumPy). Run these commands from the repository root with the toolchain on PATH.

@@ -1,3 +1,7 @@
+> V3 adds Quest Book in the bottom-right slot of a third launcher page.
+> Both existing pages and their app IDs remain intact. Horizontal navigation
+> skips reserved cells. See [V3 details](v3/pokeglass-bag-quests.md).
+
 # PokéGlass launcher
 
 Start opens PokéGlass directly. The old Start list is no longer displayed,
