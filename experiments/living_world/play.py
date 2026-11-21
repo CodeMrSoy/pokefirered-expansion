@@ -357,8 +357,13 @@ def main():
                 raise RuntimeError("Packaged local model is missing or has an unknown checksum")
             action, metrics, _ = model.survey(Encounter("pc_resident", 25, remembered=True, trust=1))
             print("Watts survey", action, metrics)
-            reply = model.guide(GuideTurn("pallet-sighting:25", True))
-            print("Guide follow-up", validate(reply.dialogue).decode("ascii"), reply.intention, reply.metrics)
+            guide_failed = False
+            try:
+                reply = model.guide(GuideTurn("pallet-sighting:25", True))
+                print("Guide follow-up", validate(reply.dialogue).decode("ascii"), reply.intention, reply.metrics)
+            except (OSError, RuntimeError, ValueError) as error:
+                guide_failed = True
+                print(f"Guide follow-up failed: {error}", file=sys.stderr, flush=True)
             if model.style == "qwen3":
                 society = smoke_memory.society
                 society.regional_demo = True
@@ -371,7 +376,7 @@ def main():
         finally:
             smoke_memory.close()
             model.close()
-        return 0
+        return int(guide_failed)
     profile_name = "LivingQuantumWorldPhase11" if args.phase11_demo or manifest.get("profile_version") == 11 else "LivingQuantumWorld"
     profile = Path(os.environ.get("LOCALAPPDATA", Path.home() / ".local/share")) / profile_name
     profile.mkdir(parents=True, exist_ok=True)
@@ -574,7 +579,7 @@ def main():
                 if trace and trace["context"]["npc"] == "guide_followup":
                     if guide_result and trace["validation"] == "accepted":
                         trace.update(intention=guide_result.intention, report=guide_turn.fact,
-                                     generated_reaction=guide_result.generated_reaction, metrics=guide_result.metrics)
+                                     selected_reaction=guide_result.selected_reaction, metrics=guide_result.metrics)
                         trace["route"] = ("model_followup" if "inference_ms" in guide_result.metrics
                                           else "retrieved_followup")
                         try:

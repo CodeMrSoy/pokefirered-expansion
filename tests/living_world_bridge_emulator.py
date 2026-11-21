@@ -497,7 +497,7 @@ if catalog and runtime:
                 assert turn.can_request
                 reply = phase5.guide(turn)
                 assert reply.intention == "ASK_WATTS", reply
-                assert reply.generated_reaction, reply
+                assert reply.selected_reaction, reply
 
                 def follow_up(context):
                     assert context == Conversation("guide_followup", None)

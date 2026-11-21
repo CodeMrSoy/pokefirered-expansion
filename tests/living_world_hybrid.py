@@ -165,7 +165,7 @@ def benchmark(catalog, save):
                     (ready if index % 2 == 0 else survey).append((perf_counter() - start) * 1000)
                     start = perf_counter()
                     reply = model.guide(GuideTurn("pallet-sighting:25", True))
-                    assert reply.intention == "ASK_WATTS" and reply.generated_reaction
+                    assert reply.intention == "ASK_WATTS" and reply.selected_reaction
                     followup.append((perf_counter() - start) * 1000)
                 print(json.dumps(dict(fresh_survey_ms=survey, prepared_survey_ms=ready,
                                       fresh_guide_ms=followup, correct_model_choices="8/8",

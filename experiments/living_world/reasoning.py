@@ -1,4 +1,4 @@
-"""Bounded guide follow-ups with host-owned facts and model-authored reactions."""
+"""Bounded guide follow-ups with host-owned facts and model-selected reactions."""
 
 from dataclasses import dataclass
 import json
@@ -19,12 +19,6 @@ REACTION_WORDS = frozenset(
     "really right seems should slow some sorry sure thanks that that's think thought to try "
     "uncertain understand very want was we well what when why would yes you your".split()
 )
-REACTION = r"""reaction ::= "I " stance " " aim ending
-stance ::= "want to" | "would rather" | "hope to" | "try to"
-aim ::= "be sure" | "help you" | "be careful" | "give it some thought" | "get it right"
-ending ::= "." | " if I can." | " when I can."
-"""
-
 
 @dataclass(frozen=True)
 class GuideTurn:
@@ -40,7 +34,7 @@ class GuideReply:
     dialogue: str
     intention: str
     metrics: dict
-    generated_reaction: bool
+    selected_reaction: bool
 
 
 def reported_fact(dialogue, keys):
@@ -83,22 +77,16 @@ def guide_reply(turn, intention="CONSERVE", reaction=None, metrics=None):
 
 def plan_guide(worker, render_prompt, turn, *, natural=True):
     name = REPORTS.get(turn.fact)
-    if not natural or not name:
+    if not natural or not name or not turn.can_request:
         return guide_reply(turn)
-    allowed = '("ASK_WATTS" | "CONSERVE")' if turn.can_request else '"CONSERVE"'
-    grammar = 'root ::= ' + allowed + r' "\n" reaction' + "\n" + REACTION
     prompt = render_prompt(
-        "You are the friendly, cautious Pallet sign guide. Write a short in-character reaction. "
-        "Use no names, places, dates or facts in the reaction, only your feelings. "
-        "Write your decision, a line break, and your reaction.",
-        f"You previously attributed a {name} sighting to Watts. The player asks for details. "
-        "You do not know when it happened. "
-        + ("ASK_WATTS if checking would help the traveler, or CONSERVE if you'd rather wait. "
-           if turn.can_request else "CONSERVE. You cannot file a new request. ")
-        + "Say how you feel about leaving a question unanswered. Speak to the traveler, in at most eight words.",
+        "You are the cautious Pallet guide. Help travelers verify missing details. "
+        "Choose A to ask Watts to check when he saw it, or B to wait. Output one letter.",
+        f"Watts reported seeing {name}. The traveler asks when. You can ask Watts.",
     )
-    raw, metrics = worker.generate(grammar, prompt)
-    intention, separator, reaction = raw.partition("\n")
-    if not separator:
-        raise ValueError("Missing structured guide response")
-    return guide_reply(turn, intention, reaction, metrics)
+    choice, metrics = worker.generate('root ::= "A" | "B"', prompt)
+    if choice == "A":
+        return guide_reply(turn, "ASK_WATTS", "I want to be sure.", metrics)
+    if choice == "B":
+        return guide_reply(turn, "CONSERVE", "I would rather be careful.", metrics)
+    raise ValueError("Unknown guide decision")
