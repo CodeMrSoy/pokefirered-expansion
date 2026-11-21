@@ -6,6 +6,7 @@ import json
 import sqlite3
 from uuid import uuid4
 
+from director import WorldDirector
 from profiles import PROFILES, WATTS
 from routines import RoutineWorld
 from social import SocialWorld
@@ -72,6 +73,7 @@ class WorldMemory:
 
         self.social = SocialWorld(self)
         self.routines = RoutineWorld(self)
+        self.director = WorldDirector(self)
 
     def _key(self, battery):
         return self.slot + ":" + hashlib.sha256(battery).hexdigest()
@@ -93,10 +95,12 @@ class WorldMemory:
                     """, (next_save, self.save))
                     self.social.checkpoint(next_save)
                     self.routines.checkpoint(next_save)
+                    self.director.checkpoint(next_save)
                 self._discard_unsaved()
             self.save = next_save
             self.social.deadline = self.social.next_deadline()
             self.routines.load()
+            self.director.load()
 
     def _discard_unsaved(self):
         if self.save.startswith("unsaved:"):
@@ -104,6 +108,7 @@ class WorldMemory:
             self.db.execute("DELETE FROM npc_knowledge WHERE save=?", (self.save,))
             self.social.discard()
             self.routines.discard()
+            self.director.discard()
             self.db.execute("DELETE FROM npc_checkpoint WHERE save=?", (self.save,))
 
     def knowledge(self, npc, species):

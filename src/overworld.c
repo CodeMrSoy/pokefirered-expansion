@@ -1693,6 +1693,8 @@ void CB2_Overworld(void)
         SetVBlankCallback(NULL);
     OverworldBasic();
     LivingWorld_UpdateFieldHint();
+    if (!fading)
+        LivingWorld_ReconcileBrock();
     if (fading)
         SetFieldVBlankCallback();
 }

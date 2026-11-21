@@ -139,6 +139,10 @@ def synthetic(path, population):
     tick_times = []
     transitions = 0
     duplicates = 0
+    from director import DUTY
+    director = memory.director
+    completed_plans = 0
+    previous_plan = None
     tracemalloc.start()
     cpu = process_time()
     for now in range(0, 7 * DAY, 300):
@@ -156,6 +160,16 @@ def synthetic(path, population):
             assert engine.enqueue(key, fact, species, WATTS.npc, now)
             duplicates += int(engine.enqueue(key, fact, species, WATTS.npc, now))
         start = perf_counter()
+        if previous_plan is not None:
+            director.observe(previous_plan["due"], "pewter", False)
+        director.observe(now, "pewter", False)
+        if previous_plan is not None and director.state["active"] is None:
+            completed_plans += 1
+        if now % DAY == 43200:
+            ready = director.decision()
+            assert ready
+            director.submit(ready, DUTY)
+        previous_plan = director.state["active"]
         changes = engine.tick(now)
         tick_times.append((perf_counter() - start) * 1000)
         while changes:
@@ -171,7 +185,7 @@ def synthetic(path, population):
     tracemalloc.stop()
     assertions = memory.db.execute("SELECT stage,COUNT(*) FROM routine_event GROUP BY stage").fetchall()
     assert assertions == [("resolved", len(batches))], assertions
-    assert duplicates == 0
+    assert duplicates == 0 and completed_plans == 7
     assert memory.db.execute("""
         SELECT COUNT(*) FROM npc_knowledge WHERE fact LIKE 'relay:%' AND verified=0
     """).fetchone()[0] == len(batches) * 2
@@ -186,7 +200,8 @@ def synthetic(path, population):
     return dict(population=population, in_game_days=7, events=len(batches), transitions=transitions,
                 cpu_seconds=round(run_cpu, 3), tick_p95_ms=round(ticks[int(len(ticks) * 0.95)], 4),
                 tick_max_ms=round(max(ticks), 4), tracemalloc_kib=round(peak / 1024, 1),
-                database_kib=path.stat().st_size // 1024, duplicates=duplicates, inference_calls=0)
+                database_kib=path.stat().st_size // 1024, duplicates=duplicates, inference_calls=0,
+                completed_director_plans=completed_plans)
 
 
 if __name__ == "__main__":

@@ -2,6 +2,13 @@ PewterCity_Gym_MapScripts::
 	.byte 0
 
 PewterCity_Gym_EventScript_Brock::
+	lock
+	faceplayer
+	callnative LivingWorld_BrockHome
+	goto_if_eq VAR_RESULT, FALSE, PewterCity_Gym_EventScript_BrockUnavailable
+	goto_if_set FLAG_DEFEATED_BROCK, PewterCity_Gym_EventScript_BrockChallenge
+	living_world_aside LIVING_WORLD_BROCK_RETURN
+PewterCity_Gym_EventScript_BrockChallenge::
 	famechecker FAMECHECKER_BROCK, FCPICKSTATE_COLORED, UpdatePickStateFromSpecialVar8005
 	trainerbattle_single TRAINER_LEADER_BROCK, PewterCity_Gym_Text_BrockIntro, PewterCity_Gym_Text_BrockDefeat, PewterCity_Gym_EventScript_DefeatedBrock, NO_MUSIC
 	goto_if_unset FLAG_GOT_TM39_FROM_BROCK, PewterCity_Gym_EventScript_GiveTM39
@@ -36,6 +43,11 @@ PewterCity_Gym_EventScript_NoRoomForTM39::
 	release
 	end
 
+PewterCity_Gym_EventScript_BrockUnavailable::
+	msgbox PewterCity_Gym_Text_BrockReturnSoon
+	release
+	end
+
 PewterCity_Gym_EventScript_Liam::
 	trainerbattle_single TRAINER_CAMPER_LIAM, PewterCity_Gym_Text_LiamIntro, PewterCity_Gym_Text_LiamDefeat
 	msgbox PewterCity_Gym_Text_LiamPostBattle, MSGBOX_AUTOCLOSE
@@ -45,10 +57,24 @@ PewterCity_Gym_EventScript_GymGuy::
 	lock
 	faceplayer
 	goto_if_set FLAG_DEFEATED_BROCK, PewterCity_Gym_EventScript_GymGuyPostVictory
+	callnative LivingWorld_BrockHome
+	goto_if_eq VAR_RESULT, FALSE, PewterCity_Gym_EventScript_GymGuyAway
+	living_world_aside LIVING_WORLD_BROCK_ATTENDANT
 	msgbox PewterCity_Gym_Text_LetMeTakeYouToTheTop, MSGBOX_YESNO
 	goto_if_eq VAR_RESULT, YES, PewterCity_Gym_EventScript_GymGuyTakeMeToTop
 	goto_if_eq VAR_RESULT, NO, PewterCity_Gym_EventScript_GymGuyDontTakeMeToTop
 	end
+
+PewterCity_Gym_EventScript_GymGuyAway::
+	living_world_aside LIVING_WORLD_BROCK_ATTENDANT
+	goto_if_eq VAR_RESULT, TRUE, PewterCity_Gym_EventScript_GymGuyRelease
+	msgbox PewterCity_Gym_Text_BrockReturnSoon
+PewterCity_Gym_EventScript_GymGuyRelease::
+	release
+	end
+
+PewterCity_Gym_Text_BrockReturnSoon::
+	.string "Brock will be back soon.$"
 
 PewterCity_Gym_EventScript_GymGuyPostVictory::
 	msgbox PewterCity_Gym_Text_YoureChampMaterial

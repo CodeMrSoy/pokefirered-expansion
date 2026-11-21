@@ -14,7 +14,7 @@ from profiles import KNOWLEDGE_PROFILES, NPC_IDS, PROFILES
 from reasoning import GuideTurn
 from world import Encounter
 
-AREAS = {0: "", 1: "pallet", 2: "rival_house", 3: "oak_lab", 4: "route_1", 5: "viridian"}
+AREAS = {0: "", 1: "pallet", 2: "rival_house", 3: "oak_lab", 4: "route_1", 5: "viridian", 6: "pewter", 7: "pewter_gym"}
 PREDICTION_DELAY = 0.2
 MAX_REPLIES = 32
 FIELD_HINT = struct.Struct("<4sHHBBBB")
@@ -252,6 +252,10 @@ class HybridDialogue:
                 future.set_result(prepare(self.model, key.state))
             self._remember(key, future)
         return Lookup(key, future, cache, (retrieved - start) * 1000, lookup_ms)
+
+    def worker_idle(self):
+        return not ((self.obsolete is not None and not self.obsolete.done())
+                    or any(not reply.done() for reply in self.replies.values()))
 
     def prioritize_followup(self):
         self._discard_speculative()

@@ -655,3 +655,16 @@ PewterCity_EventScript_CitySign::
 PewterCity_Movement_WalkInPlaceLeft::
 	walk_in_place_left
 	step_end
+
+PewterCity_EventScript_BrockForecourt::
+	lock
+	faceplayer
+	living_world_aside LIVING_WORLD_BROCK_CONTACT
+	goto_if_eq VAR_RESULT, TRUE, PewterCity_EventScript_BrockForecourtRelease
+	msgbox PewterCity_Text_BrockForecourt
+PewterCity_EventScript_BrockForecourtRelease::
+	release
+	end
+
+PewterCity_Text_BrockForecourt::
+	.string "I'll meet you at the Gym.$"

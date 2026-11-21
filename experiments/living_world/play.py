@@ -7,6 +7,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import struct
 import subprocess
 import sys
 import tempfile
@@ -15,6 +16,7 @@ import time
 from bridge import (
     Conversation, DialogueBridge, MAILBOX_SIZE, REPLY_OFFSET, SKIP, TEXT_CAPACITY, WAIT, validate,
 )
+from director import DUTY, PRESENCE, choose_brock
 from inference import LocalModel, windows_launcher_environment
 from hybrid import FIELD_SIZE, FieldHint, HybridDialogue, prepare
 from reasoning import BALANCED_SHA256, LIGHTWEIGHT_SHA256, GuideTurn, guide_reply, reported_fact
@@ -25,6 +27,8 @@ ROOT = Path(__file__).resolve().parent
 VOID = c.c_void_p
 UINT = c.c_uint
 INT = c.c_int
+BROCK_PRESENCE = struct.Struct("<4sHBB")
+BROCK_REQUESTS = frozenset(("brock_attendant", "brock_contact", "brock_return"))
 KEYS = {8: 29, 0: 27, 2: 42, 3: 40, 4: 82, 5: 81, 6: 80, 7: 79, 10: 4, 11: 22}
 PIXELS = {0: 0x15130F02, 1: 0x16161804, 2: 0x15151002}
 
@@ -116,7 +120,7 @@ class Display:
 
 
 class Game:
-    def __init__(self, core_path, rom_path, rom, mailbox, display, *, field_hint=None):
+    def __init__(self, core_path, rom_path, rom, mailbox, display, *, field_hint=None, brock_presence=None):
         self.display = display
         self.mailbox = mailbox
         self.core = core = c.CDLL(str(core_path))
@@ -147,6 +151,14 @@ class Game:
             self.close()
             raise RuntimeError("Invalid field hint location")
         self.hint_ptr = None if field_hint is None else ram + field_hint - 0x02000000
+        if brock_presence is not None and (
+                brock_presence % 4 or not 0x02000000 <= brock_presence <= 0x02040000 - BROCK_PRESENCE.size
+                or any(start is not None and brock_presence < start + length
+                       and start < brock_presence + BROCK_PRESENCE.size
+                       for start, length in ((mailbox, MAILBOX_SIZE), (field_hint, FIELD_SIZE)))):
+            self.close()
+            raise RuntimeError("Invalid Brock presence location")
+        self.brock_ptr = None if brock_presence is None else ram + brock_presence - 0x02000000
         av = AvInfo()
         core.retro_get_system_av_info(c.byref(av))
         self.frame_period = 1 / av.fps
@@ -173,6 +185,12 @@ class Game:
 
     def read_hint(self):
         return FieldHint.decode(c.string_at(self.hint_ptr, FIELD_SIZE)) if self.hint_ptr else None
+
+    def publish_brock(self, frame, location):
+        if self.brock_ptr is not None:
+            code = PRESENCE[location]
+            data = BROCK_PRESENCE.pack(b"LWB1", frame, code, code ^ 255)
+            c.memmove(self.brock_ptr, data, BROCK_PRESENCE.size)
 
     def write_reply(self, address, data):
         offset = address - self.mailbox
@@ -228,6 +246,7 @@ def main():
     mode.add_argument("--model-test", action="store_true")
     mode.add_argument("--pallet-test", action="store_true")
     mode.add_argument("--pallet-social", action="store_true")
+    mode.add_argument("--pewter-demo", action="store_true")
     parser.add_argument("--lightweight", action="store_true", help="Use short dialogue and skip optional prose")
     parser.add_argument("--no-predict", action="store_true", help="Disable approach prefetch for comparison")
     args = parser.parse_args()
@@ -280,11 +299,13 @@ def main():
     profile = Path(os.environ.get("LOCALAPPDATA", Path.home() / ".local/share")) / "LivingQuantumWorld"
     profile.mkdir(parents=True, exist_ok=True)
     demo = "PalletSocialTest.sav" if args.pallet_social else "PalletTest.sav" if args.pallet_test else None
+    if args.pewter_demo:
+        demo = "PewterTest.sav"
     save_path = profile / (demo or "PokemonQuantum.sav")
     core_path = ROOT / ("mgba_libretro.dll" if sys.platform == "win32" else "mgba_libretro.so")
     display = Display()
     game = Game(core_path, rom_path, rom, manifest["mailbox"], display,
-                field_hint=manifest.get("field_hint"))
+                field_hint=manifest.get("field_hint"), brock_presence=manifest.get("brock_presence"))
     memory = None
     previous = None
     try:
@@ -312,8 +333,17 @@ def main():
             previous_hint_frame = None
             prediction_error = None
 
+            director = memory.director
+            director.demo = args.pewter_demo
+            planning = None
+            plan_retry_after = 0.0
+            plan_budget = (None, 0)
+
             def propose(context):
                 nonlocal staged, scene, lookup, guide_turn, guide_work, guide_result, last_guide
+                if context.npc in BROCK_REQUESTS:
+                    message = director.message(context.npc)
+                    return json.dumps({"action": "SAY_DIALOGUE", "text": message}) if message else SKIP
                 if context.npc == "pallet_exchange":
                     last_guide = None
                     scene = memory.social.scene()
@@ -368,6 +398,15 @@ def main():
                 if next_title != title:
                     display.title(display.window, next_title)
                     title = next_title
+                if trace and trace["context"]["npc"] in BROCK_REQUESTS:
+                    if trace["validation"] == "accepted":
+                        director.message(trace["context"]["npc"], accepted=True)
+                    if trace["context"]["npc"] in ("brock_attendant", "brock_return"):
+                        director.challenger()
+                    trace["route"] = "world_director"
+                    trace["objective"] = director.state["quest"]
+                    log.write(json.dumps(trace) + "\n")
+                    trace = None
                 if trace and trace["context"]["npc"] == "pallet_exchange":
                     if scene and trace["validation"] == "accepted":
                         memory.social.displayed(scene[0])
@@ -440,7 +479,41 @@ def main():
                         if fresh:
                             for change in memory.routines.tick(fresh.local_second):
                                 log.write(json.dumps({"world_event": change}) + "\n")
-                        predicted = None if args.no_predict else replies.predict(fresh, start)
+                            protected = bool(fresh.story) if fresh.area in ("", "pewter", "pewter_gym") else False
+                            director.observe(fresh.local_second, fresh.area, protected, fresh.busy)
+                            if planning is not None:
+                                request, future = planning
+                                if future.done():
+                                    planning = None
+                                    metrics = {}
+                                    failure = None
+                                    try:
+                                        selected, metrics = future.result()
+                                    except (OSError, ValueError, RuntimeError, TimeoutError) as error:
+                                        selected, failure = DUTY, str(error)[:220]
+                                    try:
+                                        director.submit(request, selected, fallback=failure)
+                                        log.write(json.dumps({"directive": selected.goal, "cause": request.trigger,
+                                                              "metrics": metrics, "fallback": failure}) + "\n")
+                                    except ValueError as error:
+                                        log.write(json.dumps({"director_rejection": str(error)}) + "\n")
+                                elif request != director.decision() and future.cancel():
+                                    planning = None
+                            if planning is None and start >= plan_retry_after and game.brock_ptr:
+                                request = director.decision()
+                                if request is not None and replies.worker_idle():
+                                    key = (request.checkpoint, request.number)
+                                    attempts = plan_budget[1] if plan_budget[0] == key else 0
+                                    if attempts < 2:
+                                        plan_budget = key, attempts + 1
+                                        plan_retry_after = start + 5
+                                        planning = request, pool.submit(choose_brock, model, request)
+                                    else:
+                                        director.submit(request, DUTY, fallback="decision retry limit")
+                                        log.write(json.dumps({"directive": DUTY.goal,
+                                                              "fallback": "decision retry limit"}) + "\n")
+                            game.publish_brock(fresh.frame, director.location)
+                        predicted = None if args.no_predict or planning else replies.predict(fresh, start)
                         if predicted:
                             log.write(json.dumps({"prefetched": predicted.state.encounter.npc,
                                                   "species": predicted.state.encounter.visible_species,
