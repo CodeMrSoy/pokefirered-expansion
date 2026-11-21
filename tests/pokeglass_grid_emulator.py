@@ -5,7 +5,7 @@ import struct
 setup = pathlib.Path(__file__).with_name('avatar_wardrobe_emulator.py')
 exec(compile(setup.read_text().split("fixture = b'\\x23'")[0], str(setup), 'exec'))
 native('FlagSet', 0x829)
-fixture = b'\x23' + struct.pack('<I', (m.symbols['ScrCmd_createmon'] | 1) + 0x2000000)
+fixture = b'\x23' + struct.pack('<I', (m.symbols['ScrCmd_givegiftmon'] | 1) + 0x2000000)
 fixture += struct.pack('<BBHHI', 0, 6, 1, 25, 0)
 m.inject(fixture + b'\x44' + struct.pack('<HH', 717, 1) + b'\x02')
 avatar_offset = avatar_var - struct.unpack('<I',m.read(m.symbols['gSaveBlock1Ptr'],4))[0]
@@ -48,7 +48,8 @@ move(6, 7); m.snap('phone-page-two'); app('Task_OptionMenu', 'options')
 move(6, 8); move(6, 6); app('Task_TrainerCard', 'trainer-card')
 move(4, 9); app('Task_PokeGlassFieldKit', 'field-kit')
 move(7, 12); app('Task_HandleListInput', 'tm-case')
-move(5, 8)
+move(7, 13); app('Task_GlassQuestBook', 'quest-book')
+move(7, 0); move(6, 13); move(6, 12); move(5, 8)
 # Cancel Save and return to the same page/tile.
 m.press(8);wait_task('task50_save_game');m.run(120);m.snap('phone-save-prompt')
 m.press(0);wait_task('Task_PokeGlassHub');m.run(30)

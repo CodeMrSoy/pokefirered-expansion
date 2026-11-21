@@ -79,25 +79,50 @@ def project_museum(society):
 REGIONAL_STATES = {"active": 1, "completed": 3, "expired": 4, "withdrawn": 5}
 
 
-def regional_exchange(population, actor, *, accepted=False):
+def regional_exchange(population, actor, *, accepted=False, include_closed=True):
     state = population.state
     objective = state.get("objective")
-    if actor == "assistant" and (not objective or objective["status"] != "active"):
+    if actor not in ("assistant", "researcher"):
+        return None
+    status = objective["status"] if objective else None
+    if actor == "assistant" and (not objective or objective.get("reported")):
         for id_, event in state["events"].items():
-            if event["kind"] != "survey_support" or event["audience"] != "museum_desk" or event["status"] != "active":
+            if (event["kind"] != "survey_support" or event["audience"] != "museum_desk"
+                    or event["status"] != "active" or event.get("survey_discovered")
+                    or (objective and objective["event"] == id_)):
                 continue
-            if objective and objective["event"] == id_:
+            person = population.people.get(event["origin"])
+            if person is None:
                 continue
             if accepted:
+                event["survey_discovered"] = True
                 state["objective"] = {"event": id_, "status": "active", "source": "museum_desk"}
                 population.persist()
-            return "A survey team needs help.\nPass word to the volunteer.\fSurvey Notes added\nto your Quest Book."
-    if actor == "researcher" and objective and objective["status"] == "active":
+            return (f"{person.name}'s team needs help.\nPass word to the volunteer."
+                    "\fSurvey Notes added\nto your Quest Book.")
+    if status == "active":
+        if actor == "assistant":
+            return "Survey Notes is open.\nBring word to the volunteer."
         if accepted:
-            objective["status"] = "completed"
-            objective["delivered"] = True
+            event = state["events"].get(objective["event"])
+            if event:
+                event.update(survey_discovered=True, notice_delivered=state["clock"])
+            objective.update(status="completed", delivered=True)
             population.persist()
         return "Thanks for the survey note.\nI'll tell the field team."
+    if actor == "assistant" and status in ("completed", "expired", "withdrawn") and not objective.get("reported"):
+        if accepted:
+            objective["reported"] = True
+            population.persist()
+    elif not include_closed:
+        return None
+    if status == "completed":
+        if objective.get("delivered"):
+            return "Your note reached the team.\nSurvey Notes is complete."
+        return "The team found help.\nSurvey Notes is complete."
+    if status in ("expired", "withdrawn"):
+        return ("The survey request expired." if status == "expired"
+                else "The team withdrew its request.")
     return None
 
 

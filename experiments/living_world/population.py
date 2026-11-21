@@ -110,6 +110,12 @@ class Population:
         self.state = json.loads(row[0]) if row else {"clock": -1, "actors": {}}
         self.state.setdefault("requests", {})
         self.state.setdefault("events", {})
+        objective = self.state.get("objective")
+        if objective and (event := self.state["events"].get(objective["event"])):
+            # Old saves recorded discovery only on the projected objective.
+            event["survey_discovered"] = True
+            if objective["status"] == "active" and event["status"] != "active":
+                objective["status"] = event["status"]
         self.rebuild()
 
     def rebuild(self):

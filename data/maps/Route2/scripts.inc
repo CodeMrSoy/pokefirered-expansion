@@ -26,8 +26,10 @@ Route2_Text_PewterTrainerPractice::
 Route2_EventScript_Volunteer::
 	lock
 	faceplayer
-	msgbox Route2_Text_Volunteer
 	living_world_aside LIVING_WORLD_SOCIETY_RESEARCHER
+	goto_if_eq VAR_RESULT, TRUE, Route2_EventScript_VolunteerRelease
+	msgbox Route2_Text_Volunteer
+Route2_EventScript_VolunteerRelease::
 	release
 	end
 

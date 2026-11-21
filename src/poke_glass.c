@@ -488,15 +488,26 @@ static void DrawHubIcon(u8 app, u16 x, u16 y)
 }
 
 // Stable script IDs, arranged in two rows on each phone-style page.
-static const u8 sHubPages[3][6] = {{0, 1, 2, 4, 3, 5}, {9, 12, 11, 6, 8, 7}, {255, 255, 255, 255, 255, 13}};
+static const u8 sHubPages[][6] = {{0, 1, 2, 4, 3, 5}, {9, 12, 13, 6, 8, 7}};
 
-// The final utility slot shows Safari Retire during a Safari session, and
-// retains the optional DexNav outside Safari when that feature is enabled.
-static u8 HubPage(void) { return sHubCursor == 13 ? 2 : sHubCursor >= 6; }
+static bool8 HubDexNavAvailable(void)
+{
+    return DEXNAV_ENABLED && DN_FLAG_DEXNAV_GET != 0 && FlagGet(DN_FLAG_DEXNAV_GET)
+        && !GetSafariZoneFlag() && !IsUpdateLinkStateCBActive() && !InUnionRoom();
+}
+
+static u8 HubPageCount(void) { return ARRAY_COUNT(sHubPages) + HubDexNavAvailable(); }
+static u8 HubPage(void) { return sHubCursor == 10 ? 2 : sHubCursor >= 6; }
 
 static u8 HubAppAt(u8 page, u8 slot)
 {
-    if (page == 1 && slot == 2 && !GetSafariZoneFlag()) return 10;
+    if (page == 2)
+        return slot == 2 ? 10 : 255;
+    if (page == 1 && GetSafariZoneFlag())
+    {
+        if (slot == 2) return 11; // Retire takes the utility slot during Safari.
+        if (slot == 4) return 13; // The disabled Save tile is free during Safari.
+    }
     return sHubPages[page][slot];
 }
 
@@ -516,7 +527,7 @@ static bool8 HubAppAvailable(u8 app)
     if (IsUpdateLinkStateCBActive() || InUnionRoom())
         return app == 1 || app == 5 || app == 6 || app == 7;
     if (app == 9 || app == 12) return TRUE;
-    if (app == 10) return DEXNAV_ENABLED && DN_FLAG_DEXNAV_GET != 0 && FlagGet(DN_FLAG_DEXNAV_GET);
+    if (app == 10) return HubDexNavAvailable();
     if (app == 11) return GetSafariZoneFlag();
     if (app == 8) return !GetSafariZoneFlag() && !IsUpdateLinkStateCBActive() && !InUnionRoom();
     return TRUE;
@@ -927,8 +938,8 @@ static void DrawHub(void)
     for (i = 0; i < 6; i++) DrawHubApp(i);
     SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(14, 4));
     AddTextPrinterParameterized3(sHubWindow, FONT_SMALL, 16, 132, textColors, TEXT_SKIP_DRAW, descriptions[sHubCursor]);
-    // Two page dots and edge arrows keep horizontal paging discoverable.
-    for (i = 0; i < 3; i++) HubRect(HubPage() == i ? 8 : 6, 104 + i * 10, 146, 4, 2);
+    // Dots and arrows show the available pages.
+    for (i = 0; i < HubPageCount(); i++) HubRect(HubPage() == i ? 8 : 6, 104 + i * 10, 146, 4, 2);
     AddTextPrinterParameterized3(sHubWindow, FONT_SMALL, 15, 17, textColors, TEXT_SKIP_DRAW, COMPOUND_STRING("{LEFT_ARROW}"));
     AddTextPrinterParameterized3(sHubWindow, FONT_SMALL, 35, 17, textColors, TEXT_SKIP_DRAW, COMPOUND_STRING("{RIGHT_ARROW}"));
     PutWindowTilemap(sHubWindow);
@@ -1022,18 +1033,18 @@ static void Task_PokeGlassHub(u8 taskId)
         s8 direction = JOY_NEW(DPAD_LEFT) ? -1 : JOY_NEW(DPAD_RIGHT) ? 1 : 0;
         if (direction)
         {
-            // Preserve row and existing page order; skip unavailable cells
-            // across pages, including the reserved cells on the Quest page.
-            for (attempts = 0; attempts < 18; attempts++)
+            u8 pages = HubPageCount();
+            // Preserve row and skip unavailable cells across pages.
+            for (attempts = 0; attempts < pages * 6; attempts++)
             {
                 if (direction < 0)
                 {
-                    if (slot % 3 == 0) { page = (page + 2) % 3; slot += 2; }
+                    if (slot % 3 == 0) { page = (page + pages - 1) % pages; slot += 2; }
                     else slot--;
                 }
                 else
                 {
-                    if (slot % 3 == 2) { page = (page + 1) % 3; slot -= 2; }
+                    if (slot % 3 == 2) { page = (page + 1) % pages; slot -= 2; }
                     else slot++;
                 }
                 if (HubAppAvailable(HubAppAt(page, slot))) break;

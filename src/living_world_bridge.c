@@ -230,7 +230,9 @@ void LivingWorld_ReconcileAgents(void)
         u8 object = GetObjectEventIdByLocalIdAndMap(slot->id, number, group);
         if (!WantsSlot(slot))
         {
-            if (object < OBJECT_EVENTS_COUNT)
+            // Let the Route 2 volunteer leave the camera before retiring his slot.
+            if (object < OBJECT_EVENTS_COUNT
+             && (map != MAP_ROUTE2 || slot->actor != AGENT_RESEARCHER || gObjectEvents[object].offScreen))
                 RemoveObjectEventByLocalIdAndMap(slot->id, number, group);
         }
         else if (object >= OBJECT_EVENTS_COUNT && player->active

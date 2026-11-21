@@ -41,7 +41,12 @@ assert native('QuestBook_GetState',5)==1
 before=m.read(ptr('gSaveBlock2Ptr')+3803,144)
 # Reach Quest Book through real launcher navigation, without writing its cursor.
 m.write(m.symbols['sHubCursor'],b'\x05');m.press(3);wait_task('Task_PokeGlassHub')
-for _ in range(4):m.press(7,30)
+for key, cursor in ((7, 6), (4, 9), (7, 12), (7, 13)):
+ m.press(key,30)
+ assert m.read(m.symbols['sHubCursor'],1)==bytes([cursor])
+m.press(7,30)
+assert m.read(m.symbols['sHubCursor'],1)==b'\x00'
+m.press(6,30)
 assert m.read(m.symbols['sHubCursor'],1)==b'\x0d'
 m.snap('qc-quest-book-launcher');m.press(8);wait_task('Task_GlassQuestBook');m.run(60)
 # Empty Side/Done filters must tolerate all D-pad directions and A.
@@ -50,7 +55,9 @@ for _ in range(4):
  for key in [4,5,6,7,8]:
   m.press(key,20)
   if task_active('Task_GlassQuestOffer'):m.press(0,30)
-m.snap('qc-quest-filters');m.press(0);wait_task('Task_PokeGlassHub');m.press(0)
+m.snap('qc-quest-filters');m.press(0);wait_task('Task_PokeGlassHub')
+assert m.read(m.symbols['sHubCursor'],1)==b'\x0d'
+m.press(0)
 assert field()
 # Book offer: Decline, reoffer, Accept, then Track using actual button input.
 m.write(m.symbols['sHubCursor'],b'\x0d');m.press(3);wait_task('Task_PokeGlassHub');m.press(8);wait_task('Task_GlassQuestBook')

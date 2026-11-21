@@ -672,8 +672,10 @@ PewterCity_Text_BrockForecourt::
 PewterCity_EventScript_Volunteer::
 	lock
 	faceplayer
-	msgbox PewterCity_Text_Volunteer
 	living_world_aside LIVING_WORLD_SOCIETY_RESEARCHER
+	goto_if_eq VAR_RESULT, TRUE, PewterCity_EventScript_VolunteerRelease
+	msgbox PewterCity_Text_Volunteer
+PewterCity_EventScript_VolunteerRelease::
 	release
 	end
 

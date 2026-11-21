@@ -119,6 +119,23 @@ to the ARM symbols tool and Linux mGBA core, and run:
   `experiments/living_world/package-windows.py`, the two Pewter fixtures
   and the existing pinned Windows inputs.
 
+### Windows playtest follow-up
+
+Survey Notes records discovery on the originating request. Ask the public
+Museum assistant for the request, then speak to the older volunteer.
+The assistant explains an open or newly closed objective before offering
+another request. The Quest Book retains the same row through delivery,
+independent resolution, expiration, or withdrawal. Existing Phase 11 saves
+retain their objective and are migrated on load.
+
+Quest Book is the top-right app on page two during regular play. During
+Safari it occupies the unavailable Save position, leaving Retire
+accessible. With DexNav disabled in this build the launcher has two pages.
+
+When a Route 2 visit ends, the volunteer can finish the current conversation
+and remains in view until the player's camera leaves. The simulation
+continues the scheduled return and other maps only spawn the current slot.
+
 ### Merge-readiness decision
 
 The current `Living-Quantum-World` tip matched the recorded Phase 10 baseline

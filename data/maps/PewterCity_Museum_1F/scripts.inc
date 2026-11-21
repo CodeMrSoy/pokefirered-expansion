@@ -146,8 +146,10 @@ PewterCity_Museum_1F_EventScript_LivingAssistant::
 PewterCity_Museum_1F_EventScript_OldMan::
 	lock
 	faceplayer
-	msgbox PewterCity_Museum_1F_Text_ShouldBeGratefulForLongLife
 	living_world_aside LIVING_WORLD_SOCIETY_RESEARCHER
+	goto_if_eq VAR_RESULT, TRUE, PewterCity_Museum_1F_EventScript_OldManRelease
+	msgbox PewterCity_Museum_1F_Text_ShouldBeGratefulForLongLife
+PewterCity_Museum_1F_EventScript_OldManRelease::
 	release
 	end
 

@@ -462,12 +462,22 @@ def main():
                 choice, metrics = choose_commitment(model, ticket)
                 return choice, {**metrics, "queue_ms": wait}
 
+            society_exchange = None
+
             def propose(context):
-                nonlocal staged, scene, lookup, guide_turn, guide_work, guide_result, last_guide
+                nonlocal staged, scene, lookup, guide_turn, guide_work, guide_result, last_guide, society_exchange
                 if context.npc in ("society_assistant", "society_trainer", "society_researcher"):
                     actor = context.npc.removeprefix("society_")
-                    message = (regional_exchange(population, actor) if population else None)
-                    message = message or museum_exchange(society, actor) or society.message(actor)
+                    if population:
+                        message = regional_exchange(population, actor, include_closed=False)
+                        if message:
+                            society_exchange = regional_exchange, population, actor
+                            return json.dumps({"action": "SAY_DIALOGUE", "text": message})
+                    message = museum_exchange(society, actor)
+                    if message:
+                        society_exchange = museum_exchange, society, actor
+                    else:
+                        message = (regional_exchange(population, actor) if population else None) or society.message(actor)
                     return json.dumps({"action": "SAY_DIALOGUE", "text": message}) if message else SKIP
                 if context.npc in BROCK_REQUESTS:
                     message = director.message(context.npc)
@@ -547,16 +557,19 @@ def main():
                 staged = None
                 scene = None
                 guide_result = None
+                society_exchange = None
                 trace = bridge.poll(propose)
                 next_title = b"Living Quantum World - NPC is thinking" if bridge.pending else b"Living Quantum World - F1 Controls"
                 if next_title != title:
                     display.title(display.window, next_title)
                     title = next_title
                 if trace and trace["context"]["npc"] in ("society_assistant", "society_trainer", "society_researcher"):
-                    if trace["validation"] == "accepted":
-                        actor = trace["context"]["npc"].removeprefix("society_")
-                        if not population or not regional_exchange(population, actor, accepted=True):
-                            museum_exchange(society, actor, accepted=True)
+                    if trace["validation"] == "accepted" and society_exchange:
+                        exchange, owner, actor = society_exchange
+                        exchange(owner, actor, accepted=True)
+                        game.publish_quest(director, society, population)
+                        if exchange is regional_exchange:
+                            trace["survey_objective"] = population.state.get("objective")
                     trace["route"] = "attributed_society_memory"
                     log.write(json.dumps(trace) + "\n")
                     trace = None
@@ -634,11 +647,11 @@ def main():
                             memory.routines.discovery_pending = True
                         event["simulation_ms"] = (time.perf_counter() - simulation_start) * 1000
                         log.write(json.dumps({"social": event}) + "\n")
-                if not bridge.pending and start >= next_prediction:
+                if start >= next_prediction:
                     hint = game.read_hint()
+                    fresh = hint if hint and hint.frame != previous_hint_frame else None
                     try:
-                        fresh = hint if hint and hint.frame != previous_hint_frame else None
-                        if fresh:
+                        if fresh and not bridge.pending:
                             for change in memory.routines.tick(fresh.local_second):
                                 log.write(json.dumps({"world_event": change}) + "\n")
                             protected = bool(fresh.story) if fresh.area in ("", "pewter", "pewter_gym", "route_2") else False
@@ -749,10 +762,7 @@ def main():
                                         log.write(json.dumps({"directive": "routine",
                                                               "fallback": "decision retry limit"}) + "\n")
                             game.publish_quest(director, society, population)
-                            game.publish_brock(fresh.frame, director.location)
-                            game.publish_trainer(fresh.frame, society.state["agents"]["trainer"]["location"])
-                            game.publish_researcher(fresh.frame, society.state["agents"]["researcher"]["location"])
-                        predicted = None if args.no_predict or planning or resident_work else replies.predict(fresh, start)
+                        predicted = None if bridge.pending or args.no_predict or planning or resident_work else replies.predict(fresh, start)
                         if predicted:
                             log.write(json.dumps({"prefetched": predicted.state.encounter.npc,
                                                   "species": predicted.state.encounter.visible_species,
@@ -762,6 +772,10 @@ def main():
                         if str(error) != prediction_error:
                             prediction_error = str(error)
                             log.write(json.dumps({"prediction_error": prediction_error}) + "\n")
+                    if fresh:
+                        game.publish_brock(fresh.frame, director.location)
+                        game.publish_trainer(fresh.frame, society.state["agents"]["trainer"]["location"])
+                        game.publish_researcher(fresh.frame, society.state["agents"]["researcher"]["location"])
                     previous_hint_frame = hint.frame if hint else None
                     next_prediction = start + 0.10
                 if start >= next_save:

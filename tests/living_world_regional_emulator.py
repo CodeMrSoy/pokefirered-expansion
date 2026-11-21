@@ -65,15 +65,47 @@ publish()
 gba.run(16)
 assert spawned(road,9)
 assert not spawned(museum,2)
-gba.snap("phase10-regional-volunteer")
+# Give the sprite a field movement update before starting its real dialogue.
+gba.press(4, 24)
+publish()
+gba.run(16)
+invoke_event("Route2_EventScript_Volunteer")
+for _ in range(30):
+    gba.run(1)
+    if gba.read(mailbox, 4) == b"LQW1":
+        break
+else:
+    raise AssertionError("Route 2 volunteer did not start the exchange")
+assert bridge.poll(lambda _: SKIP)["validation"] == "skipped"
+gba.run(30)
+assert not field_ready()
 society.tick(now+60, "viridian")
 assert researcher["facts"]["tracks"]["kind"] == "firsthand"
 assert researcher["location"] == "in_transit"
+publish()
+gba.run(110)
+assert not field_ready()
+obj = gba.read(gba.symbols["gObjectEvents"], 16 * 36)
+assert any(obj[i] & 1 and obj[i + 8] == 9 for i in range(0, len(obj), 36))
+gba.snap("phase11-route2-volunteer-during-departure")
+finish_dialogue()
+publish()
+gba.run(16)
+assert spawned(road, 9), "Route 2 volunteer vanished in the player's view"
+# Re-enter the map beyond the old sprite's camera bounds, then return
+# to the survey spot while the volunteer is still travelling.
+warp("PewterCity", 21, 37)
+assert not spawned(road, 9), "Route 2 object survived the map transition"
+warp("Route2", 9, 7)
+publish()
+gba.run(24)
+assert not spawned(road, 9), "Departed volunteer respawned on Route 2"
 society.tick(now+88,"viridian")
 assert researcher["location"] == "museum"
 museum = warp("PewterCity_Museum_1F",2,5)
 publish()
 gba.run(16)
 assert spawned(museum,2)
+assert not spawned(road,9)
 memory.close()
 print(f"PASS mode {mode}: verified connected geometry and multi-leg volunteer travel")
