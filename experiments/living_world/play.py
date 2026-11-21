@@ -306,9 +306,11 @@ def main():
     mode.add_argument("--pewter-demo", action="store_true")
     mode.add_argument("--pewter-society", action="store_true")
     mode.add_argument("--pewter-regional", action="store_true")
+    mode.add_argument("--pewter-regional-retest", action="store_true")
     parser.add_argument("--lightweight", action="store_true", help="Use short dialogue and skip optional prose")
     parser.add_argument("--no-predict", action="store_true", help="Disable approach prefetch for comparison")
     args = parser.parse_args()
+    regional_demo = args.pewter_regional or args.pewter_regional_retest
     runtime = ROOT / "inference"
     if args.sandbox_test:
         if sys.platform != "win32":
@@ -367,8 +369,8 @@ def main():
     profile = Path(os.environ.get("LOCALAPPDATA", Path.home() / ".local/share")) / "LivingQuantumWorld"
     profile.mkdir(parents=True, exist_ok=True)
     demo = "PalletSocialTest.sav" if args.pallet_social else "PalletTest.sav" if args.pallet_test else None
-    if args.pewter_regional:
-        demo = "PewterRegionalTest.sav"
+    if regional_demo:
+        demo = "PewterRegionalRetest.sav" if args.pewter_regional_retest else "PewterRegionalTest.sav"
     elif args.pewter_society:
         demo = "PewterSocietyTest.sav"
     elif args.pewter_demo:
@@ -386,7 +388,8 @@ def main():
         if save_path.is_file():
             game.load_save(save_path.read_bytes())
         elif demo:
-            game.load_save((ROOT / demo).read_bytes())
+            fixture = "PewterRegionalTest.sav" if args.pewter_regional_retest else demo
+            game.load_save((ROOT / fixture).read_bytes())
         previous = game.save_bytes()
         memory = WorldMemory(profile / "living-world.sqlite3", save_path.name, previous,
                              unsaved=not demo and not save_path.is_file())
@@ -411,8 +414,8 @@ def main():
             prediction_error = None
 
             society = memory.society
-            society.demo = args.pewter_society or args.pewter_regional
-            society.regional_demo = args.pewter_regional
+            society.demo = args.pewter_society or regional_demo
+            society.regional_demo = regional_demo
             director = memory.director
             director.demo = args.pewter_demo
             director.society_demo = society.demo
