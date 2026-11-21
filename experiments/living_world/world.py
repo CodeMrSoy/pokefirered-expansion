@@ -11,6 +11,7 @@ from profiles import PROFILES, WATTS
 from routines import RoutineWorld
 from social import SocialWorld
 from society import Society
+from population import Population
 
 QUEST = "pond_survey"
 
@@ -76,6 +77,7 @@ class WorldMemory:
         self.routines = RoutineWorld(self)
         self.director = WorldDirector(self)
         self.society = Society(self)
+        self.population = Population(self)
 
     def _key(self, battery):
         return self.slot + ":" + hashlib.sha256(battery).hexdigest()
@@ -99,12 +101,14 @@ class WorldMemory:
                     self.routines.checkpoint(next_save)
                     self.director.checkpoint(next_save)
                     self.society.checkpoint(next_save)
+                    self.population.checkpoint(next_save)
                 self._discard_unsaved()
             self.save = next_save
             self.social.deadline = self.social.next_deadline()
             self.routines.load()
             self.director.load()
             self.society.load()
+            self.population.load()
 
     def _discard_unsaved(self):
         if self.save.startswith("unsaved:"):
@@ -114,6 +118,7 @@ class WorldMemory:
             self.routines.discard()
             self.director.discard()
             self.society.discard()
+            self.population.discard()
             self.db.execute("DELETE FROM npc_checkpoint WHERE save=?", (self.save,))
 
     def knowledge(self, npc, species):
