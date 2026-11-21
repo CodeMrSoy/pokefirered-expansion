@@ -16,7 +16,7 @@ import time
 from bridge import (
     Conversation, DialogueBridge, MAILBOX_SIZE, REPLY_OFFSET, SKIP, TEXT_CAPACITY, WAIT, validate,
 )
-from director import DUTY, PRESENCE, choose_brock
+from director import DUTY, PRESENCE, TRIP, choose_brock
 from inference import LocalModel, windows_launcher_environment
 from hybrid import FIELD_SIZE, FieldHint, HybridDialogue, prepare
 from reasoning import BALANCED_SHA256, LIGHTWEIGHT_SHA256, GuideTurn, guide_reply, reported_fact
@@ -337,6 +337,7 @@ def main():
             society = memory.society
             director = memory.director
             director.demo = args.pewter_demo
+            director.notice_required = True
             planning = None
             plan_retry_after = 0.0
             plan_budget = (None, 0)
@@ -484,6 +485,7 @@ def main():
                             protected = bool(fresh.story) if fresh.area in ("", "pewter", "pewter_gym") else False
                             director.observe(fresh.local_second, fresh.area, protected, fresh.busy)
                             society.tick(fresh.local_second, fresh.area, fresh.busy)
+                            director.notice = society.notice_for_brock()
                             if planning is not None:
                                 request, future = planning
                                 social_plan = isinstance(request, Ticket)
@@ -500,6 +502,8 @@ def main():
                                         failure = str(error)[:220]
                                     try:
                                         authority.submit(request, selected, fallback=failure)
+                                        if not social_plan:
+                                            society.respond_brock(request.notice, selected == TRIP)
                                         directive = [step.action for step in selected] if social_plan else selected.goal
                                         log.write(json.dumps({"directive": directive,
                                                               "actor": request.actor if social_plan else "brock",

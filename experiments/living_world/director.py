@@ -69,6 +69,7 @@ class Decision:
     plans: tuple[Plan, ...]
     comparisons: int
     expected_challenger: bool
+    notice: str | None = None
 
 
 def choose_brock(model, decision):
@@ -118,6 +119,8 @@ class WorldDirector:
     def __init__(self, memory):
         self.memory = memory
         self.demo = False
+        self.notice_required = False
+        self.notice = None
         self.db = memory.db
         with self.db:
             self.db.execute("CREATE TABLE IF NOT EXISTS director_state (save TEXT PRIMARY KEY, state TEXT NOT NULL)")
@@ -195,9 +198,11 @@ class WorldDirector:
             return None
         expected = second < self.state["challenger_until"]
         report = trigger == "research_request"
+        if report and self.notice_required and not (self.notice or self.demo):
+            return None
         choices = (DUTY, TRAIN, TRIP) if report and not expected else (DUTY, TRAIN)
         return Decision(self.memory.save, bucket, trigger, report, hour, choices,
-                        self.state["familiarity"], expected)
+                        self.state["familiarity"], expected, self.notice if report else None)
 
     def validate(self, decision, plan):
         if decision != self.decision():
