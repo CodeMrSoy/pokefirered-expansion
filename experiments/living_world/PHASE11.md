@@ -26,3 +26,12 @@ after two failed requests. The recipient answers from their shift capacity
 and existing relationship. A successful exchange records its actual
 source, updates both relationships, and unlocks dependent work. Pending
 requests expire and are capped at 24.
+
+## 11D
+
+Validated requests now create regional cooperation or survey events. Work
+that reaches its goal yields a research, training, or ordinary work result.
+Requests can complete, expire, or be withdrawn without a player action.
+The capped ledger preserves the active entries and their true origin.
+Only researchers' outstanding survey requests are published at the Museum
+desk. Other resident memories and internal events remain private.

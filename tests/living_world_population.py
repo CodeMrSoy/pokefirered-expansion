@@ -37,7 +37,24 @@ def checkpoint_test(db):
     later.close()
 
 
+def event_test(db):
+    w = WorldMemory(db, "events", b"start")
+    seen = set()
+    for day in range(1, 10):
+        for hour in range(9,15):
+            for offset in (0,24):
+                through(w.population, day*DAY+hour*3600+offset)
+                seen.update((e["kind"],e["status"]) for e in w.population.state["events"].values())
+    assert ("survey_support", "active") in seen
+    assert ("survey_support", "completed") in seen
+    assert ("training_milestone", "completed") in seen
+    assert len(w.population.state["events"]) <= 48
+    assert any(f["kind"] == "reported" for a in w.population.state["actors"].values() for f in a["facts"].values())
+    w.close()
+
+
 if __name__ == "__main__":
     with TemporaryDirectory() as directory:
         checkpoint_test(Path(directory) / "world.sqlite")
-    print("PASS 24 residents, multi-day goal, checkpoint fork and backward-clock guard")
+        event_test(Path(directory) / "events.sqlite")
+    print("PASS 24 residents, multi-day goal, checkpoint fork and backward-clock guard, autonomous regional events and provenance")

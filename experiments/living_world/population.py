@@ -7,6 +7,7 @@ DAY = 86400
 TRANSITIONS = 32
 GOAL_WINDOW = 10 * DAY
 OPEN_REQUESTS = 24
+EVENT_LIMIT = 48
 DEPENDENCIES = {"researcher": "volunteer", "curator": "researcher", "trainer": "attendant",
                 "guide": "volunteer", "volunteer": "guide", "attendant": "trainer"}
 LOCATIONS = frozenset(("pewter", "museum", "route_2", "gym"))
@@ -73,6 +74,7 @@ class Population:
         row = self.db.execute("SELECT state FROM regional_population WHERE save=?", (self.world.save,)).fetchone()
         self.state = json.loads(row[0]) if row else {"clock": -1, "actors": {}}
         self.state.setdefault("requests", {})
+        self.state.setdefault("events", {})
         self.rebuild()
 
     def rebuild(self):
@@ -141,6 +143,26 @@ class Population:
         actor.update(day=day, activity=person.role, due=when + 24)
         self.remember(actor, when, "shift", location=person.home)
 
+    def event(self, id_, kind, owner, when, *, status="active", audience=None):
+        events = self.state["events"]
+        if id_ in events:
+            return
+        if len(events) >= EVENT_LIMIT:
+            oldest = next((key for key, event in events.items() if event["status"] != "active"), None)
+            if oldest is None:
+                return
+            del events[oldest]
+        events[id_] = {"kind": kind, "origin": owner, "source": owner, "status": status,
+                       "created": when, "updated": when, "audience": audience}
+
+    def close_event(self, id_, status, when, source):
+        event = self.state["events"].get(id_)
+        if event and event["status"] == "active":
+            event.update(status=status, updated=when, source=source)
+            objective = self.state.get("objective")
+            if objective and objective["event"] == id_ and objective["status"] == "active":
+                objective["status"] = status
+
     def supplement(self, person, actor, when):
         """Ask a peer for a needed work unit, using only known relationships."""
         goal = actor["goal"]
@@ -164,6 +186,8 @@ class Population:
         goal.update(request=request, last_peer=preferred)
         self.state["requests"][request] = {"owner": person.id, "recipient": preferred,
                                            "goal": goal["id"], "created": when, "deadline": when + 2 * DAY}
+        self.event(request, "survey_support" if person.role == "researcher" else "cooperation",
+                   person.id, when, audience="museum_desk" if person.role == "researcher" else None)
         self.remember(actor, when, "requested_help", peer=preferred, request=request)
         return False
 
@@ -192,6 +216,7 @@ class Population:
             owner["bonds"][peer_id] = min(owner["bonds"].get(peer_id, 0) + 1, 20)
             peer["bonds"][owner_id] = min(peer["bonds"].get(owner_id, 0) + 1, 20)
         label = "helped" if honored else "declined"
+        self.close_event(id_, "completed" if honored else "withdrawn", when, peer_id)
         self.remember(owner, when, label, peer=peer_id, request=id_)
         self.remember(peer, when, label, peer=owner_id, request=id_)
 
@@ -203,6 +228,8 @@ class Population:
         goal["progress"] += 1
         if goal["progress"] >= goal["target"]:
             goal["status"] = "completed"
+            category = {"researcher": "research_result", "trainer": "training_milestone"}.get(person.role, "work_result")
+            self.event(goal["id"], category, person.id, when, status="completed")
             self.remember(actor, when, "goal_completed", goal=goal["id"])
 
     def tick(self, second):
@@ -216,6 +243,7 @@ class Population:
         for id_, request in list(self.state["requests"].items()):
             if second >= request["deadline"]:
                 self.remember(self.state["actors"][request["owner"]], second, "missed_commitment", request=id_)
+                self.close_event(id_, "expired", second, request["owner"])
                 del self.state["requests"][id_]
                 processed += 1
         while self.queue and self.queue[0][0] <= second and processed < TRANSITIONS:
