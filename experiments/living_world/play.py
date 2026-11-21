@@ -16,6 +16,7 @@ import time
 from bridge import (
     Conversation, DialogueBridge, MAILBOX_SIZE, REPLY_OFFSET, SKIP, TEXT_CAPACITY, WAIT, validate,
 )
+from controls import Controls
 from director import DUTY, PRESENCE, TRIP, choose_brock
 from dynamic_quests import QUEST_VIEW, museum_exchange, project_brock, project_museum
 from inference import LocalModel, windows_launcher_environment
@@ -33,7 +34,6 @@ UINT = c.c_uint
 INT = c.c_int
 BROCK_PRESENCE = struct.Struct("<4sHBB")
 BROCK_REQUESTS = frozenset(("brock_attendant", "brock_contact", "brock_return"))
-KEYS = {8: 29, 0: 27, 2: 42, 3: 40, 4: 82, 5: 81, 6: 80, 7: 79, 10: 4, 11: 22}
 PIXELS = {0: 0x15130F02, 1: 0x16161804, 2: 0x15151002}
 
 
@@ -60,7 +60,7 @@ def bind(library, name, result, *arguments):
 
 
 class Display:
-    def __init__(self):
+    def __init__(self, controls_path=None):
         name = str(ROOT / "SDL2.dll") if sys.platform == "win32" else ctypes.util.find_library("SDL2-2.0")
         if not name:
             raise RuntimeError("SDL2 is unavailable")
@@ -69,7 +69,7 @@ class Display:
             raise RuntimeError("SDL could not start video")
         sdl.SDL_InitSubSystem(0x10)  # Audio is optional if the machine has no output.
         self.window = bind(sdl, "SDL_CreateWindow", VOID, c.c_char_p, INT, INT, INT, INT, UINT)(
-            b"Living Quantum World", 0x2FFF0000, 0x2FFF0000, 720, 480, 0x20)
+            b"Living Quantum World - F1 Controls", 0x2FFF0000, 0x2FFF0000, 720, 480, 0x20)
         self.renderer = bind(sdl, "SDL_CreateRenderer", VOID, VOID, INT, UINT)(self.window, -1, 0)
         if not self.window or not self.renderer:
             raise RuntimeError("SDL could not open the game window")
@@ -86,7 +86,8 @@ class Display:
         self.texture = None
         self.pixel = 0
         self.event = (c.c_uint64 * 8)()
-        self.keyboard = bind(sdl, "SDL_GetKeyboardState", c.POINTER(c.c_uint8), VOID)(None)
+        self.controls = Controls(sdl, bind, self.window, controls_path or ROOT / "controls.json",
+                                 atomic_write, lambda title: self.title(self.window, title))
         self.closed = False
 
     def open_audio(self, rate):
@@ -115,12 +116,22 @@ class Display:
 
     def pump(self):
         while self.sdl.SDL_PollEvent(c.byref(self.event)):
-            if self.event[0] & 0xFFFFFFFF == 0x100:
+            kind = self.event[0] & 0xFFFFFFFF
+            if kind == 0x100:
                 self.closed = True
+            elif kind == 0x300:
+                # SDL_KeyboardEvent: repeat at byte 13, SDL_Keysym at byte 16.
+                event = bytes(self.event)
+                if not event[13]:
+                    self.controls.event(kind, struct.unpack_from("=i", event, 16)[0])
+            else:
+                self.controls.event(kind)
+        if not self.closed:
+            self.controls.snapshot()
         return not self.closed
 
     def key(self, port, device, index, button):
-        return self.keyboard[KEYS[button]] if port == 0 and button in KEYS else 0
+        return int(port == 0 and device == 1 and index == 0 and button in self.controls.buttons)
 
 
 class Game:
@@ -345,7 +356,7 @@ def main():
         demo = "PewterTest.sav"
     save_path = profile / (demo or "PokemonQuantum.sav")
     core_path = ROOT / ("mgba_libretro.dll" if sys.platform == "win32" else "mgba_libretro.so")
-    display = Display()
+    display = Display(profile / "controls.json")
     game = Game(core_path, rom_path, rom, manifest["mailbox"], display,
                 field_hint=manifest.get("field_hint"), brock_presence=manifest.get("brock_presence"),
                 trainer_presence=manifest.get("trainer_presence"), quest_view=manifest.get("quest_view"),
@@ -372,7 +383,7 @@ def main():
             guide_turn = None
             guide_work = None
             guide_result = None
-            title = b"Living Quantum World"
+            title = b"Living Quantum World - F1 Controls"
             next_prediction = 0.0
             previous_hint_frame = None
             prediction_error = None
@@ -450,13 +461,17 @@ def main():
 
             next_save = time.monotonic() + 2
             while display.pump():
+                if display.controls.draft is not None:
+                    title = None  # Restore the game title when keyboard capture ends.
+                    time.sleep(game.frame_period)
+                    continue
                 start = time.monotonic()
                 game.core.retro_run()
                 staged = None
                 scene = None
                 guide_result = None
                 trace = bridge.poll(propose)
-                next_title = b"Living Quantum World - NPC is thinking" if bridge.pending else b"Living Quantum World"
+                next_title = b"Living Quantum World - NPC is thinking" if bridge.pending else b"Living Quantum World - F1 Controls"
                 if next_title != title:
                     display.title(display.window, next_title)
                     title = next_title
@@ -662,6 +677,7 @@ def main():
             if memory is not None:
                 memory.close()
             game.close()
+            display.controls.close()
             display.sdl.SDL_Quit()
     return 0
 
