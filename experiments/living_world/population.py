@@ -6,6 +6,9 @@ import json
 DAY = 86400
 TRANSITIONS = 32
 GOAL_WINDOW = 10 * DAY
+OPEN_REQUESTS = 24
+DEPENDENCIES = {"researcher": "volunteer", "curator": "researcher", "trainer": "attendant",
+                "guide": "volunteer", "volunteer": "guide", "attendant": "trainer"}
 LOCATIONS = frozenset(("pewter", "museum", "route_2", "gym"))
 
 
@@ -69,6 +72,7 @@ class Population:
     def load(self):
         row = self.db.execute("SELECT state FROM regional_population WHERE save=?", (self.world.save,)).fetchone()
         self.state = json.loads(row[0]) if row else {"clock": -1, "actors": {}}
+        self.state.setdefault("requests", {})
         self.rebuild()
 
     def rebuild(self):
@@ -113,7 +117,7 @@ class Population:
         old = actor.get("goal")
         generation = old["generation"] + 1 if old else 1
         return {"id": f"{person.id}:{generation}", "generation": generation, "priority": person.patience + 1,
-                "progress": 0, "target": 3 + person.patience,
+                "progress": 0, "target": 3 + person.patience, "dependency": DEPENDENCIES[person.role],
                 "deadline": when + GOAL_WINDOW, "status": "active"}
 
     def step(self, person, actor, when):
@@ -137,8 +141,65 @@ class Population:
         actor.update(day=day, activity=person.role, due=when + 24)
         self.remember(actor, when, "shift", location=person.home)
 
-    def advance_goal(self, person, actor, when):
+    def supplement(self, person, actor, when):
+        """Ask a peer for a needed work unit, using only known relationships."""
         goal = actor["goal"]
+        previous = goal.get("request")
+        if previous and previous in self.state["requests"]:
+            return False
+        if goal.get("attempts", 0) >= 2:
+            self.remember(actor, when, "independent_followup", goal=goal["id"])
+            return True
+        if len(self.state["requests"]) >= OPEN_REQUESTS:
+            return False
+        busy = {request["recipient"] for request in self.state["requests"].values()}
+        peers = [peer.id for peer in self.people.values()
+                 if peer.role == goal.get("dependency", DEPENDENCIES[person.role]) and peer.id not in busy]
+        if not peers:
+            return False
+        preferred = max(peers, key=lambda peer: (actor["bonds"].get(peer, 0),
+                                                 peer != goal.get("last_peer"), peer))
+        goal["attempts"] = goal.get("attempts", 0) + 1
+        request = f"{goal['id']}:{goal['attempts']}"
+        goal.update(request=request, last_peer=preferred)
+        self.state["requests"][request] = {"owner": person.id, "recipient": preferred,
+                                           "goal": goal["id"], "created": when, "deadline": when + 2 * DAY}
+        self.remember(actor, when, "requested_help", peer=preferred, request=request)
+        return False
+
+    def respond(self, person, actor, when):
+        for id_, request in list(self.state["requests"].items()):
+            if request["recipient"] != person.id or when >= request["deadline"]:
+                continue
+            owner_id = request["owner"]
+            trust = actor["bonds"].get(owner_id, 0)
+            available = when % DAY < person.shift + (person.patience + 1) * 1800
+            willing = available or trust > 0
+            self.settle_request(id_, willing, when)
+            return
+
+    def settle_request(self, id_, willing, when):
+        request = self.state["requests"].pop(id_)
+        owner_id, peer_id = request["owner"], request["recipient"]
+        owner, peer = self.state["actors"][owner_id], self.state["actors"][peer_id]
+        goal = owner.get("goal")
+        honored = willing and goal and goal["status"] == "active" and goal["id"] == request["goal"]
+        if honored:
+            owner["facts"][self.people[peer_id].role] = {
+                "source": peer_id, "origin": peer_id, "kind": "reported", "received": when,
+            }
+            goal["verified"] = True
+            owner["bonds"][peer_id] = min(owner["bonds"].get(peer_id, 0) + 1, 20)
+            peer["bonds"][owner_id] = min(peer["bonds"].get(owner_id, 0) + 1, 20)
+        label = "helped" if honored else "declined"
+        self.remember(owner, when, label, peer=peer_id, request=id_)
+        self.remember(peer, when, label, peer=owner_id, request=id_)
+
+    def advance_goal(self, person, actor, when):
+        self.respond(person, actor, when)
+        goal = actor["goal"]
+        if goal["progress"] == 2 and not goal.get("verified") and not self.supplement(person, actor, when):
+            return
         goal["progress"] += 1
         if goal["progress"] >= goal["target"]:
             goal["status"] = "completed"
@@ -152,6 +213,11 @@ class Population:
             self.initialize(second)
         self.state["clock"] = second
         processed = 0
+        for id_, request in list(self.state["requests"].items()):
+            if second >= request["deadline"]:
+                self.remember(self.state["actors"][request["owner"]], second, "missed_commitment", request=id_)
+                del self.state["requests"][id_]
+                processed += 1
         while self.queue and self.queue[0][0] <= second and processed < TRANSITIONS:
             due, id_ = heapq.heappop(self.queue)
             actor = self.state["actors"][id_]

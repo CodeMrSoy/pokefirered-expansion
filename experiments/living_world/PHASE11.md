@@ -17,3 +17,12 @@ Goals survive daily shifts and battery branches. Profiles establish a work
 motive and priority. Work units advance an explicit target over multiple
 working days. Expired work ends against a game-clock deadline. Missed shifts
 cannot create retroactive work, and a later goal gets its own identity.
+
+## 11C
+
+Occupations supply different work dependencies. A resident can ask an
+eligible peer, prefer previous collaborators, and attempt independent work
+after two failed requests. The recipient answers from their shift capacity
+and existing relationship. A successful exchange records its actual
+source, updates both relationships, and unlocks dependent work. Pending
+requests expire and are capped at 24.
