@@ -1,5 +1,49 @@
 // Shared field overlay: the launcher and NPC offers use the same window owner.
-static EWRAM_DATA u8 sQuestIds[QUEST_DEFINITION_COUNT];
+#define QUEST_UI_LOCATE_BROCK 254
+static EWRAM_DATA u8 sQuestIds[QUEST_DEFINITION_COUNT + 1];
+static EWRAM_DATA u8 sLivingQuestView;
+static const u8 *const sLocateBrockMuseum[] = {
+    COMPOUND_STRING("The attendant says Brock intended to visit the Museum forecourt. Find Brock or check back at the Gym."),
+};
+static const u8 *const sLocateBrockGym[] = {
+    COMPOUND_STRING("Ask Brock at Pewter Gym. His return was part of his commitment."),
+};
+static const u8 *const sLocateBrockDone[] = {
+    COMPOUND_STRING("You spoke to Brock. Any Gym challenge still takes place at Pewter Gym."),
+};
+static const u8 *const sLocateBrockEnded[] = {
+    COMPOUND_STRING("The outing ended. Speak to the Gym attendant for current information."),
+};
+#define LIVING_BOOK_ROW(text, place) { \
+    COMPOUND_STRING("Locate Brock"), \
+    COMPOUND_STRING("An optional objective from the Pewter Gym attendant. The Boulder Badge still requires the Gym battle."), \
+    COMPOUND_STRING(place), text, 0, 0, 1, TRUE, FALSE \
+}
+static const struct QuantumQuestDefinition sLocateBrock[] = {
+    LIVING_BOOK_ROW(sLocateBrockMuseum, "Pewter Museum forecourt"),
+    LIVING_BOOK_ROW(sLocateBrockGym, "Pewter Gym"),
+    LIVING_BOOK_ROW(sLocateBrockDone, "Pewter Gym"),
+    LIVING_BOOK_ROW(sLocateBrockEnded, "Pewter Gym"),
+};
+#undef LIVING_BOOK_ROW
+
+static const struct QuantumQuestDefinition *QuestUiDefinition(u16 id)
+{
+    if (id == QUEST_UI_LOCATE_BROCK && sLivingQuestView)
+        return &sLocateBrock[sLivingQuestView - 1];
+    return QuestBook_GetDefinition(id);
+}
+
+static u8 QuestUiState(u16 id)
+{
+    if (id != QUEST_UI_LOCATE_BROCK)
+        return QuestBook_GetState(id);
+    if (sLivingQuestView == 3)
+        return QUEST_COMPLETED;
+    return sLivingQuestView == 4 ? QUEST_FAILED : QUEST_ACTIVE;
+}
+
+
 static EWRAM_DATA u8 sQuestCount, sQuestCursor, sQuestFilter, sQuestDetail, sQuestTextPage, sQuestTextPages;
 static EWRAM_DATA bool8 sQuestOfferNpc, sQuestOfferNo;
 static EWRAM_DATA u8 sQuestOfferId;
@@ -27,6 +71,7 @@ static void QuestUiList(void)
 {
     u8 id;
     sQuestCount = 0;
+    sLivingQuestView = LivingWorld_BrockQuestView();
     for (id = 0; id < QUEST_DEFINITION_COUNT; id++)
     {
         const struct QuantumQuestDefinition *q = QuestBook_GetDefinition(id);
@@ -37,6 +82,9 @@ static void QuestUiList(void)
         if (sQuestFilter == 3 && state != QUEST_COMPLETED && state != QUEST_CLAIMED) continue;
         sQuestIds[sQuestCount++] = id;
     }
+    if (sLivingQuestView && sQuestFilter != 1
+     && (sQuestFilter != 3 || sLivingQuestView == 3))
+        sQuestIds[sQuestCount++] = QUEST_UI_LOCATE_BROCK;
     if (sQuestCursor >= sQuestCount) sQuestCursor = 0;
 }
 static const u8 *QuestStatus(u8 state)
@@ -46,13 +94,18 @@ static const u8 *QuestStatus(u8 state)
 }
 static void QuestRewardText(u16 id, u8 *text)
 {
-    const struct QuantumQuestDefinition *q = QuestBook_GetDefinition(id);
+    const struct QuantumQuestDefinition *q = QuestUiDefinition(id);
     u8 *end;
+    if (id == QUEST_UI_LOCATE_BROCK)
+    {
+        StringCopy(text, COMPOUND_STRING("No extra reward. Challenge Brock normally at the Gym."));
+        return;
+    }
     if (!q->rewardQuantity) { StringCopy(text, COMPOUND_STRING("No extra reward. Story rewards are given by their original NPCs.")); return; }
     end = StringCopy(text, GetItemName(q->rewardItem));
     end = StringAppend(end, COMPOUND_STRING(" x"));
     ConvertIntToDecimalStringN(end, q->rewardQuantity, STR_CONV_MODE_LEFT_ALIGN, 2);
-    if (QuestBook_GetState(id) == QUEST_CLAIMED) StringAppend(text, COMPOUND_STRING("\nAlready claimed."));
+    if (QuestUiState(id) == QUEST_CLAIMED) StringAppend(text, COMPOUND_STRING("\nAlready claimed."));
 }
 static void DrawGlassQuestBook(void)
 {
@@ -76,8 +129,8 @@ static void DrawGlassQuestBook(void)
     }
     for (row = first; row < sQuestCount && row < first + 5; row++)
     {
-        u8 id = sQuestIds[row], y = 59 + (row - first) * 14, state = QuestBook_GetState(id);
-        const struct QuantumQuestDefinition *q = QuestBook_GetDefinition(id);
+        u8 id = sQuestIds[row], y = 59 + (row - first) * 14, state = QuestUiState(id);
+        const struct QuantumQuestDefinition *q = QuestUiDefinition(id);
         if (row == sQuestCursor) HubRect(5, 14, y, 92, 13);
         HubRect(state == QUEST_COMPLETED || state == QUEST_CLAIMED ? 8 : 6, 16, y + 4, 3, 5);
         if (QuestBook_GetTracked() == id) HubRect(10, 16, y + 4, 3, 5);
@@ -87,8 +140,8 @@ static void DrawGlassQuestBook(void)
     sQuestTextPages = 1;
     if (sQuestCount)
     {
-        u8 id = sQuestIds[sQuestCursor], state = QuestBook_GetState(id);
-        const struct QuantumQuestDefinition *q = QuestBook_GetDefinition(id);
+        u8 id = sQuestIds[sQuestCursor], state = QuestUiState(id);
+        const struct QuantumQuestDefinition *q = QuestUiDefinition(id);
         const u8 *body;
         u8 reward[160], heading[32];
         StatsTextFit(16, 28, 208, q->title);
@@ -99,7 +152,8 @@ static void DrawGlassQuestBook(void)
             end = ConvertIntToDecimalStringN(end, sQuestDetail + 1, STR_CONV_MODE_LEFT_ALIGN, 1);
             *end++ = CHAR_SLASH; ConvertIntToDecimalStringN(end, q->objectiveCount, STR_CONV_MODE_LEFT_ALIGN, 1);
             body = q->objectives[sQuestDetail];
-            if (QuestBook_GetCompletedObjectives(id) & (1 << sQuestDetail)) HubRect(8, 217, 46, 5, 5);
+            if ((id == QUEST_UI_LOCATE_BROCK && state == QUEST_COMPLETED)
+             || (QuestBook_GetCompletedObjectives(id) & (1 << sQuestDetail))) HubRect(8, 217, 46, 5, 5);
         }
         else if (sQuestDetail == q->objectiveCount) { StringCopy(heading, COMPOUND_STRING("STORY")); body = q->description; }
         else if (sQuestDetail == q->objectiveCount + 1) { StringCopy(heading, COMPOUND_STRING("LOCATION")); body = q->location; }
@@ -109,6 +163,7 @@ static void DrawGlassQuestBook(void)
         StatsText(116, 119, COMPOUND_STRING("<>: Info"));
         if (sQuestTextPages > 1) HubRect(8, 220, 128, 4, 2);
         if (sQuestRewardBlocked) StatsText(16, 136, COMPOUND_STRING("Bag full. Collect your reward later."));
+        else if (id == QUEST_UI_LOCATE_BROCK) StatsText(16, 136, COMPOUND_STRING("SELECT: Filter   B: Back"));
         else if (state == QUEST_ACTIVE) StatsText(16, 136, COMPOUND_STRING("A: Track  SELECT: Filter  B: Back"));
         else if (state == QUEST_COMPLETED) StatsText(16, 136, q->optional ? COMPOUND_STRING("A: Claim  SELECT: Filter  B: Back") : COMPOUND_STRING("A: Archive  SELECT: Filter  B: Back"));
         else if (state == QUEST_AVAILABLE || state == QUEST_DECLINED) StatsText(16, 136, COMPOUND_STRING("A: Offer  SELECT: Filter  B: Back"));
@@ -181,6 +236,12 @@ static void Task_GlassQuestBook(u8 taskId)
     u8 old = sQuestCursor;
     if (gPaletteFade.active) return;
     if (JOY_NEW(B_BUTTON)) { QuestUiClose(taskId); return; }
+    if (LivingWorld_BrockQuestView() != sLivingQuestView)
+    {
+        QuestUiList();
+        sQuestDetail = sQuestTextPage = 0;
+        DrawGlassQuestBook();
+    }
     if (JOY_NEW(SELECT_BUTTON))
     {
         sQuestRewardBlocked = FALSE;
@@ -195,11 +256,12 @@ static void Task_GlassQuestBook(u8 taskId)
     else if (sQuestCount && JOY_NEW(DPAD_LEFT))
     {
         if (sQuestTextPage) sQuestTextPage--;
-        else { const struct QuantumQuestDefinition *q = QuestBook_GetDefinition(sQuestIds[sQuestCursor]); sQuestDetail = sQuestDetail ? sQuestDetail - 1 : q->objectiveCount + 2; }
+        else { const struct QuantumQuestDefinition *q = QuestUiDefinition(sQuestIds[sQuestCursor]); sQuestDetail = sQuestDetail ? sQuestDetail - 1 : q->objectiveCount + 2; }
     }
     else if (sQuestCount && JOY_NEW(A_BUTTON))
     {
-        u8 id = sQuestIds[sQuestCursor], state = QuestBook_GetState(id);
+        u8 id = sQuestIds[sQuestCursor], state = QuestUiState(id);
+        if (id == QUEST_UI_LOCATE_BROCK) return;
         if (state == QUEST_AVAILABLE || state == QUEST_DECLINED)
         {
             sQuestOfferId = id; sQuestOfferNpc = sQuestOfferNo = FALSE;
@@ -215,7 +277,7 @@ static void Task_GlassQuestBook(u8 taskId)
     {
         sQuestRewardBlocked = FALSE;
         u8 id = sQuestIds[sQuestCursor], objective = QuestBook_GetObjective(id);
-        const struct QuantumQuestDefinition *q = QuestBook_GetDefinition(id);
+        const struct QuantumQuestDefinition *q = QuestUiDefinition(id);
         sQuestDetail = objective < q->objectiveCount ? objective : 0; sQuestTextPage = 0;
     }
     DrawGlassQuestBook();

@@ -17,6 +17,7 @@ from bridge import (
     Conversation, DialogueBridge, MAILBOX_SIZE, REPLY_OFFSET, SKIP, TEXT_CAPACITY, WAIT, validate,
 )
 from director import DUTY, PRESENCE, TRIP, choose_brock
+from dynamic_quests import QUEST_VIEW, project_brock
 from inference import LocalModel, windows_launcher_environment
 from hybrid import FIELD_SIZE, FieldHint, HybridDialogue, prepare
 from reasoning import BALANCED_SHA256, LIGHTWEIGHT_SHA256, GuideTurn, guide_reply, reported_fact
@@ -121,7 +122,7 @@ class Display:
 
 
 class Game:
-    def __init__(self, core_path, rom_path, rom, mailbox, display, *, field_hint=None, brock_presence=None, trainer_presence=None):
+    def __init__(self, core_path, rom_path, rom, mailbox, display, *, field_hint=None, brock_presence=None, trainer_presence=None, quest_view=None):
         self.display = display
         self.mailbox = mailbox
         self.core = core = c.CDLL(str(core_path))
@@ -153,8 +154,9 @@ class Game:
             raise RuntimeError("Invalid field hint location")
         self.hint_ptr = None if field_hint is None else ram + field_hint - 0x02000000
         ranges = [(mailbox, MAILBOX_SIZE), (field_hint, FIELD_SIZE)]
-        for name, address in (("brock_ptr", brock_presence), ("trainer_ptr", trainer_presence)):
-            size = BROCK_PRESENCE.size
+        for name, address, size in (("brock_ptr", brock_presence, BROCK_PRESENCE.size),
+                                    ("trainer_ptr", trainer_presence, BROCK_PRESENCE.size),
+                                    ("quest_ptr", quest_view, QUEST_VIEW.size)):
             if address is not None and (
                     address % 4 or not 0x02000000 <= address <= 0x02040000 - size
                     or any(start is not None and address < start + length and start < address + size
@@ -201,6 +203,10 @@ class Game:
             code = TRAINER_PRESENCE[location]
             data = BROCK_PRESENCE.pack(b"LWS1", frame, code, code ^ 255)
             c.memmove(self.trainer_ptr, data, BROCK_PRESENCE.size)
+
+    def publish_quest(self, director):
+        if self.quest_ptr is not None:
+            c.memmove(self.quest_ptr, project_brock(director), QUEST_VIEW.size)
 
     def write_reply(self, address, data):
         offset = address - self.mailbox
@@ -316,7 +322,7 @@ def main():
     display = Display()
     game = Game(core_path, rom_path, rom, manifest["mailbox"], display,
                 field_hint=manifest.get("field_hint"), brock_presence=manifest.get("brock_presence"),
-                trainer_presence=manifest.get("trainer_presence"))
+                trainer_presence=manifest.get("trainer_presence"), quest_view=manifest.get("quest_view"))
     memory = None
     previous = None
     try:
@@ -542,6 +548,7 @@ def main():
                                         authority.submit(request, fallback_plan, fallback="decision retry limit")
                                         log.write(json.dumps({"directive": "routine",
                                                               "fallback": "decision retry limit"}) + "\n")
+                            game.publish_quest(director)
                             game.publish_brock(fresh.frame, director.location)
                             game.publish_trainer(fresh.frame, society.state["agents"]["trainer"]["location"])
                         predicted = None if args.no_predict or planning else replies.predict(fresh, start)
@@ -562,6 +569,7 @@ def main():
                         if save_path.exists():
                             atomic_write(save_path.with_suffix(".bak"), previous)
                         memory.checkpoint(current)
+                        game.publish_quest(director)
                         atomic_write(save_path, current)
                         previous = current
                     next_save = start + 2

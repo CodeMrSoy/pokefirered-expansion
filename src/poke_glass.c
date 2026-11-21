@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include "global.h"
 #include "quest_book.h"
+#include "living_world_bridge.h"
 #include "quantum_cleanup.h"
 #include "field_tools.h"
 #include "field_message_box.h"

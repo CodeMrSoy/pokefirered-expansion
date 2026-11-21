@@ -290,7 +290,8 @@ class WorldDirector:
         if self.state["appointment"] and self.state["appointment"]["status"] == "scheduled":
             self.state["appointment"]["status"] = "ready_at_gym"
         if quest and quest["status"] == "seeking":
-            quest.update(status="returned", clue=GYM, source="gym_attendant_return_commitment")
+            status = "cancelled" if reason in ("clock_unavailable", "clock_reversed") else "returned"
+            quest.update(status=status, clue=GYM, source="gym_attendant_return_commitment")
         self.persist()
 
     def challenger(self):

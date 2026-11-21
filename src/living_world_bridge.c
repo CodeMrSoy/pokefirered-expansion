@@ -77,6 +77,30 @@ STATIC_ASSERT(sizeof(struct LivingWorldBrockPresence) == 8, LivingWorldBrockPres
 EWRAM_DATA volatile struct LivingWorldBrockPresence gLivingWorldBrockPresence = {0};
 EWRAM_DATA volatile struct LivingWorldBrockPresence gLivingWorldTrainerPresence = {0};
 
+struct LivingWorldQuestView
+{
+    u32 magic;
+    u32 plan;
+    u8 state;
+    u8 source;
+    u16 reserved;
+};
+
+STATIC_ASSERT(sizeof(struct LivingWorldQuestView) == 12, LivingWorldQuestViewSize);
+EWRAM_DATA volatile struct LivingWorldQuestView gLivingWorldQuestView = {0};
+
+u8 LivingWorld_BrockQuestView(void)
+{
+    struct LivingWorldQuestView view = gLivingWorldQuestView;
+    if (view.magic != 0x3951574C || !view.plan || !view.state || view.state > 4
+     || !view.source || view.source > 3 || view.reserved
+     || !FlagGet(FLAG_SYS_POKEDEX_GET) || gQuestLogState == QL_STATE_PLAYBACK)
+        return 0;
+    if ((view.state == 1 && view.source != 1) || (view.state == 3 && view.source != 3))
+        return 0;
+    return view.state;
+}
+
 static bool8 BrockProtected(void)
 {
     return !FlagGet(FLAG_SYS_POKEDEX_GET) || FlagGet(FLAG_BADGE01_GET)
