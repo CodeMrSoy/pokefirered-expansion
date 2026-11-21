@@ -102,6 +102,19 @@ u8 LivingWorld_BrockQuestView(void)
     return view.state;
 }
 
+EWRAM_DATA volatile struct LivingWorldQuestView gLivingWorldMuseumQuestView = {0};
+
+u8 LivingWorld_MuseumQuestView(void)
+{
+    struct LivingWorldQuestView view = gLivingWorldMuseumQuestView;
+    if (view.magic != 0x314D514C || !view.plan || view.reserved
+     || !FlagGet(FLAG_SYS_POKEDEX_GET) || gQuestLogState == QL_STATE_PLAYBACK)
+        return 0;
+    if ((view.state == 1 || view.state == 4) && view.source == 1)
+        return view.state;
+    return view.state == 3 && view.source == 3 ? 3 : 0;
+}
+
 static bool8 BrockProtected(void)
 {
     return !FlagGet(FLAG_SYS_POKEDEX_GET) || FlagGet(FLAG_BADGE01_GET)
@@ -413,7 +426,7 @@ static void BeginConversation(u8 npc)
     gLivingWorldMailbox.request = 0;
     sFramesRemaining = 0;
     sDeferred = FALSE;
-    if (npc < LIVING_WORLD_PC_RESIDENT || npc > LIVING_WORLD_SOCIETY_TRAINER
+    if (npc < LIVING_WORLD_PC_RESIDENT || npc > LIVING_WORLD_SOCIETY_RESEARCHER
      || !FlagGet(FLAG_SYS_POKEDEX_GET) || gQuestLogState == QL_STATE_PLAYBACK)
         return;
 

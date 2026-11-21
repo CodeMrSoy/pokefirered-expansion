@@ -4,6 +4,7 @@ from dataclasses import dataclass
 import json
 from time import perf_counter
 
+from dynamic_quests import settle_museum
 from planning import GOALS, Proposal
 from region import TRAINER_PRESENCE, TRAVEL_PERMISSIONS, route
 
@@ -161,7 +162,7 @@ class Society:
                     self.abort(actor, "expired commitment")
                 else:
                     self.advance(actor)
-        if dirty:
+        if settle_museum(self) or dirty:
             self.persist()
 
     def message(self, actor):
@@ -550,4 +551,5 @@ class Society:
             agent["activity"] = "WORK"
         elif start_next:
             self.start(actor)
+        settle_museum(self)
         self.persist()

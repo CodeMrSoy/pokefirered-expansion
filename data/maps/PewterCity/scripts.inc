@@ -670,7 +670,11 @@ PewterCity_Text_BrockForecourt::
 	.string "I'll meet you at the Gym.$"
 
 PewterCity_EventScript_Volunteer::
-	msgbox PewterCity_Text_Volunteer, MSGBOX_NPC
+	lock
+	faceplayer
+	msgbox PewterCity_Text_Volunteer
+	living_world_aside LIVING_WORLD_SOCIETY_RESEARCHER
+	release
 	end
 
 PewterCity_Text_Volunteer::

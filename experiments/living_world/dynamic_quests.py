@@ -1,5 +1,6 @@
 """Project player-discovered Living World objectives into a read-only Book row."""
 import struct
+from zlib import crc32
 
 QUEST_VIEW = struct.Struct("<4sIBBH")
 BROCK_STATES = {"seeking": 1, "returned": 2, "contacted": 3, "completed_at_gym": 3,
@@ -20,3 +21,56 @@ def project_brock(director):
     if not source:
         return bytes(QUEST_VIEW.size)
     return QUEST_VIEW.pack(b"LWQ9", quest["plan"], state, source, 0)
+
+
+def museum_exchange(society, actor, *, accepted=False):
+    """Discover an actual staff request, or deliver its status to the issuer."""
+    state = society.state
+    objective = state.get("museum_objective")
+    if actor == "assistant":
+        event, request = next(((event, request) for event, request in state["requests"].items()
+                               if request["sender"] == "researcher" and request["recipient"] == actor
+                               and request["status"] in ("pending", "accepted")
+                               and request["expires"] > society.now), (None, None))
+        if request and (not objective or objective["event"] != event):
+            if accepted:
+                state["museum_objective"] = dict(event=event, source=actor, delivered=False)
+                society.persist()
+            return "The volunteer asked me\nfor a second look.\fMuseum Follow-up\nCheck in with the volunteer."
+    if actor == "researcher" and objective and project_museum(society)[8] == 1:
+        if accepted:
+            objective["delivered"] = True
+            society.record(actor, "player_delivered_report", event=objective["event"], source="assistant")
+            society.persist()
+        return "Thanks for the update.\nI'll check in with my peer."
+    return None
+
+
+def settle_museum(society):
+    objective = society.state.get("museum_objective")
+    if not objective or objective.get("final"):
+        return False
+    view = project_museum(society)[8]
+    if view in (3, 4):
+        objective["final"] = view
+        return True
+    return False
+
+
+def project_museum(society):
+    objective = society.state.get("museum_objective")
+    if not objective or objective["source"] != "assistant":
+        return bytes(QUEST_VIEW.size)
+    request = society.state["requests"].get(objective["event"])
+    if objective.get("final"):
+        status = objective["final"]
+        source = 3 if status == 3 else 1
+    elif objective["delivered"] or (request and request["status"] == "resolved"):
+        status, source = 3, 3
+    elif not request or request["status"] in ("expired", "declined", "interrupted"):
+        status, source = 4, 1
+    elif society.now >= request["expires"]:
+        status, source = 4, 1
+    else:
+        status, source = 1, 1
+    return QUEST_VIEW.pack(b"LQM1", crc32(objective["event"].encode()) or 1, status, source, 0)

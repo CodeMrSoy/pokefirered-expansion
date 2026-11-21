@@ -24,7 +24,11 @@ Route2_Text_PewterTrainerPractice::
 	.string "I'll head back to Pewter soon.$"
 
 Route2_EventScript_Volunteer::
-	msgbox Route2_Text_Volunteer, MSGBOX_NPC
+	lock
+	faceplayer
+	msgbox Route2_Text_Volunteer
+	living_world_aside LIVING_WORLD_SOCIETY_RESEARCHER
+	release
 	end
 
 Route2_Text_Volunteer::

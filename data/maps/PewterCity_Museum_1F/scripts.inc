@@ -132,6 +132,10 @@ PewterCity_Museum_1F_Movement_ApproachCounterRight::
 	step_end
 
 PewterCity_Museum_1F_EventScript_Scientist2::
+	msgbox PewterCity_Museum_1F_Text_WeHaveTwoFossilsOnExhibit, MSGBOX_NPC
+	end
+
+PewterCity_Museum_1F_EventScript_LivingAssistant::
 	lock
 	faceplayer
 	msgbox PewterCity_Museum_1F_Text_WeHaveTwoFossilsOnExhibit
@@ -140,7 +144,11 @@ PewterCity_Museum_1F_EventScript_Scientist2::
 	end
 
 PewterCity_Museum_1F_EventScript_OldMan::
-	msgbox PewterCity_Museum_1F_Text_ShouldBeGratefulForLongLife, MSGBOX_NPC
+	lock
+	faceplayer
+	msgbox PewterCity_Museum_1F_Text_ShouldBeGratefulForLongLife
+	living_world_aside LIVING_WORLD_SOCIETY_RESEARCHER
+	release
 	end
 
 PewterCity_Museum_1F_EventScript_OldAmberScientist::

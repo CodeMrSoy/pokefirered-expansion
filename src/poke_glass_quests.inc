@@ -1,7 +1,8 @@
 // Shared field overlay: the launcher and NPC offers use the same window owner.
 #define QUEST_UI_LOCATE_BROCK 254
-static EWRAM_DATA u8 sQuestIds[QUEST_DEFINITION_COUNT + 1];
-static EWRAM_DATA u8 sLivingQuestView;
+#define QUEST_UI_MUSEUM_FOLLOWUP 253
+static EWRAM_DATA u8 sQuestIds[QUEST_DEFINITION_COUNT + 2];
+static EWRAM_DATA u8 sLivingQuestView, sMuseumQuestView;
 static const u8 *const sLocateBrockMuseum[] = {
     COMPOUND_STRING("The attendant says Brock intended to visit the Museum forecourt. Find Brock or check back at the Gym."),
 };
@@ -27,20 +28,47 @@ static const struct QuantumQuestDefinition sLocateBrock[] = {
 };
 #undef LIVING_BOOK_ROW
 
+static const u8 *const sMuseumActive[] = {
+    COMPOUND_STRING("The assistant asked you to check in with the Museum volunteer about a second look at a cast."),
+};
+static const u8 *const sMuseumComplete[] = {
+    COMPOUND_STRING("The Museum follow-up has reached the volunteer. The staff can compare their notes."),
+};
+static const u8 *const sMuseumEnded[] = {
+    COMPOUND_STRING("The original request is no longer open. Ask the Museum staff for current work."),
+};
+#define MUSEUM_ROW(text) {COMPOUND_STRING("Museum Follow-up"), \
+    COMPOUND_STRING("A sourced request between Pewter Museum colleagues."), \
+    COMPOUND_STRING("Pewter Museum"), text, 0, 0, 1, TRUE, FALSE}
+static const struct QuantumQuestDefinition sMuseumFollowUp[] = {
+    [0] = MUSEUM_ROW(sMuseumActive),
+    [2] = MUSEUM_ROW(sMuseumComplete),
+    [3] = MUSEUM_ROW(sMuseumEnded),
+};
+#undef MUSEUM_ROW
+
+static bool8 QuestUiIsDynamic(u16 id)
+{
+    return id == QUEST_UI_LOCATE_BROCK || id == QUEST_UI_MUSEUM_FOLLOWUP;
+}
+
 static const struct QuantumQuestDefinition *QuestUiDefinition(u16 id)
 {
     if (id == QUEST_UI_LOCATE_BROCK && sLivingQuestView)
         return &sLocateBrock[sLivingQuestView - 1];
+    if (id == QUEST_UI_MUSEUM_FOLLOWUP && sMuseumQuestView)
+        return &sMuseumFollowUp[sMuseumQuestView - 1];
     return QuestBook_GetDefinition(id);
 }
 
 static u8 QuestUiState(u16 id)
 {
-    if (id != QUEST_UI_LOCATE_BROCK)
+    if (!QuestUiIsDynamic(id))
         return QuestBook_GetState(id);
-    if (sLivingQuestView == 3)
+    u8 view = id == QUEST_UI_LOCATE_BROCK ? sLivingQuestView : sMuseumQuestView;
+    if (view == 3)
         return QUEST_COMPLETED;
-    return sLivingQuestView == 4 ? QUEST_FAILED : QUEST_ACTIVE;
+    return view == 4 ? QUEST_FAILED : QUEST_ACTIVE;
 }
 
 
@@ -72,6 +100,7 @@ static void QuestUiList(void)
     u8 id;
     sQuestCount = 0;
     sLivingQuestView = LivingWorld_BrockQuestView();
+    sMuseumQuestView = LivingWorld_MuseumQuestView();
     for (id = 0; id < QUEST_DEFINITION_COUNT; id++)
     {
         const struct QuantumQuestDefinition *q = QuestBook_GetDefinition(id);
@@ -85,6 +114,8 @@ static void QuestUiList(void)
     if (sLivingQuestView && sQuestFilter != 1
      && (sQuestFilter != 3 || sLivingQuestView == 3))
         sQuestIds[sQuestCount++] = QUEST_UI_LOCATE_BROCK;
+    if (sMuseumQuestView && sQuestFilter != 1 && (sQuestFilter != 3 || sMuseumQuestView == 3))
+        sQuestIds[sQuestCount++] = QUEST_UI_MUSEUM_FOLLOWUP;
     if (sQuestCursor >= sQuestCount) sQuestCursor = 0;
 }
 static const u8 *QuestStatus(u8 state)
@@ -99,6 +130,11 @@ static void QuestRewardText(u16 id, u8 *text)
     if (id == QUEST_UI_LOCATE_BROCK)
     {
         StringCopy(text, COMPOUND_STRING("No extra reward. Challenge Brock normally at the Gym."));
+        return;
+    }
+    if (id == QUEST_UI_MUSEUM_FOLLOWUP)
+    {
+        StringCopy(text, COMPOUND_STRING("No item reward."));
         return;
     }
     if (!q->rewardQuantity) { StringCopy(text, COMPOUND_STRING("No extra reward. Story rewards are given by their original NPCs.")); return; }
@@ -152,7 +188,7 @@ static void DrawGlassQuestBook(void)
             end = ConvertIntToDecimalStringN(end, sQuestDetail + 1, STR_CONV_MODE_LEFT_ALIGN, 1);
             *end++ = CHAR_SLASH; ConvertIntToDecimalStringN(end, q->objectiveCount, STR_CONV_MODE_LEFT_ALIGN, 1);
             body = q->objectives[sQuestDetail];
-            if ((id == QUEST_UI_LOCATE_BROCK && state == QUEST_COMPLETED)
+            if ((QuestUiIsDynamic(id) && state == QUEST_COMPLETED)
              || (QuestBook_GetCompletedObjectives(id) & (1 << sQuestDetail))) HubRect(8, 217, 46, 5, 5);
         }
         else if (sQuestDetail == q->objectiveCount) { StringCopy(heading, COMPOUND_STRING("STORY")); body = q->description; }
@@ -163,7 +199,7 @@ static void DrawGlassQuestBook(void)
         StatsText(116, 119, COMPOUND_STRING("<>: Info"));
         if (sQuestTextPages > 1) HubRect(8, 220, 128, 4, 2);
         if (sQuestRewardBlocked) StatsText(16, 136, COMPOUND_STRING("Bag full. Collect your reward later."));
-        else if (id == QUEST_UI_LOCATE_BROCK) StatsText(16, 136, COMPOUND_STRING("SELECT: Filter   B: Back"));
+        else if (QuestUiIsDynamic(id)) StatsText(16, 136, COMPOUND_STRING("SELECT: Filter   B: Back"));
         else if (state == QUEST_ACTIVE) StatsText(16, 136, COMPOUND_STRING("A: Track  SELECT: Filter  B: Back"));
         else if (state == QUEST_COMPLETED) StatsText(16, 136, q->optional ? COMPOUND_STRING("A: Claim  SELECT: Filter  B: Back") : COMPOUND_STRING("A: Archive  SELECT: Filter  B: Back"));
         else if (state == QUEST_AVAILABLE || state == QUEST_DECLINED) StatsText(16, 136, COMPOUND_STRING("A: Offer  SELECT: Filter  B: Back"));
@@ -236,7 +272,7 @@ static void Task_GlassQuestBook(u8 taskId)
     u8 old = sQuestCursor;
     if (gPaletteFade.active) return;
     if (JOY_NEW(B_BUTTON)) { QuestUiClose(taskId); return; }
-    if (LivingWorld_BrockQuestView() != sLivingQuestView)
+    if (LivingWorld_BrockQuestView() != sLivingQuestView || LivingWorld_MuseumQuestView() != sMuseumQuestView)
     {
         QuestUiList();
         sQuestDetail = sQuestTextPage = 0;
@@ -261,7 +297,7 @@ static void Task_GlassQuestBook(u8 taskId)
     else if (sQuestCount && JOY_NEW(A_BUTTON))
     {
         u8 id = sQuestIds[sQuestCursor], state = QuestUiState(id);
-        if (id == QUEST_UI_LOCATE_BROCK) return;
+        if (QuestUiIsDynamic(id)) return;
         if (state == QUEST_AVAILABLE || state == QUEST_DECLINED)
         {
             sQuestOfferId = id; sQuestOfferNpc = sQuestOfferNo = FALSE;

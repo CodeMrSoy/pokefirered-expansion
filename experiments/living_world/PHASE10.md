@@ -52,3 +52,18 @@ observer and observation time. Contact rules prevent repeats, echo back
 to the original observer and broadcasting to strangers. Accepted, declined
 and completed requests become bounded memories. Report records never turn
 into firsthand facts merely because they crossed another contact.
+
+## 10D · Quest discovery and resolution
+
+Museum Follow-up is derived from a current request that the volunteer
+actually sent to the assistant. The public-wing assistant can disclose
+that request. Talking to the volunteer can deliver an update, or the
+assistant can resolve the request independently. An expired or withdrawn
+request ends the objective. A checkpoint preserves its event ID, source
+and terminal outcome, even when the bounded request history later rotates.
+
+The Museum projection has a separate, fixed-size, validated slot. Both
+dynamic entries coexist with the original seven native definitions and
+cannot invoke tracking, reward or offer mutations. Classic and Quantum
+mGBA tested both rows, dialogue-derived discovery, active and completed
+presentation, independent resolution, expiry and checkpoint rollback.

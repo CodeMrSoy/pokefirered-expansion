@@ -61,6 +61,8 @@ def main():
                       if line.endswith(" gLivingWorldQuestView"))
     researcher_presence = next(int(line.split()[0], 16) for line in symbols.splitlines()
                                if line.endswith(" gLivingWorldResearcherPresence"))
+    museum_view = next(int(line.split()[0], 16) for line in symbols.splitlines()
+                       if line.endswith(" gLivingWorldMuseumQuestView"))
     names = {}
     header = (ROOT / "include/constants/species.h").read_text()
     for key, id_ in re.findall(r"^#define SPECIES_([A-Z0-9_]+)\s+(\d+)\b", header, re.MULTILINE):
@@ -115,6 +117,7 @@ def main():
             "trainer_presence": trainer_presence,
             "researcher_presence": researcher_presence,
             "quest_view": quest_view,
+            "museum_view": museum_view,
             "sha256": sha256(stage / "PokemonQuantum.gba"),
             "model_sha256": model_sha,
             "species": names,
