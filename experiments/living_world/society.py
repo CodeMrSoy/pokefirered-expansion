@@ -51,7 +51,7 @@ class Ticket:
 DURATIONS = {"WORK": 24, "REST": 16, "INVESTIGATE": 32, "TRAIN_POKEMON": 28,
              "REQUEST_ASSISTANCE": 4, "ACCEPT_REQUEST": 4, "DECLINE_REQUEST": 4,
              "ARRANGE_MEETING": 6, "VISIT_NPC": 6, "SHARE_INFORMATION": 4,
-             "TRAVEL_TO": 16, "RETURN_TO_DUTY": 16}
+             "TRAVEL_TO": 16, "RETURN_TO_DUTY": 16, "EXCHANGE_INFORMATION": 4, "OFFER_ASSISTANCE": 4}
 TRAVEL_STEPS = ("TRAVEL_TO", "RETURN_TO_DUTY")
 LINKS = {
     "researcher": {"assistant", "brock"},
@@ -59,6 +59,7 @@ LINKS = {
     "trainer": {"assistant", "attendant"},
     "attendant": {"trainer"},
 }
+REPORT_SECONDS = 240
 REQUEST_SECONDS = 150
 MAX_PLAN_SECONDS = 110
 
@@ -220,6 +221,28 @@ class Society:
     def can_request(self, actor, recipient):
         return self.can_send(actor, recipient) and self.state["agents"][actor]["facts"].get("cast")
 
+    def facts_to_share(self, actor, peer):
+        if peer not in LINKS[actor] or peer not in self.state["agents"]:
+            return ()
+        own = self.state["agents"][actor]["facts"]
+        their = self.state["agents"][peer]["facts"]
+        records = []
+        for key, fact in own.items():
+            if key != "tracks" and not key.startswith("report:tracks:"):
+                continue
+            origin = fact["origin"]
+            code = f"report:tracks:{origin}"
+            observed = fact.get("observed", fact["second"])
+            if (origin != peer and self.now - observed < REPORT_SECONDS and
+                    their.get(code, {}).get("observed", -1) < observed):
+                records.append((code, origin, observed))
+        return tuple(records)
+
+    def can_offer(self, actor, peer):
+        agent = self.state["agents"][actor]
+        return (self.can_request(actor, peer) and peer != "brock"
+                and agent["bonds"].get(peer, 0) >= 1)
+
     def options(self, actor, incoming=None):
         persona = PERSONAS[actor]
         routine = (Step("WORK", persona.duty),)
@@ -269,7 +292,7 @@ class Society:
                 trust = agent["bonds"].get(notice["sender"], 0)
                 workload = hour >= persona.hours[1] - 1
                 closing = workload and trust < 2
-                context = (f"{notice['sender']} asks you to compare a fossil cast. "
+                context = (f"{notice['sender']} sent you a fossil cast {notice.get('kind', 'request')}. "
                            f"The notice names {notice['origin']} as the source. "
                            f"You have worked successfully with this sender {trust} times. "
                            + ("Your shift is nearly over. You must close the desk. Decline rather than break your promise."
@@ -277,6 +300,14 @@ class Society:
                               "A short meeting and independent check would help the Museum."))
 
                 return Ticket(self.memory.save, key, event, day, context, self.options(key, event))
+            contacts = tuple(peer for peer in sorted(LINKS[key]) if self.facts_to_share(key, peer))
+            if contacts and agent["shift"] == day and agent["followup_count"] < 2:
+                context = ("You know a recent, attributed observation from Route 2. "
+                           "Tell a colleague about the report if it is useful to them. "
+                           + ", ".join(f"{peer} has helped {agent['bonds'].get(peer, 0)} times" for peer in contacts))
+                plans = ((Step("WORK", persona.duty),),)
+                plans += tuple((Step("EXCHANGE_INFORMATION", peer),) for peer in contacts)
+                return Ticket(self.memory.save, key, "report_field_observation", day, context, plans)
             peers = self.followups(key)
             if peers and agent["shift"] == day and agent["followup_count"] < 2:
                 context = ("You completed a cast comparison. A colleague may be able to check it. "
@@ -319,6 +350,10 @@ class Society:
                         if self.can_send(actor, peer)]
         else:
             options += [Step("REQUEST_ASSISTANCE", peer) for peer in self.followups(actor)]
+        if ticket.cause not in self.state["requests"]:
+            options += [Step("EXCHANGE_INFORMATION", peer) for peer in sorted(LINKS[actor])
+                        if self.facts_to_share(actor, peer)]
+            options += [Step("OFFER_ASSISTANCE", peer) for peer in sorted(LINKS[actor]) if self.can_offer(actor, peer)]
         if actor == "trainer":
             options += [Step("TRAIN_POKEMON", duty), Step("TRAIN_POKEMON", "route_2")]
         if actor == "researcher" and ticket.cause == "open_shift":
@@ -376,8 +411,10 @@ class Society:
         if ticket.cause == "open_shift":
             agent["shift"] = ticket.window
             agent["followup_count"] = 0
-        elif ticket.cause == "share_findings":
-            agent["followup_count"] = agent["followup_count"] + 1 if plan[0].action == "REQUEST_ASSISTANCE" else 2
+        elif ticket.cause in ("share_findings", "report_field_observation"):
+            made_contact = any(step.action in ("REQUEST_ASSISTANCE", "EXCHANGE_INFORMATION", "OFFER_ASSISTANCE")
+                               for step in plan)
+            agent["followup_count"] = agent["followup_count"] + 1 if made_contact else 2
         agent["active"] = dict(steps=[(s.action, s.target) for s in plan], index=0, due=self.now,
                                deadline=self.now + MAX_PLAN_SECONDS, event=ticket.cause, goal=goal)
         self.record(ticket.actor, "accepted", steps=agent["active"]["steps"], fallback=fallback)
@@ -404,6 +441,10 @@ class Society:
                     (actor == "researcher" or self.qualifies(actor, active.get("event"), "accepted")))
         if action == "REQUEST_ASSISTANCE":
             return self.can_request(actor, target)
+        if action == "OFFER_ASSISTANCE":
+            return self.can_offer(actor, target)
+        if action == "EXCHANGE_INFORMATION":
+            return bool(self.facts_to_share(actor, target))
         if action in ("ACCEPT_REQUEST", "DECLINE_REQUEST"):
             return self.qualifies(actor, target, "pending")
         if action == "ARRANGE_MEETING":
@@ -467,7 +508,13 @@ class Society:
             checks = agent["facts"].get(target, {}).get("checks", 0) + 1
             agent["facts"][target] = dict(source=actor, origin=actor, kind="firsthand",
                                           checks=checks, second=self.now)
-        elif action == "REQUEST_ASSISTANCE":
+        elif action == "EXCHANGE_INFORMATION":
+            recipient = self.state["agents"][target]
+            for code, origin, observed in self.facts_to_share(actor, target):
+                recipient["facts"][code] = dict(source=actor, origin=origin, kind="reported",
+                                                observed=observed, second=self.now)
+                self.record(target, "received_report", source=actor, origin=origin, topic="tracks")
+        elif action in ("REQUEST_ASSISTANCE", "OFFER_ASSISTANCE"):
             if len(requests) >= 12:
                 disposable = next((key for key, report in requests.items()
                                    if report["status"] not in ("pending", "accepted")), None)
@@ -478,9 +525,11 @@ class Society:
             fact = agent["facts"]["cast"]
             requests[self.request_key(actor, target)] = dict(
                 sender=actor, recipient=target, origin=fact.get("origin", actor), status="pending",
+                kind="offer" if action == "OFFER_ASSISTANCE" else "request",
                 issued=self.now, expires=self.now + REQUEST_SECONDS)
         elif action in ("ACCEPT_REQUEST", "DECLINE_REQUEST"):
             requests[target]["status"] = "accepted" if action == "ACCEPT_REQUEST" else "declined"
+            self.record(requests[target]["sender"], requests[target]["status"], peer=actor, event=target)
         elif action == "ARRANGE_MEETING":
             requests[target]["meeting"] = self.now
         elif action == "SHARE_INFORMATION":

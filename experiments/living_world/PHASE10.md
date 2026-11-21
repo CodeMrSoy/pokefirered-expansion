@@ -43,3 +43,12 @@ visitor slot and two authored alternate slots. Geometry is checked from
 the ROM layouts, including the public door and the open Route 2 border.
 Classic and Quantum mGBA exercised departure, offscreen investigation,
 arrival and return. Intermediate legs are simulated offscreen.
+
+## 10C · Social choices
+
+Agents may form a proactive offer for a known collaborator or pass a recent
+field report to a known contact. A relay records immediate sender, original
+observer and observation time. Contact rules prevent repeats, echo back
+to the original observer and broadcasting to strangers. Accepted, declined
+and completed requests become bounded memories. Report records never turn
+into firsthand facts merely because they crossed another contact.

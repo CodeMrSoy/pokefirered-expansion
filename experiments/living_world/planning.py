@@ -21,6 +21,8 @@ GOALS = {
     "REQUEST_ASSISTANCE": "get_second_opinion",
     "DECLINE_REQUEST": "preserve_commitments",
     "SHARE_INFORMATION": "help_colleague",
+    "EXCHANGE_INFORMATION": "report_discovery",
+    "OFFER_ASSISTANCE": "help_colleague",
 }
 
 
@@ -33,13 +35,14 @@ def choose_plan(model, ticket, available, persona):
         raise ValueError("World planning requires Qwen3")
     goals = options_for(available)
     codes = {str(i + 1): step for i, step in enumerate(available)}
-    purposes = dict(zip("ABCDEFG", goals))
+    purposes = dict(zip("ABCDEFGHI", goals))
     aliases = {
         "WORK": "work", "REST": "rest", "INVESTIGATE": "investigate", "TRAIN_POKEMON": "train",
         "REQUEST_ASSISTANCE": "ask", "ACCEPT_REQUEST": "accept request",
         "DECLINE_REQUEST": "decline request", "ARRANGE_MEETING": "arrange meeting",
         "VISIT_NPC": "meet", "SHARE_INFORMATION": "send result", "TRAVEL_TO": "travel",
-        "RETURN_TO_DUTY": "return",
+        "RETURN_TO_DUTY": "return", "EXCHANGE_INFORMATION": "report findings to",
+        "OFFER_ASSISTANCE": "offer help to",
     }
     def choices(values):
         return " | ".join(map(json.dumps, values))
