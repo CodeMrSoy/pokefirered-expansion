@@ -19,6 +19,7 @@ from bridge import (
     Conversation, DialogueBridge, MAILBOX_SIZE, REPLY_OFFSET, SKIP, TEXT_CAPACITY, WAIT, validate,
 )
 from controls import Controls
+from world_rules import HOOKS as EVOLUTION_HOOKS, SUPPORT, apply_decision
 from autonomy import DESK, OFFER, REPORT, SCOUTS, choose as choose_autonomy
 from platform_io import atomic_write, backup_profile, profile_directory, profile_lock, publish_monitor
 from director import DUTY, PRESENCE, TRIP, choose_brock
@@ -399,6 +400,15 @@ def main():
                                 print("Autonomy benchmark:", sample, ticket.actor, selection, timing)
                         pilot.advance(36400, True)
                         print("Autonomy outcome:", sample, pilot.state["history"][0])
+                        rules = sample_world.rules
+                        rules.observe(36000, True)
+                        for second in (36050, 36150):
+                            rules.observe(second, True)
+                            change = rules.decision(pilot.state["history"][0])
+                            selected, timing = choose_autonomy(model, change)
+                            if not apply_decision(rules, change, selected, "qwen", timing):
+                                raise ValueError("Persistent project failed the world rules")
+                            print("Evolution benchmark:", sample, change.actor, selected, timing)
                     finally:
                         sample_world.close()
         finally:
@@ -521,6 +531,9 @@ def play(args, profile, manifest, rom_path, rom, model, regional_demo):
 
             def propose(context):
                 nonlocal staged, scene, lookup, guide_turn, guide_work, guide_result, last_guide, society_exchange, autonomy_token
+                if context.npc in EVOLUTION_HOOKS.values():
+                    message = memory.rules.reply(context.npc)
+                    return json.dumps({"action": "SAY_DIALOGUE", "text": message}) if message else SKIP
                 if context.npc in (*SCOUTS.values(), DESK, OFFER, REPORT):
                     message, autonomy_token = autonomy.reply(context.npc)
                     if message:
@@ -630,6 +643,15 @@ def play(args, profile, manifest, rom_path, rom, model, regional_demo):
                 if next_title != title:
                     display.title(display.window, next_title)
                     title = next_title
+                if trace and trace["context"]["npc"] in EVOLUTION_HOOKS.values():
+                    if trace["validation"] == "accepted" and trace["context"]["npc"] == SUPPORT:
+                        try:
+                            memory.rules.endorse()
+                        except (sqlite3.Error, ValueError) as error:
+                            trace["error"] = f"Project endorsement was not saved: {error}"
+                    trace["route"] = "world_rules"
+                    record(trace)
+                    trace = None
                 if trace and (autonomy_token or trace["context"]["npc"] in (OFFER, REPORT, DESK)):
                     if trace["validation"] == "accepted":
                         autonomy.accept(autonomy_token)
@@ -738,19 +760,31 @@ def play(args, profile, manifest, rom_path, rom, model, regional_demo):
                             society.tick(fresh.local_second, fresh.area, fresh.busy)
                             if not fresh.busy and kanto:
                                 autonomy.advance(fresh.local_second, fresh.early_kanto_open)
+                                memory.rules.observe(fresh.local_second, fresh.early_kanto_open)
                                 if autonomy_work and autonomy_work[1].done():
                                     ticket, future = autonomy_work
                                     autonomy_work = None
                                     try:
                                         action, timing = future.result()
                                     except (OSError, ValueError, RuntimeError) as error:
-                                        autonomy.submit(ticket, ticket.fallback, "fallback", error=str(error)[:180])
+                                        if ticket.purpose == "evolve":
+                                            apply_decision(memory.rules, ticket, ticket.fallback, "fallback",
+                                                           {"error": str(error)[:180]})
+                                        else:
+                                            autonomy.submit(ticket, ticket.fallback, "fallback", error=str(error)[:180])
                                     else:
-                                        autonomy.submit(ticket, action, "qwen", timing)
+                                        if ticket.purpose == "evolve":
+                                            apply_decision(memory.rules, ticket, action, "qwen", timing)
+                                        else:
+                                            autonomy.submit(ticket, action, "qwen", timing)
                                 if not (autonomy_work or planning or resident_work) and replies.worker_idle():
-                                    if ticket := autonomy.decision(kanto):
-                                        if model.style == "qwen3":
+                                    history = autonomy.state["history"]
+                                    ticket = autonomy.decision(kanto) or memory.rules.decision(history[-1] if history else None)
+                                    if ticket:
+                                        if model.style == "qwen3" and len(ticket.options) > 1:
                                             autonomy_work = ticket, pool.submit(choose_autonomy, model, ticket)
+                                        elif ticket.purpose == "evolve":
+                                            apply_decision(memory.rules, ticket, ticket.fallback, "fallback")
                                         else:
                                             autonomy.submit(ticket, ticket.fallback, "fallback",
                                                             error="Qwen3 unavailable")
@@ -866,7 +900,7 @@ def play(args, profile, manifest, rom_path, rom, model, regional_demo):
                                                   "species": predicted.state.encounter.visible_species,
                                                   "topic": predicted.state.topic})
                         prediction_error = None
-                    except (ValueError, RuntimeError, OSError) as error:
+                    except (ValueError, RuntimeError, OSError, sqlite3.Error) as error:
                         if str(error) != prediction_error:
                             prediction_error = str(error)
                             record({"prediction_error": prediction_error})

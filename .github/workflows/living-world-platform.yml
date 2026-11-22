@@ -2,7 +2,7 @@ name: Living World Platform
 
 on:
   push:
-    branches: [Living-World-Phase13]
+    branches: [Living-World-Phase14]
   workflow_dispatch:
     inputs:
       package_url:
@@ -34,6 +34,7 @@ jobs:
           python -B tests/living_world_kanto_census.py
           python -B tests/living_world_kanto.py
           python -B tests/living_world_autonomy.py > autonomy-trace.json
+          python -B tests/living_world_rules.py
           python -B tests/living_world_release_scenario.py > release-scenario.json
       - uses: actions/upload-artifact@v4
         if: always()
@@ -59,11 +60,11 @@ jobs:
           sudo apt-get install -y gcc-arm-none-eabi libnewlib-arm-none-eabi libpng-dev
           python3 -m pip install Pillow numpy
       - name: Build and stage the exact validation ZIP
-        run: bash experiments/living_world/build-ci-windows.sh Living-World-13.0.0-Autonomy-Preview-Windows-x64.zip
+        run: bash experiments/living_world/build-ci-windows.sh Living-World-14.0.0-Evolution-Preview-Windows-x64.zip
       - uses: actions/upload-artifact@v4
         with:
           name: living-world-windows-candidate
-          path: Living-World-13.0.0-Autonomy-Preview-Windows-x64.zip*
+          path: Living-World-14.0.0-Evolution-Preview-Windows-x64.zip*
           compression-level: 0
           if-no-files-found: error
   windows-package:
@@ -90,7 +91,7 @@ jobs:
             Invoke-WebRequest -Uri $env:PACKAGE_URL -OutFile release.zip
             $hash = $env:PACKAGE_SHA256
           } else {
-            $candidate = 'Living-World-13.0.0-Autonomy-Preview-Windows-x64.zip'
+            $candidate = 'Living-World-14.0.0-Evolution-Preview-Windows-x64.zip'
             $hash = (Get-Content "$candidate.sha256" -Raw).Split()[0]
             Move-Item $candidate release.zip
           }

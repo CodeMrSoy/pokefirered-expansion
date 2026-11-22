@@ -7,6 +7,7 @@ import sqlite3
 from uuid import uuid4
 
 from autonomy import AutonomousWorld
+from world_rules import WorldRules
 from director import WorldDirector
 from profiles import PROFILES, WATTS
 from routines import RoutineWorld
@@ -80,6 +81,7 @@ class WorldMemory:
         self.society = Society(self)
         self.population = Population(self, roster)
         self.autonomy = AutonomousWorld(self)
+        self.rules = WorldRules(self)
 
     def _key(self, battery):
         return self.slot + ":" + hashlib.sha256(battery).hexdigest()
@@ -105,6 +107,7 @@ class WorldMemory:
                     self.society.checkpoint(next_save)
                     self.population.checkpoint(next_save)
                     self.autonomy.checkpoint(next_save)
+                    self.rules.checkpoint(next_save)
                 self._discard_unsaved()
             self.save = next_save
             self.social.deadline = self.social.next_deadline()
@@ -113,6 +116,7 @@ class WorldMemory:
             self.society.load()
             self.population.load()
             self.autonomy.load()
+            self.rules.load()
 
     def _discard_unsaved(self):
         if self.save.startswith("unsaved:"):
@@ -124,6 +128,7 @@ class WorldMemory:
             self.society.discard()
             self.population.discard()
             self.autonomy.discard()
+            self.rules.discard()
             self.db.execute("DELETE FROM npc_checkpoint WHERE save=?", (self.save,))
 
     def knowledge(self, npc, species):

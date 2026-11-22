@@ -73,6 +73,7 @@ cp "$QUANTUM_QA_OUTPUT"/Pewter{,Society}Test.sav "$QUANTUM_QA_OUTPUT"/Phase13Pew
 for mode in 0 1; do
     ADVENTURE_TEST_MODE=$mode QUANTUM_QA_OUTPUT="$work/kanto-$mode" python -B tests/living_world_kanto_emulator.py
     ADVENTURE_TEST_MODE=$mode QUANTUM_QA_OUTPUT="$work/autonomy-$mode" python -B tests/living_world_autonomy_emulator.py
+    ADVENTURE_TEST_MODE=$mode QUANTUM_QA_OUTPUT="$work/evolution-$mode" python -B tests/living_world_rules_emulator.py
 done
 python -B "$app/package-windows.py" "$inputs" "$output" --built-mgba
 sha256sum "$output" > "$output.sha256"

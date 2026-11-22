@@ -78,6 +78,7 @@ PewterCity_Gym_Text_BrockReturnSoon::
 
 PewterCity_Gym_EventScript_GymGuyPostVictory::
 	msgbox PewterCity_Gym_Text_YoureChampMaterial
+	living_world_aside LIVING_WORLD_EVOLUTION_GYM
 	release
 	end
 

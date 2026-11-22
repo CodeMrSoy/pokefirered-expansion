@@ -9,6 +9,7 @@ from dataclasses import dataclass
 from profiles import NPC_IDS
 from kanto import HOOKS
 from autonomy import DESK, OFFER, REPORT
+from world_rules import HOOKS as EVOLUTION_HOOKS
 
 REQUEST = struct.Struct("<4sIHH")
 REPLY_OFFSET = REQUEST.size
@@ -17,7 +18,7 @@ MAILBOX_SIZE = 132
 LINE = re.compile(r"[A-Za-z0-9 !?.,':-]{1,28}")
 REQUEST_IDS = {**NPC_IDS, 10: "pallet_exchange", 11: "guide_followup",
                14: "brock_attendant", 15: "brock_contact", 16: "brock_return",
-               17: "society_assistant", 18: "society_trainer", 19: "society_researcher", **HOOKS, 26: OFFER, 27: REPORT, 28: DESK}
+               17: "society_assistant", 18: "society_trainer", 19: "society_researcher", **HOOKS, 26: OFFER, 27: REPORT, 28: DESK, **EVOLUTION_HOOKS}
 WAIT = object()
 SKIP = object()
 

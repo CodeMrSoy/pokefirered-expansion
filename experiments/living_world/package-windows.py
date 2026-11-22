@@ -14,7 +14,7 @@ from reasoning import BALANCED_SHA256, LIGHTWEIGHT_SHA256
 
 ROOT = Path(__file__).resolve().parents[2]
 APP = Path(__file__).resolve().parent
-RELEASE_VERSION = "13.0.0-autonomy-preview"
+RELEASE_VERSION = "14.0.0-evolution-preview"
 INPUTS = {
     "mgba-win.zip": "a7ae453b739d3f9117537e8ca7275ecebd923d9035b52435f556470bf58a268f",
     "python-win.zip": "4acbed6dd1c744b0376e3b1cf57ce906f9dc9e95e68824584c8099a63025a3c3",
@@ -103,10 +103,10 @@ def main():
             b'@echo off\r\ncall "%~dp0Play.cmd" --pewter-regional-retest\r\n')
         validator = (APP / "validate-offline-windows.cmd").read_text(encoding="ascii")
         (stage / "Validate Offline Runtime.cmd").write_bytes(validator.replace("\n", "\r\n").encode("ascii"))
-        for name in ("play.py", "controls.py", "platform_io.py", "platform_scenario.py", "kanto.py", "autonomy.py",
+        for name in ("play.py", "controls.py", "platform_io.py", "platform_scenario.py", "kanto.py", "autonomy.py", "world_rules.py",
                      "package_smoke.py", "launcher-windows.ps1", "population.py", "bridge.py", "inference.py", "worker.py", "world.py", "profiles.py",
                      "knowledge.py", "social.py", "reasoning.py", "hybrid.py", "routines.py", "director.py", "society.py", "planning.py", "region.py", "dynamic_quests.py", "PLAYTEST.md",
-                     "PHASE2.md", "PHASE3.md", "PHASE4.md", "PHASE5.md", "PHASE6.md", "PHASE7.md", "PHASE8.md", "PHASE9.md", "PHASE10.md", "PHASE11.md", "PHASE12.md", "PHASE13.md", "PLATFORM.md"):
+                     "PHASE2.md", "PHASE3.md", "PHASE4.md", "PHASE5.md", "PHASE6.md", "PHASE7.md", "PHASE8.md", "PHASE9.md", "PHASE10.md", "PHASE11.md", "PHASE12.md", "PHASE13.md", "PHASE14.md", "PLATFORM.md"):
             shutil.copyfile(APP / name, stage / name)
         subprocess.run([sys.executable, APP / "build-knowledge.py", stage / "world-knowledge.sqlite3"], check=True)
         shutil.copyfile(APP / "launch-windows.cmd", stage / "Play.cmd")
@@ -144,7 +144,7 @@ def main():
             "quest_view": quest_view,
             "museum_view": museum_view,
             "regional_view": regional_view,
-            "profile_version": 13,
+            "profile_version": 14,
             "sha256": sha256(stage / "PokemonQuantum.gba"),
             "model_sha256": model_sha,
             "species": names,
