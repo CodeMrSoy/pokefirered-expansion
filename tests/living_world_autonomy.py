@@ -68,8 +68,10 @@ def persistence():
         reused = WorldMemory(path, "test", b"after")
         assert reused.autonomy.state == state
         reused.autonomy.advance(2000, True)
-        assert reused.autonomy.state["history"][0]["result"] == "verified"
-        assert reused.autonomy.reply(DESK)[0] == "The accounts matched.\nI remember that inquiry."
+        assert reused.autonomy.state["history"][0]["result"] == "filed_with_player"
+        assert reused.autonomy.state["history"][0]["player_report"]["kind"] == "relayed"
+        assert reused.autonomy.state["player_trust"] == 1
+        assert reused.autonomy.reply(DESK)[0] == "We filed your account.\nI remember that inquiry."
         reused.checkpoint(b"before")
         assert reused.autonomy.state["event"]["player"] == "reported"
         reused.close()

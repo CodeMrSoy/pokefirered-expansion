@@ -48,8 +48,8 @@ write to an installed Phase 12 profile.
 - Local residents and the assistant independently choose how to react based on
   the accounts they have received, their roles, routines, goals, past outcomes,
   and bilateral trust. The first witness and each report source are recorded.
-  Comparing a second account or receiving a player report can change the
-  resulting evidence. No player appearance is required to settle an outcome.
+  Comparing a second account can verify a lead. The player's report is
+  a relay that can file the inquiry and improve trust with the assistant. No player appearance is required to settle an outcome.
 - The database uses the same battery checkpoints as the existing Living World
   state. The bounded record contains one live event, eight finished events,
   twenty-four audit entries, and four memories per participant. Latest event

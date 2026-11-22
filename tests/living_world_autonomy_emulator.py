@@ -24,7 +24,7 @@ def warp(name, x, y):
     raise AssertionError(name)
 
 
-def converse(label):
+def converse(label, accept_report=True):
     seen = {}
     token = None
 
@@ -44,13 +44,12 @@ def converse(label):
                 pilot.accept(token)
             if frame > 1 and field_ready():
                 return seen
+            gba.keys.clear()
             if frame % 10 == 0:
-                gba.keys.add(8)
-            else:
-                gba.keys.discard(8)
+                gba.keys.add(0 if OFFER in seen and not accept_report else 8)
             gba.run(1)
     finally:
-        gba.keys.discard(8)
+        gba.keys.clear()
     raise AssertionError(f"Script did not release controls: {label}")
 
 
@@ -82,19 +81,22 @@ with TemporaryDirectory() as folder:
     assert pilot.reply(SCOUTS["mt_moon"]) == (None, None)
     scene = converse("Route3_EventScript_Youngster")
     assert "Report to Pewter Museum." in scene[SCOUTS["route_3"]]
-    assert pilot.state["event"]["player"] == "witnessed"
+    assert pilot.state["event"]["player"] == "heard"
     warp("PewterCity_Museum_1F", 5, 6)
+    decline = converse("PewterCity_Museum_1F_EventScript_LivingAssistant", accept_report=False)
+    assert OFFER in decline and REPORT not in decline, decline
+    assert pilot.state["event"]["player"] == "heard"
     report = converse("PewterCity_Museum_1F_EventScript_LivingAssistant")
     assert OFFER in report and REPORT in report, report
     assert pilot.state["event"]["player"] == "reported"
     assert pilot.state["event"]["knowledge"][MUSEUM]["source"] == SCOUTS["route_3"]
     pilot.advance(1500, True)
-    assert pilot.state["history"][0]["result"] == "verified"
+    assert pilot.state["history"][0]["result"] == "filed_with_player"
     memory.checkpoint(b"after")
     memory.close()
     memory = WorldMemory(db, "phase13-test", b"after")
     pilot = memory.autonomy
-    assert "The accounts matched." in converse("PewterCity_Museum_1F_EventScript_LivingAssistant")[DESK]
+    assert "We filed your account." in converse("PewterCity_Museum_1F_EventScript_LivingAssistant")[DESK]
     assert OFFER not in converse("PewterCity_Museum_1F_EventScript_LivingAssistant")
     memory.close()
-print(f"PASS mode {mode}: badge-gated inquiry, attributed field dialogue, Museum Yes report, verified history after reload")
+print(f"PASS mode {mode}: badge-gated inquiry, attributed field dialogue, Museum Yes report, filed history after reload")

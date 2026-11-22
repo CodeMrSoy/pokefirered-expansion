@@ -154,6 +154,13 @@ def runtime_smoke(directory, core):
             game.close()
         game = open_game()
         try:
+            game.load_save((ROOT / "Phase13Pewter.sav").read_bytes())
+            hint = continue_to(game, "pewter")
+            assert hint.early_kanto_open, "Phase 13 demo did not start after the Boulder Badge"
+        finally:
+            game.close()
+        game = open_game()
+        try:
             pallet_save = (ROOT / "PalletTest.sav").read_bytes()
             game.load_save(pallet_save)
             pallet_bridge(game)
@@ -181,7 +188,7 @@ def runtime_smoke(directory, core):
     finally:
         display.controls.close()
         display.sdl.SDL_Quit()
-    return "SDL video/audio, virtual controller, remap, ROM hint and Watts mailbox round trip, native flash write/reload, SQLite quest lifecycle"
+    return "SDL, controller/remap, post-Brock Phase 13 demo, Watts mailbox, native flash write/reload, SQLite quest lifecycle"
 
 
 def worker_failure_smoke():

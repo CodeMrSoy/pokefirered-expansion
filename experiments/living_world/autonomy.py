@@ -59,7 +59,7 @@ class AutonomousWorld:
         seed = sha256(self.world.save.encode()).hexdigest()[:16]
         self.state = json.loads(row[0]) if row else {
             "seed": seed, "number": 0, "unlocked": False, "next": None, "event": None,
-            "history": [], "log": [], "bonds": {}, "memories": {},
+            "history": [], "log": [], "bonds": {}, "memories": {}, "player_trust": 0,
         }
         self.now = self.state.get("last", -1)
 
@@ -93,8 +93,14 @@ class AutonomousWorld:
         event = self.state["event"]
         if event and self.now >= event["deadline"]:
             actions = set(event["actions"].values())
-            accounts = int("inspect" in actions) + int("compare" in actions) + int(event["player"] == "reported")
-            result = "verified" if accounts >= 2 else "filed" if accounts else "unresolved"
+            if {"inspect", "compare"} <= actions:
+                result = "verified"
+            elif event["player"] == "reported":
+                result = "filed_with_player"
+            elif actions & {"inspect", "compare"}:
+                result = "filed"
+            else:
+                result = "unresolved"
             self.finish(result)
 
     def decision(self, catalog=None):
@@ -110,12 +116,13 @@ class AutonomousWorld:
             conditions = tuple(TOPICS)
             focus = self.roll("conditions", len(conditions))
             topics = (conditions[focus], conditions[(focus + 1) % len(conditions)])
-            options = tuple(f"{site}:{topic}:{lead}" for site in sorted(SITES, key=counts.get)
+            sites = sorted(SITES, key=lambda site: (counts[site], self.roll("priority:" + site, 2**32)))
+            options = tuple(f"{site}:{topic}:{lead}" for site in sites
                             for topic in topics for lead in ("local", "museum"))
             last = history[-1]["result"] if history else "no previous inquiry"
             context = (f"Pewter Museum, Route 3 and Mt. Moon are reachable after Brock's badge. "
                        f"Recent outcome: {last}. Site history counts: {counts}. "
-                       f"Current leads suggest {TOPICS[topics[0]]} or {TOPICS[topics[1]]}. "
+                       f"Latest lead near {SITES[sites[0]]} suggests {TOPICS[topics[0]]} or {TOPICS[topics[1]]}. "
                        "Select site, subject and who first noticed, the local resident or museum assistant.")
             return Decision(self.world.save, self.state["number"] + 1, "world_director", "propose",
                             options, context, options[self.roll("director", len(options))])
@@ -146,6 +153,8 @@ class AutonomousWorld:
                    f"Your {source['kind']} account concerns {TOPICS[event['topic']]} at {SITES[event['site']]}. "
                    f"Past result: {past}. Colleague trust: {trust}. Local hour: {local_hour}. Routine: {routine}. "
                    + " ".join(f"{option} means {REASONS[option]}." for option in options))
+        if actor == MUSEUM:
+            context += f" The player filed {self.state.get('player_trust', 0)} accounts you received."
         weighted = [*options]
         if trust and "compare" in options:
             weighted.extend(("compare", "compare"))
@@ -210,11 +219,11 @@ class AutonomousWorld:
         actor = MUSEUM if actor == DESK else actor
         event = self.state["event"]
         if actor == OFFER:
-            if event and event["player"] == "witnessed":
+            if event and event["player"] == "heard":
                 return "File your field account?", None
             return None, None
         if actor == REPORT:
-            if event and event["player"] == "witnessed":
+            if event and event["player"] == "heard":
                 return "I'll add your field account.\nThanks for checking in.", (event["number"], "reported")
             return None, None
         if event and actor in event["knowledge"]:
@@ -225,7 +234,7 @@ class AutonomousWorld:
                     update = {"tracks": "Someone reported tracks.", "notes": "Someone reported a mix-up.",
                               "delay": "I heard a check was missed."}[event["topic"]]
                 if event["player"] is None:
-                    return update + "\nReport to Pewter Museum.", (event["number"], "witnessed")
+                    return update + "\nReport to Pewter Museum.", (event["number"], "heard")
                 return update + "\nThanks for stopping by.", None
             site = SITES[event["site"]]
             attribution = "A local sent word." if event["lead"] != MUSEUM else "I have a field lead."
@@ -233,6 +242,7 @@ class AutonomousWorld:
         for past in reversed(self.state["history"]):
             if actor in past["knowledge"]:
                 result = {"verified": "The accounts matched.", "filed": "We filed a single account.",
+                          "filed_with_player": "We filed your account.",
                           "unresolved": "We could not verify it."}[past["result"]]
                 return result + "\nI remember that inquiry.", None
         return None, None
@@ -242,11 +252,14 @@ class AutonomousWorld:
         if token is None or not event or token[0] != event["number"]:
             return False
         target = token[1]
-        if ((target == "witnessed" and event["player"] is None)
-                or (target == "reported" and event["player"] == "witnessed")):
+        if ((target == "heard" and event["player"] is None)
+                or (target == "reported" and event["player"] == "heard")):
             event["player"] = target
             if target == "reported":
-                event["knowledge"].setdefault(MUSEUM, {"kind": "reported", "source": "player"})
+                event["player_report"] = {"kind": "relayed", "source": "player",
+                                          "origin": SCOUTS[event["site"]]}
+                event["knowledge"].setdefault(MUSEUM, event["player_report"])
+                self.state["player_trust"] = min(self.state.get("player_trust", 0) + 1, 10)
             self.log("player", action=target, source="player")
             self.persist()
             return True
