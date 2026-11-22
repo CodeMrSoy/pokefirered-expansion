@@ -94,6 +94,16 @@ with TemporaryDirectory() as directory:
         (gba.d / "PewterTest.sav").write_bytes(battery())
         assert native("AddBagItem", 717, 1)
         (gba.d / "PewterSocietyTest.sav").write_bytes(battery())
+        # Capture a separate post-Brock demo from the stable Pewter field.
+        # Restore the entire pre-badge session before testing Brock's storyline.
+        before_demo = c.create_string_buffer(gba.lib.retro_serialize_size())
+        assert gba.lib.retro_serialize(before_demo, len(before_demo))
+        native("FlagSet", 0x820)
+        native("FlagSet", 0x4B0)
+        native("SetTrainerFlag", 414)
+        assert native("AddBagItem", 715, 1)
+        (gba.d / "Phase13Pewter.sav").write_bytes(battery())
+        assert gba.lib.retro_unserialize(before_demo, len(before_demo))
     gba.run(65)
     hint = FieldHint.decode(gba.read(hint_address, FIELD_SIZE))
     assert hint.area == "pewter" and hint.story == 0 and hint.local_second is not None, hint
@@ -190,8 +200,5 @@ with TemporaryDirectory() as directory:
     assert native("FlagGet", 0x820) and native("FlagGet", 0x4B0)
     assert spawned(gym, 1)
     gba.snap("phase8-badge")
-    if os.environ.get("LIVING_WORLD_PEWTER_FIXTURE"):
-        warp("PewterCity", 18, 16)
-        (gba.d / "Phase13Pewter.sav").write_bytes(battery())
     memory.close()
     print(f"PASS mode {mode}: home, absence, clue, travel checkpoint, collision, contact, original challenge and award continuation")
