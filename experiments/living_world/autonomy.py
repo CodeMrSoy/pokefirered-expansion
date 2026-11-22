@@ -37,11 +37,17 @@ def choose(model, ticket):
     """Serialize one compact decision on the existing shared worker."""
     aliases = dict(zip("ABCDEFGHIJKLM", ticket.options, strict=False))
     labels = " | ".join(map(json.dumps, aliases))
-    prompt = model.render_prompt(
-        "Choose the most useful feasible option for this world. Output one letter only.",
-        f"{ticket.context}\nOptions:\n" + "\n".join(f"{key} {value}" for key, value in aliases.items()),
-    )
-    raw, timing = model.worker.generate(f"root ::= {labels}\n", prompt, timeout=7)
+    def describe(option):
+        if ticket.purpose != "propose":
+            return option
+        site, topic, lead = option.split(":")
+        return f"{SITES[site]} {topic} {lead}"
+
+    options = "\n".join(f"{key} {describe(value)}" for key, value in aliases.items())
+    prompt = model.render_prompt("Choose one option. Output its letter only.", f"{ticket.context}\n{options}")
+    # The compatibility Windows core uses the conservative CPU backend.
+    limit = 18 if ticket.purpose == "propose" else 12
+    raw, timing = model.worker.generate(f"root ::= {labels}\n", prompt, timeout=limit)
     if raw.strip() not in aliases:
         raise ValueError("Unsupported autonomous decision")
     return aliases[raw.strip()], timing
@@ -120,10 +126,9 @@ class AutonomousWorld:
             options = tuple(f"{site}:{topic}:{lead}" for site in sites
                             for topic in topics for lead in ("local", "museum"))
             last = history[-1]["result"] if history else "no previous inquiry"
-            context = (f"Pewter Museum, Route 3 and Mt. Moon are reachable after Brock's badge. "
-                       f"Recent outcome: {last}. Site history counts: {counts}. "
-                       f"Latest lead near {SITES[sites[0]]} suggests {TOPICS[topics[0]]} or {TOPICS[topics[1]]}. "
-                       "Select site, subject and who first noticed, the local resident or museum assistant.")
+            context = (f"Start a local inquiry. New lead near {SITES[sites[0]]}. "
+                       f"Likely topics: {TOPICS[topics[0]]} or {TOPICS[topics[1]]}. "
+                       f"Last outcome: {last}. Pick location, topic and originator.")
             return Decision(self.world.save, self.state["number"] + 1, "world_director", "propose",
                             options, context, options[self.roll("director", len(options))])
 

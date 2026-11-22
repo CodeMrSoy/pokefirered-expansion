@@ -55,8 +55,8 @@ write to an installed Phase 12 profile.
   twenty-four audit entries, and four memories per participant. Latest event
   resolution does not replay missed intervals after a long save gap.
 - One worker serves foreground and background requests. Director and resident
-  requests enter only while that worker is idle. Each model generation has a
-  seven-second budget, separate from worker startup. A missed or invalid
+  requests enter only while that worker is idle. Director generation has an 18-second limit and resident generation has a
+  12-second limit, separate from worker startup. A missed or invalid
   request can use seeded deterministic choices. A save switch discards stale
   work. The game resumes stock dialogue if optional bridge text is unavailable.
 
