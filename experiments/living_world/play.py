@@ -19,6 +19,7 @@ from bridge import (
     Conversation, DialogueBridge, MAILBOX_SIZE, REPLY_OFFSET, SKIP, TEXT_CAPACITY, WAIT, validate,
 )
 from controls import Controls
+import agency
 from world_rules import HOOKS as EVOLUTION_HOOKS, SUPPORT, apply_decision
 from autonomy import DESK, OFFER, REPORT, SCOUTS, choose as choose_autonomy
 from platform_io import atomic_write, backup_profile, profile_directory, profile_lock, publish_monitor
@@ -767,27 +768,34 @@ def play(args, profile, manifest, rom_path, rom, model, regional_demo):
                                     try:
                                         action, timing = future.result()
                                     except (OSError, ValueError, RuntimeError) as error:
-                                        if ticket.purpose == "evolve":
-                                            apply_decision(memory.rules, ticket, ticket.fallback, "fallback",
-                                                           {"error": str(error)[:180]})
+                                        if ticket.purpose == "agency":
+                                            agency.submit(memory.rules, ticket, "", error=error)
+                                        elif ticket.purpose == "evolve":
+                                            apply_decision(memory.rules, ticket, ticket.fallback, "fallback", project_scope="gym")
                                         else:
                                             autonomy.submit(ticket, ticket.fallback, "fallback", error=str(error)[:180])
                                     else:
-                                        if ticket.purpose == "evolve":
-                                            apply_decision(memory.rules, ticket, action, "qwen", timing)
+                                        if ticket.purpose == "agency":
+                                            agency.submit(memory.rules, ticket, action, timing)
+                                        elif ticket.purpose == "evolve":
+                                            apply_decision(memory.rules, ticket, action, "qwen", timing, project_scope="gym")
                                         else:
                                             autonomy.submit(ticket, action, "qwen", timing)
                                 if not (autonomy_work or planning or resident_work) and replies.worker_idle():
-                                    history = autonomy.state["history"]
-                                    ticket = autonomy.decision(kanto) or memory.rules.decision(history[-1] if history else None)
+                                    ticket = autonomy.decision(kanto)
                                     if ticket:
                                         if model.style == "qwen3" and len(ticket.options) > 1:
                                             autonomy_work = ticket, pool.submit(choose_autonomy, model, ticket)
-                                        elif ticket.purpose == "evolve":
-                                            apply_decision(memory.rules, ticket, ticket.fallback, "fallback")
                                         else:
                                             autonomy.submit(ticket, ticket.fallback, "fallback",
                                                             error="Qwen3 unavailable")
+                                    elif model.style == "qwen3" and (ticket := agency.ticket(memory.rules)):
+                                        autonomy_work = ticket, pool.submit(agency.generate, model, ticket)
+                                    elif ticket := memory.rules.decision(project_scope="gym"):
+                                        if model.style == "qwen3":
+                                            autonomy_work = ticket, pool.submit(choose_autonomy, model, ticket)
+                                        else:
+                                            apply_decision(memory.rules, ticket, ticket.fallback, "fallback", project_scope="gym")
                             if population:
                                 transitions = (population.demo_tick(fresh.local_second) if args.phase11_demo
                                                else population.tick(fresh.local_second))

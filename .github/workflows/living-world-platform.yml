@@ -2,7 +2,7 @@ name: Living World Platform
 
 on:
   push:
-    branches: [Living-World-Phase14]
+    branches: [Living-World-Phase15]
   workflow_dispatch:
     inputs:
       package_url:
@@ -35,6 +35,7 @@ jobs:
           python -B tests/living_world_kanto.py
           python -B tests/living_world_autonomy.py > autonomy-trace.json
           python -B tests/living_world_rules.py
+          python -B tests/living_world_agency.py
           python -B tests/living_world_release_scenario.py > release-scenario.json
       - uses: actions/upload-artifact@v4
         if: always()
@@ -60,11 +61,11 @@ jobs:
           sudo apt-get install -y gcc-arm-none-eabi libnewlib-arm-none-eabi libpng-dev
           python3 -m pip install Pillow numpy
       - name: Build and stage the exact validation ZIP
-        run: bash experiments/living_world/build-ci-windows.sh Living-World-14.0.0-Evolution-Preview-Windows-x64.zip
+        run: bash experiments/living_world/build-ci-windows.sh Living-World-15.0.0-Agency-Preview-Windows-x64.zip
       - uses: actions/upload-artifact@v4
         with:
           name: living-world-windows-candidate
-          path: Living-World-14.0.0-Evolution-Preview-Windows-x64.zip*
+          path: Living-World-15.0.0-Agency-Preview-Windows-x64.zip*
           compression-level: 0
           if-no-files-found: error
   windows-package:
@@ -91,7 +92,7 @@ jobs:
             Invoke-WebRequest -Uri $env:PACKAGE_URL -OutFile release.zip
             $hash = $env:PACKAGE_SHA256
           } else {
-            $candidate = 'Living-World-14.0.0-Evolution-Preview-Windows-x64.zip'
+            $candidate = 'Living-World-15.0.0-Agency-Preview-Windows-x64.zip'
             $hash = (Get-Content "$candidate.sha256" -Raw).Split()[0]
             Move-Item $candidate release.zip
           }
@@ -114,8 +115,28 @@ jobs:
           New-Item -ItemType Directory -Force $env:LOCALAPPDATA | Out-Null
           & "$root/python/python.exe" -B "$root/package_smoke.py" "$PWD/native-smoke.json"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Measure three offline planners on identical situations
+        shell: pwsh
+        run: |
+          $root = (Resolve-Path extracted/LivingQuantumWorld).Path
+          $runtime = Join-Path $root inference
+          $bench = (Resolve-Path tests/living_world_agency_benchmark.py).Path
+          $cases = @(
+            @('model.gguf','qwen3','','e773ccf7adfa50fcabfa5ea0e30312e11f0e83bf4ae00e6a38503e49358d1952'),
+            @('qwen17.gguf','qwen3','https://huggingface.co/unsloth/Qwen3-1.7B-GGUF/resolve/main/Qwen3-1.7B-Q4_K_M.gguf','b139949c5bd74937ad8ed8c8cf3d9ffb1e99c866c823204dc42c0d91fa181897'),
+            @('gemma1.gguf','gemma','https://huggingface.co/ggml-org/gemma-3-1b-it-GGUF/resolve/main/gemma-3-1b-it-Q4_K_M.gguf','8ccc5cd1f1b3602548715ae25a66ed73fd5dc68a210412eea643eb20eb75a135')
+          )
+          foreach ($case in $cases) {
+            $model = Join-Path $runtime $case[0]
+            if ($case[2]) { curl.exe --fail --location --retry 2 --output $model $case[2] }
+            if ((Get-FileHash $model).Hash -ne $case[3]) { throw 'Benchmark weight mismatch' }
+            & "$root/python/python.exe" -B $bench $runtime $model $case[1] > "agency-$($case[0]).jsonl"
+            if ($LASTEXITCODE) { throw 'Agent benchmark failed' }
+          }
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: living-world-native-windows-report
-          path: native-smoke.json
+          path: |
+            native-smoke.json
+            agency-*.jsonl

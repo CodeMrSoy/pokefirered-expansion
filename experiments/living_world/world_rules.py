@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from hashlib import sha256
 import json
 
+import agency
 from autonomy import Decision
 
 # Registry entries describe implemented native services. Optional projects may
@@ -37,7 +38,7 @@ MART, PITCH, SUPPORT, GYM = "evolution_mart", "evolution_pitch", "evolution_supp
 CHECKOUT = "evolution_checkout"
 PRACTICE_ROCK, PRACTICE_TRAIL = "practice_rock", "practice_trail"
 HOOKS = {29: MART, 30: PITCH, 31: SUPPORT, 32: GYM, 33: CHECKOUT,
-         34: PRACTICE_ROCK, 35: PRACTICE_TRAIL}
+         34: PRACTICE_ROCK, 35: PRACTICE_TRAIL, 36: "mart_neighbor", 37: "neighbor_checkout"}
 PROJECTS = {
     "mart": ("stock_helper", "counter_apprentice"),
     "gym": ("type_coaching", "expedition_coaching"),
@@ -92,7 +93,7 @@ class WorldRules:
 
     @staticmethod
     def check_state(state):
-        if not isinstance(state, dict) or set(state) != {"revision", "projects", "endorsed", "open_at", "audit"}:
+        if not isinstance(state, dict) or set(state) - {"agency"} != {"revision", "projects", "endorsed", "open_at", "audit"}:
             raise ValueError("Unknown world-state fields")
         if (type(state["revision"]) is not int or state["revision"] < 0
                 or type(state["endorsed"]) is not bool
@@ -100,6 +101,8 @@ class WorldRules:
                     (type(state["open_at"]) is not int or state["open_at"] < 0))
                 or not isinstance(state["audit"], list) or len(state["audit"]) > 16):
             raise ValueError("Malformed world state")
+        if "agency" in state:
+            agency.validate_state(state["agency"])
         if not isinstance(state["projects"], dict) or set(state["projects"]) != set(PROJECTS):
             raise ValueError("Project outside the rules registry")
         for project, value in state["projects"].items():
@@ -141,10 +144,12 @@ class WorldRules:
             opened["open_at"] = second + 45
             self.store(opened)
 
-    def decision(self, inquiry=None):
+    def decision(self, inquiry=None, project_scope=None):
         if self.quarantined or not self.badge or self.now is None or self.state["open_at"] is None:
             return None
         pending = [project for project in PROJECTS if self.state["projects"][project] == BASE[project]]
+        if project_scope is not None:
+            pending = [p for p in pending if p == project_scope]
         if not pending or self.now < self.state["open_at"]:
             return None
         seed = sha256(f"{self.world.save}:{self.state['revision']}".encode()).digest()
@@ -161,10 +166,10 @@ class WorldRules:
         return Decision(self.world.save, self.state["revision"], topic, "evolve", options,
                         context, options[seed[1] % len(options)])
 
-    def submit(self, change, source, timing=None):
+    def submit(self, change, source, timing=None, project_scope=None):
         if self.quarantined or change.save != self.world.save:
             return False
-        ticket = self.decision()
+        ticket = self.decision(project_scope=project_scope)
         approved = (ticket is not None and change.save == ticket.save
                     and change.revision == ticket.number and change.project == ticket.actor
                     and change.choice in ticket.options and source in ("qwen", "fallback"))
@@ -198,6 +203,21 @@ class WorldRules:
             return "Back my counter training?"
         if actor == SUPPORT and self.state["projects"]["mart"] == "resident" and not self.state["endorsed"]:
             return "I'll tell the shop clerk."
+        if a := self.state.get("agency"):
+            owner = "neighbor" if actor in ("mart_neighbor", "neighbor_checkout") else "resident"
+            person = a["people"][owner]
+            peer = agency.PEER[owner]
+            if actor in (MART, "mart_neighbor"):
+                if person["feedback"].startswith(peer + " answered teach"):
+                    return "My neighbor taught me."
+                if peer in a["asked"]:
+                    return "My neighbor asked for help."
+                if person["job"] == "stock":
+                    return "I am checking supplies."
+                if person["job"] == "sales":
+                    return "I can serve customers now."
+            if actor in (CHECKOUT, "neighbor_checkout") and person["job"]:
+                return "Can I take your order?" if person["job"] == "sales" else None
         if actor == CHECKOUT and self.state["projects"]["mart"] == "counter_apprentice":
             return "Need anything from the Mart?"
         if actor == MART:
@@ -223,5 +243,5 @@ class WorldRules:
         }
 
 
-def apply_decision(rules, ticket, answer, source, timing=None):
-    return rules.submit(Change(ticket.save, ticket.number, ticket.actor, answer), source, timing)
+def apply_decision(rules, ticket, answer, source, timing=None, project_scope=None):
+    return rules.submit(Change(ticket.save, ticket.number, ticket.actor, answer), source, timing, project_scope)

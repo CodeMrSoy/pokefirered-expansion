@@ -123,3 +123,19 @@ with TemporaryDirectory() as folder:
     assert converse(clerk)[1]
     memory.close()
 print(f"PASS mode {mode}: original and apprentice counters, endorsement consent, saved occupation and capped Gym practice")
+
+# Exercise both actual object scripts with an accepted compositional plan.
+import agency
+memory = WorldMemory(":memory:", "agency", b"post-brock")
+rules = memory.rules
+rules.observe(0, True)
+rules.observe(50, True)
+assert agency.submit(rules, agency.ticket(rules), "Help my neighbor|ask stock;work sales")
+warp("PewterCity_Mart", 5, 6)
+assert converse(resident)[1]
+rules.observe(150, True)
+assert agency.submit(rules, agency.ticket(rules), "Share knowledge|teach stock;practice sales;work sales")
+assert converse("PewterCity_Mart_EventScript_Youngster")[1]
+assert converse(clerk)[1]
+memory.close()
+print(f"PASS mode {mode}: composed resident and neighbor plans reached both native shop menus")

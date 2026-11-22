@@ -12,7 +12,7 @@ from zipfile import ZIP_DEFLATED, ZipFile
 
 def profile_directory(version):
     base = Path(os.environ.get("LOCALAPPDATA") or Path.home() / ".local/share")
-    return base / (f"LivingQuantumWorldPhase{version}" if version in (11, 12, 13, 14) else "LivingQuantumWorld")
+    return base / (f"LivingQuantumWorldPhase{version}" if version in (11, 12, 13, 14, 15) else "LivingQuantumWorld")
 
 
 def atomic_write(path, data, *, durable=True):

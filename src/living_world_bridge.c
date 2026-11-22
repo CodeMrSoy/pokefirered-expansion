@@ -527,7 +527,7 @@ static void BeginConversation(u8 npc)
     gLivingWorldMailbox.request = 0;
     sFramesRemaining = 0;
     sDeferred = FALSE;
-    if (npc < LIVING_WORLD_PC_RESIDENT || npc > LIVING_WORLD_PRACTICE_TRAIL
+    if (npc < LIVING_WORLD_PC_RESIDENT || npc > LIVING_WORLD_NEIGHBOR_CHECKOUT
      || !FlagGet(FLAG_SYS_POKEDEX_GET) || gQuestLogState == QL_STATE_PLAYBACK)
         return;
 

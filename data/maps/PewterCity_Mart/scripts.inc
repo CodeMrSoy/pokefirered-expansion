@@ -2,8 +2,16 @@ PewterCity_Mart_MapScripts::
 	.byte 0
 
 PewterCity_Mart_EventScript_Youngster::
-	msgbox PewterCity_Mart_Text_BoughtWeirdFishFromShadyGuy, MSGBOX_NPC
-	end
+	goto_if_questlog EventScript_ReleaseEnd
+	lock
+	faceplayer
+	msgbox PewterCity_Mart_Text_BoughtWeirdFishFromShadyGuy
+	living_world_aside LIVING_WORLD_MART_NEIGHBOR
+	callnative LivingWorld_BeginPalletOptional
+	.byte LIVING_WORLD_NEIGHBOR_CHECKOUT
+	gotonative LivingWorld_WaitForDialogue
+	goto_if_eq VAR_RESULT, TRUE, PewterCity_Mart_EventScript_ApprenticeCheckout
+	goto PewterCity_Mart_EventScript_ResidentDone
 
 PewterCity_Mart_EventScript_Boy::
 	goto_if_questlog EventScript_ReleaseEnd
