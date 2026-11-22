@@ -9,6 +9,7 @@ from tempfile import TemporaryDirectory
 
 from bridge import LINE
 from knowledge import SCHEMA
+from kanto_source import write_catalog
 from routines import KANTO
 from social import SIGHTINGS
 
@@ -223,6 +224,7 @@ def build(output):
                 (npc, species, remembered, line, source + "#" + label)
                 for npc, species, remembered, line, source, label in examples
             ))
+            write_catalog(db, ROOT)
         db.close()
         candidate.replace(output)
     return len(rows)
