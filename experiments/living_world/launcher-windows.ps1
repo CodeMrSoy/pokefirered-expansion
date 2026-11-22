@@ -3,7 +3,7 @@ Add-Type -AssemblyName System.Drawing
 [Windows.Forms.Application]::EnableVisualStyles()
 
 $root = (Get-Location).Path
-$profile = Join-Path $env:LOCALAPPDATA 'LivingQuantumWorldPhase12'
+$profile = Join-Path $env:LOCALAPPDATA 'LivingQuantumWorldPhase13'
 $python = Join-Path $root 'python\python.exe'
 $form = New-Object Windows.Forms.Form
 $form.Text = 'Pokemon Quantum - Living World'
@@ -62,7 +62,7 @@ $script:lastSnapshot = ''
 $intro = "Choose Play Pokemon Quantum for your main save, or Living World Demo for the Pewter scenario.`r`n`r`nUse Settings and controls to change keyboard bindings. Diagnostics runs the sandbox and local model checks."
 
 Add-MenuButton 'Play Pokemon Quantum' { Start-Host }
-Add-MenuButton 'Living World Demo' { Start-Host '--phase11-demo' }
+Add-MenuButton 'Living World Demo' { Start-Host '--phase13-demo' }
 Add-MenuButton 'Living World Monitor' {
     $script:monitor = $true
     $script:lastSnapshot = ''

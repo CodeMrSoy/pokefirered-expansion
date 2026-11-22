@@ -12,7 +12,7 @@ from zipfile import ZIP_DEFLATED, ZipFile
 
 def profile_directory(version):
     base = Path(os.environ.get("LOCALAPPDATA") or Path.home() / ".local/share")
-    return base / (f"LivingQuantumWorldPhase{version}" if version in (11, 12) else "LivingQuantumWorld")
+    return base / (f"LivingQuantumWorldPhase{version}" if version in (11, 12, 13) else "LivingQuantumWorld")
 
 
 def atomic_write(path, data, *, durable=True):
@@ -95,6 +95,7 @@ def publish_monitor(profile, memory, hint, population, pending, decisions, slot,
             if id_ in population.people and population.people[id_].partner is None
         ],
         "recent_events": events + list(society.get("log", ()))[-8:],
+        "autonomous_pilot": memory.autonomy.state,
         "pending_resident_requests": requests,
         "survey_event": survey_event,
         "dynamic_quests": {"Survey Notes": objective,

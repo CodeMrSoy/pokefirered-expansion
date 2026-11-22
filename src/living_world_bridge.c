@@ -442,6 +442,8 @@ void LivingWorld_UpdateFieldHint(void)
             hint.story = BrockProtected();
         if (hint.area)
             hint.species = VisibleSpecies();
+        if (FlagGet(FLAG_BADGE01_GET))
+            hint.species |= 0x8000; // Phase 13 can rely on access east of Pewter.
         if (!idle)
             hint.distance = 255;
     }
@@ -520,7 +522,7 @@ static void BeginConversation(u8 npc)
     gLivingWorldMailbox.request = 0;
     sFramesRemaining = 0;
     sDeferred = FALSE;
-    if (npc < LIVING_WORLD_PC_RESIDENT || npc > LIVING_WORLD_ROUTE25_RESIDENT
+    if (npc < LIVING_WORLD_PC_RESIDENT || npc > LIVING_WORLD_AUTONOMY_DESK
      || !FlagGet(FLAG_SYS_POKEDEX_GET) || gQuestLogState == QL_STATE_PLAYBACK)
         return;
 

@@ -140,6 +140,15 @@ PewterCity_Museum_1F_EventScript_LivingAssistant::
 	faceplayer
 	msgbox PewterCity_Museum_1F_Text_WeHaveTwoFossilsOnExhibit
 	living_world_aside LIVING_WORLD_SOCIETY_ASSISTANT
+	living_world_aside LIVING_WORLD_AUTONOMY_DESK
+	callnative LivingWorld_BeginPalletOptional
+	.byte LIVING_WORLD_AUTONOMY_OFFER
+	gotonative LivingWorld_WaitForDialogue
+	goto_if_ne VAR_RESULT, TRUE, PewterCity_Museum_1F_EventScript_LivingAssistantDone
+	msgbox gLivingWorldDialogue, MSGBOX_YESNO
+	goto_if_ne VAR_RESULT, YES, PewterCity_Museum_1F_EventScript_LivingAssistantDone
+	living_world_aside LIVING_WORLD_AUTONOMY_REPORT
+PewterCity_Museum_1F_EventScript_LivingAssistantDone::
 	release
 	end
 

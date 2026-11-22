@@ -19,6 +19,7 @@ from bridge import (
     Conversation, DialogueBridge, MAILBOX_SIZE, REPLY_OFFSET, SKIP, TEXT_CAPACITY, WAIT, validate,
 )
 from controls import Controls
+from autonomy import DESK, OFFER, REPORT, SCOUTS, choose as choose_autonomy
 from platform_io import atomic_write, backup_profile, profile_directory, profile_lock, publish_monitor
 from director import DUTY, PRESENCE, TRIP, choose_brock
 from dynamic_quests import (QUEST_VIEW, museum_exchange, project_brock, project_museum,
@@ -306,6 +307,7 @@ def main():
     mode.add_argument("--pewter-regional", action="store_true")
     mode.add_argument("--pewter-regional-retest", action="store_true")
     mode.add_argument("--phase11-demo", action="store_true")
+    mode.add_argument("--phase13-demo", action="store_true")
     parser.add_argument("--lightweight", action="store_true", help="Use short dialogue and skip optional prose")
     parser.add_argument("--no-predict", action="store_true", help="Disable approach prefetch for comparison")
     args = parser.parse_args()
@@ -383,6 +385,22 @@ def main():
                                             PERSONAS[ticket.actor], society.planning_snapshot())
                 society.submit(ticket, plan)
                 print("Regional:", plan.goal, [(step.action, step.target) for step in plan.steps], metrics)
+                for sample, battery in enumerate((b"survey-east", b"survey-moon"), 1):
+                    sample_world = WorldMemory(":memory:", "model-benchmark", battery)
+                    try:
+                        pilot = sample_world.autonomy
+                        pilot.advance(36000, True)
+                        for second in (36030, 36050, 36080):
+                            pilot.advance(second, True)
+                            if ticket := pilot.decision():
+                                selection, timing = choose_autonomy(model, ticket)
+                                if not pilot.submit(ticket, selection, "qwen", timing):
+                                    raise ValueError("Packaged Qwen decision failed the world validator")
+                                print("Autonomy benchmark:", sample, ticket.actor, selection, timing)
+                        pilot.advance(36400, True)
+                        print("Autonomy outcome:", sample, pilot.state["history"][0])
+                    finally:
+                        sample_world.close()
         finally:
             smoke_memory.close()
             model.close()
@@ -393,7 +411,9 @@ def main():
 
 def play(args, profile, manifest, rom_path, rom, model, regional_demo):
     demo = "PalletSocialTest.sav" if args.pallet_social else "PalletTest.sav" if args.pallet_test else None
-    if args.phase11_demo:
+    if args.phase13_demo:
+        demo = "Phase13Pewter.sav"
+    elif args.phase11_demo:
         demo = "Phase11RegionalSociety.sav"
     elif regional_demo:
         demo = "PewterRegionalRetest.sav" if args.pewter_regional_retest else "PewterRegionalTest.sav"
@@ -495,9 +515,18 @@ def play(args, profile, manifest, rom_path, rom, model, regional_demo):
                 return choice, {**metrics, "queue_ms": wait}
 
             society_exchange = None
+            autonomy = memory.autonomy
+            autonomy_work = None
+            autonomy_token = None
 
             def propose(context):
-                nonlocal staged, scene, lookup, guide_turn, guide_work, guide_result, last_guide, society_exchange
+                nonlocal staged, scene, lookup, guide_turn, guide_work, guide_result, last_guide, society_exchange, autonomy_token
+                if context.npc in (*SCOUTS.values(), DESK, OFFER, REPORT):
+                    message, autonomy_token = autonomy.reply(context.npc)
+                    if message:
+                        return json.dumps({"action": "SAY_DIALOGUE", "text": message})
+                    if context.npc in (OFFER, REPORT, DESK):
+                        return SKIP
                 if context.npc in HOOKS.values():
                     message = kanto_dialogue(kanto, memory, population, context) if kanto else None
                     return json.dumps({"action": "SAY_DIALOGUE", "text": message}) if message else SKIP
@@ -595,11 +624,18 @@ def play(args, profile, manifest, rom_path, rom, model, regional_demo):
                 scene = None
                 guide_result = None
                 society_exchange = None
+                autonomy_token = None
                 trace = bridge.poll(propose)
                 next_title = b"Living Quantum World - NPC is thinking" if bridge.pending else b"Living Quantum World - F1 Controls"
                 if next_title != title:
                     display.title(display.window, next_title)
                     title = next_title
+                if trace and (autonomy_token or trace["context"]["npc"] in (OFFER, REPORT, DESK)):
+                    if trace["validation"] == "accepted":
+                        autonomy.accept(autonomy_token)
+                    trace["route"] = "autonomous_pilot"
+                    record(trace)
+                    trace = None
                 if trace and trace["context"]["npc"] in ("society_assistant", "society_trainer", "society_researcher"):
                     if trace["validation"] == "accepted" and society_exchange:
                         exchange, owner, actor = society_exchange
@@ -700,6 +736,24 @@ def play(args, profile, manifest, rom_path, rom, model, regional_demo):
                             protected = bool(fresh.story) if fresh.area not in ("pallet", "rival_house", "oak_lab", "viridian") else False
                             director.observe(fresh.local_second, fresh.area, protected, fresh.busy)
                             society.tick(fresh.local_second, fresh.area, fresh.busy)
+                            if not fresh.busy and kanto:
+                                autonomy.advance(fresh.local_second, fresh.early_kanto_open)
+                                if autonomy_work and autonomy_work[1].done():
+                                    ticket, future = autonomy_work
+                                    autonomy_work = None
+                                    try:
+                                        action, timing = future.result()
+                                    except (OSError, ValueError, RuntimeError) as error:
+                                        autonomy.submit(ticket, ticket.fallback, "fallback", error=str(error)[:180])
+                                    else:
+                                        autonomy.submit(ticket, action, "qwen", timing)
+                                if not (autonomy_work or planning or resident_work) and replies.worker_idle():
+                                    if ticket := autonomy.decision(kanto):
+                                        if model.style == "qwen3":
+                                            autonomy_work = ticket, pool.submit(choose_autonomy, model, ticket)
+                                        else:
+                                            autonomy.submit(ticket, ticket.fallback, "fallback",
+                                                            error="Qwen3 unavailable")
                             if population:
                                 transitions = (population.demo_tick(fresh.local_second) if args.phase11_demo
                                                else population.tick(fresh.local_second))
@@ -724,7 +778,7 @@ def play(args, profile, manifest, rom_path, rom, model, regional_demo):
                                                                   **metrics})
                                     elif population.decision(ticket.request) != ticket and future.cancel():
                                         resident_work = None
-                                if (not resident_work and not planning and not fresh.busy
+                                if (not resident_work and not planning and not autonomy_work and not fresh.busy
                                         and replies.worker_idle() and (ticket := population.decision())):
                                     resident_work = ticket, pool.submit(run_commitment, ticket, time.perf_counter())
                             director.notice = society.notice_for_brock()
@@ -776,7 +830,7 @@ def play(args, profile, manifest, rom_path, rom, model, regional_demo):
                                             record({"director_rejection": str(error)})
                                 elif not fresh.busy and request != ready_now and future.cancel():
                                     planning = None
-                            if not resident_work and planning is None and start >= plan_retry_after and game.brock_ptr:
+                            if not resident_work and not autonomy_work and planning is None and start >= plan_retry_after and game.brock_ptr:
                                 request = (society.decision() if society.demo and not director.notice
                                            else director.decision()) or society.decision()
                                 if request is not None and replies.worker_idle():
@@ -806,7 +860,7 @@ def play(args, profile, manifest, rom_path, rom, model, regional_demo):
                                         record({"directive": "routine",
                                                               "fallback": "decision retry limit"})
                             game.publish_quest(director, society, population)
-                        predicted = None if bridge.pending or args.no_predict or planning or resident_work else replies.predict(fresh, start)
+                        predicted = None if bridge.pending or args.no_predict or planning or resident_work or autonomy_work else replies.predict(fresh, start)
                         if predicted:
                             record({"prefetched": predicted.state.encounter.npc,
                                                   "species": predicted.state.encounter.visible_species,

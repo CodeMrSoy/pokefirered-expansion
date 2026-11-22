@@ -32,6 +32,7 @@ class FieldHint:
     npc: str | None
     busy: bool
     local_second: int | None = None
+    early_kanto_open: bool = False
 
     @classmethod
     def decode(cls, raw):
@@ -43,8 +44,8 @@ class FieldHint:
         if candidate and KNOWLEDGE_PROFILES[candidate][0] != area:
             candidate = None
         second = FIELD_CLOCK.unpack_from(raw, FIELD_HINT.size)[0] if len(raw) == FIELD_SIZE else 0xFFFFFFFF
-        return cls(frame, species or None, area, story, candidate, distance == 255,
-                   second if second != 0xFFFFFFFF else None)
+        return cls(frame, (species & 0x7FFF) or None, area, story, candidate, distance == 255,
+                   second if second != 0xFFFFFFFF else None, bool(species & 0x8000))
 
 
 @dataclass(frozen=True)

@@ -190,5 +190,8 @@ with TemporaryDirectory() as directory:
     assert native("FlagGet", 0x820) and native("FlagGet", 0x4B0)
     assert spawned(gym, 1)
     gba.snap("phase8-badge")
+    if os.environ.get("LIVING_WORLD_PEWTER_FIXTURE"):
+        warp("PewterCity", 18, 16)
+        (gba.d / "Phase13Pewter.sav").write_bytes(battery())
     memory.close()
     print(f"PASS mode {mode}: home, absence, clue, travel checkpoint, collision, contact, original challenge and award continuation")
