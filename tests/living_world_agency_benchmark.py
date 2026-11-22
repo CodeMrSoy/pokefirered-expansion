@@ -5,6 +5,7 @@ from pathlib import Path
 import subprocess
 import sys
 from types import SimpleNamespace
+from time import perf_counter
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "experiments/living_world"))
@@ -33,6 +34,7 @@ def benchmark(runtime, weights, style):
                               sha256=hashlib.file_digest(f, "sha256").hexdigest())), flush=True)
     worker = ResidentWorker(runtime, windows_launcher_environment, model=weights)
     model = SimpleNamespace(render_prompt=gemma if style == "gemma" else non_thinking_chat, worker=worker)
+    completed = 0
     try:
         for case in ("ordinary", "player_intervenes", "peer_needs_help"):
             world = WorldMemory(":memory:", "benchmark", case.encode())
@@ -46,14 +48,30 @@ def benchmark(runtime, weights, style):
                 request = agency.ticket(rules)
                 if request is None:
                     continue
-                raw, timing = agency.generate(model, request)
+                worker.start()
+                initial_peak = peak(worker)
+                started = perf_counter()
+                try:
+                    raw, timing = agency.generate(model, request)
+                except TimeoutError as error:
+                    # An expired model is a measured failure. Continue independent
+                    # cases with a fresh isolated worker. Never approve a fallback plan.
+                    elapsed = round((perf_counter() - started) * 1000, 3)
+                    assert not agency.submit(rules, request, "", {"elapsed_ms": elapsed}, error=error)
+                    print(json.dumps(dict(case=case, actor=request.actor, context=request.context,
+                        raw=None, accepted=False, validator=rules.state["agency"]["audit"][-1],
+                        peak_bytes=initial_peak, timeout_ms=elapsed)), flush=True)
+                    break
                 if case == "player_intervenes" and t == 100:
                     assert rules.endorse()
                 accepted = agency.submit(rules, request, raw, timing)
+                completed += int(accepted)
                 print(json.dumps(dict(case=case, actor=request.actor, context=request.context,
                     raw=raw, accepted=accepted, validator=rules.state["agency"]["audit"][-1],
                     peak_bytes=peak(worker))), flush=True)
             world.close()
+        if weights.name == "model.gguf" and not completed:
+            raise RuntimeError("Bundled model failed to commit any plan")
     finally:
         worker.close()
 

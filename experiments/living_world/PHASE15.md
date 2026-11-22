@@ -94,3 +94,20 @@ This version supports two co-located agents, a shared shop workspace and two
 work skills. It executes each short plan atomically. Durable multi-day plans,
 open-ended business formation, negotiation over resources, and new occupations
 need additional reusable capabilities and stronger semantic evaluation.
+
+## Goal sensitivity and Windows time limits
+
+On Linux we also held the resident's initial state fixed and supplied four
+different ambitions to the action-selection calls. Qwen3 0.6B responded to
+“Organize shelves meticulously” by practicing and working stock. “Sales
+specialist” led to working sales. “Train my neighbor” also led to working
+sales. Qwen3 1.7B asked for stock training on all four goals. The larger
+model's reciprocal teaching example therefore provides limited evidence of
+goal-sensitive reasoning. These four diagnostic goals were supplied by
+the tester. The ordinary-shift goals in the raw traces were model outputs.
+
+An initial native Windows benchmarking run completed all 0.6B cases. The
+first larger Qwen decision exceeded the 18-second action-selection limit.
+The benchmark now records an expired decision with elapsed time, closes the
+worker, and proceeds to the next independent case. The player build keeps the
+same time limits. A timeout cannot authorize a simulated action.

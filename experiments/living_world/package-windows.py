@@ -106,7 +106,7 @@ def main():
         for name in ("play.py", "controls.py", "platform_io.py", "platform_scenario.py", "kanto.py", "autonomy.py", "world_rules.py", "agency.py",
                      "package_smoke.py", "launcher-windows.ps1", "population.py", "bridge.py", "inference.py", "worker.py", "world.py", "profiles.py",
                      "knowledge.py", "social.py", "reasoning.py", "hybrid.py", "routines.py", "director.py", "society.py", "planning.py", "region.py", "dynamic_quests.py", "PLAYTEST.md",
-                     "PHASE2.md", "PHASE3.md", "PHASE4.md", "PHASE5.md", "PHASE6.md", "PHASE7.md", "PHASE8.md", "PHASE9.md", "PHASE10.md", "PHASE11.md", "PHASE12.md", "PHASE13.md", "PHASE14.md", "PLATFORM.md"):
+                     "PHASE2.md", "PHASE3.md", "PHASE4.md", "PHASE5.md", "PHASE6.md", "PHASE7.md", "PHASE8.md", "PHASE9.md", "PHASE10.md", "PHASE11.md", "PHASE12.md", "PHASE13.md", "PHASE14.md", "PHASE15.md", "PLATFORM.md"):
             shutil.copyfile(APP / name, stage / name)
         subprocess.run([sys.executable, APP / "build-knowledge.py", stage / "world-knowledge.sqlite3"], check=True)
         shutil.copyfile(APP / "launch-windows.cmd", stage / "Play.cmd")
