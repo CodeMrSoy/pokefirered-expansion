@@ -61,11 +61,11 @@ jobs:
           sudo apt-get install -y gcc-arm-none-eabi libnewlib-arm-none-eabi libpng-dev
           python3 -m pip install Pillow numpy
       - name: Build and stage the exact validation ZIP
-        run: bash experiments/living_world/build-ci-windows.sh Living-World-15.0.0-Agency-Preview-Windows-x64.zip
+        run: bash experiments/living_world/build-ci-windows.sh Living-World-15.0.1-Agency-Preview-Windows-x64.zip
       - uses: actions/upload-artifact@v4
         with:
           name: living-world-windows-candidate
-          path: Living-World-15.0.0-Agency-Preview-Windows-x64.zip*
+          path: Living-World-15.0.1-Agency-Preview-Windows-x64.zip*
           compression-level: 0
           if-no-files-found: error
   windows-package:
@@ -92,7 +92,7 @@ jobs:
             Invoke-WebRequest -Uri $env:PACKAGE_URL -OutFile release.zip
             $hash = $env:PACKAGE_SHA256
           } else {
-            $candidate = 'Living-World-15.0.0-Agency-Preview-Windows-x64.zip'
+            $candidate = 'Living-World-15.0.1-Agency-Preview-Windows-x64.zip'
             $hash = (Get-Content "$candidate.sha256" -Raw).Split()[0]
             Move-Item $candidate release.zip
           }

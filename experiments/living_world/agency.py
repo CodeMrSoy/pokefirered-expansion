@@ -11,6 +11,7 @@ ACTORS = {
 }
 SKILLS = ("sales", "stock")
 PEER = {"resident": "neighbor", "neighbor": "resident"}
+OUTCOMES = tuple(f"{kind} {skill}" for kind in ("learn", "staff", "mentor") for skill in SKILLS)
 GOAL_GRAMMAR = '''root ::= word (" " word){1,7} "."
 word ::= [A-Za-z] [a-z]{0,11}
 '''
@@ -33,6 +34,20 @@ class Ticket:
     purpose: str = "agency"
 
 
+def achieved(person, target):
+    kind, skill = target.split()
+    if kind == "learn":
+        return skill in person["skills"]
+    if kind == "staff":
+        return person["job"] == skill
+    return skill in person.get("taught", [])
+
+
+def unfinished(person):
+    target = person.get("target")
+    return target if target and not achieved(person, target) else None
+
+
 def stimulus(a, actor, endorsed):
     peer = PEER[actor]
     return [a["asked"].get(peer), endorsed if actor == "resident" else False,
@@ -52,7 +67,8 @@ def ticket(rules):
         # a response from a colleague, or a player's endorsement.
         signal = stimulus(a, actor, rules.state["endorsed"])
         prior = [e for e in a["audit"] if e["actor"] == actor]
-        if not prior or (len(prior) < 6 and (prior[-1].get("signal") != signal or
+        retry = unfinished(a["people"][actor]) and prior and prior[-1].get("review") == "unmet"
+        if not prior or (len(prior) < 6 and (prior[-1].get("signal") != signal or retry or
                 (not prior[-1]["committed"] and (len(prior) == 1 or prior[-2]["committed"])))):
             break
     else:
@@ -80,14 +96,25 @@ def capabilities(a, actor):
 
 
 def generate(model, request):
-    prompt = model.render_prompt(
-        "Name your own next ambition at the Poke Mart in a few words ending in a period. "
-        "Sales means serving shoppers. Stock means organizing shelves. Be specific.", request.context)
-    goal, timing = model.worker.generate(GOAL_GRAMMAR, prompt, timeout=25)
-    goal = goal.removesuffix(".")
+    me = request.snapshot["people"][request.actor]
+    target = unfinished(me)
+    if target:
+        goal = me["goal"]
+        timing = {}
+        timings = []
+    else:
+        targets = [t for t in OUTCOMES if not achieved(me, t)]
+        grammar = GOAL_GRAMMAR.replace(' "."', ' "." "|" outcome') + "outcome ::= " + " | ".join(map(json.dumps, targets))
+        prompt = model.render_prompt(
+            "Write a short ambition and choose its finish condition. Learn means know a skill, "
+            "staff means perform that duty, mentor means teach a peer. Sales serves shoppers. "
+            "Stock organizes shelves.", request.context)
+        result, timing = model.worker.generate(grammar, prompt, timeout=25)
+        goal, target = result.split("|")
+        goal = goal.removesuffix(".")
+        timings = [timing["inference_ms"]]
     trial = deepcopy(request.snapshot)
     steps = []
-    timings = [timing["inference_ms"]]
     for _ in range(3):
         allowed = capabilities(trial, request.actor)
         if any(step.startswith("work ") for step in steps):
@@ -96,13 +123,25 @@ def generate(model, request):
             allowed.append("finish")
         else:
             allowed.append("wait")
-        if not allowed:
-            break
         prompt = model.render_prompt(
-            "Choose the next useful action for your own goal. Practice learns a skill. Ask asks your peer. "
-            "Teach or decline replies to a request. Work takes a duty. Finish once satisfied.",
-            f"{request.context} Goal: {goal}. Planned: {', '.join(steps) or 'none'}. "
-            f"Next options: {', '.join(allowed)}.")
+            "Choose a useful next step. Practice learns; ask requests teaching; teach answers a request; "
+            "work changes duty. Finish once your target is met.",
+            f"{request.context} Goal: {goal}. Target: {target}. "
+            f"Target met in trial: {achieved(trial['people'][request.actor], target)}. "
+            f"Steps: {', '.join(steps) or 'none'}. Options: {', '.join(allowed)}.")
+        if unfinished(me):
+            effects = []
+            for option in allowed:
+                forecast = deepcopy(trial)
+                if option not in ("wait", "finish"):
+                    execute(forecast, request.actor, *option.split())
+                outcome = "goal reached" if achieved(forecast["people"][request.actor], target) else "still open"
+                effects.append(f"{option} = {outcome}")
+            prompt = model.render_prompt(
+                "Your previous plan left your goal unfinished. Revise it using the predicted effects. "
+                "Choose an effective step when possible. You can wait for help.",
+                f"Goal: {goal}. Success: {target}. Feedback: {me['feedback']}. "
+                f"Trial steps: {', '.join(steps)}. " + ". ".join(effects))
         grammar = "root ::= " + " | ".join(map(json.dumps, allowed))
         step, metrics = model.worker.generate(grammar, prompt, timeout=18)
         timings.append(metrics["inference_ms"])
@@ -115,7 +154,7 @@ def generate(model, request):
             raise ValueError("worker chose unavailable capability")
         execute(trial, request.actor, *step.split())
         steps.append(step)
-    return goal + "|" + ";".join(steps), {**timing, "calls": len(timings),
+    return goal + "|" + target + "|" + ";".join(steps), {**timing, "calls": len(timings),
                                            "inference_ms": round(sum(timings), 3)}
 
 
@@ -142,6 +181,9 @@ def execute(a, actor, verb, skill):
             if skill in learner["skills"]:
                 raise ValueError("learner already qualified")
             learner["skills"].append(skill)
+            taught = me.setdefault("taught", [])
+            if skill not in taught:
+                taught.append(skill)
             learner["trust"] = min(5, learner["trust"] + 1)
         del a["asked"][peer]
         a["people"][peer]["feedback"] = f"{actor} answered {verb} {skill}"
@@ -184,6 +226,15 @@ def submit(rules, request, raw, timing=None, error=None):
             raise ValueError("malformed plan")
         goal, _, plan = raw.partition("|")
         goal = goal.strip()
+        person = trial["people"][request.actor]
+        prior_target = unfinished(person)
+        target = None
+        if "|" in plan:
+            target, plan = plan.split("|", 1)
+            if target not in OUTCOMES:
+                raise ValueError("unknown goal condition")
+        if prior_target and (target != prior_target or goal != person["goal"]):
+            raise ValueError("unfinished commitment changed")
         steps = plan.split(";")
         if not re.fullmatch(r"[A-Za-z][A-Za-z ']{2,94}", goal) or not 1 <= len(steps) <= 4:
             raise ValueError("malformed goal or step count")
@@ -199,7 +250,13 @@ def submit(rules, request, raw, timing=None, error=None):
             if not separator:
                 raise ValueError("missing argument")
             execute(trial, request.actor, verb, skill)
-        trial["people"][request.actor].update(goal=goal, feedback="plan completed")
+        person.update(goal=goal, feedback="plan completed")
+        if target:
+            person["target"] = target
+            met = achieved(person, target)
+            person["feedback"] = "Goal reached" if met else f"Still need to {target}. Last tried {plan}"[:80]
+        else:
+            person.pop("target", None)
         a = state["agency"] = trial
         accepted = True
     except ValueError as exc:
@@ -208,6 +265,10 @@ def submit(rules, request, raw, timing=None, error=None):
     a["audit"] = [*a["audit"][-15:], dict(actor=request.actor, proposal=str(raw)[:160],
                   signal=stimulus(a, request.actor, state["endorsed"]), checked=decisions, committed=accepted, reason="ok" if accepted else reason,
                   source="worker_failure" if error else "model", timing=timing)]
+    if accepted and target:
+        previous = request.snapshot["people"][request.actor]
+        a["audit"][-1].update(target=target, before=achieved(previous, target), after=met,
+            review="met" if met else "stalled" if prior_target else "unmet")
     a["turn"] += 1
     a["due"] = rules.now + (90 if accepted else 45)
     state["revision"] += 1
@@ -223,7 +284,7 @@ def validate_state(a):
             or not isinstance(a["audit"], list) or len(a["audit"]) > 16):
         raise ValueError("invalid agency state")
     for actor, person in a["people"].items():
-        if (not isinstance(person, dict) or set(person) != {"skills","job","goal","trust","feedback"}
+        if (not isinstance(person, dict) or set(person) - {"target","taught"} != {"skills","job","goal","trust","feedback"}
                 or not isinstance(person["skills"], list) or not 1 <= len(person["skills"]) <= 2
                 or any(s not in SKILLS for s in person["skills"])
                 or len(set(person["skills"])) != len(person["skills"])
@@ -232,6 +293,11 @@ def validate_state(a):
                 or not isinstance(person["goal"], str) or len(person["goal"]) > 95
                 or not isinstance(person["feedback"], str) or len(person["feedback"]) > 80):
             raise ValueError("invalid resident")
+        if ("target" in person and person["target"] not in OUTCOMES
+                or not isinstance(person.get("taught", []), list)
+                or len(person.get("taught", [])) > len(SKILLS)
+                or any(skill not in person["skills"] for skill in person.get("taught", []))):
+            raise ValueError("invalid goal evidence")
         if actor in a["asked"] and (a["asked"][actor] not in SKILLS or a["asked"][actor] in person["skills"]):
             raise ValueError("invalid request")
     for entry in a["audit"]:

@@ -208,6 +208,13 @@ class WorldRules:
             person = a["people"][owner]
             peer = agency.PEER[owner]
             if actor in (MART, "mart_neighbor"):
+                if target := agency.unfinished(person):
+                    kind, skill = target.split()
+                    if kind == "staff":
+                        return "I hope to work the counter." if skill == "sales" else "Still aiming for stock work."
+                    if kind == "learn":
+                        return f"I still need to learn {skill}."
+                    return f"I hope to teach {skill}."
                 if person["feedback"].startswith(peer + " answered teach"):
                     return "My neighbor taught me."
                 if owner in a["asked"]:

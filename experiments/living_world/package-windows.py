@@ -14,7 +14,7 @@ from reasoning import BALANCED_SHA256, LIGHTWEIGHT_SHA256
 
 ROOT = Path(__file__).resolve().parents[2]
 APP = Path(__file__).resolve().parent
-RELEASE_VERSION = "15.0.0-agency-preview"
+RELEASE_VERSION = "15.0.1-agency-preview"
 INPUTS = {
     "mgba-win.zip": "a7ae453b739d3f9117537e8ca7275ecebd923d9035b52435f556470bf58a268f",
     "python-win.zip": "4acbed6dd1c744b0376e3b1cf57ce906f9dc9e95e68824584c8099a63025a3c3",

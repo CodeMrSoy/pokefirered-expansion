@@ -111,3 +111,34 @@ first larger Qwen decision exceeded the 18-second action-selection limit.
 The benchmark now records an expired decision with elapsed time, closes the
 worker, and proceeds to the next independent case. The player build keeps the
 same time limits. A timeout cannot authorize a simulated action.
+
+## Goal follow-through · 15.0.1
+
+The intended scope is every real NPC in Kanto and Vidra. Each should have a
+persistent identity, its own reasons to act, and enough agency to respond or
+decline. Seeded world events should introduce local circumstances even while
+the player is elsewhere. A witness can act on an event; another character can
+learn about it through an attributed report. Essential services, progression
+and battles remain under ROM authority. Expanding these behaviors to additional
+NPCs will require mapping their identities to supported capabilities. The
+existing regional inquiry director already has a separate save-seeded event
+cycle. This increment exercises follow-through in the two-resident Mart pilot.
+
+When generating an ambition, the planner also chooses what observable evidence
+would fulfill it. It can seek to learn a skill, staff a duty or teach a peer.
+The host measures that condition after validated actions. On a missed goal,
+the resident carries the same ambition and condition into a later turn, sees
+what its last attempt accomplished, and can inspect the predicted effects of
+its next actions. One unsuccessful revision pauses further attempts until a
+relevant stimulus arrives. An unfinished commitment survives checkpoints.
+Teaching requires an actual request and a completed transfer of knowledge.
+
+In the ordinary Linux Qwen3 0.6B run, the resident chose to staff sales and
+initially waited. That was a valid action with an unmet goal. Its neighbor
+practiced sales and took sales duty. The original resident then requested stock
+training and took sales duty. The counter became available through its own
+native interaction. The extra stock request did not advance the sales goal.
+The generated English ambition was also awkward. The host evaluates the
+model's declared condition; it cannot establish semantic agreement between
+every free-form ambition and that condition. Full records are in
+[the follow-through trace](benchmarks/agency/follow-through-qwen3-06.jsonl).
