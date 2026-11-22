@@ -11,7 +11,7 @@ fixture = (gba.root / "tests/living_world_bridge_emulator.py").read_text().split
     "native, mode, group, map_number = setup()")[0]
 exec(compile(fixture, "native fixture", "exec"))
 
-from world_rules import CHECKOUT, GYM, MART, PITCH, SUPPORT, apply_decision
+from world_rules import CHECKOUT, GYM, MART, PITCH, SUPPORT, PRACTICE_ROCK, PRACTICE_TRAIL, apply_decision
 
 
 def warp(name, x, y):
@@ -33,7 +33,7 @@ def task_active(name):
     return False
 
 
-def converse(label, refusal=False):
+def converse(label, refusal=False, practice=False):
     seen = {}
     shop = False
     def propose(context):
@@ -53,11 +53,15 @@ def converse(label, refusal=False):
                 stock = struct.unpack("<I", gba.read(gba.symbols["sShopData"] + 4, 4))[0]
                 assert stock == gba.symbols["PewterCity_Mart_Items"]
             shop = shop or in_shop
+            if practice and gba.read(gba.symbols["gEnemyParty"] + 84, 1)[0] != 0:
+                return seen, shop
             if frame > 1 and field_ready():
                 return seen, shop
             gba.keys.clear()
             if frame % 10 == 0:
-                gba.keys.add(0 if in_shop or (refusal and PITCH in seen) else 8)
+                decline = (refusal and PITCH in seen) or (not practice and
+                           (PRACTICE_ROCK in seen or PRACTICE_TRAIL in seen))
+                gba.keys.add(0 if in_shop or decline else 8)
             gba.run(1)
     finally:
         gba.keys.clear()
@@ -79,7 +83,9 @@ with TemporaryDirectory() as folder:
     clerk = "PewterCity_Mart_EventScript_Clerk"
     assert converse(clerk)[1]
     assert converse(resident) == ({}, False)
+    assert native("GetCurrentLevelCap") == 14
     native("FlagSet", 0x820)
+    assert native("GetCurrentLevelCap") == 21
     native("FlagSet", 0x4B0)
     rules.observe(1000, True)
     offered, shop = converse(resident, refusal=True)
@@ -90,12 +96,23 @@ with TemporaryDirectory() as folder:
     for second in (1050, 1150):
         rules.observe(second, True)
         choice = rules.decision()
-        assert apply_decision(rules, choice, choice.fallback, "fallback")
+        selection = ("type_coaching" if mode == 0 else "expedition_coaching") if choice.actor == "gym" else choice.fallback
+        assert apply_decision(rules, choice, selection, "fallback")
     hired, shop = converse(resident)
     assert MART in hired and CHECKOUT in hired and shop
     assert converse(clerk)[1]
     warp("PewterCity_Gym", 6, 6)
     assert GYM in converse("PewterCity_Gym_EventScript_GymGuy")[0]
+    gba.inject(b"\x23" + struct.pack("<I", (gba.symbols["ScrCmd_givegiftmon"] | 1) + 0x2000000)
+               + struct.pack("<BBHHI", 0, 7, 14, 16, 0) + b"\x02")
+    before = c.create_string_buffer(gba.lib.retro_serialize_size())
+    assert gba.lib.retro_serialize(before, len(before))
+    scene, _ = converse("PewterCity_Gym_EventScript_GymGuy", practice=True)
+    assert (PRACTICE_ROCK if mode == 0 else PRACTICE_TRAIL) in scene
+    assert struct.unpack("<H", gba.read(gba.symbols["gTrainerBattleParameter"] + 2, 2))[0] == 751 + mode
+    assert gba.read(gba.symbols["gEnemyParty"] + 84, 1)[0] == 10 + mode
+    assert gba.lib.retro_unserialize(before, len(before))
+    gba.run(60)
     memory.checkpoint(b"after")
     memory.close()
     memory = WorldMemory(path, "pilot", b"after")
@@ -105,4 +122,4 @@ with TemporaryDirectory() as folder:
     assert converse(resident)[1]
     assert converse(clerk)[1]
     memory.close()
-print(f"PASS mode {mode}: original and apprentice counters, endorsement consent, saved occupation and Gym coaching")
+print(f"PASS mode {mode}: original and apprentice counters, endorsement consent, saved occupation and capped Gym practice")

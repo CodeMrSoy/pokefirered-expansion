@@ -35,7 +35,9 @@ CLASSIC_CAPS = dict(zip((*KANTO_GYMS, "league"), (14, 21, 24, 29, 43, 43, 47, 50
 RESERVED_CRESTS = ("corvala", "brandon", "ben", "cody")
 MART, PITCH, SUPPORT, GYM = "evolution_mart", "evolution_pitch", "evolution_support", "evolution_gym"
 CHECKOUT = "evolution_checkout"
-HOOKS = {29: MART, 30: PITCH, 31: SUPPORT, 32: GYM, 33: CHECKOUT}
+PRACTICE_ROCK, PRACTICE_TRAIL = "practice_rock", "practice_trail"
+HOOKS = {29: MART, 30: PITCH, 31: SUPPORT, 32: GYM, 33: CHECKOUT,
+         34: PRACTICE_ROCK, 35: PRACTICE_TRAIL}
 PROJECTS = {
     "mart": ("stock_helper", "counter_apprentice"),
     "gym": ("type_coaching", "expedition_coaching"),
@@ -200,8 +202,13 @@ class WorldRules:
             return "Need anything from the Mart?"
         if actor == MART:
             return DIALOGUE.get(self.state["projects"]["mart"])
+        course = self.state["projects"]["gym"]
+        if actor == PRACTICE_ROCK and course == "type_coaching":
+            return "Try the Rock type drill?"
+        if actor == PRACTICE_TRAIL and course == "expedition_coaching":
+            return "Try the trail drill?"
         if actor == GYM:
-            return DIALOGUE.get(self.state["projects"]["gym"])
+            return DIALOGUE.get(course)
         return None
 
     def monitor(self):
@@ -211,6 +218,7 @@ class WorldRules:
             "native_gym_maps": {name: f"{town}_Gym" for name, town in KANTO_GYMS.items()},
             "vidra": {"eirik": "Havora_Gym", "reserved_crests": RESERVED_CRESTS},
             "progression_caps": {"classic": CLASSIC_CAPS, "quantum": QUANTUM_CAPS},
+            "native_practice_caps": {"type_coaching": 10, "expedition_coaching": 11},
             "battle_overrides": False, "map_overrides": False,
         }
 

@@ -27,7 +27,9 @@ take a stock or counter job. A counter apprentice can open the standard
 native buy/sell menu through the original stock list. The original clerk
 continues to serve customers. The Gym can start either type coaching or
 field preparation after winning the badge. Advice appears alongside the
-attendant's stock post-victory dialogue.
+attendant's stock post-victory dialogue. The project also offers one optional
+practice battle after Brock. The fixed Rock drill uses a level 10 Geodude,
+and the trail drill uses a level 11 Sandshrew.
 
 The Monitor's `world_rules` section shows protected native services and Gym
 maps, Classic and Quantum caps, choices, provenance, player endorsement,
@@ -51,15 +53,16 @@ approval and rejection history, and quarantined saves. The separate profile is
   quarantined and native stock scripts remain usable. Accepted project state
   travels through the existing save checkpoints.
 - The ROM checks the actual Boulder Badge before exposing Phase 14 hooks.
-  The host sends optional dialogue. The only new gameplay operation on the
-  ROM side is entering the authored Pewter shop menu from an existing NPC.
+  The host sends optional dialogue. The two new operations are entering the authored Pewter shop menu from an
+  existing NPC and starting a vetted optional post-badge practice battle.
   Native stock, prices, protected flags, party data, tile geometry, puzzles,
   warps, rewards and required battles are outside the allowlist.
 - The team ceiling checks both mode and progression ceilings, including
-  boolean/oversized input rejection. There is no team assignment bridge.
-  Stock opponents and all native settings remain authoritative. Runtime
-  team assembly, difficulty evaluation, generated puzzles, relocation and
-  additional physical changes are not in this preview.
+  boolean/oversized input rejection. The practice parties are fixed, keep their authored move lists in randomizer
+  mode, and are checked for species, moves, held item, actual progression cap
+  and a hard ceiling of 14 immediately before the battle script. Stock
+  mandatory battles remain authoritative. Arbitrary team assembly, generated
+  puzzles, relocation and broader physical changes are outside this preview.
 
 Run `python -B tests/living_world_rules.py` for the registry checks, adversarial
 proposals, SQLite rollback, replay, migration, and save scope. The

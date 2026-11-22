@@ -761,7 +761,9 @@
 #define TRAINER_HAVORA_FIRST_MATE                748
 #define TRAINER_HAVORA_HARBORMASTER              749
 #define TRAINER_HAVORA_LOCKKEEPER                750
-#define TRAINERS_COUNT                           751
+#define TRAINER_PEWTER_PRACTICE_ROCK             751
+#define TRAINER_PEWTER_PRACTICE_TRAIL            752
+#define TRAINERS_COUNT                           753
 #define MAX_TRAINERS_COUNT                       768
 #define TRAINER_PARTNER(partner)           (MAX_TRAINERS_COUNT + partner)
 

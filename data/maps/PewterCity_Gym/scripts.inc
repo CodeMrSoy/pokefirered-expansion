@@ -79,8 +79,38 @@ PewterCity_Gym_Text_BrockReturnSoon::
 PewterCity_Gym_EventScript_GymGuyPostVictory::
 	msgbox PewterCity_Gym_Text_YoureChampMaterial
 	living_world_aside LIVING_WORLD_EVOLUTION_GYM
+	callnative LivingWorld_BeginPalletOptional
+	.byte LIVING_WORLD_PRACTICE_ROCK
+	gotonative LivingWorld_WaitForDialogue
+	goto_if_eq VAR_RESULT, TRUE, PewterCity_Gym_EventScript_OfferRockDrill
+	callnative LivingWorld_BeginPalletOptional
+	.byte LIVING_WORLD_PRACTICE_TRAIL
+	gotonative LivingWorld_WaitForDialogue
+	goto_if_eq VAR_RESULT, TRUE, PewterCity_Gym_EventScript_OfferTrailDrill
+PewterCity_Gym_EventScript_PracticeDone::
 	release
 	end
+
+PewterCity_Gym_EventScript_OfferRockDrill::
+	msgbox gLivingWorldDialogue, MSGBOX_YESNO
+	goto_if_ne VAR_RESULT, YES, PewterCity_Gym_EventScript_PracticeDone
+	callnative LivingWorld_PreparePracticeBattle
+	.byte 0
+	goto_if_ne VAR_RESULT, TRUE, PewterCity_Gym_EventScript_PracticeDone
+	trainerbattle_no_intro TRAINER_PEWTER_PRACTICE_ROCK, PewterCity_Gym_Text_PracticeFinished
+	goto PewterCity_Gym_EventScript_PracticeDone
+
+PewterCity_Gym_EventScript_OfferTrailDrill::
+	msgbox gLivingWorldDialogue, MSGBOX_YESNO
+	goto_if_ne VAR_RESULT, YES, PewterCity_Gym_EventScript_PracticeDone
+	callnative LivingWorld_PreparePracticeBattle
+	.byte 1
+	goto_if_ne VAR_RESULT, TRUE, PewterCity_Gym_EventScript_PracticeDone
+	trainerbattle_no_intro TRAINER_PEWTER_PRACTICE_TRAIL, PewterCity_Gym_Text_PracticeFinished
+	goto PewterCity_Gym_EventScript_PracticeDone
+
+PewterCity_Gym_Text_PracticeFinished::
+	.string "Good practice!$"
 
 PewterCity_Gym_EventScript_GymGuyTakeMeToTop::
 	msgbox PewterCity_Gym_Text_LetsGetHappening

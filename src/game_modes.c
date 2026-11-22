@@ -59,6 +59,8 @@ void GameModes_NewGame(void)
 
 bool32 GameModes_PreserveGymTeam(u16 trainerId)
 {
+    if (trainerId == TRAINER_PEWTER_PRACTICE_ROCK || trainerId == TRAINER_PEWTER_PRACTICE_TRAIL)
+        return TRUE; // Keep the published practice parties within the exercise rules.
     // Current Vidra gym battles are the eight Havora trial/leader encounters.
     return trainerId >= TRAINER_HAVORA_DOCK_CREW && trainerId <= TRAINER_HAVORA_LOCKKEEPER
         && (!AdventureMode_IsQuantum() || !GameModes_Enabled(GAME_MODE_VIDRA_GYMS));

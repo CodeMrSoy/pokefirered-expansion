@@ -1,4 +1,7 @@
 #include "global.h"
+#include "adventure_progression.h"
+#include "caps.h"
+#include "data.h"
 #include "event_data.h"
 #include "event_object_movement.h"
 #include "field_player_avatar.h"
@@ -13,6 +16,8 @@
 #include "constants/flags.h"
 #include "constants/living_world.h"
 #include "constants/maps.h"
+#include "constants/items.h"
+#include "constants/moves.h"
 #include "constants/species.h"
 #include "constants/vars.h"
 
@@ -522,7 +527,7 @@ static void BeginConversation(u8 npc)
     gLivingWorldMailbox.request = 0;
     sFramesRemaining = 0;
     sDeferred = FALSE;
-    if (npc < LIVING_WORLD_PC_RESIDENT || npc > LIVING_WORLD_EVOLUTION_CHECKOUT
+    if (npc < LIVING_WORLD_PC_RESIDENT || npc > LIVING_WORLD_PRACTICE_TRAIL
      || !FlagGet(FLAG_SYS_POKEDEX_GET) || gQuestLogState == QL_STATE_PLAYBACK)
         return;
 
@@ -574,4 +579,31 @@ bool8 LivingWorld_WaitForDialogue(void)
     gLivingWorldMailbox.request = 0;
     sFramesRemaining = 0;
     return TRUE;
+}
+
+void LivingWorld_PreparePracticeBattle(struct ScriptContext *ctx)
+{
+    u8 course = ScriptReadByte(ctx);
+    u16 trainer = course == 0 ? TRAINER_PEWTER_PRACTICE_ROCK : TRAINER_PEWTER_PRACTICE_TRAIL;
+    const struct Trainer *data = GetTrainerStructFromId(trainer);
+    u32 cap = GetCurrentLevelCap();
+    u8 level;
+    gSpecialVar_Result = FALSE;
+    if (course > 1 || !FlagGet(FLAG_BADGE01_GET) || !FlagGet(FLAG_DEFEATED_BROCK)
+     || gQuestLogState == QL_STATE_PLAYBACK || !data->party || data->partySize != 1
+     || ((gSaveBlock1Ptr->location.mapGroup << 8) | gSaveBlock1Ptr->location.mapNum) != MAP_PEWTER_CITY_GYM
+     || FlagGet(TRAINER_FLAGS_START + trainer))
+        return;
+
+    level = AdventureMode_TrainerLevel(trainer, 0, data->party[0].lvl);
+    if (level == 0 || level > 14 || level > cap)
+        return;
+    if (data->party[0].species != (course == 0 ? SPECIES_GEODUDE : SPECIES_SANDSHREW)
+     || data->party[0].moves[0] != (course == 0 ? MOVE_TACKLE : MOVE_SCRATCH)
+     || data->party[0].moves[1] != (course == 0 ? MOVE_DEFENSE_CURL : MOVE_SAND_ATTACK)
+     || data->party[0].moves[2] != MOVE_NONE || data->party[0].moves[3] != MOVE_NONE
+     || data->party[0].heldItem != ITEM_NONE)
+        return;
+
+    gSpecialVar_Result = TRUE;
 }

@@ -248,6 +248,7 @@ const union AnimCmd *const gAnims_Trainer[] ={
 static const struct Trainer sTrainerData[DIFFICULTY_NORMAL + 1][TRAINERS_COUNT] =
 {
 #include "data/trainers.h"
+#include "data/phase14_practice_trainers.h"
 };
 const struct Trainer *const gTrainers[DIFFICULTY_COUNT] =
 {
