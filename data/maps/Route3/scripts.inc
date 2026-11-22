@@ -2,7 +2,11 @@ Route3_MapScripts::
 	.byte 0
 
 Route3_EventScript_Youngster::
-	msgbox Route3_Text_TunnelFromCeruleanTiring, MSGBOX_NPC
+	lock
+	faceplayer
+	msgbox Route3_Text_TunnelFromCeruleanTiring
+	living_world_aside LIVING_WORLD_ROUTE3_WALKER
+	release
 	end
 
 Route3_EventScript_RouteSign::

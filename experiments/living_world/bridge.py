@@ -7,6 +7,7 @@ import time
 from dataclasses import dataclass
 
 from profiles import NPC_IDS
+from kanto import HOOKS
 
 REQUEST = struct.Struct("<4sIHH")
 REPLY_OFFSET = REQUEST.size
@@ -15,7 +16,7 @@ MAILBOX_SIZE = 132
 LINE = re.compile(r"[A-Za-z0-9 !?.,':-]{1,28}")
 REQUEST_IDS = {**NPC_IDS, 10: "pallet_exchange", 11: "guide_followup",
                14: "brock_attendant", 15: "brock_contact", 16: "brock_return",
-               17: "society_assistant", 18: "society_trainer", 19: "society_researcher"}
+               17: "society_assistant", 18: "society_trainer", 19: "society_researcher", **HOOKS}
 WAIT = object()
 SKIP = object()
 

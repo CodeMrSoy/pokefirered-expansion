@@ -45,6 +45,7 @@ FLAG = re.compile(r"\b(?:FLAG_[A-Z0-9_]+|VAR_MAP_SCENE_[A-Z0-9_]+)\b")
 BATTLE = re.compile(r"^\s*(?:trainerbattle\w*|settrainerflag|checktrainerflag)\s+"
                     r"[^\n@]*?\b(TRAINER_[A-Z0-9_]+)\b", re.M)
 COMMAND = re.compile(r"^\s*((?:goto|call)(?:_\w+)?)\s+([^\n@]+)", re.M)
+CONTINUATION = re.compile(r"^\s*trainerbattle\w*\s+([^\n@]+)", re.M)
 
 
 def read_json(path):
@@ -78,6 +79,9 @@ def inspect_script(labels, entry):
             branch = args.rsplit(",", 1)[-1].strip()
             if branch in labels:
                 stack.append(branch)
+        for args in CONTINUATION.findall(body):
+            stack.extend(label for field in args.split(",") if "_EventScript_" in (label := field.strip())
+                         and label in labels)
     words = "\n".join(labels[key][0] for key in sorted(visited))
     return {
         "scripts": sorted(f"{labels[key][1]}#{key}" for key in visited),
@@ -256,3 +260,32 @@ def write_catalog(db, root):
                                                   "source": f"data/maps/{name}/map.json"}))
                 for item in records or ()
             ))
+    db.execute("""CREATE TABLE kanto_fact (
+        map TEXT NOT NULL REFERENCES kanto_map(id), key TEXT NOT NULL, text TEXT NOT NULL,
+        role TEXT, source TEXT NOT NULL, PRIMARY KEY(map, key)
+    )""")
+    # Border connections are topological knowledge, independent of present
+    # access. NPC travel still uses only the runtime allowlist of tested edges.
+    by_token = {row["id"]: name for name, row in maps.items()}
+    for map_, row in maps.items():
+        for edge in row["connections"] or ():
+            if (destination := by_token.get(edge["map"])) is not None:
+                db.execute("INSERT INTO kanto_fact VALUES (?,?,?,?,?)", (
+                    map_, "border:" + destination,
+                    f"{destination} borders this area to the {edge['direction']}.",
+                    None, f"data/maps/{map_}/map.json#connections"
+                ))
+    for map_, key, role, label, text in (
+        ("PewterCity_Museum_1F", "museum:fossils", "researcher",
+         "PewterCity_Museum_1F_EventScript_Scientist2", "The Museum displays two fossils."),
+        ("CeruleanCity_Gym", "gym:leader", "gym_leader",
+         "CeruleanCity_Gym_EventScript_Misty", "Misty leads Cerulean Gym."),
+        ("ViridianCity_Mart", "mart:service", "merchant",
+         "ViridianCity_Mart_EventScript_Clerk", "The clerk serves customers after the parcel errand."),
+        ("MtMoon_1F", "journal:brock", None,
+         "MtMoon_1F_EventScript_BaldingMan", "A local visitor has heard of Brock."),
+    ):
+        path = "data/scripts/fame_checker.inc" if key == "journal:brock" else f"data/maps/{map_}/scripts.inc"
+        if f"{label}::" not in (root / path).read_text(encoding="utf-8"):
+            raise ValueError(f"Missing source for {key}: {path}#{label}")
+        db.execute("INSERT INTO kanto_fact VALUES (?,?,?,?,?)", (map_, key, text, role, f"{path}#{label}"))

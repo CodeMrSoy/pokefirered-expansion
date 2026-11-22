@@ -31,6 +31,7 @@ class Resident:
     motive: str
     preference: str
     patience: int
+    partner: str | None = None
 
 
 # These are host-side inhabitants. Their homes are logical workplaces and
@@ -96,11 +97,15 @@ class Population:
     def __init__(self, world, roster=None):
         self.world = world
         self.model_decisions = False
+        self.last_active_tick_ms = None
         self.db = world.db
         profiles = tuple(residents() if roster is None else roster)
         self.people = {person.id: person for person in profiles}
         if len(self.people) != len(profiles) or not self.people or any(
-                p.home not in LOCATIONS or not 0 <= p.shift < DAY for p in profiles):
+                not 0 <= p.shift < DAY or p.role not in ROLES
+                or (p.partner is None and p.home not in LOCATIONS)
+                or (p.partner is not None and (p.partner == p.id or p.partner not in self.people
+                    or p.home != self.people[p.partner].home)) for p in profiles):
             raise ValueError("Invalid regional roster")
         self.db.execute("CREATE TABLE IF NOT EXISTS regional_population (save TEXT PRIMARY KEY, state TEXT NOT NULL)")
         self.load()
@@ -116,7 +121,10 @@ class Population:
             event["survey_discovered"] = True
             if objective["status"] == "active" and event["status"] != "active":
                 objective["status"] = event["status"]
-        self.rebuild()
+        if self.state["clock"] >= 0 and self.people.keys() - self.state["actors"].keys():
+            self.initialize(self.state["clock"])
+        else:
+            self.rebuild()
 
     def rebuild(self):
         self.queue = [(actor["due"], key) for key, actor in self.state["actors"].items() if key in self.people]
@@ -216,8 +224,12 @@ class Population:
         if len(self.state["requests"]) >= OPEN_REQUESTS:
             return False
         busy = {request["recipient"] for request in self.state["requests"].values()}
-        peers = [peer.id for peer in self.people.values()
-                 if peer.role == goal.get("dependency", DEPENDENCIES[person.role]) and peer.id not in busy]
+        if person.partner:
+            peers = [person.partner] if person.partner not in busy else []
+        else:
+            peers = [peer.id for peer in self.people.values()
+                     if not peer.partner and peer.role == goal.get("dependency", DEPENDENCIES[person.role])
+                     and peer.id not in busy]
         if not peers:
             return False
         preferred = max(peers, key=lambda peer: (actor["bonds"].get(peer, 0),
@@ -227,13 +239,15 @@ class Population:
         goal.update(request=request, last_peer=preferred)
         self.state["requests"][request] = {"owner": person.id, "recipient": preferred,
                                            "goal": goal["id"], "created": when, "deadline": when + 2 * DAY}
-        self.event(request, "survey_support" if person.role == "researcher" else "cooperation",
-                   person.id, when, audience="museum_desk" if person.role == "researcher" else None)
+        survey = not person.partner and person.role == "researcher"
+        self.event(request, "survey_support" if survey else "cooperation",
+                   person.id, when, audience="museum_desk" if survey else None)
         self.remember(actor, when, "requested_help", peer=preferred, request=request)
         return False
 
     def queue_decision(self, person, actor, request, when):
-        if not self.model_decisions or person.role != "volunteer" or self.people[request["owner"]].role != "researcher":
+        if (not self.model_decisions or person.partner or person.role != "volunteer"
+                or self.people[request["owner"]].role != "researcher"):
             return False
         day = when // DAY
         budget = self.state.get("decision_budget", {})
@@ -335,8 +349,9 @@ class Population:
         return self.tick(DEMO_START + (second - self.state["demo_anchor"]) * DEMO_SPEED)
 
     def tick(self, second):
-        if type(second) is not int or second < self.state["clock"]:
+        if type(second) is not int or second < 0 or second < self.state["clock"]:
             return 0
+        start = perf_counter()
         initialized = not self.queue
         if initialized:
             self.initialize(second)
@@ -363,4 +378,5 @@ class Population:
             processed += 1
         if initialized or processed:
             self.persist()
+            self.last_active_tick_ms = (perf_counter() - start) * 1000
         return processed

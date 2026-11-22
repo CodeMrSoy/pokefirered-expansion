@@ -2,7 +2,7 @@ name: Living World Platform
 
 on:
   push:
-    branches: [Living-World-Infrastructure]
+    branches: [Living-World-Infrastructure, Living-World-Phase12]
   workflow_dispatch:
     inputs:
       package_url:
@@ -31,6 +31,8 @@ jobs:
           python -B experiments/living_world/platform_scenario.py platform-trace.json
           python -c "import json; from pathlib import Path; assert json.loads(Path('platform-trace.json').read_bytes()) == json.loads(Path('tests/living_world_platform_expected.json').read_bytes())"
           python -B tests/living_world_population.py
+          python -B tests/living_world_kanto_census.py
+          python -B tests/living_world_kanto.py
           python -B tests/living_world_release_scenario.py > release-scenario.json
       - uses: actions/upload-artifact@v4
         if: always()
@@ -55,11 +57,11 @@ jobs:
           sudo apt-get install -y gcc-arm-none-eabi libnewlib-arm-none-eabi libpng-dev
           python3 -m pip install Pillow numpy
       - name: Build and stage the exact validation ZIP
-        run: bash experiments/living_world/build-ci-windows.sh Living-World-11.1.0-Infrastructure-Windows-x64.zip
+        run: bash experiments/living_world/build-ci-windows.sh Living-World-12.0.0-Kanto-Preview-Windows-x64.zip
       - uses: actions/upload-artifact@v4
         with:
           name: living-world-windows-candidate
-          path: Living-World-11.1.0-Infrastructure-Windows-x64.zip*
+          path: Living-World-12.0.0-Kanto-Preview-Windows-x64.zip*
           compression-level: 0
           if-no-files-found: error
   windows-package:
@@ -86,7 +88,7 @@ jobs:
             Invoke-WebRequest -Uri $env:PACKAGE_URL -OutFile release.zip
             $hash = $env:PACKAGE_SHA256
           } else {
-            $candidate = 'Living-World-11.1.0-Infrastructure-Windows-x64.zip'
+            $candidate = 'Living-World-12.0.0-Kanto-Preview-Windows-x64.zip'
             $hash = (Get-Content "$candidate.sha256" -Raw).Split()[0]
             Move-Item $candidate release.zip
           }

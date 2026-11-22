@@ -356,8 +356,89 @@ void LivingWorld_UpdateFieldHint(void)
             if (idle)
                 ConsiderNearby(&hint, 6, LIVING_WORLD_VIRIDIAN_STUDENT);
             break;
+        case MAP_VIRIDIAN_FOREST:
+            hint.area = 9;
+            break;
+        case MAP_ROUTE3:
+            hint.area = 10;
+            break;
+        case MAP_MT_MOON_1F:
+        case MAP_MT_MOON_B1F:
+        case MAP_MT_MOON_B2F:
+            hint.area = 11;
+            break;
+        case MAP_ROUTE4:
+            hint.area = 12;
+            break;
+        case MAP_CERULEAN_CITY:
+            hint.area = 13;
+            break;
+        case MAP_ROUTE24:
+            hint.area = 14;
+            break;
+        case MAP_ROUTE25:
+            hint.area = 15;
+            break;
+        case MAP_CERULEAN_CITY_GYM:
+            hint.area = 16;
+            break;
+        case MAP_ROUTE25_SEA_COTTAGE:
+            hint.area = 17;
+            break;
+        case MAP_PALLET_TOWN_PLAYERS_HOUSE_1F:
+        case MAP_PALLET_TOWN_PLAYERS_HOUSE_2F:
+            hint.area = 18;
+            break;
+        case MAP_VIRIDIAN_CITY_GYM:
+        case MAP_VIRIDIAN_CITY_HOUSE:
+        case MAP_VIRIDIAN_CITY_MART:
+        case MAP_VIRIDIAN_CITY_POKEMON_CENTER_1F:
+        case MAP_VIRIDIAN_CITY_POKEMON_CENTER_2F:
+        case MAP_VIRIDIAN_CITY_SCHOOL:
+            hint.area = 19;
+            break;
+        case MAP_DIGLETTS_CAVE_NORTH_ENTRANCE:
+        case MAP_ROUTE2_EAST_BUILDING:
+        case MAP_ROUTE2_HOUSE:
+        case MAP_ROUTE2_VIRIDIAN_FOREST_NORTH_ENTRANCE:
+        case MAP_ROUTE2_VIRIDIAN_FOREST_SOUTH_ENTRANCE:
+            hint.area = 20;
+            break;
+        case MAP_PEWTER_CITY_HOUSE1:
+        case MAP_PEWTER_CITY_HOUSE2:
+        case MAP_PEWTER_CITY_MART:
+        case MAP_PEWTER_CITY_MUSEUM_1F:
+        case MAP_PEWTER_CITY_MUSEUM_2F:
+        case MAP_PEWTER_CITY_POKEMON_CENTER_1F:
+        case MAP_PEWTER_CITY_POKEMON_CENTER_2F:
+            hint.area = 21;
+            break;
+        case MAP_ROUTE4_POKEMON_CENTER_1F:
+        case MAP_ROUTE4_POKEMON_CENTER_2F:
+            hint.area = 22;
+            break;
+        case MAP_CERULEAN_CITY_BIKE_SHOP:
+        case MAP_CERULEAN_CITY_HOUSE1:
+        case MAP_CERULEAN_CITY_HOUSE2:
+        case MAP_CERULEAN_CITY_HOUSE3:
+        case MAP_CERULEAN_CITY_HOUSE4:
+        case MAP_CERULEAN_CITY_HOUSE5:
+        case MAP_CERULEAN_CITY_MART:
+        case MAP_CERULEAN_CITY_POKEMON_CENTER_1F:
+        case MAP_CERULEAN_CITY_POKEMON_CENTER_2F:
+            hint.area = 23;
+            break;
+        case MAP_CERULEAN_CAVE_1F:
+        case MAP_CERULEAN_CAVE_2F:
+        case MAP_CERULEAN_CAVE_B1F:
+            hint.area = 24;
+            break;
+        case MAP_TRADE_CENTER:
+        case MAP_UNION_ROOM:
+            hint.area = 25;
+            break;
         }
-        if (!hint.area)
+        if (!hint.area || hint.area >= 9)
             hint.story = BrockProtected();
         if (hint.area)
             hint.species = VisibleSpecies();
@@ -439,7 +520,7 @@ static void BeginConversation(u8 npc)
     gLivingWorldMailbox.request = 0;
     sFramesRemaining = 0;
     sDeferred = FALSE;
-    if (npc < LIVING_WORLD_PC_RESIDENT || npc > LIVING_WORLD_SOCIETY_RESEARCHER
+    if (npc < LIVING_WORLD_PC_RESIDENT || npc > LIVING_WORLD_ROUTE25_RESIDENT
      || !FlagGet(FLAG_SYS_POKEDEX_GET) || gQuestLogState == QL_STATE_PLAYBACK)
         return;
 

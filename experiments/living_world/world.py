@@ -49,7 +49,7 @@ class Encounter:
 
 
 class WorldMemory:
-    def __init__(self, path, slot, battery, *, unsaved=False):
+    def __init__(self, path, slot, battery, *, unsaved=False, roster=None):
         self.db = sqlite3.connect(path)
         self.slot = slot
         self.save = "unsaved:" + uuid4().hex if unsaved else self._key(battery)
@@ -77,7 +77,7 @@ class WorldMemory:
         self.routines = RoutineWorld(self)
         self.director = WorldDirector(self)
         self.society = Society(self)
-        self.population = Population(self)
+        self.population = Population(self, roster)
 
     def _key(self, battery):
         return self.slot + ":" + hashlib.sha256(battery).hexdigest()
@@ -141,6 +141,27 @@ class WorldMemory:
         return json.loads(row[0]) if row else {
             "seen": [], "trust": 0, "quest": "none", "quest_species": None,
         }
+
+    def remember_kanto(self, conversation):
+        from kanto import VOICE
+
+        npc, species = conversation.npc, conversation.visible_species
+        if npc not in VOICE or species is None:
+            return
+        state = self.snapshot(npc)
+        seen = state["seen"]
+        if seen and seen[-1] == species:
+            return
+        state["seen"] = [*(previous for previous in seen if previous != species), species][-8:]
+        state["last_kanto_companion"] = species
+        with self.db:
+            self._witness(npc, str(species), "visible_follower")
+            for forgotten in set(seen) - set(state["seen"]):
+                self.db.execute("DELETE FROM npc_knowledge WHERE save=? AND npc=? AND fact=? "
+                                "AND origin='witnessed' AND source='visible_follower'",
+                                (self.save, npc, str(forgotten)))
+            self.db.execute("INSERT OR REPLACE INTO npc_memory VALUES (?,?,?)",
+                            (self.save, npc, json.dumps(state, separators=(",", ":"))))
 
     def context(self, conversation):
         state = self.snapshot(conversation.npc)

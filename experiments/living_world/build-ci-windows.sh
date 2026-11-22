@@ -70,5 +70,8 @@ LIVING_WORLD_TEST_SAVE="$inputs/PalletTest.sav" python -B tests/living_world_bri
 LIVING_WORLD_TEST_SAVE="$inputs/PalletSocialTest.sav" LIVING_WORLD_SOCIAL_FIXTURE=1 python -B tests/living_world_bridge_emulator.py
 LIVING_WORLD_PEWTER_FIXTURE=1 python -B tests/living_world_brock_emulator.py
 cp "$QUANTUM_QA_OUTPUT"/Pewter{,Society}Test.sav "$inputs/"
+for mode in 0 1; do
+    ADVENTURE_TEST_MODE=$mode QUANTUM_QA_OUTPUT="$work/kanto-$mode" python -B tests/living_world_kanto_emulator.py
+done
 python -B "$app/package-windows.py" "$inputs" "$output" --built-mgba
 sha256sum "$output" > "$output.sha256"

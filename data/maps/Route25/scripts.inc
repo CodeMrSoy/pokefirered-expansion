@@ -6,5 +6,9 @@ Route25_EventScript_SeaCottageSign::
 	end
 
 Route25_EventScript_Man::
-	msgbox Route25_Text_AreYouHereAlone, MSGBOX_NPC
+	lock
+	faceplayer
+	msgbox Route25_Text_AreYouHereAlone
+	living_world_aside LIVING_WORLD_ROUTE25_RESIDENT
+	release
 	end

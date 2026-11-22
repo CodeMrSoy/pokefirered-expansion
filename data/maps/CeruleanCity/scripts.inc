@@ -245,7 +245,11 @@ CeruleanCity_EventScript_LittleBoySlowbroMoved::
 	end
 
 CeruleanCity_EventScript_BaldingMan::
-	msgbox CeruleanCity_Text_PokemonEncyclopediaAmusing, MSGBOX_NPC
+	lock
+	faceplayer
+	msgbox CeruleanCity_Text_PokemonEncyclopediaAmusing
+	living_world_aside LIVING_WORLD_CERULEAN_READER
+	release
 	end
 
 CeruleanCity_EventScript_Youngster::

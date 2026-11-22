@@ -9,12 +9,13 @@ from time import perf_counter
 
 from bridge import Conversation, validate
 from inference import Proposal, SURVEY_OFFER, dialogue_options
+from kanto import AREAS as KANTO_AREAS
 from knowledge import retrieve, retrieve_examples
 from profiles import KNOWLEDGE_PROFILES, NPC_IDS, PROFILES
 from reasoning import GuideTurn
 from world import Encounter
 
-AREAS = {0: "", 1: "pallet", 2: "rival_house", 3: "oak_lab", 4: "route_1", 5: "viridian", 6: "pewter", 7: "pewter_gym", 8: "route_2"}
+AREAS = {0: "", 1: "pallet", 2: "rival_house", 3: "oak_lab", 4: "route_1", 5: "viridian", 6: "pewter", 7: "pewter_gym", 8: "route_2", **KANTO_AREAS}
 PREDICTION_DELAY = 0.2
 MAX_REPLIES = 32
 FIELD_HINT = struct.Struct("<4sHHBBBB")

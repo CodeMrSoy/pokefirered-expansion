@@ -40,6 +40,7 @@ Route4_EventScript_Boy::
 	faceplayer
 	famechecker FAMECHECKER_BROCK, 3
 	msgbox Route4_Text_PeopleLikeAndRespectBrock
+	living_world_aside LIVING_WORLD_ROUTE4_GUIDE
 	release
 	end
 
@@ -48,6 +49,7 @@ MtMoon_1F_EventScript_BaldingMan::
 	faceplayer
 	famechecker FAMECHECKER_BROCK, 4
 	msgbox MtMoon_1F_Text_BrockHelpsExcavateFossils
+	living_world_aside LIVING_WORLD_MOON_VISITOR
 	release
 	end
 

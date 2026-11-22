@@ -11,7 +11,11 @@ ViridianForest_EventScript_Youngster::
 	end
 
 ViridianForest_EventScript_Boy::
-	msgbox ViridianForest_Text_RanOutOfPokeBalls, MSGBOX_NPC
+	lock
+	faceplayer
+	msgbox ViridianForest_Text_RanOutOfPokeBalls
+	living_world_aside LIVING_WORLD_FOREST_WALKER
+	release
 	end
 
 ViridianForest_EventScript_TrainerTips1::

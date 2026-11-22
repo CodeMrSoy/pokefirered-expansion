@@ -18,6 +18,7 @@ from bridge import Conversation, DialogueBridge, REPLY_OFFSET, SKIP, validate
 from controls import BUTTONS, F2
 from hybrid import HybridDialogue, prepare
 from inference import LocalModel
+from kanto import KantoCatalog
 from platform_io import atomic_write
 from platform_scenario import scenario
 from world import WorldMemory
@@ -115,6 +116,8 @@ def runtime_smoke(directory, core):
             "researcher_presence", "museum_view", "regional_view")
     rom_bytes = rom.read_bytes()
     assert hashlib.sha256(rom_bytes).hexdigest() == manifest["sha256"]
+    kanto = KantoCatalog(ROOT / "world-knowledge.sqlite3")
+    assert kanto.profile("misty")["protected"] and kanto.nearby("route_25")
 
     def open_game():
         return Game(core, rom, rom_bytes, manifest["mailbox"], display,

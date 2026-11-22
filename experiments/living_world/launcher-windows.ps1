@@ -3,7 +3,7 @@ Add-Type -AssemblyName System.Drawing
 [Windows.Forms.Application]::EnableVisualStyles()
 
 $root = (Get-Location).Path
-$profile = Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) 'LivingQuantumWorldPhase11'
+$profile = Join-Path $env:LOCALAPPDATA 'LivingQuantumWorldPhase12'
 $python = Join-Path $root 'python\python.exe'
 $form = New-Object Windows.Forms.Form
 $form.Text = 'Pokemon Quantum - Living World'

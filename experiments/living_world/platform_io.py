@@ -12,7 +12,7 @@ from zipfile import ZIP_DEFLATED, ZipFile
 
 def profile_directory(version):
     base = Path(os.environ.get("LOCALAPPDATA") or Path.home() / ".local/share")
-    return base / ("LivingQuantumWorldPhase11" if version == 11 else "LivingQuantumWorld")
+    return base / (f"LivingQuantumWorldPhase{version}" if version in (11, 12) else "LivingQuantumWorld")
 
 
 def atomic_write(path, data, *, durable=True):
@@ -68,7 +68,7 @@ def backup_profile(profile):
     return target
 
 
-def publish_monitor(profile, memory, hint, population, pending, decisions, slot, *, running=True):
+def publish_monitor(profile, memory, hint, population, pending, decisions, slot, *, running=True, kanto=None):
     regional = population.state if population else {}
     society = memory.society.state
     requests = regional.get("requests", {})
@@ -91,7 +91,8 @@ def publish_monitor(profile, memory, hint, population, pending, decisions, slot,
             {"name": population.people[id_].name, "shift_seconds": population.people[id_].shift,
              "days_off": population.people[id_].days_off,
              **{key: actor.get(key) for key in ("location", "activity", "goal", "due", "bonds", "facts")}}
-            for id_, actor in regional.get("actors", {}).items() if id_ in population.people
+            for id_, actor in regional.get("actors", {}).items()
+            if id_ in population.people and population.people[id_].partner is None
         ],
         "recent_events": events + list(society.get("log", ()))[-8:],
         "pending_resident_requests": requests,
@@ -101,4 +102,22 @@ def publish_monitor(profile, memory, hint, population, pending, decisions, slot,
                            "Locate Brock": memory.director.state.get("quest")},
         "decisions_and_failures": list(decisions),
     }
+    if kanto and hint:
+        from kanto import VOICE
+
+        nearby = kanto.nearby(hint.area)
+        data["kanto_district"] = {
+            "area": hint.area, "identity_count": len(nearby),
+            "schedule_clock": regional.get("clock"),
+            "queued_transitions": len(population.queue) if population else 0,
+            "last_active_tick_ms": population.last_active_tick_ms if population else None,
+            "identities": [
+                {"id": id_, **identity,
+                 "presence": "authored_rom_slot",
+                 "routine_active": id_ in regional.get("actors", {}),
+                 "activity_state": regional.get("actors", {}).get(id_),
+                 "player_memory": memory.snapshot(id_)["seen"] if id_ in VOICE else []}
+                for id_, identity in nearby
+            ],
+        }
     atomic_write(profile / "monitor.json", (json.dumps(data, indent=2) + "\n").encode(), durable=False)

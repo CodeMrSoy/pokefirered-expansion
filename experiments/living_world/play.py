@@ -8,6 +8,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import sqlite3
 import struct
 import subprocess
 import sys
@@ -24,13 +25,14 @@ from dynamic_quests import (QUEST_VIEW, museum_exchange, project_brock, project_
                             project_regional, regional_exchange)
 from inference import LocalModel, windows_launcher_environment
 from hybrid import FIELD_SIZE, FieldHint, HybridDialogue, prepare
+from kanto import HOOKS, KantoCatalog, dialogue as kanto_dialogue, residents as kanto_residents
 from reasoning import BALANCED_SHA256, LIGHTWEIGHT_SHA256, GuideTurn, guide_reply, reported_fact
 from profiles import PROFILES
 from world import Encounter, WorldMemory
 from society import PERSONAS, Ticket
 from region import RESEARCHER_PRESENCE, TRAINER_PRESENCE
 from planning import Proposal, choose_plan
-from population import choose_commitment
+from population import choose_commitment, residents
 
 ROOT = Path(__file__).resolve().parent
 VOID = c.c_void_p
@@ -315,7 +317,7 @@ def main():
         return int(verify_windows_sandbox(runtime))
 
     manifest = json.loads((ROOT / "rom.json").read_text(encoding="utf-8"))
-    version = 11 if args.phase11_demo else manifest.get("profile_version")
+    version = manifest.get("profile_version", 11 if args.phase11_demo else None)
     profile = profile_directory(version)
     if args.profile_backup:
         print(backup_profile(profile))
@@ -408,6 +410,8 @@ def play(args, profile, manifest, rom_path, rom, model, regional_demo):
                 researcher_presence=manifest.get("researcher_presence"), museum_view=manifest.get("museum_view"),
                 regional_view=manifest.get("regional_view"))
     memory = None
+    kanto = None
+    roster = None
     previous = None
     population = None
     decisions = deque(maxlen=16)
@@ -418,8 +422,15 @@ def play(args, profile, manifest, rom_path, rom, model, regional_demo):
             fixture = "PewterRegionalTest.sav" if args.pewter_regional_retest else demo
             game.load_save((ROOT / fixture).read_bytes())
         previous = game.save_bytes()
+        try:
+            catalog = KantoCatalog(ROOT / "world-knowledge.sqlite3")
+            if catalog.available:
+                roster = (*residents(), *kanto_residents(catalog))
+                kanto = catalog
+        except (OSError, sqlite3.Error, ValueError) as error:
+            print(f"Kanto catalog unavailable: {error}", file=sys.stderr)
         memory = WorldMemory(profile / "living-world.sqlite3", save_path.name, previous,
-                             unsaved=not demo and not save_path.is_file())
+                             unsaved=not demo and not save_path.is_file(), roster=roster)
         bridge = DialogueBridge(game.read_request, game.write_reply, game.mailbox, deferred=True)
         with ThreadPoolExecutor(max_workers=1) as pool, (profile / "dialogue.jsonl").open(
             "a", encoding="utf-8", buffering=1
@@ -450,9 +461,9 @@ def play(args, profile, manifest, rom_path, rom, model, regional_demo):
             prediction_error = None
 
             society = memory.society
-            population = memory.population if args.phase11_demo else None
+            population = memory.population if args.phase11_demo or kanto else None
             if population:
-                population.model_decisions = model.style == "qwen3"
+                population.model_decisions = args.phase11_demo and model.style == "qwen3"
             resident_work = None
             society.demo = args.pewter_society or regional_demo or args.phase11_demo
             society.regional_demo = regional_demo or args.phase11_demo
@@ -487,6 +498,9 @@ def play(args, profile, manifest, rom_path, rom, model, regional_demo):
 
             def propose(context):
                 nonlocal staged, scene, lookup, guide_turn, guide_work, guide_result, last_guide, society_exchange
+                if context.npc in HOOKS.values():
+                    message = kanto_dialogue(kanto, memory, population, context) if kanto else None
+                    return json.dumps({"action": "SAY_DIALOGUE", "text": message}) if message else SKIP
                 if context.npc in ("society_assistant", "society_trainer", "society_researcher"):
                     actor = context.npc.removeprefix("society_")
                     if population:
@@ -625,6 +639,12 @@ def play(args, profile, manifest, rom_path, rom, model, regional_demo):
                             trace["action_error"] = str(error)
                     record(trace)
                     trace = None
+                if trace and trace["context"]["npc"] in HOOKS.values():
+                    if trace["validation"] == "accepted":
+                        memory.remember_kanto(Conversation(**trace["context"]))
+                    trace["route"] = "kanto_identity"
+                    record(trace)
+                    trace = None
                 if trace:
                     trace["profile"] = PROFILES[trace["context"]["npc"]]
                     trace["fallback"] = trace["validation"] != "accepted"
@@ -677,11 +697,12 @@ def play(args, profile, manifest, rom_path, rom, model, regional_demo):
                         if fresh and not bridge.pending:
                             for change in memory.routines.tick(fresh.local_second):
                                 record({"world_event": change})
-                            protected = bool(fresh.story) if fresh.area in ("", "pewter", "pewter_gym", "route_2") else False
+                            protected = bool(fresh.story) if fresh.area not in ("pallet", "rival_house", "oak_lab", "viridian") else False
                             director.observe(fresh.local_second, fresh.area, protected, fresh.busy)
                             society.tick(fresh.local_second, fresh.area, fresh.busy)
                             if population:
-                                transitions = population.demo_tick(fresh.local_second)
+                                transitions = (population.demo_tick(fresh.local_second) if args.phase11_demo
+                                               else population.tick(fresh.local_second))
                                 if transitions:
                                     record({"regional_transitions": transitions,
                                                           "residents": len(population.state["actors"]),
@@ -804,7 +825,7 @@ def play(args, profile, manifest, rom_path, rom, model, regional_demo):
                 if start >= next_monitor:
                     try:
                         publish_monitor(profile, memory, game.read_hint(), population, bool(bridge.pending),
-                                        decisions, save_path.name)
+                                        decisions, save_path.name, kanto=kanto)
                         monitor_error = False
                     except OSError as error:
                         if not monitor_error:
@@ -834,7 +855,7 @@ def play(args, profile, manifest, rom_path, rom, model, regional_demo):
             if memory is not None:
                 try:
                     publish_monitor(profile, memory, game.read_hint(), population, False,
-                                    decisions, save_path.name, running=False)
+                                    decisions, save_path.name, running=False, kanto=kanto)
                 except OSError:
                     pass
                 memory.close()
