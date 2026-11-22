@@ -210,12 +210,16 @@ class WorldRules:
             if actor in (MART, "mart_neighbor"):
                 if person["feedback"].startswith(peer + " answered teach"):
                     return "My neighbor taught me."
+                if owner in a["asked"]:
+                    return "I asked about " + a["asked"][owner] + " work."
                 if peer in a["asked"]:
                     return "My neighbor asked for help."
                 if person["job"] == "stock":
                     return "I am checking supplies."
                 if person["job"] == "sales":
                     return "I can serve customers now."
+                if len(person["skills"]) == 2:
+                    return "I learned another skill."
             if actor in (CHECKOUT, "neighbor_checkout") and person["job"]:
                 return "Can I take your order?" if person["job"] == "sales" else None
         if actor == CHECKOUT and self.state["projects"]["mart"] == "counter_apprentice":

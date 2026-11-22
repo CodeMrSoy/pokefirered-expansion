@@ -139,3 +139,41 @@ assert converse("PewterCity_Mart_EventScript_Youngster")[1]
 assert converse(clerk)[1]
 memory.close()
 print(f"PASS mode {mode}: composed resident and neighbor plans reached both native shop menus")
+
+# Run live model proposals against the same two native object scripts.
+import os
+from types import SimpleNamespace
+from inference import non_thinking_chat, windows_launcher_environment
+from worker import ResidentWorker
+
+if runtime := os.environ.get("LIVING_WORLD_AGENCY_RUNTIME"):
+    memory = WorldMemory(":memory:", "live-agency", b"start")
+    rules = memory.rules
+    worker = ResidentWorker(runtime, windows_launcher_environment)
+    model = SimpleNamespace(worker=worker, render_prompt=non_thinking_chat)
+    try:
+        rules.observe(0, True)
+        for second in (50, 150, 250):
+            rules.observe(second, True)
+            ticket = agency.ticket(rules)
+            if ticket:
+                raw, metrics = agency.generate(model, ticket)
+                assert agency.submit(rules, ticket, raw, metrics)
+                print("MODEL", mode, ticket.actor, raw, metrics, flush=True)
+        people = rules.state["agency"]["people"]
+        assert any(p["job"] or len(p["skills"]) == 2 for p in people.values()) or rules.state["agency"]["asked"]
+        memory.checkpoint(b"after")
+        memory.rules.load()
+        rules.observe(350, True)
+        observed = []
+        for label, hook in ((resident, MART), ("PewterCity_Mart_EventScript_Youngster", "mart_neighbor")):
+            expected = rules.reply(hook)
+            seen, shop = converse(label, refusal=True)
+            if expected:
+                assert seen[hook] == expected
+                observed.append(expected)
+        assert observed and converse(clerk)[1]
+        print("LIVE MODEL SHOWN", mode, observed, flush=True)
+    finally:
+        worker.close()
+        memory.close()

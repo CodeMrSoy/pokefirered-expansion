@@ -70,6 +70,17 @@ LIVING_WORLD_TEST_SAVE="$inputs/PalletTest.sav" python -B tests/living_world_bri
 LIVING_WORLD_TEST_SAVE="$inputs/PalletSocialTest.sav" LIVING_WORLD_SOCIAL_FIXTURE=1 python -B tests/living_world_bridge_emulator.py
 LIVING_WORLD_PEWTER_FIXTURE=1 python -B tests/living_world_brock_emulator.py
 cp "$QUANTUM_QA_OUTPUT"/Pewter{,Society}Test.sav "$QUANTUM_QA_OUTPUT"/Phase13Pewter.sav "$inputs/"
+cmake -S "$work/llama" -B "$work/llama-linux" -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF \
+    -DLLAMA_CURL=OFF -DLLAMA_BUILD_TESTS=OFF -DLLAMA_BUILD_EXAMPLES=OFF -DLLAMA_BUILD_TOOLS=OFF \
+    -DLLAMA_BUILD_SERVER=OFF -DGGML_OPENMP=OFF -DGGML_NATIVE=OFF -DGGML_LLAMAFILE=OFF
+cmake --build "$work/llama-linux" --target llama --parallel 4
+export LIVING_WORLD_AGENCY_RUNTIME="$work/agency-runtime"
+mkdir "$LIVING_WORLD_AGENCY_RUNTIME"
+ln -s "$inputs/model-q4.gguf" "$LIVING_WORLD_AGENCY_RUNTIME/model.gguf"
+gcc -O2 -c "$app/sandbox-linux.c" -o "$work/sandbox.o"
+g++ -std=c++17 -O2 -I"$work/llama/include" -I"$work/llama/ggml/include" "$app/offline-worker.cpp" \
+    "$work/sandbox.o" -Wl,--start-group "$work/llama-linux/src/libllama.a" \
+    "$work/llama-linux/ggml/src/"libggml*.a -Wl,--end-group -ldl -lpthread -lm -o "$LIVING_WORLD_AGENCY_RUNTIME/offline-worker"
 for mode in 0 1; do
     ADVENTURE_TEST_MODE=$mode QUANTUM_QA_OUTPUT="$work/kanto-$mode" python -B tests/living_world_kanto_emulator.py
     ADVENTURE_TEST_MODE=$mode QUANTUM_QA_OUTPUT="$work/autonomy-$mode" python -B tests/living_world_autonomy_emulator.py
