@@ -65,6 +65,16 @@ cp "$work/mgba/LICENSE" "$inputs/licenses/mGBA-LICENSE.txt"
 make -j4 > "$root/rom-build.log" 2>&1 || { tail -80 "$root/rom-build.log"; exit 1; }
 export MGBA_CORE="$work/mgba-linux/mgba_libretro.so" ADVENTURE_TEST_MODE=1
 export ARM_NM=arm-none-eabi-nm
+export WORLD_CATALOG="$root/phase17-catalog.json"
+python -B "$app/build-world-catalog.py" "$root/pokefirered.gba" "$root/pokefirered.elf" "$WORLD_CATALOG"
+for mode in 0 1; do
+    ADVENTURE_TEST_MODE=$mode QUANTUM_QA_OUTPUT="$work/native-world-$mode" \
+        WORLD_EXAMPLE="$root/phase17-initial-world-example.json" python -B tests/living_world_native_manifest.py
+done
+WORLD_TEST_NO_RANDOMIZER=1 ADVENTURE_TEST_MODE=0 QUANTUM_QA_OUTPUT="$work/native-world-authored" \
+    python -B tests/living_world_native_manifest.py
+WORLD_TEST_PROTECT=1 ADVENTURE_TEST_MODE=1 QUANTUM_QA_OUTPUT="$work/native-world-protected" \
+    python -B tests/living_world_native_manifest.py
 export QUANTUM_QA_OUTPUT="$work/fixture-logs"
 LIVING_WORLD_TEST_SAVE="$inputs/PalletTest.sav" python -B tests/living_world_bridge_emulator.py
 LIVING_WORLD_TEST_SAVE="$inputs/PalletSocialTest.sav" LIVING_WORLD_SOCIAL_FIXTURE=1 python -B tests/living_world_bridge_emulator.py

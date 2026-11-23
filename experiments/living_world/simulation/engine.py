@@ -332,7 +332,7 @@ def evolve(state, command):
 
 
 class Simulation:
-    def __init__(self, path, initial=None, *, read_only=False):
+    def __init__(self, path, initial=None, *, read_only=False, manifest=None):
         path = Path(path).resolve() if path != ":memory:" else path
         self.db = sqlite3.connect(path.as_uri() + "?mode=ro" if read_only else path, uri=read_only)
         try:
@@ -341,11 +341,25 @@ class Simulation:
                 with self._write():
                     tables = {row[0] for row in self.db.execute(
                         "SELECT name FROM sqlite_master WHERE type='table'")}
-                    require(tables in (set(), {"simulation", "journal"}), "database_is_not_a_simulation")
+                    existing = {"simulation", "journal"}
+                    if manifest is not None:
+                        existing.add("starting_manifest")
+                    require(tables in (set(), existing), "database_is_not_a_simulation")
                     self.db.execute("CREATE TABLE IF NOT EXISTS simulation (slot INTEGER PRIMARY KEY CHECK(slot=1), state TEXT NOT NULL)")
                     self.db.execute("CREATE TABLE IF NOT EXISTS journal (revision INTEGER PRIMARY KEY, entry TEXT NOT NULL)")
-                    if self.db.execute("INSERT OR IGNORE INTO simulation VALUES (1,?)", (encoded(initial),)).rowcount:
+                    created = self.db.execute("INSERT OR IGNORE INTO simulation VALUES (1,?)",
+                                              (encoded(initial),)).rowcount
+                    if created:
                         self.db.execute("INSERT INTO journal VALUES (0,?)", (encoded(dict(initial=initial)),))
+                    if manifest is not None:
+                        self.db.execute("CREATE TABLE IF NOT EXISTS starting_manifest "
+                                        "(slot INTEGER PRIMARY KEY CHECK(slot=1), document TEXT NOT NULL)")
+                        document = encoded(manifest)
+                        if created:
+                            self.db.execute("INSERT INTO starting_manifest VALUES (1,?)", (document,))
+                        else:
+                            prior = self.db.execute("SELECT document FROM starting_manifest WHERE slot=1").fetchone()
+                            require(prior == (document,), "starting_manifest_mismatch")
             require(self.state()["version"] == 1, "unsupported_simulation_schema")
             validate(self.state())
         except Exception:

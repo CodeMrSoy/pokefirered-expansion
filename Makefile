@@ -341,6 +341,10 @@ check: $(TESTELF)
 	$(ROMTESTHYDRA) $(ROMTEST) $(OBJCOPY) $(HEADLESSELF)
 
 # Other rules
+.PHONY: world-catalog
+world-catalog: $(ROM) $(ELF)
+	python3 -B experiments/living_world/build-world-catalog.py $(ROM) $(ELF) phase17-catalog.json --nm $(PREFIX)nm
+
 rom: $(ROM)
 ifeq ($(COMPARE),1)
 	@$(SHA1) rom.sha1

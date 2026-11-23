@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Pokémon Quantum Living World Manifest 1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version", "world_uuid", "build", "catalog_sha256", "manifest_sha256", "context",
+    "maps", "encounters", "species", "trainers", "static_encounters", "gyms", "services", "rules"
+  ],
+  "properties": {
+    "version": {"const": 1},
+    "world_uuid": {"type": "string", "format": "uuid"},
+    "catalog_sha256": {"$ref": "#/$defs/sha256"},
+    "manifest_sha256": {"$ref": "#/$defs/sha256"},
+    "build": {
+      "type": "object",
+      "required": ["code", "revision", "rom_sha256", "elf_sha256"],
+      "properties": {
+        "code": {"const": "BPRE"},
+        "revision": {"type": "string", "minLength": 1},
+        "rom_sha256": {"$ref": "#/$defs/sha256"},
+        "elf_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "context": {
+      "type": "object",
+      "required": ["version", "generation", "origin", "seed", "mode", "modes", "features",
+                   "species_mode", "difficulty", "cap", "trainer_id", "starter_slot", "map"],
+      "properties": {
+        "version": {"const": 1},
+        "generation": {"type": "integer", "minimum": 1, "maximum": 4294967295},
+        "origin": {"enum": [1, 2]},
+        "mode": {"enum": [0, 1]},
+        "seed": {"type": "integer", "minimum": 0, "maximum": 4294967295},
+        "modes": {"type": "integer", "minimum": 0, "maximum": 127},
+        "features": {"type": "integer", "minimum": 0, "maximum": 255},
+        "starter_slot": {"enum": [null, 0, 1, 2]}
+      }
+    },
+    "maps": {"type": "array", "minItems": 1, "items": {"type": "object", "required": ["id", "objects", "access"]}},
+    "encounters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["table", "slots"],
+        "properties": {"table": {"$ref": "#/$defs/record"}, "slots": {"$ref": "#/$defs/records"}}
+      }
+    },
+    "species": {"$ref": "#/$defs/records"},
+    "trainers": {"$ref": "#/$defs/records"},
+    "static_encounters": {"$ref": "#/$defs/records"},
+    "gyms": {"$ref": "#/$defs/records"},
+    "services": {"$ref": "#/$defs/records"},
+    "rules": {"type": "object"}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "record": {
+      "type": "object",
+      "required": ["status"],
+      "properties": {
+        "status": {"enum": ["authored", "resolved", "conditional", "deferred_to_gameplay", "observed"]}
+      }
+    },
+    "records": {"type": "array", "items": {"$ref": "#/$defs/record"}}
+  }
+}

@@ -14,7 +14,7 @@ from reasoning import BALANCED_SHA256, LIGHTWEIGHT_SHA256
 
 ROOT = Path(__file__).resolve().parents[2]
 APP = Path(__file__).resolve().parent
-RELEASE_VERSION = "15.0.1-agency-preview"
+RELEASE_VERSION = "17.0.0-world-initialization-preview"
 INPUTS = {
     "mgba-win.zip": "a7ae453b739d3f9117537e8ca7275ecebd923d9035b52435f556470bf58a268f",
     "python-win.zip": "4acbed6dd1c744b0376e3b1cf57ce906f9dc9e95e68824584c8099a63025a3c3",
@@ -108,6 +108,15 @@ def main():
                      "knowledge.py", "social.py", "reasoning.py", "hybrid.py", "routines.py", "director.py", "society.py", "planning.py", "region.py", "dynamic_quests.py", "PLAYTEST.md",
                      "PHASE2.md", "PHASE3.md", "PHASE4.md", "PHASE5.md", "PHASE6.md", "PHASE7.md", "PHASE8.md", "PHASE9.md", "PHASE10.md", "PHASE11.md", "PHASE12.md", "PHASE13.md", "PHASE14.md", "PHASE15.md", "PLATFORM.md"):
             shutil.copyfile(APP / name, stage / name)
+        for name in ("world_manifest.py", "native_world.py", "world_initialization.py",
+                     "world-manifest-v1.schema.json", "simulate.py", "PHASE17.md"):
+            shutil.copyfile(APP / name, stage / name)
+        shutil.copytree(APP / "simulation", stage / "simulation", ignore=shutil.ignore_patterns("__pycache__"))
+        (stage / "kanto").mkdir()
+        shutil.copyfile(APP / "kanto" / "identities.json", stage / "kanto" / "identities.json")
+        subprocess.run([sys.executable, APP / "build-world-catalog.py", ROOT / "pokefirered.gba",
+                        ROOT / "pokefirered.elf", stage / "world-catalog.json", "--nm", args.nm,
+                        "--revision", revision], check=True)
         subprocess.run([sys.executable, APP / "build-knowledge.py", stage / "world-knowledge.sqlite3"], check=True)
         shutil.copyfile(APP / "launch-windows.cmd", stage / "Play.cmd")
         launcher = (APP / "open-launcher-windows.cmd").read_text(encoding="ascii")

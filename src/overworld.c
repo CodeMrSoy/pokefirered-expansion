@@ -35,6 +35,7 @@
 #include "link.h"
 #include "link_rfu.h"
 #include "living_world_bridge.h"
+#include "world_export.h"
 #include "load_save.h"
 #include "m4a.h"
 #include "map_name_popup.h"
@@ -1695,6 +1696,7 @@ void CB2_Overworld(void)
         SetVBlankCallback(NULL);
     OverworldBasic();
     LivingWorld_UpdateFieldHint();
+    WorldExport_Poll();
     if (!fading)
         LivingWorld_ReconcileAgents();
     if (fading)
@@ -1745,6 +1747,7 @@ void CB2_NewGame(void)
 
     NewGameInitData();
     GameModes_Apply();
+    WorldExport_SetContext(1);
 
     ResetInitialPlayerAvatarState();
     PlayTimeCounter_Start();
@@ -1929,6 +1932,7 @@ void CB2_ContinueSavedGame(void)
     DoTimeBasedEvents();
     Overworld_ResetStateOnContinue();
     InitMapFromSavedGame();
+    WorldExport_SetContext(2);
     PlayTimeCounter_Start();
     ScriptContext_Init();
     UnlockPlayerFieldControls();

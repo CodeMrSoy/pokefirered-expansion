@@ -31,9 +31,8 @@ void AdventureMode_WildRange(const struct WildPokemon *table, u32 slot, u8 *min,
         }
 }
 
-u8 AdventureMode_ScriptedLevel(u16 species, u8 quantumLevel)
+u8 AdventureMode_ScriptedLevelForMap(u16 map, u16 species, u8 quantumLevel)
 {
-    u16 map = (u8)gSaveBlock1Ptr->location.mapNum | ((u8)gSaveBlock1Ptr->location.mapGroup << 8);
     if (AdventureMode_IsQuantum())
         return quantumLevel;
     // Relocated Kanto Articuno/Moltres already use level 50 in both modes.
@@ -49,4 +48,10 @@ u8 AdventureMode_ScriptedLevel(u16 species, u8 quantumLevel)
         break;
     }
     return quantumLevel;
+}
+
+u8 AdventureMode_ScriptedLevel(u16 species, u8 quantumLevel)
+{
+    u16 map = (u8)gSaveBlock1Ptr->location.mapNum | ((u8)gSaveBlock1Ptr->location.mapGroup << 8);
+    return AdventureMode_ScriptedLevelForMap(map, species, quantumLevel);
 }

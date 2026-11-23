@@ -74,3 +74,6 @@ tools/compresSmol/compresSmolTilemap
 *.smol
 *.fastSmol
 *.smolTM
+
+/phase17-catalog.json
+/phase17-initial-world-example.json

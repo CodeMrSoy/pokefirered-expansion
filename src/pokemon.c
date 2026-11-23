@@ -2123,15 +2123,13 @@ void GiveMonInitialMoveset(struct Pokemon *mon)
     GiveBoxMonInitialMoveset(&mon->box);
 }
 
-void GiveBoxMonInitialMoveset(struct BoxPokemon *boxMon) //Credit: AsparagusEduardo
+void GetInitialLevelUpMoves(u16 species, u8 level, u16 moves[MAX_MON_MOVES])
 {
-    u16 species = GetBoxMonData(boxMon, MON_DATA_SPECIES, NULL);
-    s32 level = GetLevelFromBoxMonExp(boxMon);
     s32 i;
-    u16 moves[MAX_MON_MOVES] = {MOVE_NONE};
     u8 addedMoves = 0;
     const struct LevelUpMove *learnset = GetSpeciesLevelUpLearnset(species);
 
+    memset(moves, 0, sizeof(u16) * MAX_MON_MOVES);
     for (i = 0; learnset[i].move != LEVEL_UP_MOVE_END; i++)
     {
         s32 j;
@@ -2166,6 +2164,16 @@ void GiveBoxMonInitialMoveset(struct BoxPokemon *boxMon) //Credit: AsparagusEdua
             }
         }
     }
+}
+
+void GiveBoxMonInitialMoveset(struct BoxPokemon *boxMon)
+{
+    u16 species = GetBoxMonData(boxMon, MON_DATA_SPECIES, NULL);
+    u8 level = GetLevelFromBoxMonExp(boxMon);
+    u16 moves[MAX_MON_MOVES];
+    s32 i;
+
+    GetInitialLevelUpMoves(species, level, moves);
     for (i = 0; i < MAX_MON_MOVES; i++)
     {
         SetBoxMonData(boxMon, MON_DATA_MOVE1 + i, &moves[i]);

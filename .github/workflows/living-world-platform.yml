@@ -2,7 +2,7 @@ name: Living World Platform
 
 on:
   push:
-    branches: [Living-World-Phase15, Living-World-Phase16]
+    branches: [Living-World-Phase15, Living-World-Phase16, Living-World-Phase17]
     paths-ignore:
       - 'experiments/living_world/PHASE16.md'
       - 'experiments/living_world/benchmarks/simulation/**'
@@ -40,6 +40,7 @@ jobs:
           python -B tests/living_world_rules.py
           python -B tests/living_world_agency.py
           python -B tests/living_world_simulation.py
+          python -B tests/living_world_manifest.py
           python -B tests/living_world_release_scenario.py > release-scenario.json
       - uses: actions/upload-artifact@v4
         if: always()
@@ -65,12 +66,19 @@ jobs:
           sudo apt-get install -y gcc-arm-none-eabi libnewlib-arm-none-eabi libpng-dev
           python3 -m pip install Pillow numpy
       - name: Build and stage the exact validation ZIP
-        run: bash experiments/living_world/build-ci-windows.sh Living-World-15.0.1-Agency-Preview-Windows-x64.zip
+        run: bash experiments/living_world/build-ci-windows.sh Living-World-17.0.0-World-Initialization-Preview-Windows-x64.zip
       - uses: actions/upload-artifact@v4
         with:
           name: living-world-windows-candidate
-          path: Living-World-15.0.1-Agency-Preview-Windows-x64.zip*
+          path: Living-World-17.0.0-World-Initialization-Preview-Windows-x64.zip*
           compression-level: 0
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        with:
+          name: phase17-native-world-example
+          path: |
+            phase17-catalog.json
+            phase17-initial-world-example.json
           if-no-files-found: error
   windows-package:
     needs: build-candidate
@@ -96,7 +104,7 @@ jobs:
             Invoke-WebRequest -Uri $env:PACKAGE_URL -OutFile release.zip
             $hash = $env:PACKAGE_SHA256
           } else {
-            $candidate = 'Living-World-15.0.1-Agency-Preview-Windows-x64.zip'
+            $candidate = 'Living-World-17.0.0-World-Initialization-Preview-Windows-x64.zip'
             $hash = (Get-Content "$candidate.sha256" -Raw).Split()[0]
             Move-Item $candidate release.zip
           }
@@ -120,6 +128,7 @@ jobs:
           & "$root/python/python.exe" -B "$root/package_smoke.py" "$PWD/native-smoke.json"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Measure three offline planners on identical situations
+        if: github.ref_name != 'Living-World-Phase17'
         shell: pwsh
         run: |
           $root = (Resolve-Path extracted/LivingQuantumWorld).Path

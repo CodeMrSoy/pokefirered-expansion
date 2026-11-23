@@ -446,6 +446,22 @@ def play(args, profile, manifest, rom_path, rom, model, regional_demo):
     previous = None
     population = None
     decisions = deque(maxlen=16)
+    startup = None
+    catalog = ROOT / "world-catalog.json"
+    if not demo and catalog.is_file():
+        from world_initialization import WorldStartup
+        try:
+            startup = WorldStartup(profile / "native-worlds", rom_path, core_path, catalog)
+        except (ValueError, OSError, KeyError) as error:
+            print(f"Living World catalog unavailable: {error}", file=sys.stderr)
+
+    def pair_flash(data):
+        if startup is not None:
+            try:
+                startup.record_save(data)
+            except (ValueError, OSError, RuntimeError, sqlite3.Error) as error:
+                print(f"Living World checkpoint unavailable: {error}", file=sys.stderr)
+
     try:
         if save_path.is_file():
             game.load_save(save_path.read_bytes())
@@ -634,6 +650,13 @@ def play(args, profile, manifest, rom_path, rom, model, regional_demo):
                 pace = 0.98 if display.audio_started and queued_blocks < 2 else 1
                 next_frame += game.frame_period * pace
                 game.core.retro_run()
+                if startup is not None:
+                    try:
+                        startup.poll(game, previous)
+                    except OSError as error:
+                        print(f"Living World progress unavailable: {error}", file=sys.stderr)
+                        startup.close()
+                        startup = None
                 staged = None
                 scene = None
                 guide_result = None
@@ -936,6 +959,7 @@ def play(args, profile, manifest, rom_path, rom, model, regional_demo):
                         memory.checkpoint(current)
                         game.publish_quest(director, society, population)
                         atomic_write(save_path, current)
+                        pair_flash(current)
                         previous = current
                     next_save = start + 2
     finally:
@@ -947,7 +971,10 @@ def play(args, profile, manifest, rom_path, rom, model, regional_demo):
                     atomic_write(save_path.with_suffix(".bak"), previous)
                 memory.checkpoint(current)
                 atomic_write(save_path, current)
+                pair_flash(current)
         finally:
+            if startup is not None:
+                startup.close()
             if memory is not None:
                 try:
                     publish_monitor(profile, memory, game.read_hint(), population, False,

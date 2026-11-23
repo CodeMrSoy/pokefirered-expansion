@@ -63,6 +63,32 @@ static bool8 IsAbilityAllowingEncounter(u8 level);
 
 #include "data/wild_encounters.h"
 
+// Use the exact compiled cumulative thresholds used by the native rolls.
+#define SLOT_WEIGHT_RAW(prefix, slot, previous) (prefix ## _SLOT_ ## slot - prefix ## _SLOT_ ## previous)
+#define SLOT_WEIGHT(prefix, slot, previous) SLOT_WEIGHT_RAW(prefix, slot, previous)
+#define WATER_WEIGHTS(prefix) { prefix ## _SLOT_0, SLOT_WEIGHT(prefix, 1, 0), SLOT_WEIGHT(prefix, 2, 1), \
+                               SLOT_WEIGHT(prefix, 3, 2), SLOT_WEIGHT(prefix, 4, 3) }
+#define LAND ENCOUNTER_CHANCE_LAND_MONS
+const u8 gWorldEncounterWeights[5][12] = {
+    { ENCOUNTER_CHANCE_LAND_MONS_SLOT_0, SLOT_WEIGHT(LAND, 1, 0), SLOT_WEIGHT(LAND, 2, 1),
+      SLOT_WEIGHT(LAND, 3, 2), SLOT_WEIGHT(LAND, 4, 3), SLOT_WEIGHT(LAND, 5, 4),
+      SLOT_WEIGHT(LAND, 6, 5), SLOT_WEIGHT(LAND, 7, 6), SLOT_WEIGHT(LAND, 8, 7),
+      SLOT_WEIGHT(LAND, 9, 8), SLOT_WEIGHT(LAND, 10, 9), SLOT_WEIGHT(LAND, 11, 10) },
+    WATER_WEIGHTS(ENCOUNTER_CHANCE_WATER_MONS),
+    WATER_WEIGHTS(ENCOUNTER_CHANCE_WATER_MONS),
+    { ENCOUNTER_CHANCE_FISHING_MONS_OLD_ROD_SLOT_0, SLOT_WEIGHT(ENCOUNTER_CHANCE_FISHING_MONS_OLD_ROD, 1, 0),
+      ENCOUNTER_CHANCE_FISHING_MONS_GOOD_ROD_SLOT_2, SLOT_WEIGHT(ENCOUNTER_CHANCE_FISHING_MONS_GOOD_ROD, 3, 2),
+      SLOT_WEIGHT(ENCOUNTER_CHANCE_FISHING_MONS_GOOD_ROD, 4, 3), ENCOUNTER_CHANCE_FISHING_MONS_SUPER_ROD_SLOT_5,
+      SLOT_WEIGHT(ENCOUNTER_CHANCE_FISHING_MONS_SUPER_ROD, 6, 5), SLOT_WEIGHT(ENCOUNTER_CHANCE_FISHING_MONS_SUPER_ROD, 7, 6),
+      SLOT_WEIGHT(ENCOUNTER_CHANCE_FISHING_MONS_SUPER_ROD, 8, 7), SLOT_WEIGHT(ENCOUNTER_CHANCE_FISHING_MONS_SUPER_ROD, 9, 8) },
+    {0},
+};
+#undef LAND
+#undef WATER_WEIGHTS
+#undef SLOT_WEIGHT
+#undef SLOT_WEIGHT_RAW
+
+
 static const u8 sUnownLetterSlots[][LAND_WILD_COUNT] = {
   //  A   A   A   A   A   A   A   A   A   A   A   ?
     { 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 27},

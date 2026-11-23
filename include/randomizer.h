@@ -87,6 +87,7 @@ struct RandomizerGroupSet {
 
 
 u32 GetRandomizerSeed(void);
+u16 GetRandomizerOption(enum RandomizerOption option);
 u32 GenerateSeedForRandomizer(void);
 
 // Enables/disables the randomizer master switch and synchronizes its feature flags.
