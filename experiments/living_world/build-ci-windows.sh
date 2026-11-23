@@ -4,6 +4,8 @@ set -euo pipefail
 root=$(pwd)
 app="$root/experiments/living_world"
 output=$(realpath -m "$1")
+reports=$(dirname "$output")
+mkdir -p "$reports"
 work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT
 inputs="$work/inputs"
@@ -62,14 +64,14 @@ cp "$work/llama/LICENSE" "$inputs/licenses/llama.cpp-LICENSE.txt"
 cp "$work/mgba/LICENSE" "$inputs/licenses/mGBA-LICENSE.txt"
 
 
-make -j4 > "$root/rom-build.log" 2>&1 || { tail -80 "$root/rom-build.log"; exit 1; }
+make -j4 > "$reports/rom-build.log" 2>&1 || { tail -80 "$reports/rom-build.log"; exit 1; }
 export MGBA_CORE="$work/mgba-linux/mgba_libretro.so" ADVENTURE_TEST_MODE=1
 export ARM_NM=arm-none-eabi-nm
-export WORLD_CATALOG="$root/phase17-catalog.json"
+export WORLD_CATALOG="$reports/world-catalog.json"
 python -B "$app/build-world-catalog.py" "$root/pokefirered.gba" "$root/pokefirered.elf" "$WORLD_CATALOG"
 for mode in 0 1; do
     ADVENTURE_TEST_MODE=$mode QUANTUM_QA_OUTPUT="$work/native-world-$mode" \
-        WORLD_EXAMPLE="$root/phase17-initial-world-example.json" python -B tests/living_world_native_manifest.py
+        WORLD_EXAMPLE="$reports/initial-world-example.json" python -B tests/living_world_native_manifest.py
 done
 WORLD_TEST_NO_RANDOMIZER=1 ADVENTURE_TEST_MODE=0 QUANTUM_QA_OUTPUT="$work/native-world-authored" \
     python -B tests/living_world_native_manifest.py
@@ -81,7 +83,7 @@ for case in classic quantum disabled; do
     if [[ $case == classic ]]; then mode=0; fi
     if [[ $case == disabled ]]; then disabled=1; fi
     ADVENTURE_TEST_MODE=$mode WORLD_TEST_NO_RANDOMIZER=$disabled QUANTUM_QA_OUTPUT="$work/live-$case" \
-        WORLD_LIVE_REPORT="$root/phase18-live-$case.json" python -B tests/living_world_live_emulator.py
+        WORLD_LIVE_REPORT="$reports/live-$case.json" python -B tests/living_world_live_emulator.py
 done
 export QUANTUM_QA_OUTPUT="$work/fixture-logs"
 LIVING_WORLD_TEST_SAVE="$inputs/PalletTest.sav" python -B tests/living_world_bridge_emulator.py

@@ -2,7 +2,7 @@ name: Living World Platform
 
 on:
   push:
-    branches: [Living-World, Living-World-Phase15, Living-World-Phase16, Living-World-Phase17]
+    branches: [Living-World]
     paths-ignore:
       - 'experiments/living_world/PHASE16.md'
       - 'experiments/living_world/benchmarks/simulation/**'
@@ -15,11 +15,19 @@ on:
         description: SHA-256 of the release ZIP
         type: string
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PACKAGE_NAME: Living-World-${{ github.sha }}-Windows-x64.zip
+
 permissions:
   contents: read
 
 jobs:
   parity:
+    if: github.ref == 'refs/heads/Living-World'
     strategy:
       matrix:
         os: [ubuntu-24.04, windows-2022]
@@ -53,7 +61,9 @@ jobs:
             autonomy-trace.json
 
   build-candidate:
-    if: ${{ !inputs.package_url && !vars.LIVING_WORLD_PACKAGE_URL }}
+    if: >-
+      github.ref == 'refs/heads/Living-World' &&
+      !(github.event_name == 'workflow_dispatch' && (inputs.package_url || vars.LIVING_WORLD_PACKAGE_URL))
     runs-on: ubuntu-24.04
     timeout-minutes: 40
     steps:
@@ -67,29 +77,33 @@ jobs:
           sudo apt-get install -y --no-install-recommends gcc-arm-none-eabi libnewlib-arm-none-eabi libpng-dev
           python3 -m pip install Pillow numpy
       - name: Build and stage the exact validation ZIP
-        run: bash experiments/living_world/build-ci-windows.sh Living-World-18.0.0-Live-Sync-Preview-Windows-x64.zip
+        run: bash experiments/living_world/build-ci-windows.sh "build/living-world-ci/$PACKAGE_NAME"
       - uses: actions/upload-artifact@v4
         with:
           name: living-world-windows-candidate
-          path: Living-World-18.0.0-Live-Sync-Preview-Windows-x64.zip*
+          path: build/living-world-ci/${{ env.PACKAGE_NAME }}*
           compression-level: 0
           if-no-files-found: error
       - uses: actions/upload-artifact@v4
         with:
-          name: phase17-native-world-example
+          name: living-world-native-evidence
           path: |
-            phase17-catalog.json
-            phase17-initial-world-example.json
-            phase18-live-*.json
+            build/living-world-ci/world-catalog.json
+            build/living-world-ci/initial-world-example.json
+            build/living-world-ci/live-*.json
+            build/living-world-ci/rom-build.log
           if-no-files-found: error
   windows-package:
     needs: build-candidate
-    if: ${{ !cancelled() && (needs.build-candidate.result == 'success' || needs.build-candidate.result == 'skipped') }}
+    if: >-
+      !cancelled() && github.ref == 'refs/heads/Living-World' &&
+      (needs.build-candidate.result == 'success' ||
+       (github.event_name == 'workflow_dispatch' && needs.build-candidate.result == 'skipped'))
     runs-on: windows-2022
     timeout-minutes: 20
     env:
-      PACKAGE_URL: ${{ inputs.package_url || vars.LIVING_WORLD_PACKAGE_URL }}
-      PACKAGE_SHA256: ${{ inputs.package_sha256 || vars.LIVING_WORLD_PACKAGE_SHA256 }}
+      PACKAGE_URL: ${{ github.event_name == 'workflow_dispatch' && (inputs.package_url || vars.LIVING_WORLD_PACKAGE_URL) || '' }}
+      PACKAGE_SHA256: ${{ github.event_name == 'workflow_dispatch' && (inputs.package_sha256 || vars.LIVING_WORLD_PACKAGE_SHA256) || '' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
@@ -106,7 +120,7 @@ jobs:
             Invoke-WebRequest -Uri $env:PACKAGE_URL -OutFile release.zip
             $hash = $env:PACKAGE_SHA256
           } else {
-            $candidate = 'Living-World-18.0.0-Live-Sync-Preview-Windows-x64.zip'
+            $candidate = $env:PACKAGE_NAME
             $hash = (Get-Content "$candidate.sha256" -Raw).Split()[0]
             Move-Item $candidate release.zip
           }
@@ -129,33 +143,8 @@ jobs:
           New-Item -ItemType Directory -Force $env:LOCALAPPDATA | Out-Null
           & "$root/python/python.exe" -B "$root/package_smoke.py" "$PWD/native-smoke.json"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-      - name: Measure three offline planners on identical situations
-        if: github.ref_name != 'Living-World-Phase17' && github.ref_name != 'Living-World'
-        shell: pwsh
-        run: |
-          $root = (Resolve-Path extracted/LivingQuantumWorld).Path
-          $runtime = Join-Path $root inference
-          $bench = (Resolve-Path tests/living_world_agency_benchmark.py).Path
-          $cases = @(
-            @('model.gguf','qwen3','','e773ccf7adfa50fcabfa5ea0e30312e11f0e83bf4ae00e6a38503e49358d1952'),
-            @('qwen17.gguf','qwen3','https://huggingface.co/unsloth/Qwen3-1.7B-GGUF/resolve/main/Qwen3-1.7B-Q4_K_M.gguf','b139949c5bd74937ad8ed8c8cf3d9ffb1e99c866c823204dc42c0d91fa181897'),
-            @('gemma1.gguf','gemma','https://huggingface.co/ggml-org/gemma-3-1b-it-GGUF/resolve/main/gemma-3-1b-it-Q4_K_M.gguf','8ccc5cd1f1b3602548715ae25a66ed73fd5dc68a210412eea643eb20eb75a135')
-          )
-          foreach ($case in $cases) {
-            $model = Join-Path $runtime $case[0]
-            if ($case[2]) { curl.exe --fail --location --retry 2 --output $model $case[2] }
-            if ((Get-FileHash $model).Hash -ne $case[3]) { throw 'Benchmark weight mismatch' }
-            & "$root/python/python.exe" -B $bench $runtime $model $case[1] > "agency-$($case[0]).jsonl"
-            if ($LASTEXITCODE) { throw 'Agent benchmark failed' }
-            $simulation = (Resolve-Path experiments/living_world/benchmark_simulation.py).Path
-            & "$root/python/python.exe" -B -c "import pathlib,runpy,sys; script=sys.argv.pop(1); sys.path.insert(0,str(pathlib.Path(script).parent)); runpy.run_path(script,run_name='__main__')" $simulation $runtime $model $case[1] --case cooperation --decisions 4 > "simulation-$($case[0]).jsonl"
-            if ($LASTEXITCODE) { throw 'Headless agent benchmark failed' }
-          }
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: living-world-native-windows-report
-          path: |
-            native-smoke.json
-            agency-*.jsonl
-            simulation-*.jsonl
+          path: native-smoke.json
