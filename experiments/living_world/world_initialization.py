@@ -8,6 +8,7 @@ import sqlite3
 import subprocess
 import sys
 from tempfile import TemporaryDirectory
+from time import perf_counter_ns
 from uuid import uuid4
 
 from native_world import Replica, read_context, snapshot
@@ -24,21 +25,32 @@ def write_json(path, document):
 
 
 def initialize(args):
-    catalog = read_json(args.catalog)
+    timings = {}
 
-    def progress(stage, done, total):
-        write_json(args.progress, dict(stage=stage, done=done, total=total, world_uuid=args.uuid))
+    def progress(stage, done, total, **extra):
+        write_json(args.progress, dict(stage=stage, done=done, total=total,
+                                       world_uuid=args.uuid, **extra))
 
     try:
+        started = perf_counter_ns()
+        catalog = read_json(args.catalog)
         with closing(Replica(args.rom, args.core, catalog, args.snapshot.read_bytes(),
                              read_json(args.context) if args.context else None)) as replica:
-            world = native_manifest(catalog, replica.context, replica, args.uuid, progress)
+            timings["replica_startup"] = perf_counter_ns() - started
+            started = perf_counter_ns()
+            world = native_manifest(catalog, replica.context, replica, args.uuid, progress,
+                                    timings=timings)
+            timings["manifest_assembly"] = (perf_counter_ns() - started
+                                            - timings["native_resolution"]
+                                            - timings["resolution_progress"])
         progress("commit", 0, 1)
+        started = perf_counter_ns()
         with closing(import_world(args.database, world)):
             pass
+        timings["database_initialization"] = perf_counter_ns() - started
         if args.manifest:
             write_json(args.manifest, world)
-        progress("ready", 1, 1)
+        progress("ready", 1, 1, timings_ms={stage: duration / 1e6 for stage, duration in timings.items()})
     except (ValueError, RuntimeError, OSError, TimeoutError, sqlite3.Error) as error:
         progress("error", 0, 0)
         print(str(error), file=sys.stderr)
