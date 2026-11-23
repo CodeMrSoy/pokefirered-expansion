@@ -67,3 +67,22 @@ shows concrete success on employment and relocation under local constraints
 and significant weaknesses in open-ended planning. The larger tested models
 cost more time and memory, with mixed improvements on declared predicates and
 weaker results on the defined outcomes.
+
+## Native Windows check
+
+The [Windows CI report](phase16-windows-report.zip) contains the native
+package smoke result, the Phase 15 inference regression, and the Phase 16
+cooperation case for all three models. The same checked package and its
+offline worker ran each model on Windows Server 2022. This narrower trial
+used four decisions before reload and two after reload.
+
+| Model | Nonempty plans / decisions | Median decision | Peak working set | Cooperation objective |
+| --- | ---: | ---: | ---: | --- |
+| Qwen3 0.6B | 4 / 6 | 11.86 s | 512 MiB | Missed |
+| Gemma 3 1B IT | 6 / 6 | 33.33 s | 892 MiB | Missed |
+| Qwen3 1.7B | 3 / 6 | 36.11 s | 1,199 MiB | Missed |
+
+All three completed inference within this trial's per-call budget. Median
+decision time includes multiple inference calls where the planner chose
+multiple steps. The package smoke and all companion CI jobs passed.
+[GitHub Actions run](https://github.com/CodeMrSoy/pokefirered-expansion/actions/runs/45154275224)
