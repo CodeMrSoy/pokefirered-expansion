@@ -24,15 +24,29 @@ fixture = ROOT / "tests/adventure_mode_menu_emulator.py"
 source = fixture.read_text().split("helpers = (root / 'tests/rom_cleanup_migration_emulator.py')")[0]
 disabled = os.environ.get("WORLD_TEST_NO_RANDOMIZER") == "1"
 protect = os.environ.get("WORLD_TEST_PROTECT") == "1"
+benchmark_trials = int(os.environ.get("WORLD_INIT_BENCHMARK_TRIALS", "0"))
+full = bool(benchmark_trials and not disabled)
 if disabled:
     source = source.replace("m.press(8); m.press(5); m.press(7); m.press(5); m.press(7)",
                             "m.press(5); m.press(5)")
     source = source.replace("== 23", "== 16").replace("== 87", "== 80")
     source = source.replace("87 if mode == 1 else 23", "80 if mode == 1 else 16")
+    if benchmark_trials:
+        source = source.replace("m.press(5); m.press(5); m.press(7)\n        assert",
+                                "m.press(5); m.press(5); m.press(6)\n        assert")
+        source = source.replace("== 80", "== 16").replace("80 if mode == 1 else 16", "16")
 if protect:
     source = source.replace("m.press(5); m.press(5); m.press(7)\n        assert",
                             "m.press(5); m.press(5)\n        assert")
     source = source.replace("== 87", "== 23").replace("87 if mode == 1 else 23", "23")
+if full:
+    # Turn on field items as well. The Quantum case also enables Vidra Gyms.
+    source = source.replace("m.press(5); m.press(5); m.press(7)\n        assert",
+                            "m.press(5); m.press(7); m.press(5); m.press(7)\n        assert")
+    source = source.replace("== 87", "== 119").replace("87 if mode == 1 else 23", "119")
+    delay = int(os.environ["WORLD_INIT_SEED_DELAY"])
+    source = source.replace("# Test independent category controls,",
+                            f"m.run({delay})\n    # Test independent category controls,")
 env = {"__file__": str(fixture)}
 exec(compile(source, str(fixture), "exec"), env)
 m = env["m"]
@@ -57,6 +71,16 @@ class Player:
     def memory_size(self, key):
         return memory(key)[1]
 
+if benchmark_trials:
+    from living_world_init_benchmark import measure
+
+    helpers = (ROOT / "tests/rom_cleanup_migration_emulator.py").read_text().split("old=(m.root")[0]
+    helpers = helpers.replace("import quantum_qol_emulator as m", "")
+    exec(compile(helpers, "benchmark_native_save", "exec"), env)
+    measure(m, Player(), env, memory, catalog, catalog_path, context, benchmark_trials,
+            Path(os.environ["WORLD_INIT_CASE_RESULT"]))
+    raise SystemExit(0)
+
 
 with TemporaryDirectory() as tmp:
     directory = Path(tmp)
@@ -71,7 +95,11 @@ with TemporaryDirectory() as tmp:
         assert startup.task.returncode == 0
         startup.poll(player, virgin_flash)
         assert snapshot(m.lib) == before and c.string_at(*memory(0)) == virgin_flash
-        assert json.loads((directory / "progress.json").read_bytes())["stage"] == "ready"
+        report = json.loads((directory / "progress.json").read_bytes())
+        assert report["stage"] == "ready"
+        assert set(report["timings_ms"]) == {"replica_startup", "native_resolution", "manifest_assembly",
+                                             "resolution_progress", "database_initialization"}
+        assert all(value > 0 for value in report["timings_ms"].values())
         path = startup.database
         with closing(sqlite3.connect(path)) as db:
             manifest = json.loads(db.execute("SELECT document FROM starting_manifest").fetchone()[0])

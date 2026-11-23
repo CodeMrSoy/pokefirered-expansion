@@ -2,6 +2,7 @@
 from collections import Counter
 from hashlib import sha256
 import json
+from time import perf_counter_ns
 from uuid import UUID
 
 from simulation.engine import Simulation
@@ -38,7 +39,8 @@ def static_specs(catalog):
                 yield location["id"], obj["local"], binding
 
 
-def native_manifest(catalog, context, resolver, world_id, progress=lambda *args: None):
+def native_manifest(catalog, context, resolver, world_id, progress=lambda *args: None,
+                    *, timings=None):
     """Resolve a frozen context. The resolver is an isolated native query client."""
     catalog_check(catalog)
     if context["version"] != VERSION or context["origin"] not in (1, 2) or not context["generation"]:
@@ -61,13 +63,24 @@ def native_manifest(catalog, context, resolver, world_id, progress=lambda *args:
                      for page in range(count)]
     total = len(wild) + len(species) + len(moves_queries) + len(trainers) + len(static)
     completed = 0
-    progress("resolve", completed, total)
+    native_ns = 0
+    progress_ns = 0
+
+    def report_progress():
+        nonlocal progress_ns
+        started = perf_counter_ns()
+        progress("resolve", completed, total)
+        progress_ns += perf_counter_ns() - started
+
+    report_progress()
 
     def rows(command, queries):
-        nonlocal completed
+        nonlocal completed, native_ns
         for i in range(0, len(queries), resolver.page):
             batch = queries[i:i+resolver.page]
+            started = perf_counter_ns()
             values = list(resolver.query(command, batch))
+            native_ns += perf_counter_ns() - started
             if len(values) != len(batch):
                 raise ValueError("Truncated native results")
             for value in values:
@@ -75,7 +88,7 @@ def native_manifest(catalog, context, resolver, world_id, progress=lambda *args:
                     raise ValueError(f"Catalog query rejected by native command {command}")
                 yield value
             completed += len(batch)
-            progress("resolve", completed, total)
+            report_progress()
 
     wild_values = iter(rows(2, wild))
     encounter_data = []
@@ -143,6 +156,8 @@ def native_manifest(catalog, context, resolver, world_id, progress=lambda *args:
                     services=catalog["services"], rules=catalog["rules"])
     manifest["manifest_sha256"] = digest(manifest)
     validate_manifest(manifest)
+    if timings is not None:
+        timings.update(native_resolution=native_ns, resolution_progress=progress_ns)
     return manifest
 
 
