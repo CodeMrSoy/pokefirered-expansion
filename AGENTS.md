@@ -2,6 +2,10 @@
 
 ## Branch ownership
 
+- `Living-World`: permanent development branch for the native observation bridge,
+  simulation, and companion launcher. Keep historical Living World phase branches
+  as milestone references. Integrate with V3 only on request.
+
 - `Pokemon-Quantum-V3`: dual-adventure development based on V2. Keep V3
   changes on V3; do not merge it back into the stable V2 branch.
 

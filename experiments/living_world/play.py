@@ -447,16 +447,20 @@ def play(args, profile, manifest, rom_path, rom, model, regional_demo):
     population = None
     decisions = deque(maxlen=16)
     startup = None
+    live_world = None
     catalog = ROOT / "world-catalog.json"
     if not demo and catalog.is_file():
         from world_initialization import WorldStartup
+        from live_world import LiveWorld
         try:
             startup = WorldStartup(profile / "native-worlds", rom_path, core_path, catalog)
+            if "observation" in startup.catalog["ports"]:
+                live_world = LiveWorld(startup)
         except (ValueError, OSError, KeyError) as error:
             print(f"Living World catalog unavailable: {error}", file=sys.stderr)
 
     def pair_flash(data):
-        if startup is not None:
+        if startup is not None and live_world is None:
             try:
                 startup.record_save(data)
             except (ValueError, OSError, RuntimeError, sqlite3.Error) as error:
@@ -653,6 +657,10 @@ def play(args, profile, manifest, rom_path, rom, model, regional_demo):
                 if startup is not None:
                     try:
                         startup.poll(game, previous)
+                        if live_world is not None and live_world.failure is None:
+                            live_world.poll(game)
+                            if live_world.failure:
+                                record({"error": f"Live World observations paused: {live_world.failure}"})
                     except OSError as error:
                         print(f"Living World progress unavailable: {error}", file=sys.stderr)
                         startup.close()
@@ -973,6 +981,11 @@ def play(args, profile, manifest, rom_path, rom, model, regional_demo):
                 atomic_write(save_path, current)
                 pair_flash(current)
         finally:
+            if live_world is not None:
+                try:
+                    live_world.close()
+                except (ValueError, OSError, RuntimeError, sqlite3.Error) as error:
+                    print(f"Living World journal unavailable: {error}", file=sys.stderr)
             if startup is not None:
                 startup.close()
             if memory is not None:

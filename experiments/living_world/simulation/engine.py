@@ -269,6 +269,21 @@ def dispatch(world, command):
     kind = command["kind"]
     if kind == "tick":
         return clock(world)
+    if kind == "native_roster":
+        require(world.get("case") == "native_manifest" and command["source"] == "native_rom",
+                "unauthorized")
+        actors = {}
+        for actor in world["people"].values():
+            identity = (actor["location"], actor.get("native_trainer"))
+            actors.setdefault(identity, []).append(actor)
+        taught = 0
+        for row in command["team"]:
+            witnesses = actors.get((row["location"], row["trainer"]), [])
+            if len(witnesses) == 1 and not witnesses[0]["transit"]:
+                remember(witnesses[0], dict(tick=world["tick"], source="own_native_team",
+                                            species=row["species"], slot=row["slot"]))
+                taught += 1
+        return dict(status="observed", participants=taught)
     if kind == "incident":
         require(command["source"] == "director", "unauthorized")
         return incident(world, command["event"], command["target"])
@@ -344,7 +359,10 @@ class Simulation:
                     existing = {"simulation", "journal"}
                     if manifest is not None:
                         existing.add("starting_manifest")
-                    require(tables in (set(), existing), "database_is_not_a_simulation")
+                    native_tables = {"native_streams", "native_events", "observed_pokemon",
+                                     "observed_aliases", "observed_party", "native_ticks", "native_clock"}
+                    allowed = (set(), existing, existing | native_tables) if manifest is not None else (set(), existing)
+                    require(tables in allowed, "database_is_not_a_simulation")
                     self.db.execute("CREATE TABLE IF NOT EXISTS simulation (slot INTEGER PRIMARY KEY CHECK(slot=1), state TEXT NOT NULL)")
                     self.db.execute("CREATE TABLE IF NOT EXISTS journal (revision INTEGER PRIMARY KEY, entry TEXT NOT NULL)")
                     created = self.db.execute("INSERT OR IGNORE INTO simulation VALUES (1,?)",
@@ -390,11 +408,15 @@ class Simulation:
         require(isinstance(command, dict), "malformed_command")
         command = json.loads(encoded(command))
         with self._write():
-            state, result = evolve(self.state(), command)
-            entry = dict(revision=state["revision"], tick=state["tick"], command=command,
-                         result=result, state_digest=digest(state))
-            self.db.execute("UPDATE simulation SET state=? WHERE slot=1", (encoded(state),))
-            self.db.execute("INSERT INTO journal VALUES (?,?)", (state["revision"], encoded(entry)))
+            return self._apply_command(command)
+
+    def _apply_command(self, command):
+        """Apply one command inside the caller's write transaction."""
+        state, result = evolve(self.state(), command)
+        entry = dict(revision=state["revision"], tick=state["tick"], command=command,
+                     result=result, state_digest=digest(state))
+        self.db.execute("UPDATE simulation SET state=? WHERE slot=1", (encoded(state),))
+        self.db.execute("INSERT INTO journal VALUES (?,?)", (state["revision"], encoded(entry)))
         return result
 
     def advance(self, hours, planner=None, *, actors=(), limit=0):

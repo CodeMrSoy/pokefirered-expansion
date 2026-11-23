@@ -1,4 +1,5 @@
 #include "global.h"
+#include "world_observe.h"
 #include "quest_book.h"
 #include "adventure_mode.h"
 #include <stddef.h>
@@ -788,6 +789,8 @@ u8 TrySavingData(u8 saveType)
     if (!gDamagedSaveSectors)
     {
         gSaveAttemptStatus = SAVE_STATUS_OK;
+        if (saveType == SAVE_NORMAL || saveType == SAVE_OVERWRITE_DIFFERENT_FILE || saveType == SAVE_HALL_OF_FAME)
+            WorldObserve_Save(gSaveCounter);
         return SAVE_STATUS_OK;
     }
     else

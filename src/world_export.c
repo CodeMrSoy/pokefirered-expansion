@@ -1,4 +1,5 @@
 #include "global.h"
+#include "world_observe.h"
 #include "adventure_mode.h"
 #include "adventure_progression.h"
 #include "caps.h"
@@ -84,6 +85,7 @@ void WorldExport_SetContext(u32 origin)
                                 | ((u32)(u8)gSaveBlock1Ptr->location.mapGroup << 8);
     gWorldExportPort.magic = 0;
     gWorldExportPort.reply = 0;
+    WorldObserve_Start(gWorldExportContext.generation);
 }
 
 static void ResolveWild(u32 headerIndex, u32 selector, struct WorldExportResult *out)

@@ -75,6 +75,14 @@ WORLD_TEST_NO_RANDOMIZER=1 ADVENTURE_TEST_MODE=0 QUANTUM_QA_OUTPUT="$work/native
     python -B tests/living_world_native_manifest.py
 WORLD_TEST_PROTECT=1 ADVENTURE_TEST_MODE=1 QUANTUM_QA_OUTPUT="$work/native-world-protected" \
     python -B tests/living_world_native_manifest.py
+for case in classic quantum disabled; do
+    mode=1
+    disabled=0
+    if [[ $case == classic ]]; then mode=0; fi
+    if [[ $case == disabled ]]; then disabled=1; fi
+    ADVENTURE_TEST_MODE=$mode WORLD_TEST_NO_RANDOMIZER=$disabled QUANTUM_QA_OUTPUT="$work/live-$case" \
+        WORLD_LIVE_REPORT="$root/phase18-live-$case.json" python -B tests/living_world_live_emulator.py
+done
 export QUANTUM_QA_OUTPUT="$work/fixture-logs"
 LIVING_WORLD_TEST_SAVE="$inputs/PalletTest.sav" python -B tests/living_world_bridge_emulator.py
 LIVING_WORLD_TEST_SAVE="$inputs/PalletSocialTest.sav" LIVING_WORLD_SOCIAL_FIXTURE=1 python -B tests/living_world_bridge_emulator.py

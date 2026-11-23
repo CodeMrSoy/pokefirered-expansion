@@ -280,6 +280,8 @@ def build_catalog(rom_path, elf_path, nm, revision):
                   rules=dict(classic_caps=CLASSIC_CAPS, quantum_caps=QUANTUM_CAPS, reserved_crests=RESERVED_CRESTS,
                              time_variants=layout["wild_times"], season_time_variants=layout["wild_variants"],
                              nuzlocke_key="region_map_section", disposition="native_authoritative"))
+    if "gWorldObservationPort" in rom.symbols:
+        result["ports"]["observation"] = rom.address("gWorldObservationPort")
     result["catalog_sha256"] = digest(result)
     return result
 

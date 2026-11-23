@@ -3681,34 +3681,41 @@ u8 GetMonsStateToDoubles_2(void)
     return (aliveCount > 1) ? PLAYER_HAS_TWO_USABLE_MONS : PLAYER_HAS_ONE_USABLE_MON;
 }
 
-u16 GetAbilityBySpecies(u16 species, u8 abilityNum, u8 cantRandomizeAbility)
+u16 GetEffectiveAbilityBySpecies(u16 species, u8 abilityNum, u8 cantRandomizeAbility)
 {
     int i;
+    u16 ability;
 
     if (abilityNum < NUM_ABILITY_SLOTS)
-        gLastUsedAbility = GetSpeciesAbility(species, abilityNum);
+        ability = GetSpeciesAbility(species, abilityNum);
     else
-        gLastUsedAbility = ABILITY_NONE;
+        ability = ABILITY_NONE;
 
     if (abilityNum >= NUM_NORMAL_ABILITY_SLOTS) // if abilityNum is empty hidden ability, look for other hidden abilities
     {
-        for (i = NUM_NORMAL_ABILITY_SLOTS; i < NUM_ABILITY_SLOTS && gLastUsedAbility == ABILITY_NONE; i++)
+        for (i = NUM_NORMAL_ABILITY_SLOTS; i < NUM_ABILITY_SLOTS && ability == ABILITY_NONE; i++)
         {
-            gLastUsedAbility = GetSpeciesAbility(species, i);
+            ability = GetSpeciesAbility(species, i);
         }
     }
 
-    for (i = 0; i < NUM_ABILITY_SLOTS && gLastUsedAbility == ABILITY_NONE; i++) // look for any non-empty ability
+    for (i = 0; i < NUM_ABILITY_SLOTS && ability == ABILITY_NONE; i++) // look for any non-empty ability
     {
-        gLastUsedAbility = GetSpeciesAbility(species, i);
+        ability = GetSpeciesAbility(species, i);
     }
     #if RANDOMIZER_AVAILABLE == TRUE
-        if(!cantRandomizeAbility && gLastUsedAbility != ABILITY_NONE)
+        if(!cantRandomizeAbility && ability != ABILITY_NONE)
         {
-            gLastUsedAbility = RandomizeAbility(species, gLastUsedAbility);
+            ability = RandomizeAbility(species, ability);
         }
     #endif
 
+    return ability;
+}
+
+u16 GetAbilityBySpecies(u16 species, u8 abilityNum, u8 cantRandomizeAbility)
+{
+    gLastUsedAbility = GetEffectiveAbilityBySpecies(species, abilityNum, cantRandomizeAbility);
     return gLastUsedAbility;
 }
 

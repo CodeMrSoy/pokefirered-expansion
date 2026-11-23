@@ -8,6 +8,7 @@ from pathlib import Path
 import subprocess
 import sys
 from tempfile import TemporaryDirectory
+from time import perf_counter_ns
 
 ROOT = Path(__file__).resolve().parent
 os.environ["SDL_VIDEODRIVER"] = "dummy"
@@ -123,21 +124,35 @@ def native_catalog_smoke(game, directory, rom, core):
     context = read_context(lambda kind: (game.memory(kind), game.memory_size(kind)), catalog)
     assert context and context["origin"] == 2
     frozen = snapshot(game.core)
+    observed = 0
+    if "observation" in catalog["ports"]:
+        from live_world import NativeObservations
+
+        reader = NativeObservations(catalog["ports"]["observation"])
+        frame, events = reader.read(lambda kind: (game.memory(kind), game.memory_size(kind)),
+                                    context["generation"])
+        assert frame is not None
+        assert any(event["kind"] == "map" for event in events)
+        observed = len(events)
     with TemporaryDirectory(dir=directory) as workspace:
         path = Path(workspace)
         (path/"snapshot").write_bytes(frozen)
         (path/"context.json").write_text(json.dumps(context), encoding="utf-8")
+        start = perf_counter_ns()
         subprocess.run(
             [sys.executable, "-B", str(ROOT/"world_initialization.py"), "initialize",
              str(rom), str(core), str(catalog_path), str(path/"snapshot"), str(path/"world.sqlite3"),
              str(path/"progress.json"), "--uuid", str(uuid4()), "--context", str(path/"context.json")],
             check=True, timeout=150)
-        assert json.loads((path/"progress.json").read_bytes())["stage"] == "ready"
+        total = (perf_counter_ns() - start) / 1e6
+        report = json.loads((path/"progress.json").read_bytes())
+        assert report["stage"] == "ready"
         with closing(Simulation(path/"world.sqlite3", read_only=True)) as world:
             state = world.state()
             assert len(state["locations"]) == len(catalog["maps"]) and not state["pokemon"]
             assert world.verify_replay() == 0
     assert snapshot(game.core) == frozen
+    return dict(replica_from_continue_ms=total, timings_ms=report["timings_ms"], native_records=observed)
 
 
 def runtime_smoke(directory, core):
@@ -164,7 +179,7 @@ def runtime_smoke(directory, core):
             hint = continue_to(game, "pewter")
             assert display.texture and display.device
             assert game.save_bytes() == fixture
-            native_catalog_smoke(game, directory, rom, core)
+            native_report = native_catalog_smoke(game, directory, rom, core)
             # Keep all writes inside the authorized host response window.
             bridge = DialogueBridge(game.read_request, game.write_reply, game.mailbox, deferred=True)
             assert bridge.poll(lambda _: SKIP) is None
@@ -220,7 +235,8 @@ def runtime_smoke(directory, core):
     finally:
         display.controls.close()
         display.sdl.SDL_Quit()
-    return "SDL, controller/remap, post-Brock Phase 13 demo, Watts mailbox, native flash write/reload, SQLite quest lifecycle"
+    return dict(checks="SDL, controller/remap, post-Brock demo, Watts mailbox, Flash save/reload, SQLite quest lifecycle",
+                native_world=native_report)
 
 
 def worker_failure_smoke():

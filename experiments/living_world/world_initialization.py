@@ -111,6 +111,8 @@ class WorldStartup:
         self.pending_flash = None
         write_json(self.directory / "active.json", dict(database=None, generation=self.generation))
         if native["origin"] == 2:
+            if hasattr(game, "save_bytes"):
+                battery = game.save_bytes()
             pair = self.directory / "checkpoints.sqlite3"
             if pair.exists():
                 try:
@@ -167,7 +169,7 @@ class WorldStartup:
             self.staging = None
 
 
-def flash_identity(flash, abi):
+def flash_identity(flash, abi, *, include_counter=False):
     """Read the newest fully checksummed logical Flash slot."""
     from struct import unpack_from
 
@@ -192,14 +194,17 @@ def flash_identity(flash, abi):
             valid.append(members[0])
     if not valid:
         return None
-    _, block = max(valid)
+    counter, block = max(valid)
     seed = unpack_from("<I", flash, block + abi["seed"])[0]
     trainer = unpack_from("<I", flash, block + abi["trainer"])[0]
     modes = flash[block + abi["modes"]]
     tag = flash[block + abi["adventure"]:block + abi["adventure"] + 8]
     if len(tag) != 8 or tag[:5] != b"QADV\x01" or tag[5] not in (0,1) or tag[6] != (tag[5] ^ 255) or tag[7] != 167:
         return None
-    return dict(seed=seed, trainer_id=trainer, modes=modes, mode=tag[5])
+    identity = dict(seed=seed, trainer_id=trainer, modes=modes, mode=tag[5])
+    if include_counter:
+        identity["counter"] = counter
+    return identity
 
 
 def valid_flash_identity(flash, context, abi):

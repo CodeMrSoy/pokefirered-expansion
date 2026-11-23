@@ -8,6 +8,7 @@ it does not contain only the files mentioned in its name.
 
 | Branch | New work | Integration target |
 | --- | --- | --- |
+| `Living-World` | Native observations, simulation, companion launcher and packaging | Permanent Living World development branch |
 | `QOL` | PokéGlass, menus, battle/system mechanics, field-tool behavior, performance, shared bug fixes | `Pokemon-Quantum-V2` |
 | `Randomizer` | Pokémon, ability and move randomization rules, settings and randomizer-specific fixes | `Pokemon-Quantum-V2` |
 | `Havora-Development` | Havora layouts, tilesets, gym, encounters, city dialogue and local events | `Pokemon-Quantum-V2` |

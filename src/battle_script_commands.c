@@ -1,4 +1,5 @@
 #include "global.h"
+#include "world_observe.h"
 #include "game_modes.h"
 #include "battle.h"
 #include "battle_message.h"
@@ -15870,6 +15871,7 @@ static void Cmd_handleballthrow(void)
                 else
                     gBattleCommunication[MULTISTRING_CHOOSER] = shakes;
 
+                WorldObserve_BallFailed(GetBattlerMon(gBattlerTarget), gBattlerPartyIndexes[gBattlerTarget], ballId);
                 gBattlescriptCurrInstr = BattleScript_ShakeBallThrow;
             }
         }
@@ -15985,7 +15987,9 @@ static void Cmd_givecaughtmon(void)
                 SetMonData(caughtMon, MON_DATA_HELD_ITEM, &lostItem);  // Restore non-berry items
         }
 
-        if (GiveMonToPlayer(caughtMon) != MON_GIVEN_TO_PARTY
+        u8 destination = GiveMonToPlayer(caughtMon);
+        WorldObserve_Capture(caughtMon, gBattlerPartyIndexes[GetCatchingBattler()], destination);
+        if (destination != MON_GIVEN_TO_PARTY
          && gBattleCommunication[MULTISTRING_CHOOSER] != B_MSG_SWAPPED_INTO_PARTY)
         {
             if (!ShouldShowBoxWasFullMessage())

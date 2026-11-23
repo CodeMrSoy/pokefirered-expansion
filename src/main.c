@@ -1,4 +1,5 @@
 #include "global.h"
+#include "world_observe.h"
 #include "crt0.h"
 #include "malloc.h"
 #include "help_system.h"
@@ -376,6 +377,7 @@ static void VBlankIntr(void)
         LinkVSync();
 
     gMain.vblankCounter1++;
+    WorldObserve_Frame();
 
     if (gMain.vblankCallback)
         gMain.vblankCallback();

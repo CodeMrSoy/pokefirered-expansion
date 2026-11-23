@@ -1,4 +1,5 @@
 #include "global.h"
+#include "world_observe.h"
 #include "quest_book.h"
 #include "game_modes.h"
 #include "adventure_mode.h"
@@ -1697,6 +1698,8 @@ void CB2_Overworld(void)
     OverworldBasic();
     LivingWorld_UpdateFieldHint();
     WorldExport_Poll();
+    if (!fading)
+        WorldObserve_Field();
     if (!fading)
         LivingWorld_ReconcileAgents();
     if (fading)

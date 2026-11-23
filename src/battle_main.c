@@ -1,4 +1,5 @@
 #include "global.h"
+#include "world_observe.h"
 #include "adventure_progression.h"
 #include "game_modes.h"
 #include "battle.h"
@@ -641,6 +642,8 @@ static void CB2_InitBattleInternal(void)
         TryFormChange(i, B_SIDE_PLAYER, FORM_CHANGE_BEGIN_BATTLE);
         TryFormChange(i, B_SIDE_OPPONENT, FORM_CHANGE_BEGIN_BATTLE);
     }
+
+    WorldObserve_BattleStart(gBattleTypeFlags, TRAINER_BATTLE_PARAM.opponentA, TRAINER_BATTLE_PARAM.opponentB);
 
     if (TESTING)
     {
@@ -5478,6 +5481,7 @@ static void ReturnFromBattleToOverworld(void)
         return;
 
     gSpecialVar_Result = gBattleOutcome;
+    WorldObserve_BattleEnd(gBattleOutcome);
     gMain.inBattle = FALSE;
     gMain.callback1 = gPreBattleCallback1;
 

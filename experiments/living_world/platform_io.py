@@ -53,13 +53,14 @@ def backup_profile(profile):
         target = staging.with_name(f"Quantum-{time.time_ns()}.zip")
         try:
             with tempfile.TemporaryDirectory() as directory, ZipFile(staging, "w", ZIP_DEFLATED) as archive:
-                database = profile / "living-world.sqlite3"
-                if database.is_file():
-                    copy = Path(directory) / database.name
-                    with (closing(sqlite3.connect(database.as_uri() + "?mode=ro", uri=True)) as reader,
-                          closing(sqlite3.connect(copy)) as writer):
-                        reader.backup(writer)
-                    archive.write(copy, database.name)
+                for name in ("living-world.sqlite3", "native-worlds/checkpoints.sqlite3"):
+                    database = profile / name
+                    if database.is_file():
+                        copy = Path(directory) / database.name
+                        with (closing(sqlite3.connect(database.as_uri() + "?mode=ro", uri=True)) as reader,
+                              closing(sqlite3.connect(copy)) as writer):
+                            reader.backup(writer)
+                        archive.write(copy, name)
                 for path in saves:
                     archive.write(path, path.name)
             staging.rename(target)
