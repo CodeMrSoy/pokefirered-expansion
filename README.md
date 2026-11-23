@@ -1,34 +1,34 @@
 # Pokémon Quantum
 
-A Pokémon FireRed expansion project featuring Kanto, the Vidra region, PokéGlass,
-and reusable field tools.
-
-**Use [`Pokemon-Quantum-V2`](https://github.com/CodeMrSoy/pokefirered-expansion/tree/Pokemon-Quantum-V2)
-for the combined game.** Development branches hold work for a particular area;
-they are not separate games or folders.
+A Pokémon FireRed expansion featuring Classic Kanto, the Quantum adventure in
+Vidra, PokéGlass, and reusable field tools.
 
 | Branch | Purpose |
 | --- | --- |
-| `Pokemon-Quantum-V2` | Combined game, campaign integration and release builds |
-| `QOL` | Mechanics, menus, PokéGlass, field tools, performance and bug fixes |
-| `Havora-Development` | Havora maps, gym, city NPCs, encounters and local scripts |
-| `Sprites` | Player/trainer/overworld sprites, animation frames and character palettes |
-| `Corvala-dev` | Corvala maps and local assets; work in progress, not yet merged into V2 |
-| `Pokemon-Quantum-V1` | Historical V1 snapshot; no new feature work |
-| `master` | Historical original base; no new feature work |
-| `Randomizer` | Pokémon, ability and move randomization mechanics |
+| [`Pokemon-Quantum-V3`](https://github.com/CodeMrSoy/pokefirered-expansion/tree/Pokemon-Quantum-V3) | Integrates playable game changes |
+| [`Living-World`](https://github.com/CodeMrSoy/pokefirered-expansion/tree/Living-World) | Develops the native bridge, simulation, and Windows companion |
+| [`Pokemon-Quantum-V2`](https://github.com/CodeMrSoy/pokefirered-expansion/tree/Pokemon-Quantum-V2) | Stable V2 release and save-migration baseline |
 
-Start focused work on its matching branch, then merge tested changes into V2.
-Every branch contains a complete checkout of the game. Shared history can
-include other areas; the branch purpose governs **new changes**.
+Build with `make -j4` after installing the ARM GNU toolchain and host build
+dependencies. See [INSTALL.md](INSTALL.md#pokémon-quantum-quick-start) for the
+Quantum build and [the branch guide](docs/branches/README.md) for development,
+tests, and milestones.
 
-See [the branch guide](docs/branches/README.md) for examples, merge directions,
-release rules and the branch audit. Agent contributors should also read
-[AGENTS.md](AGENTS.md).
+## Source layout
 
-For build setup, see [INSTALL.md](https://github.com/rh-hideout/pokeemerald-expansion/blob/upcoming/INSTALL.md).
+| Path | Contents |
+| --- | --- |
+| `src/`, `include/`, `asm/` | Native GBA source, headers and assembly |
+| `data/`, `graphics/`, `sound/` | Maps, scripts, layouts, sprites, palettes and audio inputs |
+| `tools/` | Host tools and generators used by the FireRed build |
+| `test/`, `tests/` | Native tests and Python/emulator regression drivers |
+| `docs/` | Build, mechanics, maps and verification notes |
+| `experiments/living_world/` on Living-World | Simulation, native world catalog, launchers and package tooling |
 
 ## Credits
 
-- [rh-hideout/pokeemerald-expansion](https://github.com/rh-hideout/pokeemerald-expansion/wiki/Credits)
-- [Sotomura/pokefirered-rtc](https://github.com/Sotomura/pokefirered/tree/pokefirered-rtc)
+Pokémon Quantum builds on [cawtds/pokefirered-expansion](https://github.com/cawtds/pokefirered-expansion)
+and [pret/pokefirered](https://github.com/pret/pokefirered). The FireRed expansion
+inherits contributions from [rh-hideout/pokeemerald-expansion](https://github.com/rh-hideout/pokeemerald-expansion/wiki/Credits)
+and [Sotomura/pokefirered-rtc](https://github.com/Sotomura/pokefirered/tree/pokefirered-rtc).
+See the individual notices under `tools/` for bundled tool licenses.

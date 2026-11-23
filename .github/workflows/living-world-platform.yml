@@ -1,0 +1,150 @@
+name: Living World Platform
+
+on:
+  push:
+    branches: [Living-World]
+    paths-ignore:
+      - 'experiments/living_world/PHASE16.md'
+      - 'experiments/living_world/benchmarks/simulation/**'
+  workflow_dispatch:
+    inputs:
+      package_url:
+        description: HTTPS URL of the release ZIP for this commit
+        type: string
+      package_sha256:
+        description: SHA-256 of the release ZIP
+        type: string
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PACKAGE_NAME: Living-World-${{ github.sha }}-Windows-x64.zip
+
+permissions:
+  contents: read
+
+jobs:
+  parity:
+    if: github.ref == 'refs/heads/Living-World'
+    strategy:
+      matrix:
+        os: [ubuntu-24.04, windows-2022]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compare deterministic scenario against the same fixture
+        run: |
+          python -B experiments/living_world/platform_scenario.py platform-trace.json
+          python -c "import json; from pathlib import Path; assert json.loads(Path('platform-trace.json').read_bytes()) == json.loads(Path('tests/living_world_platform_expected.json').read_bytes())"
+          python -B tests/living_world_population.py
+          python -B tests/living_world_kanto_census.py
+          python -B tests/living_world_kanto.py
+          python -B tests/living_world_autonomy.py > autonomy-trace.json
+          python -B tests/living_world_rules.py
+          python -B tests/living_world_agency.py
+          python -B tests/living_world_simulation.py
+          python -B tests/living_world_manifest.py
+          python -B tests/living_world_live.py
+          python -B tests/living_world_release_scenario.py > release-scenario.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: living-world-parity-${{ matrix.os }}
+          path: |
+            platform-trace.json
+            release-scenario.json
+            autonomy-trace.json
+
+  build-candidate:
+    if: >-
+      github.ref == 'refs/heads/Living-World' &&
+      !(github.event_name == 'workflow_dispatch' && (inputs.package_url || vars.LIVING_WORLD_PACKAGE_URL))
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install ROM build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends gcc-arm-none-eabi libnewlib-arm-none-eabi libpng-dev
+          python3 -m pip install Pillow numpy
+      - name: Build and stage the exact validation ZIP
+        run: bash experiments/living_world/build-ci-windows.sh "build/living-world-ci/$PACKAGE_NAME"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: living-world-windows-candidate
+          path: build/living-world-ci/${{ env.PACKAGE_NAME }}*
+          compression-level: 0
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        with:
+          name: living-world-native-evidence
+          path: |
+            build/living-world-ci/world-catalog.json
+            build/living-world-ci/initial-world-example.json
+            build/living-world-ci/live-*.json
+            build/living-world-ci/rom-build.log
+          if-no-files-found: error
+  windows-package:
+    needs: build-candidate
+    if: >-
+      !cancelled() && github.ref == 'refs/heads/Living-World' &&
+      (needs.build-candidate.result == 'success' ||
+       (github.event_name == 'workflow_dispatch' && needs.build-candidate.result == 'skipped'))
+    runs-on: windows-2022
+    timeout-minutes: 20
+    env:
+      PACKAGE_URL: ${{ github.event_name == 'workflow_dispatch' && (inputs.package_url || vars.LIVING_WORLD_PACKAGE_URL) || '' }}
+      PACKAGE_SHA256: ${{ github.event_name == 'workflow_dispatch' && (inputs.package_sha256 || vars.LIVING_WORLD_PACKAGE_SHA256) || '' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        if: needs.build-candidate.result == 'success'
+        with:
+          name: living-world-windows-candidate
+      - name: Require the exact release candidate
+        shell: pwsh
+        run: |
+          if ($env:PACKAGE_URL) {
+            if (([uri]$env:PACKAGE_URL).Scheme -ne 'https' -or $env:PACKAGE_SHA256 -notmatch '^[a-fA-F0-9]{64}$') {
+              throw 'An HTTPS package URL and SHA-256 digest are required.'
+            }
+            Invoke-WebRequest -Uri $env:PACKAGE_URL -OutFile release.zip
+            $hash = $env:PACKAGE_SHA256
+          } else {
+            $candidate = $env:PACKAGE_NAME
+            $hash = (Get-Content "$candidate.sha256" -Raw).Split()[0]
+            Move-Item $candidate release.zip
+          }
+          if ((Get-FileHash release.zip -Algorithm SHA256).Hash -ne $hash) {
+            throw 'Release ZIP SHA-256 mismatch.'
+          }
+          Expand-Archive release.zip -DestinationPath extracted
+          $release = Get-Content extracted/LivingQuantumWorld/release.json -Raw | ConvertFrom-Json
+          if ($release.commit -ne $env:GITHUB_SHA) { throw 'Package commit does not match this run.' }
+      - name: Validate the extracted Windows package
+        shell: pwsh
+        run: |
+          $root = (Resolve-Path extracted/LivingQuantumWorld).Path
+          $syntaxErrors = $null
+          $tokens = $null
+          [System.Management.Automation.Language.Parser]::ParseFile(
+            (Join-Path $root 'launcher-windows.ps1'), [ref]$tokens, [ref]$syntaxErrors) | Out-Null
+          if ($syntaxErrors) { throw ($syntaxErrors | Out-String) }
+          $env:LOCALAPPDATA = Join-Path $env:RUNNER_TEMP 'QuantumSmokeProfile'
+          New-Item -ItemType Directory -Force $env:LOCALAPPDATA | Out-Null
+          & "$root/python/python.exe" -B "$root/package_smoke.py" "$PWD/native-smoke.json"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: living-world-native-windows-report
+          path: native-smoke.json

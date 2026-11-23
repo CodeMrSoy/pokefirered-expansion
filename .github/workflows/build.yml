@@ -3,9 +3,16 @@ name: CI
 on:
   push:
     branches:
-      - master
-      - no-ql-and-hs
+      - Pokemon-Quantum-V3
+      - Living-World
   pull_request:
+    branches:
+      - Pokemon-Quantum-V3
+      - Living-World
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

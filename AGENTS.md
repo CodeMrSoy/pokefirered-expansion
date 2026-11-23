@@ -2,29 +2,19 @@
 
 ## Branch ownership
 
-- `Pokemon-Quantum-V3`: dual-adventure development based on V2. Keep V3
-  changes on V3; do not merge it back into the stable V2 branch.
+- `Pokemon-Quantum-V3` integrates the game, including randomizer, PokéGlass,
+  shared mechanics, story, maps, and sprites.
+- `Living-World` owns the native observation bridge, simulation, companion
+  launcher, and Windows packaging. Integrate Living World changes into V3 on
+  request.
+- `Havora-Development` and `Corvala-dev` retain unfinished map work.
+  `Living-Quantum-World` retains outstanding prototype runtime fixes.
+- `Pokemon-Quantum-V2` is the stable V2 save-migration baseline.
+  `Pokemon-Quantum-V1` and `master` are historical snapshots.
 
-- `Pokemon-Quantum-V2`: combined game, merges, cross-region campaign integration
-  and release builds.
-- `QOL`: mechanics, shared systems, PokéGlass/UI, field-tool behavior, performance
-  and general bug fixes.
-- `Havora-Development`: Havora city/maps, gym, encounters, local assets and scripts.
-- `Sprites`: character/trainer/overworld sprite sheets, frames and palettes.
-- `Corvala-dev`: Corvala maps and local assets; preserve its unfinished work.
-- `Pokemon-Quantum-V1` and `master`: historical references, not feature targets.
-- `Randomizer`: Pokémon, ability and move randomization mechanics; keep active.
-
-Explicit user branch choices take precedence. For an unspecified target, choose
-by the change's responsibility. Use a focused branch from that target, such as
-`feature/qol-*`, `feature/havora-*`, `feature/sprites-*` or
-`feature/randomizer-*`. Cross-region story
-work can use `feature/story-*` based on V2. Do not put an unrelated feature
-straight on V2 merely because the last task used it.
-
-Every branch is a complete game snapshot. Existing shared history and baseline
-assets do not violate branch ownership; keep new work focused. Read
-`docs/branches/README.md` for the integration workflow.
+Use a temporary feature branch from the relevant workstream when isolation
+helps. Use annotated tags for completed milestones. Read
+[the branch guide](docs/branches/README.md) for review and release procedures.
 
 ## Preserve shared work
 
@@ -34,8 +24,8 @@ when merging. Do not force-push, rewrite old mixed-scope history, reset shared
 branches or delete unique work to clean up the branch list.
 
 Use normal merge commits for divergent development-branch integrations and
-fast-forward when possible. Sync V2 back into a development branch when a new
-feature needs the current baseline. Merge into the combined game when the user
+fast-forward when possible. Sync V3 into Living World when a change needs the current
+integration baseline. Merge into the combined game when the user
 requests integration/release or the task's existing authorization includes it.
 Use expected-head protection when updating refs through the GitHub connector.
 

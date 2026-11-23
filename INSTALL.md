@@ -1,3 +1,26 @@
+## Pokémon Quantum quick start
+
+Build from `Pokemon-Quantum-V3` for the integrated game or `Living-World` for
+the simulation branch. Install GNU Make, a host C/C++ compiler, Python 3, libpng
+development headers, and an ARM GNU embedded toolchain with Newlib. On Debian or
+Ubuntu the core packages are:
+
+```sh
+sudo apt-get install build-essential git pkg-config python3 libpng-dev \
+  gcc-arm-none-eabi binutils-arm-none-eabi libnewlib-arm-none-eabi
+make -j4
+```
+
+The native FireRed build writes `pokefirered.gba`, `pokefirered.elf`, and
+intermediate files under `build/`. Use `make GAME_VERSION=LEAFGREEN` for
+the LeafGreen target. Set `TOOLCHAIN=/path/to/toolchain` on the make command line
+if the ARM tools are outside `PATH`. For Python emulator checks, install Pillow
+and NumPy. Set `MGBA_CORE` to the path of a compatible mGBA libretro library and
+`ARM_NM` to the ARM symbol reader if it is outside `PATH`.
+
+The inherited installation guide below covers additional platforms and upstream
+build variants.
+
 # Instructions
 
 These instructions explain how to set up the tools required to build **pokefirered**, which assembles the source files into a ROM.

@@ -71,6 +71,11 @@ tools/trainerproc/trainerproc
 tools/compresSmol/compresSmol
 tools/compresSmol/compresSmolTilemap
 *.Identifier
-*.smol
-*.fastSmol
-*.smolTM
+
+# Local Python caches, package staging and disposable profiles
+__pycache__/
+.pytest_cache/
+/dist/
+/local-profiles/
+/*.sav
+/*.srm
