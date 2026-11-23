@@ -22,6 +22,7 @@
 #include "quest_log_objects.h"
 #include "quest_log_player.h"
 #include "quest_log.h"
+#include "world_export.h"
 #include "rtc.h"
 #include "strings.h"
 #include "constants/event_objects.h"
@@ -1232,6 +1233,9 @@ static void Task_EndQuestLog(u8 taskId)
         gGlobalFieldTintMode = QL_TINT_NONE;
         DisableWildEncounters(FALSE);
         gHelpSystemEnabled = TRUE;
+        // The recap temporarily plays on a copy of the saved world. Publish
+        // the Continue context only when the actual Flash save is playable.
+        WorldExport_SetContext(2);
         DestroyTask(taskId);
         break;
     }

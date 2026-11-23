@@ -121,19 +121,32 @@ def native_catalog_smoke(game, directory, rom, core):
     if not catalog_path.is_file():
         return
     catalog = json.loads(catalog_path.read_bytes())
-    context = read_context(lambda kind: (game.memory(kind), game.memory_size(kind)), catalog)
-    assert context and context["origin"] == 2
-    frozen = snapshot(game.core)
-    observed = 0
+    def memory(kind):
+        return game.memory(kind), game.memory_size(kind)
+
+    # Some native saves replay the Quest Log before exposing a Continue
+    # context. Skip the recap as a player would and wait for real field data.
+    reader = None
     if "observation" in catalog["ports"]:
         from live_world import NativeObservations
-
         reader = NativeObservations(catalog["ports"]["observation"])
-        frame, events = reader.read(lambda kind: (game.memory(kind), game.memory_size(kind)),
-                                    context["generation"])
-        assert frame is not None
-        assert any(event["kind"] == "map" for event in events)
-        observed = len(events)
+    observed = 0
+    for _ in range(50):
+        context = read_context(memory, catalog)
+        if context and context["origin"] == 2:
+            if reader is None:
+                break
+            _, events = reader.read(memory, context["generation"])
+            observed += len(events)
+            if any(event["kind"] == "map" for event in events):
+                break
+        if reader is not None and reader.generation is not None:
+            run_frames(game, 1)
+        else:
+            tap(game, 0, 24)
+    else:
+        raise AssertionError("Continue did not publish real field observations after the recap")
+    frozen = snapshot(game.core)
     with TemporaryDirectory(dir=directory) as workspace:
         path = Path(workspace)
         (path/"snapshot").write_bytes(frozen)

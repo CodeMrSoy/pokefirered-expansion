@@ -74,7 +74,8 @@ acknowledgment, and simulation tick. Exact duplicate payloads are ignored;
 divergent payloads or sequence gaps quarantine the attachment. A real save
 marker must match the checksummed native Flash counter. The background worker
 archives the SQLite snapshot through that marker. Continue reopens a fresh
-copy of the exact archived pair. Journal writes beyond that checkpoint remain
+copy of the exact archived pair. When the native Quest Log plays a recap,
+the handoff waits for the recap to close and the saved field to be playable. Journal writes beyond that checkpoint remain
 in the prior working copy. The launcher's backup now includes the immutable
 paired checkpoint archive.
 
