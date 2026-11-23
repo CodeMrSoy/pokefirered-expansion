@@ -2,7 +2,10 @@ name: Living World Platform
 
 on:
   push:
-    branches: [Living-World-Phase15]
+    branches: [Living-World-Phase15, Living-World-Phase16]
+    paths-ignore:
+      - 'experiments/living_world/PHASE16.md'
+      - 'experiments/living_world/benchmarks/simulation/**'
   workflow_dispatch:
     inputs:
       package_url:
@@ -36,6 +39,7 @@ jobs:
           python -B tests/living_world_autonomy.py > autonomy-trace.json
           python -B tests/living_world_rules.py
           python -B tests/living_world_agency.py
+          python -B tests/living_world_simulation.py
           python -B tests/living_world_release_scenario.py > release-scenario.json
       - uses: actions/upload-artifact@v4
         if: always()
@@ -132,6 +136,9 @@ jobs:
             if ((Get-FileHash $model).Hash -ne $case[3]) { throw 'Benchmark weight mismatch' }
             & "$root/python/python.exe" -B $bench $runtime $model $case[1] > "agency-$($case[0]).jsonl"
             if ($LASTEXITCODE) { throw 'Agent benchmark failed' }
+            $simulation = (Resolve-Path experiments/living_world/benchmark_simulation.py).Path
+            & "$root/python/python.exe" -B -c "import pathlib,runpy,sys; script=sys.argv.pop(1); sys.path.insert(0,str(pathlib.Path(script).parent)); runpy.run_path(script,run_name='__main__')" $simulation $runtime $model $case[1] --case cooperation --decisions 4 > "simulation-$($case[0]).jsonl"
+            if ($LASTEXITCODE) { throw 'Headless agent benchmark failed' }
           }
       - uses: actions/upload-artifact@v4
         if: always()
@@ -140,3 +147,4 @@ jobs:
           path: |
             native-smoke.json
             agency-*.jsonl
+            simulation-*.jsonl
