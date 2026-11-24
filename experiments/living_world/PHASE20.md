@@ -52,6 +52,9 @@ paths limits proposals. Accepted and rejected plans are journaled, and each
 step is revalidated before execution. Inference is offered at most once
 across the world every five days, with one background request in flight.
 Busy, absent, stale or failed inference falls back to the seeded policy.
+Trainer requests use a compact prompt and a 60-second generation deadline
+to accommodate the portable single-threaded Linux worker. Native frames
+and the simulation clock continue while the request is in flight.
 Different ambitions, preferences, opportunities and resources affect
 action priorities. Routine decisions do not require language inference.
 

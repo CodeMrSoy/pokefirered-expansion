@@ -57,7 +57,7 @@ def run(manifest, size, db, model=None):
     eco = ecology.initial_state(manifest, manifest.get("ecology_protected"), 0)
     state = trainers.start(index, eco, 0, profiles)
     metrics, snapshots, proposal, model_times = [], [], None, []
-    model_failures = 0
+    model_failures = []
     start, cpu = perf_counter(), process_time()
     memory = rss()
     max_rss = memory
@@ -81,8 +81,8 @@ def run(manifest, size, db, model=None):
             started = perf_counter()
             try:
                 proposal = trainers.request_plan(model, state["request"])
-            except (OSError, ValueError, RuntimeError):
-                model_failures += 1
+            except (OSError, ValueError, RuntimeError) as error:
+                model_failures.append(str(error))
             model_times.append((perf_counter() - started) * 1000)
         if day % 30 == 0 or day in HORIZONS:
             current = rss()
@@ -97,7 +97,7 @@ def run(manifest, size, db, model=None):
                                                  db.execute("PRAGMA page_count").fetchone()[0],
                                   counters=dict(state["counters"]), owned=len(levels), highest_level=max(levels, default=0),
                                   median_level=median(levels) if levels else None, conservation_checked=True,
-                                  completed_model_calls=len(model_times), model_failures=model_failures,
+                                  completed_model_calls=len(model_times), model_failures=len(model_failures),
                                   model_latency_ms=list(model_times), max_inflight_model_calls=1 if model_times else 0))
     final = ecology.encoded(state)
     assert trainers.load(db) == state
@@ -111,6 +111,7 @@ def run(manifest, size, db, model=None):
     assert journal.digest() == repeated_journal.digest()
     assert repeated == state and replay == eco
     return dict(profiles=len(profiles), production_profiles=sorted(index["actors"]), scenarios=snapshots,
+                model_proposals=replay_inputs, model_errors=model_failures,
                 projection_sha256=sha256(final.encode("ascii") + journal.digest()).hexdigest(),
                 journeys={key: dict(goal=row["goal"], journeys=row["journeys"], decisions=row["decisions"],
                                     party=len(row["party"]), storage=len(row["storage"]))
@@ -133,11 +134,12 @@ def main():
                 if args.model_runtime:
                     with closing(LocalModel(args.model_runtime, {}, style="qwen3")) as model:
                         result = run(manifest, size, db, model)
-                    assert result["scenarios"][-1]["counters"].get("model_plan_admitted", 0), result
                 else:
                     result = run(manifest, size, db)
                 results.append(result)
     args.output.write_text(json.dumps(results, indent=2) + "\n", encoding="utf-8")
+    if args.model_runtime and not all(row["scenarios"][-1]["counters"].get("model_plan_admitted") for row in results):
+        parser.error(f"No native-sized Qwen plan was admitted. See {args.output}.")
 
 
 if __name__ == "__main__":

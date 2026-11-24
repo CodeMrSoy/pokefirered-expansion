@@ -45,7 +45,7 @@ def options_for(steps):
     return tuple(dict.fromkeys(goal for step in steps for goal in goals_for(step)))
 
 
-def choose_plan(model, ticket, available, persona, planner=None):
+def choose_plan(model, ticket, available, persona, planner=None, *, timeout=20, concise=False):
     if model.style != "qwen3":
         raise ValueError("World planning requires Qwen3")
     goals = options_for(available)
@@ -71,16 +71,22 @@ def choose_plan(model, ticket, available, persona, planner=None):
     else:
         grammar = ('root ::= goal ":" atom (" " atom)? (" " atom)? (" " atom)? (" " atom)? (" " atom)?\n'
                    f'goal ::= {choices(purposes)}\natom ::= {choices(codes)}\n')
+    if concise:
+        aliases.update(SCOUT_HABITAT="scout", EXPLORE_TRAVEL="go", ATTEMPT_CAPTURE="catch",
+                       DEVELOP_PARTNER="train", TRAINER_WORK="work", BUY_BALL="buy balls",
+                       ROTATE_PARTY="rotate party", REPORT_SIGHTING="report", SPAR_PRACTICE="spar")
     methods = "; ".join(f"{code} {aliases.get(step.action, step.action.lower())}" +
                         (f" {step.target}" if step.target != ticket.cause else "")
                         for code, step in codes.items())
     motives = "; ".join(f"{code} {goal.replace('_', ' ')}" for code, goal in purposes.items())
-    instructions = (f"{persona.role}. {persona.motive}. Pick one useful goal. "
-                    "Write its letter, colon, then ordered action IDs. Use few steps. Example A:1 2.")
-    prompt = model.render_prompt(instructions,
+    instruction = ("Choose a goal and action IDs as A:1 2." if concise else
+                   "Pick one useful goal. Write its letter, colon, then ordered action IDs. "
+                   "Use few steps. Example A:1 2.")
+    motive = persona.motive.rstrip(".") if concise else persona.motive
+    prompt = model.render_prompt(f"{persona.role}. {motive}. {instruction}",
                                  f"{ticket.context[:300]}\nGoals: {motives}.\nActions: {methods}.")
     start = perf_counter()
-    raw, metrics = model.worker.generate(grammar, prompt, timeout=20)
+    raw, metrics = model.worker.generate(grammar, prompt, timeout=timeout)
     label, separator, atoms = raw.strip().partition(":")
     codes_used = atoms.split()
     if not separator or label not in purposes or not 1 <= len(codes_used) <= 6 or any(

@@ -475,7 +475,7 @@ def request_plan(model, request):
     ticket = SimpleNamespace(context=request["context"], cause="")
     persona = SimpleNamespace(role=request["name"], motive=request["motive"])
     planner = SimpleNamespace(plan_paths=lambda _, available: feasible_paths(available))
-    proposal, _ = choose_plan(model, ticket, steps, persona, planner=planner)
+    proposal, _ = choose_plan(model, ticket, steps, persona, planner=planner, timeout=60, concise=True)
     return dict(day=request["day"], actor=request["actor"], goal=proposal.goal,
                 steps=[[step.action, step.target] for step in proposal.steps])
 
@@ -557,19 +557,20 @@ def advance(state, eco, index, proposal=None):
         a = state["actors"][key]
         choices = available(state, eco, index, key)
         if len(choices) >= 3 and not a["plans"]:
-            fact = (f"You know species #{a['sighting']['species']} from a local report."
-                    if a["sighting"] else "You have no fresh sighting.")
+            fact = (f"Local sighting: species {a['sighting']['species']}."
+                    if a["sighting"] else "No fresh sighting.")
             state["counters"]["decision_opportunities"] = state["counters"].get("decision_opportunities", 0) + 1
             preferred = a["profile"]["preferences"]
             motive = a["profile"]["ambition"].replace("_", " ")
             traits = ", ".join(a["profile"]["personality"])
             last = a["notices"][-1]["kind"].replace("_", " ") if a["notices"] else "none"
+            choices = priorities(state, eco, index, key, choices)
             state["request"] = dict(day=day, actor=key, name=a["profile"]["name"],
                                     motive=f"{traits}. You want to {motive}.",
-                                    context=f"Map {a['location']}. Cash {a['cash']}, balls {a['balls']}, "
+                                    context=f"Map {a['location']}, cash {a['cash']}, balls {a['balls']}, "
                                             f"party {len(a['party'])}, fatigue {a['fatigue']}. {fact} "
-                                            f"Preferred species ID {preferred['species']} and type ID {preferred['type']}. "
-                                            f"Last field result {last}.",
+                                            f"Preference: species {preferred['species']}, type {preferred['type']}. "
+                                            f"Last: {last}.",
                                     steps=[[step.action, step.target] for step in choices])
     return events
 

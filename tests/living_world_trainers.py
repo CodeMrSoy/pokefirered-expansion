@@ -116,8 +116,13 @@ class TrainerTests(unittest.TestCase):
                 state = trainers.load(sim.db)
                 request = state["request"]
                 self.assertIsNotNone(request)
+                from planning import options_for
+
+                actions = tuple(trainers.Step(*pair) for pair in request["steps"])
+                goal = chr(ord("A") + options_for(actions).index("recover"))
+                rest = actions.index(trainers.Step("REST", "")) + 1
                 model = SimpleNamespace(style="qwen3", render_prompt=lambda *p: p,
-                                        worker=SimpleNamespace(generate=lambda *args, **kw: ("A:1", {})))
+                                        worker=SimpleNamespace(generate=lambda *args, **kw: (f"{goal}:{rest}", {})))
                 proposed = trainers.request_plan(model, request)
                 self.assertEqual("recover", proposed["goal"])
                 self.assertTrue(trainers.confirmed_plan(request, proposed))
