@@ -149,6 +149,45 @@ class TrainerTests(unittest.TestCase):
                         self.assertEqual(48, resumed.state()["tick"])
                         ecology.replay(resumed.db)
 
+    def test_dialogue_uses_current_speakers_documented_activity(self):
+        from concurrent.futures import ThreadPoolExecutor
+        import sqlite3
+
+        from bridge import Conversation, validate
+        from hybrid import FieldHint, HybridDialogue, prepare
+        from knowledge import SCHEMA
+        from world import WorldMemory
+
+        manifest = scenario()
+        index = trainers.build_index(manifest, [150])
+        eco = ecology.initial_state(manifest, [150], 0)
+        state = trainers.start(index, eco, 0)
+        a = state["actors"]["route_scout"]
+        a["sighting"] = dict(day=0, location=a["location"], species=16, individual=None,
+                             confidence=80, source="route_scout")
+        with patch("ecology.draw", return_value=0):
+            trainers.capture(state, eco, index, "route_scout", "16", [])
+        fact = trainers.fact(state, "route_scout")
+        self.assertIsNotNone(fact)
+        self.assertIsNone(trainers.fact(state, "viridian_student"))
+        with TemporaryDirectory() as tmp:
+            path = Path(tmp)
+            lore = path / "lore.db"
+            with closing(sqlite3.connect(lore)) as db:
+                db.executescript(SCHEMA)
+            with (ThreadPoolExecutor() as pool,
+                  closing(WorldMemory(path / "world.db", "demo", b"fixture")) as memory):
+                model = SimpleNamespace(catalog=lore, style="unavailable", species_names={})
+                router = HybridDialogue(memory, model, pool, ecology_sighting=lambda npc: trainers.fact(state, npc))
+                reader = Conversation("route_scout", None)
+                hint = FieldHint(4, None, "route_1", 0, reader.npc, False)
+                exchange = router.key(reader, hint).state
+                result, _ = prepare(model, exchange)
+                self.assertIn(fact.line.encode(), validate(result.dialogue))
+                self.assertEqual((fact.key,), result.knowledge)
+                other = FieldHint(4, None, "viridian", 0, reader.npc, False)
+                self.assertIsNone(router.key(reader, other).state.encounter.ecology)
+
     def test_old_compiled_binding_digest_and_protected_roster(self):
         original = dict(build={"rom_sha256": "1"*64, "revision": "legacy"}, ecology_protected=[150],
                         maps=[dict(objects=[dict(binding=dict(opcode=0x5C, battle_script_mode=4,

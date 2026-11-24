@@ -74,7 +74,8 @@ companion tier, or level 1 for a supported migrant without any local
 authored range. Species IDs retain form identity. Abilities follow the
 resolved native ability slots. Known moves come from eligible entries of
 the resolved level-up learnset. Party size is six, with 18 storage places.
-Storage rotation uses the trainer's preferred species/type and experience.
+Storage rotation weighs the trainer's preferred species, preferred type,
+party type coverage, and the individuals' levels.
 
 Training costs 12 companion credits and adds fatigue. It awards 8–16
 companion experience, with a threshold of 20 plus three times the current

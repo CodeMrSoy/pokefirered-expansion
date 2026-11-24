@@ -154,10 +154,9 @@ def available(state, eco, index, actor):
                     and state["mons"][partner]["fatigue"] < 2):
         choices.append(Step("DEVELOP_PARTNER", partner))
     if a["storage"]:
-        candidate = min(a["storage"], key=lambda uid: composition(a, index, state["mons"][uid]))
-        if len(a["party"]) < 6 or composition(a, index, state["mons"][candidate]) < max(
-                composition(a, index, state["mons"][uid]) for uid in a["party"]):
-            choices.append(Step("ROTATE_PARTY", candidate))
+        change = rotation(state, index, a)
+        if change:
+            choices.append(Step("ROTATE_PARTY", change[0]))
     for contact in sorted(a["contacts"]):
         other = state["actors"].get(contact)
         if (other and other["location"] == loc and not other["journey"] and sight
@@ -173,10 +172,27 @@ def available(state, eco, index, actor):
     return tuple(choices)
 
 
-def composition(a, index, mon):
+def rotation(state, index, a):
     pref = a["profile"]["preferences"]
-    types = index["species"][mon["species"]]["authored"].get("types", ())
-    return (-int(mon["species"] == pref["species"]), -int(pref["type"] in types), -mon["level"])
+    party, storage = a["party"], a["storage"]
+    roster = state["mons"]
+    types = {uid: index["species"][roster[uid]["species"]]["authored"]["types"]
+             for uid in party + storage}
+
+    def score(team):
+        diversity = set().union(*(set(types[uid]) for uid in team))
+        favor = sum(32 * (roster[uid]["species"] == pref["species"]) + 16 * (pref["type"] in types[uid])
+                    + roster[uid]["level"] for uid in team)
+        return favor + 8 * len(diversity)
+
+    best, change = score(party), None
+    demotions = party if len(party) == 6 else (None,)
+    for incoming in sorted(storage):
+        for outgoing in demotions:
+            value = score([uid for uid in party if uid != outgoing] + [incoming])
+            if value > best:
+                best, change = value, (incoming, outgoing)
+    return change
 
 
 def recent_moves(row, level, prior=(), after=0):
@@ -372,13 +388,13 @@ def execute(state, eco, index, actor, step, events):
     elif action == "SPAR_PRACTICE":
         practice(state, eco, index, actor, target, events)
     elif action == "ROTATE_PARTY":
+        candidate, demoted = rotation(state, index, a)
+        if target != candidate:
+            raise ValueError("Trainer chose an unavailable party rotation")
         a["storage"].remove(target)
-        if len(a["party"]) == 6:
-            demoted = max(a["party"], key=lambda uid: composition(a, index, state["mons"][uid]))
+        if demoted is not None:
             a["party"].remove(demoted)
             a["storage"].append(demoted)
-        else:
-            demoted = None
         a["party"].append(target)
         record(state, events, actor, "party_rotation", promoted=target, demoted=demoted)
     elif action == "REPORT_SIGHTING":
@@ -529,8 +545,10 @@ def advance(state, eco, index, proposal=None):
             goals = goals_for(step)
             if goals and step.action != "REST":
                 a["goal"] = goals[0]
-        a["decisions"].append(dict(day=day, action=step.action, target=step.target, source=reason, goal=a["goal"]))
+        decision = dict(day=day, action=step.action, target=step.target, source=reason, goal=a["goal"])
+        a["decisions"].append(decision)
         del a["decisions"][:-8]
+        events.append(dict(decision, kind="trainer_decision", actor=key, location=a["location"]))
         execute(state, eco, index, key, step, events)
 
     actors = tuple(state["actors"])
