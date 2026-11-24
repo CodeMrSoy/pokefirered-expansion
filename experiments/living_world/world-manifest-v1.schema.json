@@ -47,6 +47,8 @@
       }
     },
     "species": {"$ref": "#/$defs/records"},
+    "ecology_protected": {"type": "array", "uniqueItems": true,
+                          "items": {"type": "integer", "minimum": 1}},
     "trainers": {"$ref": "#/$defs/records"},
     "static_encounters": {"$ref": "#/$defs/records"},
     "gyms": {"$ref": "#/$defs/records"},

@@ -97,6 +97,14 @@ $timer.Add_Tick({
     $status = if ($state.running -and $age -lt 8) { 'Live' } else { 'Last recorded session' }
     $position = $view.SelectionStart
     $rendered = "$status`r`nHost-only residents have no ROM sprites. ROM actor projections are intended locations; the nearby hint is confirmed by the ROM.`r`n`r`n" + $snapshot
+    if ($state.ecology -and $state.ecology.status) {
+        $ecology = $state.ecology
+        $lines = "Companion ecology  Day $($ecology.day)  $($ecology.status)`r`n" +
+                 "Habitats $(@($ecology.habitats).Count)   In transit $(@($ecology.migrations_in_transit).Count)   Notable $(@($ecology.notable_simulated).Count)`r`n" +
+                 "Ecology counts are simulated. Native observations are listed separately below.`r`n"
+        if ($ecology.health.failure) { $lines += "Ecology paused  $($ecology.health.failure)`r`n" }
+        $rendered = $lines + "`r`n" + $rendered
+    }
     if ($rendered -eq $script:lastSnapshot) { return }
     $script:lastSnapshot = $rendered
     $view.Text = $rendered

@@ -20,6 +20,7 @@ env = {"__file__": str(fixture)}
 exec(compile(prefix, str(fixture), "exec"), env)
 m, memory, catalog, catalog_path, context, Player = (env[key] for key in
     ("m", "memory", "catalog", "catalog_path", "context", "Player"))
+import ecology
 from live_world import LiveWorld
 from native_world import snapshot
 from simulation.engine import Simulation
@@ -31,6 +32,8 @@ native = env["native"]
 port = catalog["ports"]["observation"]
 history = []
 poll_ms = []
+frame_ms = []
+ordinary = os.environ.get("WORLD_ECOLOGY_ORDINARY") == "1"
 frame_samples = int(os.environ.get("WORLD_LIVE_EXTENDED_FRAMES", "11000"))
 
 
@@ -50,11 +53,14 @@ live = None
 
 def run(frames):
     for _ in range(frames):
+        frame_start = perf_counter_ns()
         m.lib.retro_run()
         if live is not None:
             start = perf_counter_ns()
             live.poll(player)
-            poll_ms.append((perf_counter_ns() - start) / 1e6)
+            end = perf_counter_ns()
+            poll_ms.append((end - start) / 1e6)
+            frame_ms.append((end - frame_start) / 1e6)
             assert live.failure is None, live.failure
 
 
@@ -132,11 +138,16 @@ def gameplay_bytes():
 
 
 def wild_capture():
-    warp("Route1", 10, 20)
-    m.inject(b"\xb6" + struct.pack("<HBHHBH", 143, 30, 0, 0, 0, 0) + b"\xb7\x6b\x02")
-    assert choose_when_ready(), "Wild battle failed to start"
-    select_ball(False)
-    assert choose_when_ready(), "Weak ball unexpectedly ended the fixture battle"
+    if ordinary:
+        warp("Route1", 12, 24)  # A verified grass tile.
+        assert native("SweetScentWildEncounter") == 1
+        assert choose_when_ready(), "Native encounter did not start"
+    else:
+        warp("Route1", 10, 20)
+        m.inject(b"\xb6" + struct.pack("<HBHHBH", 143, 30, 0, 0, 0, 0) + b"\xb7\x6b\x02")
+        assert choose_when_ready(), "Wild battle failed to start"
+        select_ball(False)
+        assert choose_when_ready(), "Weak ball unexpectedly ended the fixture battle"
     select_ball(True)
     for _ in range(70):
         if not in_battle():
@@ -251,12 +262,27 @@ with TemporaryDirectory() as temporary:
                 assert events[-1]["kind"] == "save"
                 assert sim.db.execute("SELECT ack FROM native_streams").fetchone() == (events[-1]["seq"],)
                 assert len([event for event in events if event["kind"] == "capture"]) == 1
-                assert any(event["kind"] == "ball_failed" for event in events)
+                if not ordinary:
+                    assert any(event["kind"] == "ball_failed" for event in events)
                 assert any(event["kind"] == "battle_end" and event["outcome"] == "caught" for event in events)
                 trainers = {event["actor"] for event in events if event["kind"] == "battle_start"
                             and event["battle_kind"] == "trainer"}
                 assert trainers == {743, 751}, trainers
                 starting = json.loads(sim.db.execute("SELECT document FROM starting_manifest").fetchone()[0])
+                if catalog.get("ecology_protected"):
+                    eco = ecology.replay(sim.db)
+                    assert eco["day"] == sim.state()["tick"] // 24
+                    assert any(eco["groups"].values())
+                    capture = next(row for row in eco["history"] if row["kind"] == "capture")
+                    assert capture["source"] == "native_observation"
+                    if ordinary:
+                        assert capture.get("population_adjustment") == -1
+                    else:
+                        assert "population_adjustment" not in capture  # Scripted encounter.
+                    if output := os.environ.get("WORLD_ECOLOGY_MANIFEST"):
+                        Path(output).write_text(json.dumps(starting), encoding="utf-8")
+                else:
+                    eco = None
                 for trainer_id in trainers:
                     definition = next(row for row in starting["trainers"] if row["id"] == trainer_id)
                     actual = [event["mon"] for event in events if event["kind"] == "battle_mon"
@@ -317,11 +343,15 @@ with TemporaryDirectory() as temporary:
             with closing(Simulation(resumed.database, read_only=True)) as sim:
                 assert sim.state()["tick"] == tick
                 assert sim.db.execute("SELECT count(*) FROM native_events").fetchone() == (event_count,)
+                if eco:
+                    assert ecology.replay(sim.db) == eco
 
     batches = {name: [ms for kind, _, ms in metrics if kind == name]
                for name in ("event_latency", "ingestion", "tick", "checkpoint")}
     performance = dict(frames=frame_samples, samples=len(poll_ms), rss_bytes=measurements,
                        poll_ms=dict(median=median(poll_ms), worst=max(poll_ms)),
+                       headless_frame_ms=dict(median=median(frame_ms), p99=sorted(frame_ms)[int(.99 * len(frame_ms))],
+                                             worst=max(frame_ms)),
                        **{f"{name}_ms": dict(median=median(values), worst=max(values), batches=len(values))
                           for name, values in batches.items() if values})
     report = dict(build=catalog["build"], seed=context["seed"], mode=context["mode"], features=context["features"],

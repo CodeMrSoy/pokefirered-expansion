@@ -50,6 +50,8 @@ jobs:
           python -B tests/living_world_simulation.py
           python -B tests/living_world_manifest.py
           python -B tests/living_world_live.py
+          python -B tests/living_world_ecology.py
+          python -B tests/living_world_ecology_benchmark.py ecology-platform.json --copies 1 8 32
           python -B tests/living_world_release_scenario.py > release-scenario.json
       - uses: actions/upload-artifact@v4
         if: always()
@@ -59,6 +61,7 @@ jobs:
             platform-trace.json
             release-scenario.json
             autonomy-trace.json
+            ecology-platform.json
 
   build-candidate:
     if: >-
@@ -91,6 +94,8 @@ jobs:
             build/living-world-ci/world-catalog.json
             build/living-world-ci/initial-world-example.json
             build/living-world-ci/live-*.json
+            build/living-world-ci/ecology-manifest.json
+            build/living-world-ci/ecology-benchmark.json
             build/living-world-ci/rom-build.log
           if-no-files-found: error
   windows-package:

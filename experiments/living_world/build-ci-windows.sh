@@ -83,8 +83,14 @@ for case in classic quantum disabled; do
     if [[ $case == classic ]]; then mode=0; fi
     if [[ $case == disabled ]]; then disabled=1; fi
     ADVENTURE_TEST_MODE=$mode WORLD_TEST_NO_RANDOMIZER=$disabled QUANTUM_QA_OUTPUT="$work/live-$case" \
-        WORLD_LIVE_REPORT="$reports/live-$case.json" python -B tests/living_world_live_emulator.py
+        WORLD_LIVE_REPORT="$reports/live-$case.json" WORLD_ECOLOGY_MANIFEST="$reports/ecology-$case.json" \
+        python -B tests/living_world_live_emulator.py
 done
+WORLD_TEST_NO_RANDOMIZER=1 WORLD_ECOLOGY_ORDINARY=1 WORLD_LIVE_EXTENDED_FRAMES=0 \
+    QUANTUM_QA_OUTPUT="$work/live-ordinary" WORLD_LIVE_REPORT="$reports/live-ordinary.json" \
+    python -B tests/living_world_live_emulator.py
+cp "$reports/ecology-quantum.json" "$reports/ecology-manifest.json"
+python -B tests/living_world_ecology_benchmark.py "$reports/ecology-benchmark.json" --manifest "$reports/ecology-manifest.json"
 export QUANTUM_QA_OUTPUT="$work/fixture-logs"
 LIVING_WORLD_TEST_SAVE="$inputs/PalletTest.sav" python -B tests/living_world_bridge_emulator.py
 LIVING_WORLD_TEST_SAVE="$inputs/PalletSocialTest.sav" LIVING_WORLD_SOCIAL_FIXTURE=1 python -B tests/living_world_bridge_emulator.py

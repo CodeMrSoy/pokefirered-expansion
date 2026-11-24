@@ -498,7 +498,8 @@ def play(args, profile, manifest, rom_path, rom, model, regional_demo):
                             "director_rejection", "prediction_error")
                     decisions.append({key: entry[key] for key in keys if key in entry})
 
-            replies = HybridDialogue(memory, model, pool)
+            replies = HybridDialogue(memory, model, pool,
+                                     ecology_sighting=live_world.ecology_sighting if live_world else None)
             staged = None
             scene = None
             lookup = None
@@ -952,7 +953,8 @@ def play(args, profile, manifest, rom_path, rom, model, regional_demo):
                 if start >= next_monitor:
                     try:
                         publish_monitor(profile, memory, game.read_hint(), population, bool(bridge.pending),
-                                        decisions, save_path.name, kanto=kanto)
+                                        decisions, save_path.name, kanto=kanto,
+                                        ecology=live_world.ecology_monitor() if live_world else None)
                         monitor_error = False
                     except OSError as error:
                         if not monitor_error:
@@ -991,7 +993,8 @@ def play(args, profile, manifest, rom_path, rom, model, regional_demo):
             if memory is not None:
                 try:
                     publish_monitor(profile, memory, game.read_hint(), population, False,
-                                    decisions, save_path.name, running=False, kanto=kanto)
+                                    decisions, save_path.name, running=False, kanto=kanto,
+                                    ecology=live_world.ecology_monitor() if live_world else None)
                 except OSError:
                     pass
                 memory.close()

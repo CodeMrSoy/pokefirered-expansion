@@ -69,7 +69,7 @@ def backup_profile(profile):
     return target
 
 
-def publish_monitor(profile, memory, hint, population, pending, decisions, slot, *, running=True, kanto=None):
+def publish_monitor(profile, memory, hint, population, pending, decisions, slot, *, running=True, kanto=None, ecology=None):
     regional = population.state if population else {}
     society = memory.society.state
     requests = regional.get("requests", {})
@@ -105,6 +105,8 @@ def publish_monitor(profile, memory, hint, population, pending, decisions, slot,
                            "Locate Brock": memory.director.state.get("quest")},
         "decisions_and_failures": list(decisions),
     }
+    if ecology is not None:
+        data["ecology"] = ecology
     if kanto and hint:
         from kanto import VOICE
 

@@ -2,7 +2,7 @@
 
 from collections import OrderedDict
 from concurrent.futures import Future
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 import json
 import struct
 from time import perf_counter
@@ -163,10 +163,11 @@ def prepare(model, state, *, fallback=False):
 class HybridDialogue:
     """One speculative model job, a small LRU, and fresh authorization per use."""
 
-    def __init__(self, memory, model, executor):
+    def __init__(self, memory, model, executor, *, ecology_sighting=None):
         self.memory = memory
         self.model = model
         self.executor = executor
+        self.ecology_sighting = ecology_sighting
         self.replies = OrderedDict()
         self.speculative = None
         self.obsolete = None
@@ -177,7 +178,12 @@ class HybridDialogue:
     def key(self, conversation, hint=None):
         stat = self.model.catalog.stat() if self.model.catalog else None
         version = (stat.st_dev, stat.st_ino, stat.st_mtime_ns, stat.st_size) if stat else ()
-        return ReplyKey(self.memory.save, version, npc_state(self.memory, conversation, hint))
+        state = npc_state(self.memory, conversation, hint)
+        if self.ecology_sighting and hint and hint.npc == conversation.npc and hint.area == state.area:
+            fact = self.ecology_sighting(conversation.npc)
+            if fact is not None:
+                state = replace(state, encounter=replace(state.encounter, ecology=fact))
+        return ReplyKey(self.memory.save, version, state)
 
     def _remember(self, key, future):
         self.replies[key] = future

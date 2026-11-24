@@ -210,6 +210,21 @@ def catalog_species(rom, layout):
     return species
 
 
+def ecology_protection(rom, layout):
+    # ABI v1 packs the species flags immediately before the four shadow
+    # bytes and the learnset pointer. Fail closed if a build changes layout.
+    base = rom.address("gSpeciesInfo")
+    width = layout["species_size"]
+    offset = layout["species_learnset"] - 8
+    def flags(species):
+        return rom.value("H", base + species * width + offset)
+    expected = {1: 0, 150: 1, 151: 2, 803: 4, 906: 32, 1380: 8}
+    if any(flags(species) & 0x3f != value for species, value in expected.items()):
+        raise ValueError("Unsupported species flags layout for ecology safety")
+    # Legendary, mythical, Ultra Beast, Paradox and temporary battle forms.
+    return [species for species in range(1, layout["species_count"]) if flags(species) & 0x43ff]
+
+
 def catalog_trainers(rom, layout):
     base = rom.value("I", rom.address("gTrainers") + 4 * layout["difficulty"])
     names = {}
@@ -282,6 +297,7 @@ def build_catalog(rom_path, elf_path, nm, revision):
                              nuzlocke_key="region_map_section", disposition="native_authoritative"))
     if "gWorldObservationPort" in rom.symbols:
         result["ports"]["observation"] = rom.address("gWorldObservationPort")
+    result["ecology_protected"] = ecology_protection(rom, layout)
     result["catalog_sha256"] = digest(result)
     return result
 

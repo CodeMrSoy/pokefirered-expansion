@@ -1,6 +1,7 @@
 """Save-scoped Pallet resident state. Only trusted observations update SQLite."""
 
 from dataclasses import dataclass
+from knowledge import Fact
 import hashlib
 import json
 import sqlite3
@@ -27,6 +28,7 @@ class Encounter:
     quest: str = "none"
     quest_species: int | None = None
     evidence: tuple[str, ...] = ()
+    ecology: Fact | None = None
 
     @property
     def completes_quest(self):

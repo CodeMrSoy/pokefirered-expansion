@@ -49,6 +49,23 @@ class Fact:
     source: str
 
 
+def ecological_fact(report, day):
+    if not report or day - report["observed_day"] > 21:
+        return None
+    kind = report["kind"]
+    if report["activity"] == "received_from_contact":
+        line = "I heard the wildlife shifted."
+    elif kind == "migration_arrived":
+        line = "I saw wild Pokemon arrive."
+    elif kind == "unusual_sighting":
+        line = "I noticed a rare sighting."
+    else:
+        line = "The wildlife seems different."
+    source = (f"ecology:{report['source']}:{report['location']}:"
+              f"{report['observed_day']}:{report['confidence']}")
+    return Fact(source, "rumor", line, line, source)
+
+
 def retrieve(path, encounter, *, limit=2, budget=220):
     """Return only facts the NPC can use in this conversation."""
     profile = KNOWLEDGE_PROFILES.get(encounter.npc)
@@ -92,12 +109,14 @@ def retrieve(path, encounter, *, limit=2, budget=220):
         """, params).fetchall()
 
     selected = []
-    for row in rows:
-        fact = Fact(*row)
+    candidates = [Fact(*row) for row in rows]
+    if encounter.ecology is not None:
+        candidates.insert(0, encounter.ecology)
+    for fact in candidates:
         if fact.line and not LINE.fullmatch(fact.line):
             raise ValueError("Invalid dialogue line in world knowledge catalog")
         cost = len(f"{fact.kind}: {fact.text}".encode("utf-8")) + 2
-        if cost <= budget:
+        if len(selected) < limit and cost <= budget:
             selected.append(fact)
             budget -= cost
     return tuple(selected)

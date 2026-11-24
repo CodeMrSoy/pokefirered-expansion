@@ -154,11 +154,28 @@ def native_manifest(catalog, context, resolver, world_id, progress=lambda *args:
                     context=context, maps=catalog["maps"], encounters=encounter_data, species=species_data,
                     trainers=trainer_data, static_encounters=static_data, gyms=catalog["gyms"],
                     services=catalog["services"], rules=catalog["rules"])
+    if "ecology_protected" in catalog:
+        manifest["ecology_protected"] = catalog["ecology_protected"]
     manifest["manifest_sha256"] = digest(manifest)
     validate_manifest(manifest)
     if timings is not None:
         timings.update(native_resolution=native_ns, resolution_progress=progress_ns)
     return manifest
+
+
+def compatible_catalog(manifest, catalog):
+    if manifest["catalog_sha256"] == catalog["catalog_sha256"]:
+        return True
+    # Reproduce the precise catalog digest that a prior launcher stored.
+    # Only the ecology metadata and build bookkeeping may differ.
+    if (not catalog.get("ecology_protected")
+            or manifest["build"]["rom_sha256"] != catalog["build"]["rom_sha256"]):
+        return False
+    original = {k: v for k, v in catalog.items() if k != "catalog_sha256"}
+    original["build"] = manifest["build"]
+    if "ecology_protected" not in manifest:
+        original.pop("ecology_protected")
+    return digest(original) == manifest["catalog_sha256"]
 
 
 def validate_manifest(manifest):
@@ -178,6 +195,12 @@ def validate_manifest(manifest):
     if len(maps) != len(manifest["maps"]) or not maps:
         raise ValueError("Duplicate or missing map")
     species = {row["id"] for row in manifest["species"]}
+    if "ecology_protected" in manifest:
+        protection = manifest["ecology_protected"]
+        if (not isinstance(protection, list)
+                or any(type(item) is not int or item not in species for item in protection)
+                or protection != sorted(set(protection))):
+            raise ValueError("Invalid native ecology protection list")
     trainers = {row["id"] for row in manifest["trainers"]}
     if len(species) != len(manifest["species"]) or len(trainers) != len(manifest["trainers"]):
         raise ValueError("Duplicate species or trainer IDs")

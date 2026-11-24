@@ -131,6 +131,7 @@ def native_catalog_smoke(game, directory, rom, core):
         from live_world import NativeObservations
         reader = NativeObservations(catalog["ports"]["observation"])
     observed = 0
+    observations = []
     for _ in range(50):
         context = read_context(memory, catalog)
         if context and context["origin"] == 2:
@@ -138,6 +139,7 @@ def native_catalog_smoke(game, directory, rom, core):
                 break
             _, events = reader.read(memory, context["generation"])
             observed += len(events)
+            observations.extend(events)
             if any(event["kind"] == "map" for event in events):
                 break
         if reader is not None and reader.generation is not None:
@@ -164,8 +166,19 @@ def native_catalog_smoke(game, directory, rom, core):
             state = world.state()
             assert len(state["locations"]) == len(catalog["maps"]) and not state["pokemon"]
             assert world.verify_replay() == 0
+        habitat_count = None
+        if "ecology_protected" in catalog:
+            from ecology import replay
+            from live_world import apply_batch
+
+            _, summary = apply_batch(path/"world.sqlite3", path/"paired.sqlite3", "smoke", None,
+                                     [("event", event) for event in observations])
+            assert summary["status"] == "ready" and summary["habitats"]
+            with closing(Simulation(path/"world.sqlite3", read_only=True)) as world:
+                habitat_count = len(replay(world.db)["habitats"])
     assert snapshot(game.core) == frozen
-    return dict(replica_from_continue_ms=total, timings_ms=report["timings_ms"], native_records=observed)
+    return dict(replica_from_continue_ms=total, timings_ms=report["timings_ms"], native_records=observed,
+                ecology_habitats=habitat_count)
 
 
 def runtime_smoke(directory, core):

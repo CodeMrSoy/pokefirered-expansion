@@ -13,7 +13,7 @@ from uuid import uuid4
 
 from native_world import Replica, read_context, snapshot
 from platform_io import atomic_write
-from world_manifest import catalog_check, encoded, import_world, native_manifest, validate_manifest
+from world_manifest import catalog_check, compatible_catalog, encoded, import_world, native_manifest, validate_manifest
 
 
 def read_json(path):
@@ -250,7 +250,7 @@ class PairedCheckpoints:
         manifest = json.loads(row[3])
         validate_manifest(manifest)
         prior = manifest["context"]
-        if (manifest["catalog_sha256"] != catalog["catalog_sha256"]
+        if (not compatible_catalog(manifest, catalog)
                 or any(prior[k] != context[k] for k in ("seed","mode","modes","features","trainer_id"))):
             raise ValueError("Incompatible paired checkpoint")
         # Restore to a fresh database so an unmanaged rollback cannot overwrite

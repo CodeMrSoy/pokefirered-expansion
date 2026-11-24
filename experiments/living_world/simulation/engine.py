@@ -361,7 +361,10 @@ class Simulation:
                         existing.add("starting_manifest")
                     native_tables = {"native_streams", "native_events", "observed_pokemon",
                                      "observed_aliases", "observed_party", "native_ticks", "native_clock"}
-                    allowed = (set(), existing, existing | native_tables) if manifest is not None else (set(), existing)
+                    ecology_tables = {"ecology_state", "ecology_inputs"}
+                    allowed = ((set(), existing, existing | native_tables, existing | ecology_tables,
+                                existing | native_tables | ecology_tables)
+                               if manifest is not None else (set(), existing))
                     require(tables in allowed, "database_is_not_a_simulation")
                     self.db.execute("CREATE TABLE IF NOT EXISTS simulation (slot INTEGER PRIMARY KEY CHECK(slot=1), state TEXT NOT NULL)")
                     self.db.execute("CREATE TABLE IF NOT EXISTS journal (revision INTEGER PRIMARY KEY, entry TEXT NOT NULL)")

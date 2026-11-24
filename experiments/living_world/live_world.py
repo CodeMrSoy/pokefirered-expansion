@@ -10,6 +10,7 @@ from struct import Struct
 from time import perf_counter_ns
 from uuid import uuid4
 
+import ecology
 from native_world import ewram_pointer
 from simulation.engine import Simulation, encoded
 from world_initialization import PairedCheckpoints, flash_identity
@@ -137,7 +138,7 @@ def project_mon(db, stream, event, event_id):
                (individual, owner, encoded(event["map"]), encoded(attributes), event_id))
 
 
-def append_events(sim, stream, base_checkpoint, events):
+def append_events(sim, stream, base_checkpoint, events, protection=None):
     """Commit the ordered payload, Pokémon projection and acknowledgment together."""
     with sim._write():
         identity_fields = sim.db.execute(
@@ -155,6 +156,8 @@ def append_events(sim, stream, base_checkpoint, events):
         if (world, manifest_hash, checkpoint) != identity:
             raise ValueError("Native event stream belongs to another world or checkpoint")
         tick, = sim.db.execute("SELECT json_extract(state,'$.tick') FROM simulation WHERE slot=1").fetchone()
+        ecology.initialize(sim.db, protection)
+        ecological = []
         team = []
         for event in events:
             seq = event["seq"]
@@ -168,22 +171,30 @@ def append_events(sim, stream, base_checkpoint, events):
             if seq != ack + 1:
                 raise ValueError("Noncontiguous native event stream")
             sim.db.execute("INSERT INTO native_events VALUES (?,?,?,?)", (stream, seq, tick, payload))
-            project_mon(sim.db, stream, event, f"{stream}:{seq}")
+            event_id = f"{stream}:{seq}"
+            project_mon(sim.db, stream, event, event_id)
+            if ecology.relevant(event):
+                ecological.append((event_id, {"event": event}))
             if event["kind"] == "battle_mon" and event["actor"] and event["mon"]:
                 team.append(dict(location=":".join(map(str, event["map"])), trainer=event["actor"],
                                  species=event["mon"]["species"], slot=event["mon"]["slot"]))
             ack = seq
         if team:
             sim._apply_command(dict(kind="native_roster", source="native_rom", team=team))
+        ecology.apply(sim.db, ecological)
         sim.db.execute("UPDATE native_streams SET ack=? WHERE stream=?", (ack, stream))
     return ack
 
 
-def advance_native_clock(sim, stream, frame):
+def advance_native_clock(sim, stream, frame, protection=None):
     with sim._write():
         if sim.db.execute("INSERT OR IGNORE INTO native_ticks VALUES (?,?)", (stream, frame)).rowcount:
+            ecology.initialize(sim.db, protection)
             if not sim._apply_command(dict(kind="tick"))["accepted"]:
                 raise RuntimeError("Live simulation clock transaction failed")
+            tick, = sim.db.execute("SELECT json_extract(state,'$.tick') FROM simulation").fetchone()
+            if tick % 24 == 0:
+                ecology.apply(sim.db, [(f"day:{tick // 24}", {"day": tick // 24})])
 
 
 @dataclass(frozen=True)
@@ -203,7 +214,7 @@ class Checkpoint:
             raise ValueError("Native save marker did not match the Flash image")
 
 
-def apply_batch(database, checkpoint_path, stream, base, entries):
+def apply_batch(database, checkpoint_path, stream, base, entries, protection=None):
     timings = []
     with closing(Simulation(database)) as sim:
         events = []
@@ -212,7 +223,7 @@ def apply_batch(database, checkpoint_path, stream, base, entries):
         def commit_events():
             if events:
                 start = perf_counter_ns()
-                append_events(sim, stream, base, events)
+                append_events(sim, stream, base, events, protection)
                 completed = perf_counter_ns()
                 timings.append(("ingestion", len(events), (completed - start) / 1e6))
                 if arrivals:
@@ -231,7 +242,7 @@ def apply_batch(database, checkpoint_path, stream, base, entries):
             commit_events()
             start = perf_counter_ns()
             if kind == "tick":
-                advance_native_clock(sim, stream, value)
+                advance_native_clock(sim, stream, value, protection)
             elif kind == "checkpoint":
                 value.verify()
                 with sim._write():
@@ -240,7 +251,11 @@ def apply_batch(database, checkpoint_path, stream, base, entries):
                     pair.store(value.flash, database)
             timings.append((kind, 1, (perf_counter_ns() - start) / 1e6))
         commit_events()
-    return timings
+        summary = None
+        if any(kind in ("event", "tick") for kind, _ in entries):
+            summary = ecology.monitor(ecology.read_state(sim.db))
+            summary["recent_native_individuals"] = ecology.native_individuals(sim.db)
+    return timings, summary
 
 
 class LiveWorld:
@@ -257,6 +272,7 @@ class LiveWorld:
         self.failure = None
         self.metrics = deque(maxlen=256)
         self.retry = 0
+        self.ecology_snapshot = None
 
     def quarantine(self, reason):
         self.failure = str(reason)
@@ -312,7 +328,10 @@ class LiveWorld:
     def pump(self, *, drain=False):
         if self.future is not None and (drain or self.future.done()):
             try:
-                self.metrics.extend(self.future.result())
+                timings, summary = self.future.result()
+                self.metrics.extend(timings)
+                if summary is not None:
+                    self.ecology_snapshot = summary
             except sqlite3.OperationalError:
                 if self.retry or self.failure:
                     raise
@@ -329,7 +348,19 @@ class LiveWorld:
             entries = tuple(self.queue[index] for index in range(min(BATCH, len(self.queue))))
             self.inflight = len(entries)
             self.future = self.executor.submit(apply_batch, self.database, self.startup.directory / "checkpoints.sqlite3",
-                                               self.stream, self.base, entries)
+                                               self.stream, self.base, entries,
+                                               self.startup.catalog.get("ecology_protected"))
+
+    def ecology_sighting(self, npc):
+        from knowledge import ecological_fact
+        if self.ecology_snapshot is None or self.failure:
+            return None
+        return ecological_fact(self.ecology_snapshot["npc_sightings"].get(npc), self.ecology_snapshot["day"])
+
+    def ecology_monitor(self):
+        timings = {kind: round(ms, 3) for kind, _, ms in self.metrics}
+        return {**(self.ecology_snapshot or {}), "health": {
+            "failure": self.failure, "pending_jobs": len(self.queue), "last_worker_ms": timings}}
 
     def close(self):
         try:
