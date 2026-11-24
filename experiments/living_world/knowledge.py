@@ -54,13 +54,13 @@ def ecological_fact(report, day):
         return None
     kind = report["kind"]
     if report["activity"] == "received_from_contact":
-        line = "I heard the wildlife shifted."
+        line = "I heard the wildlife moved."
     elif kind == "migration_arrived":
         line = "I saw wild Pokemon arrive."
     elif kind == "unusual_sighting":
-        line = "I noticed a rare sighting."
+        line = "I thought I saw a rare one."
     else:
-        line = "The wildlife seems different."
+        line = "The local wildlife shifted."
     source = (f"ecology:{report['source']}:{report['location']}:"
               f"{report['observed_day']}:{report['confidence']}")
     return Fact(source, "rumor", line, line, source)

@@ -96,6 +96,41 @@ class EcologyTests(unittest.TestCase):
         self.assertIn("heard", ecological_fact(secondhand, state["day"]).line)
         self.assertIsNone(ecological_fact(secondhand, state["day"] + 22))
 
+    def test_report_reuses_validated_dialogue_for_the_verified_speaker(self):
+        from concurrent.futures import ThreadPoolExecutor
+        import sqlite3
+        from types import SimpleNamespace
+
+        from bridge import Conversation, LINE, validate
+        from hybrid import FieldHint, HybridDialogue, prepare
+        from knowledge import SCHEMA
+        from world import WorldMemory
+
+        base = dict(kind="migration_arrived", activity="local_patrol", source="route_scout",
+                    location="3:32", observed_day=4, confidence=66)
+        for kind in ("migration_arrived", "unusual_sighting", "unusual_population_change"):
+            self.assertIsNotNone(LINE.fullmatch(ecological_fact(dict(base, kind=kind), 4).line))
+        received = ecological_fact(dict(base, activity="received_from_contact", confidence=41), 5)
+        with TemporaryDirectory() as tmp:
+            path = Path(tmp)
+            lore = path / "lore.db"
+            with closing(sqlite3.connect(lore)) as db:
+                db.executescript(SCHEMA)
+            with (ThreadPoolExecutor() as pool,
+                  closing(WorldMemory(path / "world.db", "demo", b"fixture")) as memory):
+                model = SimpleNamespace(catalog=lore, style="unavailable", species_names={})
+                router = HybridDialogue(memory, model, pool,
+                                        ecology_sighting=lambda npc: received if npc == "viridian_student" else None)
+                reader = Conversation("viridian_student", None)
+                hint = FieldHint(4, None, "viridian", 0, reader.npc, False)
+                state = router.key(reader, hint).state
+                result, _ = prepare(model, state)
+                self.assertIn(received.line.encode(), validate(result.dialogue))
+                self.assertEqual((received.key,), result.knowledge)
+                self.assertIsNone(router.key(reader).state.encounter.ecology)
+                unrelated = FieldHint(4, None, "route_1", 0, reader.npc, False)
+                self.assertIsNone(router.key(reader, unrelated).state.encounter.ecology)
+
     def test_capture_and_native_checkpoint_replay(self):
         with TemporaryDirectory() as tmp:
             path = Path(tmp).resolve()
