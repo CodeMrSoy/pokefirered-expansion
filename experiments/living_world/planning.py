@@ -14,6 +14,15 @@ class Proposal:
 # Goals describe an observable effect; agents select their own goal for a
 # decision. They may use zero or more other actions to achieve it.
 GOALS = {
+    "SCOUT_HABITAT": "find_wild_pokemon",
+    "EXPLORE_TRAVEL": "explore_connected_habitat",
+    "ATTEMPT_CAPTURE": "catch_a_known_pokemon",
+    "DEVELOP_PARTNER": "develop_a_partner",
+    "BUY_BALL": "restock_poke_balls",
+    "TRAINER_WORK": "save_for_supplies",
+    "ROTATE_PARTY": "improve_party_composition",
+    "REPORT_SIGHTING": "share_a_local_sighting",
+    "SPAR_PRACTICE": "prepare_for_gym_challenge",
     "WORK": "maintain_duty",
     "REST": "recover",
     "INVESTIGATE": "verify_observation",
@@ -45,7 +54,7 @@ def choose_plan(model, ticket, available, persona, planner=None):
     paths = planner.plan_paths(ticket, available) if planner is not None else None
     if paths is not None:
         goals = tuple(goal for goal in goals if goal in paths)
-    purposes = dict(zip("ABCDEFGHI", goals))
+    purposes = dict(zip("ABCDEFGHIJKLMNOPQRSTUVWXYZ", goals))
     aliases = {
         "WORK": "work", "REST": "rest", "INVESTIGATE": "investigate", "TRAIN_POKEMON": "train",
         "REQUEST_ASSISTANCE": "ask", "ACCEPT_REQUEST": "accept request",

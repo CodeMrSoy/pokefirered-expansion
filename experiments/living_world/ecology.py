@@ -386,7 +386,25 @@ def initialize(db, protection, limits=Limits()):
     write_state(db, state)
 
 
+def trainer_day(eco, previous, entry, index):
+    import trainers
+
+    state = previous if previous is not None else trainers.start(index, eco, eco["day"] - 1)
+    events = trainers.advance(state, eco, index, entry.get("proposal"))
+    return state, events
+
+
+def trainer_index(db):
+    import trainers
+
+    manifest, = db.execute("SELECT document FROM starting_manifest WHERE slot=1").fetchone()
+    origin, = db.execute("SELECT entry FROM ecology_inputs WHERE id='origin'").fetchone()
+    return trainers.build_index(json.loads(manifest), json.loads(origin)["protected"])
+
+
 def apply(db, entries):
+    import trainers
+
     state = None
     for key, entry in entries:
         payload = encoded(entry)
@@ -398,6 +416,9 @@ def apply(db, entries):
             state = read_state(db)
         if "day" in entry:
             evolve_day(state, entry["day"])
+            if entry.get("trainer_phase") == 1:
+                projection, events = trainer_day(state, trainers.load(db), entry, trainer_index(db))
+                trainers.write(db, projection, events)
         else:
             observe(state, entry["event"], key)
     if state is not None:
@@ -405,17 +426,28 @@ def apply(db, entries):
 
 
 def replay(db):
+    import trainers
+
     origin = json.loads(db.execute("SELECT entry FROM ecology_inputs WHERE id='origin'").fetchone()[0])
     manifest = json.loads(db.execute("SELECT document FROM starting_manifest WHERE slot=1").fetchone()[0])
     state = initial_state(manifest, origin["protected"], origin["tick"], Limits(**origin["limits"]))
+    projection, index = None, None
+    has_trainers = trainers.load(db)
     for key, raw in db.execute("SELECT id, entry FROM ecology_inputs WHERE id!='origin' ORDER BY rowid"):
         entry = json.loads(raw)
         if "day" in entry:
             evolve_day(state, entry["day"])
+            if entry.get("trainer_phase") == 1:
+                if index is None:
+                    index = trainers.build_index(manifest, origin["protected"])
+                projection, events = trainer_day(state, projection, entry, index)
+                if not has_trainers or db.execute("SELECT events FROM trainer_journal WHERE day=?",
+                                                (entry["day"],)).fetchone() != (encoded(events),):
+                    raise ValueError("Trainer action replay differs from the persisted journal")
         else:
             observe(state, entry["event"], key)
-    if state != read_state(db):
-        raise ValueError("Ecology replay differs from the persisted projection")
+    if state != read_state(db) or projection != has_trainers:
+        raise ValueError("Ecology or trainer replay differs from the persisted projection")
     return state
 
 

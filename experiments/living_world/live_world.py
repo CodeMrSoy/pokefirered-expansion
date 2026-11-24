@@ -11,6 +11,7 @@ from time import perf_counter_ns
 from uuid import uuid4
 
 import ecology
+import trainers
 from native_world import ewram_pointer
 from simulation.engine import Simulation, encoded
 from world_initialization import PairedCheckpoints, flash_identity
@@ -186,7 +187,7 @@ def append_events(sim, stream, base_checkpoint, events, protection=None):
     return ack
 
 
-def advance_native_clock(sim, stream, frame, protection=None):
+def advance_native_clock(sim, stream, frame, protection=None, trainer_proposal=None):
     with sim._write():
         if sim.db.execute("INSERT OR IGNORE INTO native_ticks VALUES (?,?)", (stream, frame)).rowcount:
             ecology.initialize(sim.db, protection)
@@ -194,7 +195,10 @@ def advance_native_clock(sim, stream, frame, protection=None):
                 raise RuntimeError("Live simulation clock transaction failed")
             tick, = sim.db.execute("SELECT json_extract(state,'$.tick') FROM simulation").fetchone()
             if tick % 24 == 0:
-                ecology.apply(sim.db, [(f"day:{tick // 24}", {"day": tick // 24})])
+                entry = dict(day=tick // 24, trainer_phase=1)
+                if trainer_proposal is not None:
+                    entry["proposal"] = trainer_proposal
+                ecology.apply(sim.db, [(f"day:{tick // 24}", entry)])
 
 
 @dataclass(frozen=True)
@@ -242,7 +246,11 @@ def apply_batch(database, checkpoint_path, stream, base, entries, protection=Non
             commit_events()
             start = perf_counter_ns()
             if kind == "tick":
-                advance_native_clock(sim, stream, value, protection)
+                if isinstance(value, tuple):
+                    value, proposal = value
+                else:
+                    proposal = None
+                advance_native_clock(sim, stream, value, protection, proposal)
             elif kind == "checkpoint":
                 value.verify()
                 with sim._write():
@@ -255,6 +263,7 @@ def apply_batch(database, checkpoint_path, stream, base, entries, protection=Non
         if any(kind in ("event", "tick") for kind, _ in entries):
             summary = ecology.monitor(ecology.read_state(sim.db))
             summary["recent_native_individuals"] = ecology.native_individuals(sim.db)
+            summary["trainers"] = trainers.load(sim.db)
     return timings, summary
 
 
@@ -273,6 +282,8 @@ class LiveWorld:
         self.metrics = deque(maxlen=256)
         self.retry = 0
         self.ecology_snapshot = None
+        self.trainer_proposal = None
+        self.trainer_requested_day = None
 
     def quarantine(self, reason):
         self.failure = str(reason)
@@ -307,7 +318,8 @@ class LiveWorld:
 
             def advance_until(native_frame):
                 while self.database is not None and self.next_tick <= native_frame:
-                    self.queue.append(("tick", self.next_tick))
+                    value = (self.next_tick, self.trainer_proposal) if self.trainer_proposal is not None else self.next_tick
+                    self.queue.append(("tick", value))
                     self.next_tick += FRAMES_PER_TICK
 
             for event in events:
@@ -332,6 +344,8 @@ class LiveWorld:
                 self.metrics.extend(timings)
                 if summary is not None:
                     self.ecology_snapshot = summary
+                    if self.trainer_proposal and summary["day"] > self.trainer_proposal["day"]:
+                        self.trainer_proposal = None
             except sqlite3.OperationalError:
                 if self.retry or self.failure:
                     raise
@@ -351,15 +365,33 @@ class LiveWorld:
                                                self.stream, self.base, entries,
                                                self.startup.catalog.get("ecology_protected"))
 
+    def trainer_request(self):
+        state = (self.ecology_snapshot or {}).get("trainers")
+        request = state["request"] if state and not self.failure else None
+        if request and request["day"] != self.trainer_requested_day:
+            self.trainer_requested_day = request["day"]
+            return request
+        return None
+
+    def accept_trainer_proposal(self, proposal):
+        state = (self.ecology_snapshot or {}).get("trainers")
+        if state and not self.failure and proposal["day"] == state["day"]:
+            self.trainer_proposal = proposal
+
     def ecology_sighting(self, npc):
         from knowledge import ecological_fact
         if self.ecology_snapshot is None or self.failure:
             return None
-        return ecological_fact(self.ecology_snapshot["npc_sightings"].get(npc), self.ecology_snapshot["day"])
+        state = self.ecology_snapshot.get("trainers")
+        return ((trainers.fact(state, npc) if state else None) or
+                ecological_fact(self.ecology_snapshot["npc_sightings"].get(npc), self.ecology_snapshot["day"]))
 
     def ecology_monitor(self):
         timings = {kind: round(ms, 3) for kind, _, ms in self.metrics}
-        return {**(self.ecology_snapshot or {}), "health": {
+        snapshot = dict(self.ecology_snapshot or {})
+        if snapshot.get("trainers"):
+            snapshot["trainers"] = {key: value for key, value in snapshot["trainers"].items() if key != "request"}
+        return {**snapshot, "health": {
             "failure": self.failure, "pending_jobs": len(self.queue), "last_worker_ms": timings}}
 
     def close(self):

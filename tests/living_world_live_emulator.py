@@ -21,6 +21,7 @@ exec(compile(prefix, str(fixture), "exec"), env)
 m, memory, catalog, catalog_path, context, Player = (env[key] for key in
     ("m", "memory", "catalog", "catalog_path", "context", "Player"))
 import ecology
+import trainers as companion_trainers
 from live_world import LiveWorld
 from native_world import snapshot
 from simulation.engine import Simulation
@@ -273,6 +274,11 @@ with TemporaryDirectory() as temporary:
                     eco = ecology.replay(sim.db)
                     assert eco["day"] == sim.state()["tick"] // 24
                     assert any(eco["groups"].values())
+                    trainer_state = companion_trainers.load(sim.db)
+                    if eco["day"] > eco["start_tick"] // 24:
+                        assert trainer_state and trainer_state["day"] == eco["day"]
+                        assert set(trainer_state["actors"]) == {"route_scout", "sammy", "viridian_student"}
+                        assert trainer_state["actors"]["sammy"]["profile"]["native_roster"]["id"] == 104
                     capture = next(row for row in eco["history"] if row["kind"] == "capture")
                     assert capture["source"] == "native_observation"
                     if ordinary:
@@ -282,7 +288,7 @@ with TemporaryDirectory() as temporary:
                     if output := os.environ.get("WORLD_ECOLOGY_MANIFEST"):
                         Path(output).write_text(json.dumps(starting), encoding="utf-8")
                 else:
-                    eco = None
+                    eco = trainer_state = None
                 for trainer_id in trainers:
                     definition = next(row for row in starting["trainers"] if row["id"] == trainer_id)
                     actual = [event["mon"] for event in events if event["kind"] == "battle_mon"
@@ -345,6 +351,7 @@ with TemporaryDirectory() as temporary:
                 assert sim.db.execute("SELECT count(*) FROM native_events").fetchone() == (event_count,)
                 if eco:
                     assert ecology.replay(sim.db) == eco
+                    assert companion_trainers.load(sim.db) == trainer_state
 
     batches = {name: [ms for kind, _, ms in metrics if kind == name]
                for name in ("event_latency", "ingestion", "tick", "checkpoint")}
@@ -356,6 +363,8 @@ with TemporaryDirectory() as temporary:
                           for name, values in batches.items() if values})
     report = dict(build=catalog["build"], seed=context["seed"], mode=context["mode"], features=context["features"],
                   events=events, performance=performance, host_attachment_parity=True,
+                  trainer_day=trainer_state["day"] if trainer_state else None,
+                  trainer_state_restored=trainer_state is not None,
                   recorder_bypass_differences=recorder_bypass_differences)
     if output := os.environ.get("WORLD_LIVE_REPORT"):
         Path(output).write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")

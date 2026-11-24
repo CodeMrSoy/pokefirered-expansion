@@ -167,18 +167,26 @@ def native_catalog_smoke(game, directory, rom, core):
             assert len(state["locations"]) == len(catalog["maps"]) and not state["pokemon"]
             assert world.verify_replay() == 0
         habitat_count = None
+        trainer_count = None
         if "ecology_protected" in catalog:
             from ecology import replay
             from live_world import apply_batch
+            from trainers import load as load_trainers
 
             _, summary = apply_batch(path/"world.sqlite3", path/"paired.sqlite3", "smoke", None,
-                                     [("event", event) for event in observations])
+                                     [("event", event) for event in observations]
+                                     + [("tick", n) for n in range(1, 25)])
             assert summary["status"] == "ready" and summary["habitats"]
             with closing(Simulation(path/"world.sqlite3", read_only=True)) as world:
                 habitat_count = len(replay(world.db)["habitats"])
+                trainers = load_trainers(world.db)
+                assert trainers == summary["trainers"]
+                assert trainers["actors"]["sammy"]["profile"]["native_roster"]["id"] == 104
+                trainer_count = len(trainers["actors"])
+                assert trainer_count == 3
     assert snapshot(game.core) == frozen
     return dict(replica_from_continue_ms=total, timings_ms=report["timings_ms"], native_records=observed,
-                ecology_habitats=habitat_count)
+                ecology_habitats=habitat_count, companion_trainers=trainer_count)
 
 
 def runtime_smoke(directory, core):

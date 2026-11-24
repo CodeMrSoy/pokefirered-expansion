@@ -167,7 +167,7 @@ def compatible_catalog(manifest, catalog):
     if manifest["catalog_sha256"] == catalog["catalog_sha256"]:
         return True
     # Reproduce the precise catalog digest that a prior launcher stored.
-    # Only the ecology metadata and build bookkeeping may differ.
+    # Allow only the exact pre-ecology metadata and pre-trainer script layout.
     if (not catalog.get("ecology_protected")
             or manifest["build"]["rom_sha256"] != catalog["build"]["rom_sha256"]):
         return False
@@ -175,7 +175,23 @@ def compatible_catalog(manifest, catalog):
     original["build"] = manifest["build"]
     if "ecology_protected" not in manifest:
         original.pop("ecology_protected")
-    return digest(original) == manifest["catalog_sha256"]
+    if digest(original) == manifest["catalog_sha256"]:
+        return True
+    # Phase 19 read the local-object byte and low trainer byte as one word.
+    maps = []
+    for row in original.get("maps", ()):
+        if not isinstance(row, dict) or not isinstance(row.get("objects"), list):
+            return False
+        objects = []
+        for obj in row["objects"]:
+            binding = obj.get("binding") or {}
+            if "trainer_local" in binding and binding.get("opcode") == 0x5C:
+                binding = dict(binding)
+                binding["trainer"] = binding.pop("trainer_local") | ((binding["trainer"] & 255) << 8)
+                obj = dict(obj, binding=binding)
+            objects.append(obj)
+        maps.append(dict(row, objects=objects))
+    return digest(dict(original, maps=maps)) == manifest["catalog_sha256"]
 
 
 def validate_manifest(manifest):

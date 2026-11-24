@@ -83,8 +83,9 @@ def script_binding(rom, ptr):
             branches.append(dict(address=ptr, condition=condition, alternate=target, assumed="fallthrough"))
             ptr += 6
         elif op == 0x5C:
-            kind, trainer = rom.unpack("BH", ptr + 1)
-            return dict(status="conditional", opcode=op, address=ptr, trainer=trainer, battle_script_mode=kind, branches=branches)
+            flags, local, trainer = rom.unpack("BBH", ptr + 1)
+            return dict(status="conditional", opcode=op, address=ptr, trainer=trainer,
+                        battle_script_mode=flags, trainer_local=local, branches=branches)
         elif op == 0xB6:
             a, l1, i1, b, l2, i2 = rom.unpack("HBHHBH", ptr + 1)
             return dict(status="conditional", opcode=op, address=ptr,

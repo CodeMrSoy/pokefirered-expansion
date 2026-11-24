@@ -103,6 +103,18 @@ $timer.Add_Tick({
                  "Habitats $(@($ecology.habitats).Count)   In transit $(@($ecology.migrations_in_transit).Count)   Notable $(@($ecology.notable_simulated).Count)`r`n" +
                  "Ecology counts are simulated. Native observations are listed separately below.`r`n"
         if ($ecology.health.failure) { $lines += "Ecology paused  $($ecology.health.failure)`r`n" }
+        if ($ecology.trainers -and $ecology.trainers.actors) {
+            $lines += "`r`nCompanion trainers  Day $($ecology.trainers.day)`r`n"
+            foreach ($entry in $ecology.trainers.actors.PSObject.Properties) {
+                $actor = $entry.Value
+                $decision = @($actor.decisions)[-1]
+                $native = if ($actor.profile.native_roster) { "ROM trainer $($actor.profile.native_roster.id) (conditional template)" } else { 'No native battle roster' }
+                $lines += "$($actor.profile.name)  $($actor.location)  $($actor.activity)`r`n"
+                $lines += "Goal $($actor.goal)  Party $(@($actor.party).Count)  Storage $(@($actor.storage).Count)  Balls $($actor.balls)  Cash $($actor.cash)`r`n"
+                $lines += "Decision $($decision.source)  $native`r`n"
+            }
+            $lines += "Full companion rosters, sightings and recent events follow in the snapshot.`r`n"
+        }
         $rendered = $lines + "`r`n" + $rendered
     }
     if ($rendered -eq $script:lastSnapshot) { return }

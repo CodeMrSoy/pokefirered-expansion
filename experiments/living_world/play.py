@@ -527,6 +527,7 @@ def play(args, profile, manifest, rom_path, rom, model, regional_demo):
             plan_retry_after = 0.0
             plan_budget = {}
             plan_cache = {}
+            trainer_inference = None
 
             def decision_key(request):
                 if isinstance(request, Ticket):
@@ -662,6 +663,18 @@ def play(args, profile, manifest, rom_path, rom, model, regional_demo):
                             live_world.poll(game)
                             if live_world.failure:
                                 record({"error": f"Live World observations paused: {live_world.failure}"})
+                            if trainer_inference is not None and trainer_inference.done():
+                                try:
+                                    live_world.accept_trainer_proposal(trainer_inference.result())
+                                except (OSError, ValueError, RuntimeError) as error:
+                                    record({"error": f"Trainer planning fallback: {error}"})
+                                trainer_inference = None
+                            if (model.style == "qwen3" and trainer_inference is None
+                                    and not bridge.pending and planning is None):
+                                request = live_world.trainer_request()
+                                if request:
+                                    from trainers import request_plan
+                                    trainer_inference = pool.submit(request_plan, model, request)
                     except OSError as error:
                         print(f"Living World progress unavailable: {error}", file=sys.stderr)
                         startup.close()

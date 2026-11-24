@@ -82,7 +82,7 @@ for case in classic quantum disabled; do
     disabled=0
     if [[ $case == classic ]]; then mode=0; fi
     if [[ $case == disabled ]]; then disabled=1; fi
-    ADVENTURE_TEST_MODE=$mode WORLD_TEST_NO_RANDOMIZER=$disabled QUANTUM_QA_OUTPUT="$work/live-$case" \
+    WORLD_LIVE_EXTENDED_FRAMES=88000 ADVENTURE_TEST_MODE=$mode WORLD_TEST_NO_RANDOMIZER=$disabled QUANTUM_QA_OUTPUT="$work/live-$case" \
         WORLD_LIVE_REPORT="$reports/live-$case.json" WORLD_ECOLOGY_MANIFEST="$reports/ecology-$case.json" \
         python -B tests/living_world_live_emulator.py
 done
@@ -107,6 +107,10 @@ gcc -O2 -c "$app/sandbox-linux.c" -o "$work/sandbox.o"
 g++ -std=c++17 -O2 -I"$work/llama/include" -I"$work/llama/ggml/include" "$app/offline-worker.cpp" \
     "$work/sandbox.o" -Wl,--start-group "$work/llama-linux/src/libllama.a" \
     "$work/llama-linux/ggml/src/"libggml*.a -Wl,--end-group -ldl -lpthread -lm -o "$LIVING_WORLD_AGENCY_RUNTIME/offline-worker"
+python -B tests/living_world_trainers_benchmark.py "$reports/trainer-native-model.json" \
+    --manifest "$reports/ecology-manifest.json" --profiles 0 --model-runtime "$LIVING_WORLD_AGENCY_RUNTIME"
+python -B tests/living_world_trainers_benchmark.py "$reports/trainer-native-authored.json" \
+    --manifest "$reports/ecology-disabled.json" --profiles 0
 for mode in 0 1; do
     ADVENTURE_TEST_MODE=$mode QUANTUM_QA_OUTPUT="$work/kanto-$mode" python -B tests/living_world_kanto_emulator.py
     ADVENTURE_TEST_MODE=$mode QUANTUM_QA_OUTPUT="$work/autonomy-$mode" python -B tests/living_world_autonomy_emulator.py
