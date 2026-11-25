@@ -4,6 +4,7 @@
 #include "main.h"
 #include "pokemon.h"
 #include "world_observe.h"
+#include "world_project.h"
 
 #define OBSERVE_MAGIC 0x3831574C // LW18
 #define OBSERVE_CAPACITY 48
@@ -14,7 +15,7 @@
 enum ObservationKind
 {
     OBS_MAP = 1, OBS_STORY, OBS_BATTLE_START, OBS_BATTLE_MON, OBS_BATTLE_END,
-    OBS_BALL_FAILED, OBS_CAPTURE, OBS_PARTY, OBS_EVOLUTION, OBS_SAVE,
+    OBS_BALL_FAILED, OBS_CAPTURE, OBS_PARTY, OBS_EVOLUTION, OBS_SAVE, OBS_PROJECTION, OBS_PROJECT_CONDITION, OBS_PROJECT_REJECTED,
 };
 
 struct ObservedMon
@@ -47,6 +48,9 @@ static EWRAM_DATA u32 sStory = 0;
 static EWRAM_DATA u32 sBattle = 0;
 static EWRAM_DATA u32 sBattleFlags = 0;
 static EWRAM_DATA u32 sLastParty = 0;
+static EWRAM_DATA u32 sProjectionKind = 0;
+static EWRAM_DATA u32 sProjectionCount = 0;
+static EWRAM_DATA u32 sParticipants = 0;
 
 static bool32 Active(void)
 {
@@ -156,6 +160,7 @@ void WorldObserve_Start(u32 generation)
     sMap = NO_MAP;
     sStory = 0xFFFFFFFF;
     sBattle = 0;
+    sProjectionKind = 0;
     sLastParty = gMain.vblankCounter1 - 32;
     memset(sParty, 0, sizeof(sParty));
     memset(sPartySource, 0, sizeof(sPartySource));
@@ -199,12 +204,41 @@ void WorldObserve_BattleStart(u32 flags, u16 trainerA, u16 trainerB)
     sBattle = gWorldObservationPort.sequence + 1;
     sBattleFlags = flags;
     Emit(OBS_BATTLE_START, sBattle, trainerA, trainerB, flags, NULL);
+    u32 projectKind = 0, revision = 0, selection = 0;
+    WorldProject_BattleStart(flags, trainerA, &projectKind, &revision, &selection);
+    sParticipants = 0;
+    sProjectionKind = projectKind < 0x100 ? projectKind : 0;
+    sProjectionCount = selection;
+    if (projectKind & 0x100)
+        Emit(OBS_PROJECT_REJECTED, sBattle, projectKind & 255, revision, selection, NULL);
+    else if (projectKind)
+        Emit(OBS_PROJECTION, sBattle, projectKind, revision, selection, NULL);
     for (slot = 0; slot < PARTY_SIZE; slot++)
     {
         struct ObservedMon mon = ReadMon(&gEnemyParty[slot], slot);
         u32 actor = trainerB && slot >= PARTY_SIZE / 2 ? trainerB : trainerA;
         if (mon.species != SPECIES_NONE)
             Emit(OBS_BATTLE_MON, sBattle, actor, 0, flags, &mon);
+    }
+}
+
+void WorldObserve_OpponentSentOut(u8 slot)
+{
+    if (sBattle && sProjectionKind == 1 && slot < PARTY_SIZE)
+        sParticipants |= 1u << slot;
+}
+
+void WorldObserve_OpponentConditions(void)
+{
+    u32 slot;
+    if (!sBattle || sProjectionKind != 1)
+        return;
+    for (slot = 0; slot < sProjectionCount && slot < PARTY_SIZE; slot++)
+    {
+        u32 hp = GetMonData(&gEnemyParty[slot], MON_DATA_HP);
+        u32 max = GetMonData(&gEnemyParty[slot], MON_DATA_MAX_HP);
+        bool32 appeared = (sParticipants >> slot) & 1;
+        Emit(OBS_PROJECT_CONDITION, sBattle, slot + 1, hp | (max << 16), appeared || hp < max, NULL);
     }
 }
 

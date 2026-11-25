@@ -11,6 +11,7 @@ from time import perf_counter_ns
 from uuid import uuid4
 
 import ecology
+import native_projection
 import trainers
 from native_world import ewram_pointer
 from simulation.engine import Simulation, encoded
@@ -20,7 +21,7 @@ MAGIC = 0x3831574C
 HEADER = Struct("<8I")
 RECORD = Struct("<11I7H6B")
 KINDS = ("map", "story", "battle_start", "battle_mon", "battle_end", "ball_failed",
-         "capture", "party", "evolution", "save")
+         "capture", "party", "evolution", "save", "projection", "project_condition", "projection_rejected")
 OUTCOMES = {1: "won", 2: "lost", 3: "draw", 4: "player_escaped", 5: "player_teleported",
             6: "wild_fled", 7: "caught", 8: "out_of_safari_balls", 9: "forfeited",
             10: "wild_teleported"}
@@ -125,6 +126,10 @@ def project_mon(db, stream, event, event_id):
         return  # Native party and PC both rejected the handoff.
     else:
         individual = "player:{ot:08x}:{personality:08x}:{ivs:08x}".format_map(mon)
+        if db.execute("SELECT 1 FROM sqlite_master WHERE name='projected_player_aliases'").fetchone():
+            alias = db.execute("SELECT individual FROM projected_player_aliases WHERE native=?", (individual,)).fetchone()
+            if alias:
+                individual = alias[0]
         owner = "player"
         if kind == "capture":
             db.execute("INSERT OR REPLACE INTO observed_aliases VALUES (?,?)", (transient, individual))
@@ -173,9 +178,21 @@ def append_events(sim, stream, base_checkpoint, events, protection=None):
                 raise ValueError("Noncontiguous native event stream")
             sim.db.execute("INSERT INTO native_events VALUES (?,?,?,?)", (stream, seq, tick, payload))
             event_id = f"{stream}:{seq}"
-            project_mon(sim.db, stream, event, event_id)
+            projected = native_projection.receive(sim.db, stream, event)
+            if not projected or "individual" not in projected:
+                project_mon(sim.db, stream, event, event_id)
+            if projected and ("trainer_native" in projected or "wild_native" in projected):
+                ecological.append((f"{event_id}:projection", projected))
+            if event["kind"] == "map":
+                ecological.append((f"{event_id}:reservation-map", dict(wild_native=dict(
+                    status="map", stream=stream, location=ecology.map_key(event["map"])))))
             if ecology.relevant(event):
-                ecological.append((event_id, {"event": event}))
+                ecology_event = dict(event)
+                if projected and projected.get("projection_land"):
+                    ecology_event["projection_land"] = True
+                if projected and projected.get("persistent"):
+                    ecology_event["persistent"] = projected["persistent"]
+                ecological.append((event_id, {"event": ecology_event}))
             if event["kind"] == "battle_mon" and event["actor"] and event["mon"]:
                 team.append(dict(location=":".join(map(str, event["map"])), trainer=event["actor"],
                                  species=event["mon"]["species"], slot=event["mon"]["slot"]))
@@ -218,7 +235,7 @@ class Checkpoint:
             raise ValueError("Native save marker did not match the Flash image")
 
 
-def apply_batch(database, checkpoint_path, stream, base, entries, protection=None):
+def apply_batch(database, checkpoint_path, stream, base, entries, protection=None, projection_request=None):
     timings = []
     with closing(Simulation(database)) as sim:
         events = []
@@ -257,13 +274,30 @@ def apply_batch(database, checkpoint_path, stream, base, entries, protection=Non
                     sim.db.execute("INSERT OR REPLACE INTO native_clock VALUES (1,?)", (value.remaining,))
                 with closing(PairedCheckpoints(checkpoint_path)) as pair:
                     pair.store(value.flash, database)
+                if projection_request is not None:
+                    projection_request = dict(projection_request, checkpoint=sha256(value.flash).hexdigest(),
+                                              counter=value.counter)
             timings.append((kind, 1, (perf_counter_ns() - start) / 1e6))
         commit_events()
         summary = None
-        if any(kind in ("event", "tick") for kind, _ in entries):
-            summary = ecology.monitor(ecology.read_state(sim.db))
+        if any(kind in ("event", "tick", "checkpoint") for kind, _ in entries):
+            state = ecology.read_state(sim.db)
+            summary = ecology.monitor(state)
             summary["recent_native_individuals"] = ecology.native_individuals(sim.db)
             summary["trainers"] = trainers.load(sim.db)
+            if projection_request is not None:
+                start = perf_counter_ns()
+                with sim._write():
+                    document, reason = native_projection.prepare(sim.db, stream, projection_request, summary, state)
+                    updated = ecology.read_state(sim.db) if document and document["kind"] == native_projection.LAND else state
+                    summary["npc_sightings"] = updated["sightings"]
+                    summary["projection"] = dict(offer=document, fallback=reason,
+                                                 history=native_projection.recent(sim.db, stream),
+                                                 rejections=native_projection.rejections(sim.db, stream),
+                                                 reservations=[mon for mon in updated["individuals"].values()
+                                                               if mon.get("reservation")])
+                summary["_projection_epoch"] = {key: projection_request[key] for key in ("checkpoint", "counter")}
+                timings.append(("projection", 1, (perf_counter_ns() - start) / 1e6))
     return timings, summary
 
 
@@ -284,13 +318,27 @@ class LiveWorld:
         self.ecology_snapshot = None
         self.trainer_proposal = None
         self.trainer_requested_day = None
+        self.projection_address = startup.catalog["ports"].get("projection")
+        self.native_map = None
+        self.projection_epoch = None
+        self.projection_counter = None
+        self.last_publication = None
+        self.offer_frame = None
+        self.game = None
 
     def quarantine(self, reason):
         self.failure = str(reason)
         self.queue.clear()
+        self.clear_projection()
+
+    def clear_projection(self):
+        if self.game is not None and self.projection_address is not None:
+            native_projection.publish(self.game, self.projection_address, None, 0)
+            self.last_publication = None
 
     def poll(self, game):
         context = self.startup.context
+        self.game = game if self.projection_address is not None else None
         if self.failure or not context:
             return
         if context["origin"] == 2 and self.startup.database is None and self.reader.generation is None:
@@ -311,6 +359,11 @@ class LiveWorld:
                                 if row and 1 <= row[0] <= FRAMES_PER_TICK:
                                     remaining = row[0]
                 self.next_tick = frame + remaining
+                if self.projection_address is not None:
+                    battery = game.save_bytes()
+                    flash = flash_identity(battery, self.startup.catalog["save"], include_counter=True)
+                    self.projection_counter = flash["counter"] if flash and context["origin"] == 2 else 0
+                    self.projection_epoch = dict(counter=self.projection_counter, checkpoint=self.base)
             if self.startup.task is None and self.startup.database is not None:
                 if self.database is not None and self.database != self.startup.database:
                     raise ValueError("Native world attachment changed")
@@ -325,7 +378,10 @@ class LiveWorld:
             for event in events:
                 advance_until(event["frame"])
                 self.queue.append(("event", {**event, "_received_ns": perf_counter_ns()}))
+                if event["kind"] == "map":
+                    self.native_map = event["map"]
                 if event["kind"] == "save":
+                    self.projection_counter = event["value"]
                     remaining = max(1, min(FRAMES_PER_TICK, self.next_tick - event["frame"]))
                     cut = Checkpoint(game.save_bytes(), remaining, self.startup.catalog["save"],
                                      context, event["value"])
@@ -334,6 +390,7 @@ class LiveWorld:
             if len(self.queue) > PENDING_LIMIT:
                 raise ValueError("Live world queue overrun")
             self.pump()
+            self.publish_projection(frame)
         except (OSError, ValueError, RuntimeError, sqlite3.Error) as error:
             self.quarantine(error)
 
@@ -344,6 +401,8 @@ class LiveWorld:
                 self.metrics.extend(timings)
                 if summary is not None:
                     self.ecology_snapshot = summary
+                    self.offer_frame = self.reader.frame
+                    self.projection_epoch = summary.pop("_projection_epoch", self.projection_epoch)
                     if self.trainer_proposal and summary["day"] > self.trainer_proposal["day"]:
                         self.trainer_proposal = None
             except sqlite3.OperationalError:
@@ -361,9 +420,28 @@ class LiveWorld:
         if self.future is None and self.database is not None and self.queue and not self.failure:
             entries = tuple(self.queue[index] for index in range(min(BATCH, len(self.queue))))
             self.inflight = len(entries)
+            request = None
+            if self.projection_epoch is not None and self.native_map is not None:
+                context = self.startup.context
+                request = {key: context[key] for key in ("generation", *native_projection.CONTEXT_FIELDS)}
+                request.update(self.projection_epoch, map=self.native_map)
             self.future = self.executor.submit(apply_batch, self.database, self.startup.directory / "checkpoints.sqlite3",
                                                self.stream, self.base, entries,
-                                               self.startup.catalog.get("ecology_protected"))
+                                               self.startup.catalog.get("ecology_protected"), request)
+
+    def publish_projection(self, frame):
+        if self.projection_address is None:
+            return
+        offer = ((self.ecology_snapshot or {}).get("projection") or {}).get("offer")
+        if (not offer or self.native_map != offer["map"] or self.projection_counter != offer["counter"]
+                or self.offer_frame is None or frame - self.offer_frame > FRAMES_PER_TICK + 120):
+            if self.last_publication is not None:
+                self.clear_projection()
+            return
+        if (self.last_publication is None or self.last_publication[0] != offer["revision"]
+                or frame - self.last_publication[1] >= native_projection.PUBLICATION_INTERVAL):
+            if native_projection.publish(self.game, self.projection_address, offer, frame):
+                self.last_publication = (offer["revision"], frame)
 
     def trainer_request(self):
         state = (self.ecology_snapshot or {}).get("trainers")
@@ -389,6 +467,9 @@ class LiveWorld:
     def ecology_monitor(self):
         timings = {kind: round(ms, 3) for kind, _, ms in self.metrics}
         snapshot = dict(self.ecology_snapshot or {})
+        if snapshot.get("projection"):
+            snapshot["projection"] = dict(snapshot["projection"],
+                                          active_revision=self.last_publication[0] if self.last_publication else None)
         if snapshot.get("trainers"):
             snapshot["trainers"] = {key: value for key, value in snapshot["trainers"].items() if key != "request"}
         return {**snapshot, "health": {
@@ -400,3 +481,5 @@ class LiveWorld:
                 self.pump(drain=True)
         finally:
             self.executor.shutdown(wait=True)
+            if self.last_publication is not None:
+                self.clear_projection()

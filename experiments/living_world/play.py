@@ -310,6 +310,7 @@ def main():
     mode.add_argument("--pewter-regional-retest", action="store_true")
     mode.add_argument("--phase11-demo", action="store_true")
     mode.add_argument("--phase13-demo", action="store_true")
+    mode.add_argument("--phase21-demo", choices=("sammy", "route24"))
     parser.add_argument("--lightweight", action="store_true", help="Use short dialogue and skip optional prose")
     parser.add_argument("--no-predict", action="store_true", help="Disable approach prefetch for comparison")
     args = parser.parse_args()
@@ -323,6 +324,8 @@ def main():
     manifest = json.loads((ROOT / "rom.json").read_text(encoding="utf-8"))
     version = manifest.get("profile_version", 11 if args.phase11_demo else None)
     profile = profile_directory(version)
+    if args.phase21_demo:
+        profile = profile.with_name(f"{profile.name}-Phase21-{args.phase21_demo}")
     if args.profile_backup:
         print(backup_profile(profile))
         return 0
@@ -417,7 +420,26 @@ def main():
             model.close()
         return int(guide_failed)
     with profile_lock(profile):
+        if args.phase21_demo:
+            install_projection_demo(profile, ROOT / "projection-demo" / args.phase21_demo)
         return play(args, profile, manifest, rom_path, rom, model, regional_demo)
+
+
+def install_projection_demo(profile, fixture):
+    """Install only into an unused, isolated demo profile."""
+    save = profile / "PokemonQuantum.sav"
+    if save.is_file():
+        return
+    flash = (fixture / save.name).read_bytes()
+    pairs = (fixture / "checkpoints.sqlite3").read_bytes()
+    directory = profile / "native-worlds"
+    directory.mkdir(exist_ok=True)
+    destination = directory / "checkpoints.sqlite3"
+    if destination.is_file() and destination.read_bytes() != pairs:
+        raise RuntimeError("Demo already has existing checkpoint history")
+    if not destination.is_file():
+        atomic_write(destination, pairs)
+    atomic_write(save, flash)
 
 
 def play(args, profile, manifest, rom_path, rom, model, regional_demo):
@@ -564,6 +586,11 @@ def play(args, profile, manifest, rom_path, rom, model, regional_demo):
                     if context.npc in (OFFER, REPORT, DESK):
                         return SKIP
                 if context.npc in HOOKS.values():
+                    hint = game.read_hint()
+                    if live_world and context.npc == "route25/man" and hint and hint.area == "route_25":
+                        fact = live_world.ecology_sighting(context.npc)
+                        if fact:
+                            return json.dumps({"action": "SAY_DIALOGUE", "text": fact.line})
                     message = kanto_dialogue(kanto, memory, population, context) if kanto else None
                     return json.dumps({"action": "SAY_DIALOGUE", "text": message}) if message else SKIP
                 if context.npc in ("society_assistant", "society_trainer", "society_researcher"):

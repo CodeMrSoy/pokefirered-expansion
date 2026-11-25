@@ -1,6 +1,7 @@
 #include "global.h"
 #include "adventure_progression.h"
 #include "caps.h"
+#include "battle_setup.h"
 #include "data.h"
 #include "event_data.h"
 #include "event_object_movement.h"
@@ -15,6 +16,7 @@
 #include "constants/event_objects.h"
 #include "constants/flags.h"
 #include "constants/living_world.h"
+#include "constants/opponents.h"
 #include "constants/maps.h"
 #include "constants/items.h"
 #include "constants/moves.h"
@@ -363,6 +365,8 @@ void LivingWorld_UpdateFieldHint(void)
             break;
         case MAP_VIRIDIAN_FOREST:
             hint.area = 9;
+            if (idle && HasTrainerBeenFought(TRAINER_BUG_CATCHER_SAMMY))
+                ConsiderNearby(&hint, 5, LIVING_WORLD_SAMMY);
             break;
         case MAP_ROUTE3:
             hint.area = 10;
@@ -527,11 +531,18 @@ static void BeginConversation(u8 npc)
     gLivingWorldMailbox.request = 0;
     sFramesRemaining = 0;
     sDeferred = FALSE;
-    if (npc < LIVING_WORLD_PC_RESIDENT || npc > LIVING_WORLD_NEIGHBOR_CHECKOUT
+    if (npc < LIVING_WORLD_PC_RESIDENT || npc > LIVING_WORLD_SAMMY
      || !FlagGet(FLAG_SYS_POKEDEX_GET) || gQuestLogState == QL_STATE_PLAYBACK)
         return;
 
-    if (npc >= LIVING_WORLD_EVOLUTION_MART && !FlagGet(FLAG_BADGE01_GET))
+    if (npc == LIVING_WORLD_SAMMY)
+    {
+        if (gSaveBlock1Ptr->location.mapGroup != MAP_GROUP(MAP_VIRIDIAN_FOREST)
+            || gSaveBlock1Ptr->location.mapNum != MAP_NUM(MAP_VIRIDIAN_FOREST)
+            || !HasTrainerBeenFought(TRAINER_BUG_CATCHER_SAMMY))
+            return;
+    }
+    else if (npc >= LIVING_WORLD_EVOLUTION_MART && !FlagGet(FLAG_BADGE01_GET))
         return;
 
     if (npc == LIVING_WORLD_BROCK_CONTACT && BrockLocation() != BROCK_AT_FORECOURT)

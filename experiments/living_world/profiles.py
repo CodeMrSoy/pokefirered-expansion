@@ -20,12 +20,19 @@ WATTS = {
 NPC_IDS = {
     1: "pc_resident", 2: "daisy", 3: "oak", 4: "blue", 5: "mom",
     6: "sign_guide", 7: "lab_aide_1", 8: "lab_aide_2", 9: "lab_aide_3",
-    12: "route_scout", 13: "viridian_student",
+    12: "route_scout", 13: "viridian_student", 38: "sammy",
 }
 
 # Name, role, traits, goal, motivation, favorite species, knowledge and
 # protected interactions. Each aside has two short, spoken lines.
 _ASIDES = {
+    "sammy": (
+        "Bug Catcher Sammy", "Viridian Forest Bug Catcher", ("patient", "competitive"),
+        "Develop a reliable partner.", "Learn through hands-on training.", None,
+        ("Viridian Forest", "bug Pokemon"), ("native trainer battle",),
+        ("I like Pokemon training.", "The forest keeps me busy."),
+        ("This is where I train.", "The forest keeps me busy."),
+    ),
     "route_scout": (
         "Route 1 scout", "local youngster who watches the ledges", ("observant", "eager"),
         "Keep useful notes on Route 1.", "Share clear directions with travelers.", 25,
@@ -118,6 +125,7 @@ for key, (name, role, traits, goal, motivation, favorite, knowledge, protected, 
 # both the Pokedex and game-clear flags. Other hooks provide no story evidence.
 # Area, familiar regions, expertise, known characters, proven story milestones.
 KNOWLEDGE_PROFILES = {
+    "sammy": ("viridian_forest", ("kanto",), ("battle",), (), ()),
     "route_scout": ("route_1", ("kanto",), ("directions",), ("sign_guide",), ()),
     "viridian_student": ("viridian", ("kanto",), ("biology",), ("route_scout",), ()),
     "pc_resident": ("pallet", ("kanto",), ("electronics",), ("oak",), ()),

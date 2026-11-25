@@ -55,6 +55,8 @@ ViridianForest_EventScript_Doug::
 ViridianForest_EventScript_Sammy::
 	trainerbattle_single TRAINER_BUG_CATCHER_SAMMY, ViridianForest_Text_SammyIntro, ViridianForest_Text_SammyDefeat
 	msgbox ViridianForest_Text_SammyPostBattle, MSGBOX_AUTOCLOSE
+	living_world_aside LIVING_WORLD_SAMMY
+	release
 	end
 
 ViridianForest_EventScript_Anthony::

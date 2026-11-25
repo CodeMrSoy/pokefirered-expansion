@@ -298,6 +298,11 @@ def build_catalog(rom_path, elf_path, nm, revision):
                              nuzlocke_key="region_map_section", disposition="native_authoritative"))
     if "gWorldObservationPort" in rom.symbols:
         result["ports"]["observation"] = rom.address("gWorldObservationPort")
+    if "gWorldProjectPort" in rom.symbols:
+        address, size = rom.symbols["gWorldProjectPort"]
+        if size != 192:
+            raise ValueError("Unsupported native projection ABI")
+        result["ports"]["projection"] = address
     result["ecology_protected"] = ecology_protection(rom, layout)
     result["catalog_sha256"] = digest(result)
     return result

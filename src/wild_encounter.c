@@ -1,6 +1,7 @@
 #include "global.h"
+#include "world_project.h"
+#include "dexnav.h"
 #include "adventure_progression.h"
-#include "random.h"
 #include "battle_debug.h"
 #include "wild_encounter.h"
 #include "event_data.h"
@@ -9,6 +10,7 @@
 #include "randomizer.h"
 #include "roamer.h"
 #include "field_player_avatar.h"
+#include "field_specials.h"
 #include "battle_setup.h"
 #include "overworld.h"
 #include "metatile_behavior.h"
@@ -464,8 +466,10 @@ u8 GetUnownLetterByPersonalityLoByte(u32 personality)
 
 #define TRY_GET_ABILITY_INFLUENCED_WILD_MON_INDEX(wildPokemon, type, ability, ptr, count) TryGetAbilityInfluencedWildMonIndex(wildPokemon, type, ability, ptr, count)
 
-static bool8 TryGenerateWildMon(const struct WildPokemonInfo * wildMonInfo, enum WildPokemonArea area, u8 flags)
+static bool8 TryGenerateWildMon(const struct WildPokemonInfo * wildMonInfo, enum WildPokemonArea area, u8 flags, u32 projectionVariant)
 {
+    bool32 ordinaryLand = FALSE;
+    u32 identity = 0;
     u8 wildMonIndex = 0;
     u8 level;
     u16 species;
@@ -486,6 +490,7 @@ static bool8 TryGenerateWildMon(const struct WildPokemonInfo * wildMonInfo, enum
         if (OW_STORM_DRAIN == GEN_8 && TRY_GET_ABILITY_INFLUENCED_WILD_MON_INDEX(wildMonInfo->wildPokemon, TYPE_WATER, ABILITY_STORM_DRAIN, &wildMonIndex, LAND_WILD_COUNT))
             break;
 
+        ordinaryLand = TRUE;
         wildMonIndex = ChooseWildMonIndex_Land();
         break;
     case WILD_AREA_WATER:
@@ -533,7 +538,22 @@ static bool8 TryGenerateWildMon(const struct WildPokemonInfo * wildMonInfo, enum
         );
     }
 
-    CreateWildMon(species, level, wildMonIndex);
+    if (ordinaryLand && projectionVariant < 32 && !gDexNavSpecies && !GetSafariZoneFlag()
+        && B_DOUBLE_WILD_CHANCE == 0 && B_FLAG_FORCE_DOUBLE_WILD == 0)
+        species = WorldProject_Land(projectionVariant, species, level, wildMonIndex, &identity);
+    if (identity)
+    {
+        // Companion rare individuals keep their native PID and base IVs if
+        // encountered again. Capture odds, held items and the catch itself
+        // continue through the ordinary native wild battle path.
+        u8 abilitySlot = 0;
+        ZeroEnemyPartyMons();
+        CreateMon(&gEnemyParty[0], species, level, (identity >> 24) & 31, TRUE, identity,
+                  OT_ID_PRESET, GetPlayerTrainerId());
+        SetMonData(&gEnemyParty[0], MON_DATA_ABILITY_NUM, &abilitySlot);
+    }
+    else
+        CreateWildMon(species, level, wildMonIndex);
     return TRUE;
 }
 
@@ -665,13 +685,14 @@ bool8 TryStandardWildLandEncounter(u16 headerId, u32 currMetatileAttrs, u16 prev
         return TRUE;
     }
 
-    // try a regular wild land encounter
-    if (TryGenerateWildMon(gWildMonHeaders[headerId].encounterTypes[season][timeOfDay].landMonsInfo, WILD_AREA_LAND, WILD_CHECK_REPEL) == TRUE)
+    // The pilot is offered only at the ordinary land step boundary.
+    u32 variant = season * ARRAY_COUNT(gWildMonHeaders[headerId].encounterTypes[0]) + timeOfDay;
+    if (TryGenerateWildMon(gWildMonHeaders[headerId].encounterTypes[season][timeOfDay].landMonsInfo, WILD_AREA_LAND, WILD_CHECK_REPEL, variant) == TRUE)
     {
         if (TryDoDoubleWildBattle())
         {
             struct Pokemon mon1 = gEnemyParty[0];
-            TryGenerateWildMon(gWildMonHeaders[headerId].encounterTypes[season][timeOfDay].landMonsInfo, WILD_AREA_LAND, WILD_CHECK_KEEN_EYE);
+            TryGenerateWildMon(gWildMonHeaders[headerId].encounterTypes[season][timeOfDay].landMonsInfo, WILD_AREA_LAND, WILD_CHECK_KEEN_EYE, UINT32_MAX);
             gEnemyParty[1] = mon1;
             BattleSetup_StartDoubleWildBattle();
         }
@@ -713,13 +734,13 @@ bool8 TryStandardWildSurfEncounter(u16 headerId, u32 currMetatileAttrs, u16 prev
         return TRUE;
     }
     // try a regular surfing encounter
-    if (TryGenerateWildMon(gWildMonHeaders[headerId].encounterTypes[season][timeOfDay].waterMonsInfo, WILD_AREA_WATER, WILD_CHECK_REPEL) == TRUE)
+    if (TryGenerateWildMon(gWildMonHeaders[headerId].encounterTypes[season][timeOfDay].waterMonsInfo, WILD_AREA_WATER, WILD_CHECK_REPEL, UINT32_MAX) == TRUE)
     {   
         gIsSurfingEncounter = TRUE;
         if (TryDoDoubleWildBattle())
         {
             struct Pokemon mon1 = gEnemyParty[0];
-            TryGenerateWildMon(gWildMonHeaders[headerId].encounterTypes[season][timeOfDay].waterMonsInfo, WILD_AREA_WATER, WILD_CHECK_KEEN_EYE);
+            TryGenerateWildMon(gWildMonHeaders[headerId].encounterTypes[season][timeOfDay].waterMonsInfo, WILD_AREA_WATER, WILD_CHECK_KEEN_EYE, UINT32_MAX);
             gEnemyParty[1] = mon1;
             BattleSetup_StartDoubleWildBattle();
         }
@@ -766,7 +787,7 @@ void RockSmashWildEncounter(void)
         gSpecialVar_Result = FALSE;
     else if (DoWildEncounterRateTest(gWildMonHeaders[headerId].encounterTypes[season][timeOfDay].rockSmashMonsInfo->encounterRate, TRUE) != TRUE)
         gSpecialVar_Result = FALSE;
-    else if (TryGenerateWildMon(gWildMonHeaders[headerId].encounterTypes[season][timeOfDay].rockSmashMonsInfo, WILD_AREA_ROCKS, WILD_CHECK_REPEL) == TRUE)
+    else if (TryGenerateWildMon(gWildMonHeaders[headerId].encounterTypes[season][timeOfDay].rockSmashMonsInfo, WILD_AREA_ROCKS, WILD_CHECK_REPEL, UINT32_MAX) == TRUE)
     {
         BattleSetup_StartWildBattle();
         gSpecialVar_Result = TRUE;
@@ -800,7 +821,7 @@ bool8 SweetScentWildEncounter(void)
         if (gWildMonHeaders[headerId].encounterTypes[season][timeOfDay].landMonsInfo == NULL)
             return FALSE;
 
-        TryGenerateWildMon(gWildMonHeaders[headerId].encounterTypes[season][timeOfDay].landMonsInfo, WILD_AREA_LAND, 0);
+        TryGenerateWildMon(gWildMonHeaders[headerId].encounterTypes[season][timeOfDay].landMonsInfo, WILD_AREA_LAND, 0, UINT32_MAX);
 
         BattleSetup_StartWildBattle();
         return TRUE;
@@ -817,7 +838,7 @@ bool8 SweetScentWildEncounter(void)
         if (gWildMonHeaders[headerId].encounterTypes[season][timeOfDay].waterMonsInfo == NULL)
             return FALSE;
 
-        TryGenerateWildMon(gWildMonHeaders[headerId].encounterTypes[season][timeOfDay].waterMonsInfo, WILD_AREA_WATER, 0);
+        TryGenerateWildMon(gWildMonHeaders[headerId].encounterTypes[season][timeOfDay].waterMonsInfo, WILD_AREA_WATER, 0, UINT32_MAX);
         BattleSetup_StartWildBattle();
         return TRUE;
     }

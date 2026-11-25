@@ -53,7 +53,9 @@ def ecological_fact(report, day):
     if not report or day - report["observed_day"] > 21:
         return None
     kind = report["kind"]
-    if report["activity"] == "received_from_contact":
+    if kind == "named_local_report":
+        line = "A rare Pokemon was seen."
+    elif report["activity"] == "received_from_contact":
         line = "I heard the wildlife moved."
     elif kind == "migration_arrived":
         line = "I saw wild Pokemon arrive."

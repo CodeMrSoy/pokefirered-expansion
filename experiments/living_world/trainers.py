@@ -121,16 +121,21 @@ def record(state, events, actor, kind, **data):
     state["recent"].append(row)
     del state["recent"][:-60]
     state["counters"][kind] = state["counters"].get(kind, 0) + 1
-    if kind in {"capture", "capture_failed", "evolution", "scout"}:
+    if kind in {"capture", "capture_failed", "evolution", "scout", "native_battle_reconciled"}:
         a = state["actors"][actor]
         a["notices"].append(row)
         del a["notices"][:-5]
 
 
+def training_partner(state, a):
+    available = [uid for uid in a["party"] if state["mons"][uid].get("recover_until", 0) <= state["day"]]
+    return min(available, key=lambda uid: (state["mons"][uid]["level"], uid), default=None)
+
+
 def available(state, eco, index, actor):
     a = state["actors"][actor]
     loc, day = a["location"], state["day"]
-    if a["journey"] or a["practice_day"] == day:
+    if a["journey"] or a["practice_day"] == day or a.get("native_battle"):
         return ()
     choices = [Step("REST", "")]
     land = eco["groups"].get(loc, {}).get("land", {})
@@ -148,8 +153,7 @@ def available(state, eco, index, actor):
     if (sight and sight["location"] == loc and day - sight["day"] <= SIGHT_DAYS and a["balls"]
             and len(a["party"]) + len(a["storage"]) < 6 + STORAGE_SLOTS):
         choices.append(Step("ATTEMPT_CAPTURE", str(sight["species"])))
-    partner = (min(a["party"], key=lambda uid: (state["mons"][uid]["level"], uid))
-               if a["party"] else None)
+    partner = training_partner(state, a)
     if partner and (a["cash"] >= TRAIN_COST and state["mons"][partner]["level"] < MAX_LEVEL
                     and state["mons"][partner]["fatigue"] < 2):
         choices.append(Step("DEVELOP_PARTNER", partner))
@@ -167,7 +171,8 @@ def available(state, eco, index, actor):
                 and other["fatigue"] < 2 and other["practice_day"] != day and a["contacts"][contact] >= 40
                 and (not other["decisions"] or other["decisions"][-1]["day"] < day)
                 and state["mons"][partner]["fatigue"] == 0
-                and state["mons"][other["party"][0]]["fatigue"] == 0):
+                and state["mons"][other["party"][0]]["fatigue"] == 0
+                and state["mons"][other["party"][0]].get("recover_until", 0) <= day):
             choices.append(Step("SPAR_PRACTICE", contact))
     return tuple(choices)
 
@@ -212,7 +217,8 @@ def capture(state, eco, index, actor, target, events):
     row = index["species"].get(species)
     land = eco["groups"].get(loc, {}).get("land", {})
     notable = eco["individuals"].get(sight.get("individual"))
-    if notable and (notable["location"], notable["layer"], int(notable["species"])) != (loc, "land", species):
+    if notable and (notable.get("reservation") or
+                    (notable["location"], notable["layer"], int(notable["species"])) != (loc, "land", species)):
         notable = None
     eligible = row and (notable if sight.get("individual") else land.get(target, 0) > 0)
     if not eligible:
@@ -308,7 +314,7 @@ def practice(state, eco, index, actor, contact, events):
     pair = []
     for key in (actor, contact):
         member = state["actors"][key]
-        uid = min(member["party"], key=lambda id_: (state["mons"][id_]["level"], id_)) if key == actor else member["party"][0]
+        uid = training_partner(state, member) if key == actor else member["party"][0]
         mon = state["mons"][uid]
         stats = index["species"][mon["species"]]["authored"]["stats"]
         score = sum(stats) * mon["level"] + 5 * member["profile"]["competence"]
@@ -362,7 +368,7 @@ def execute(state, eco, index, actor, step, events):
                       if count > 0 and int(species) in index["species"]
                       and (species in current or species in pool.get("compatible_arrivals", ())) ]
         candidates.extend((int(mon["species"]), uid, 1) for uid, mon in sorted(eco["individuals"].items())
-                          if mon["location"] == loc and mon["layer"] == "land"
+                          if mon["location"] == loc and mon["layer"] == "land" and not mon.get("reservation")
                           and int(mon["species"]) in index["species"])
         if candidates:
             def rank(item):
@@ -518,7 +524,7 @@ def advance(state, eco, index, proposal=None):
     for key, a in state["actors"].items():
         if a["sighting"] and day - a["sighting"]["day"] > SIGHT_DAYS:
             a["sighting"] = None
-        if a["practice_day"] == day:
+        if a["practice_day"] == day or a.get("native_battle"):
             continue
         if a["journey"]:
             if day < a["journey"]["arrival"]:
@@ -575,6 +581,33 @@ def advance(state, eco, index, proposal=None):
     return events
 
 
+def observe_native(state, entry):
+    """Reconcile the opponent's confirmed condition without granting native rewards."""
+    a = state["actors"]["sammy"]
+    if entry["status"] == "started":
+        if a.get("native_battle"):
+            raise ValueError("Duplicate active Sammy battle")
+        a["native_battle"] = entry["battle"]
+        a["activity"] = "native_player_battle"
+        return
+    if a.get("native_battle") != entry["battle"]:
+        raise ValueError("Companion trainer battle did not match native outcome")
+    del a["native_battle"]
+    a["activity"] = "recovering_from_native_battle"
+    for uid, hp, maximum, participated in entry["members"]:
+        mon = state["mons"].get(uid)
+        if not mon or mon["owner"] != "sammy":
+            raise ValueError("Projected opponent lost its companion owner")
+        if participated or hp < maximum:
+            if hp < maximum:
+                mon["fatigue"] = min(2, mon["fatigue"] + 1)
+                mon["recover_until"] = state["day"] + (2 if hp == 0 else 1)
+            a["experience"] += 1
+    a["last_native_battle"] = entry
+    record(state, [], "sammy", "native_battle_reconciled", outcome=entry["outcome"],
+           participants=sum(bool(row[3]) for row in entry["members"]))
+
+
 def load(db):
     if not db.execute("SELECT 1 FROM sqlite_master WHERE name='trainer_state'").fetchone():
         return None
@@ -602,8 +635,14 @@ def fact(state, npc):
     if not a:
         return None
     lines = {"capture": "I caught a wild Pokemon.", "capture_failed": "One got away from me.",
-             "evolution": "My partner evolved!", "scout": "I spotted a wild Pokemon."}
-    for report in reversed(a["notices"]):
+             "evolution": "My partner evolved!", "scout": "I spotted a wild Pokemon.",
+             "training": "I trained my Pokemon.", "native_battle_reconciled": "I battled a trainer."}
+    reports = a["notices"]
+    if npc == "sammy":
+        reports = sorted([*reports, *(row for row in state["recent"]
+                                      if row["actor"] == npc and row["kind"] == "training")],
+                         key=lambda row: row["day"])
+    for report in reversed(reports):
         if report["location"] == a["profile"]["home"] and state["day"] - report["day"] <= SIGHT_DAYS:
             line = lines[report["kind"]]
             key = f"trainer:{npc}:{report['location']}:{report['day']}:{report['kind']}"

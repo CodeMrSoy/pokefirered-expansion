@@ -1,5 +1,6 @@
 #include "global.h"
 #include "world_observe.h"
+#include "world_project.h"
 #include "adventure_mode.h"
 #include "adventure_progression.h"
 #include "caps.h"
@@ -55,7 +56,7 @@ const u32 gWorldCatalogLayout[] = {
 #undef WORLD_LAYOUT
 };
 
-void WorldExport_SetContext(u32 origin)
+u32 WorldExport_Features(void)
 {
     u32 i, features = 0;
     static const enum RandomizerFeature options[] = {
@@ -66,6 +67,11 @@ void WorldExport_SetContext(u32 origin)
     for (i = 0; i < ARRAY_COUNT(options); i++)
         if (RandomizerFeatureEnabled(options[i]))
             features |= 1u << i;
+    return features;
+}
+
+void WorldExport_SetContext(u32 origin)
+{
     gWorldExportContext.magic = EXPORT_MAGIC;
     gWorldExportContext.version = 1;
     if (++gWorldExportContext.generation == 0)
@@ -74,7 +80,7 @@ void WorldExport_SetContext(u32 origin)
     gWorldExportContext.seed = GetRandomizerSeed();
     gWorldExportContext.mode = AdventureMode_Get();
     gWorldExportContext.modes = gSaveBlock2Ptr->gameModes;
-    gWorldExportContext.features = features;
+    gWorldExportContext.features = WorldExport_Features();
     gWorldExportContext.speciesMode = GetRandomizerOption(RANDOMIZER_OPTION_SPECIES_MODE);
     gWorldExportContext.buildTrainer = GetCurrentDifficultyLevel();
     gWorldExportContext.cap = GetCurrentLevelCap();
@@ -85,6 +91,7 @@ void WorldExport_SetContext(u32 origin)
                                 | ((u32)(u8)gSaveBlock1Ptr->location.mapGroup << 8);
     gWorldExportPort.magic = 0;
     gWorldExportPort.reply = 0;
+    WorldProject_Reset(gWorldExportContext.generation);
     WorldObserve_Start(gWorldExportContext.generation);
 }
 

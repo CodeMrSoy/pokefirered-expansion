@@ -1,5 +1,6 @@
 #include "global.h"
 #include "world_observe.h"
+#include "world_project.h"
 #include "adventure_progression.h"
 #include "game_modes.h"
 #include "battle.h"
@@ -2143,6 +2144,8 @@ static u8 CreateNPCTrainerParty(struct Pokemon *party, u16 trainerNum, bool8 fir
     u8 retVal;
     if (trainerNum == TRAINER_SECRET_BASE)
         return 0;
+    if (WorldProject_Trainer(party, trainerNum, firstTrainer))
+        return CalculateEnemyPartyCount();
     retVal = CreateNPCTrainerPartyFromTrainer(party, GetTrainerStructFromId(trainerNum), firstTrainer, gBattleTypeFlags, trainerNum);
     return retVal;
 }
@@ -2915,6 +2918,8 @@ static void BattleStartClearSetData(void)
 
 void SwitchInClearSetData(u32 battler)
 {
+    if (GetBattlerSide(battler) == B_SIDE_OPPONENT)
+        WorldObserve_OpponentSentOut(gBattlerPartyIndexes[battler]);
     s32 i;
     enum BattleMoveEffects effect = GetMoveEffect(gCurrentMove);
     struct DisableStruct disableStructCopy = gDisableStructs[battler];
@@ -5364,6 +5369,7 @@ static void HandleEndTurn_FinishBattle(void)
         {
             gBattleMons[i].species = SPECIES_NONE;
         }
+        WorldObserve_OpponentConditions();
         gBattleMainFunc = FreeResetData_ReturnToOvOrDoEvolutions;
         gCB2_AfterEvolution = BattleMainCB2;
     }

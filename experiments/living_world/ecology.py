@@ -344,17 +344,69 @@ def observe(state, event, event_id):
         return
     evidence = dict(source="native_observation", event=event_id, species=mon["species"] if mon else None,
                     battle=event.get("battle"), outcome=event.get("outcome"))
-    if kind == "capture" and event["value"] in (0, 1) and mon and not event.get("flags", 0) & SPECIAL_BATTLE:
+    if event.get("persistent"):
+        evidence["persistent_individual"] = event["persistent"]
+    if (kind == "capture" and event["value"] in (0, 1) and mon and not event.get("persistent")
+            and not event.get("flags", 0) & SPECIAL_BATTLE):
         species = str(mon["species"])
         habitat = state["habitats"][key]["simulated"]["layers"]
         options = [group for layer, group in state["groups"][key].items() if species in group and
                    any(species in weights for weights in habitat[layer]["variants"].values())]
-        if len(options) == 1 and options[0][species] > 0:
+        if event.get("projection_land"):
+            options = [state["groups"][key]["land"]]
+        if len(options) == 1 and options[0].get(species, 0) > 0:
             options[0][species] -= 1
             evidence["population_adjustment"] = -1
     # Battle identity and known attributes remain in the Phase 18 observation
     # tables. Ordinary sightings never link to a simulated individual.
     note(state, kind, key, **evidence)
+
+
+def native_wild(state, change):
+    """Replay a single lease status change inside the native journal transaction."""
+    status, stream = change["status"], change["stream"]
+    if status == "map":
+        for uid, mon in state["individuals"].items():
+            lease = mon.get("reservation")
+            if lease and (lease["stream"] != stream or mon["location"] != change["location"]):
+                if lease.get("battle") and lease["stream"] == stream:
+                    raise ValueError("Reserved native wild battle left its map")
+                del mon["reservation"]
+                note(state, "native_reservation_released", mon["location"], individual=uid, cause="map_or_session")
+        return
+    uid = change["individual"]
+    mon = state["individuals"].get(uid)
+    if not mon:
+        raise ValueError("Named native encounter has no wild individual")
+    lease = mon.get("reservation")
+    if status == "reserved":
+        if lease or mon["location"] != change["location"] or mon["layer"] != "land":
+            raise ValueError("Wild reservation could not acquire the individual")
+        mon["native_level"] = change["level"]
+        mon["reservation"] = dict(id=change["lease"], stream=stream)
+        if mon["location"] == "3:44":
+            sightings = [row for row in state["history"] if row["kind"] == "unusual_sighting"
+                         and row.get("individual") == uid and state["day"] - row["day"] <= KNOWLEDGE_DAYS]
+            if sightings:
+                observed = sightings[-1]
+                state["sightings"]["route25/man"] = dict(observed, kind="named_local_report",
+                     source="route_25_ecological_survey", observed_day=observed["day"],
+                     activity="received_from_contact", confidence=45)
+    elif not lease or (lease["stream"], lease["id"]) != (stream, change["lease"]):
+        raise ValueError("Native encounter did not own the reserved individual")
+    elif status == "engaged" and not lease.get("battle"):
+        lease["battle"] = change["battle"]
+    elif lease.get("battle") == change["battle"] and status in {"captured", "released"}:
+        del mon["reservation"]
+        if status == "captured":
+            del state["individuals"][uid]
+            state["sightings"] = {npc: report for npc, report in state["sightings"].items()
+                                  if report.get("individual") != uid}
+        else:
+            mon["release_day"] = state["day"]
+    else:
+        raise ValueError("Invalid native reservation transition")
+    note(state, "native_reservation_" + status, mon["location"], individual=uid, battle=change.get("battle"))
 
 
 def relevant(event):
@@ -419,6 +471,14 @@ def apply(db, entries):
             if entry.get("trainer_phase") == 1:
                 projection, events = trainer_day(state, trainers.load(db), entry, trainer_index(db))
                 trainers.write(db, projection, events)
+        elif "wild_native" in entry:
+            native_wild(state, entry["wild_native"])
+        elif "trainer_native" in entry:
+            projection = trainers.load(db)
+            if not projection:
+                raise ValueError("Projection has no companion trainer state")
+            trainers.observe_native(projection, entry["trainer_native"])
+            db.execute("UPDATE trainer_state SET document=? WHERE slot=1", (encoded(projection),))
         else:
             observe(state, entry["event"], key)
     if state is not None:
@@ -444,6 +504,12 @@ def replay(db):
                 if not has_trainers or db.execute("SELECT events FROM trainer_journal WHERE day=?",
                                                 (entry["day"],)).fetchone() != (encoded(events),):
                     raise ValueError("Trainer action replay differs from the persisted journal")
+        elif "wild_native" in entry:
+            native_wild(state, entry["wild_native"])
+        elif "trainer_native" in entry:
+            if not projection:
+                raise ValueError("Replay has no companion trainer state")
+            trainers.observe_native(projection, entry["trainer_native"])
         else:
             observe(state, entry["event"], key)
     if state != read_state(db) or projection != has_trainers:
