@@ -47,6 +47,25 @@ if full:
     delay = int(os.environ["WORLD_INIT_SEED_DELAY"])
     source = source.replace("# Test independent category controls,",
                             f"m.run({delay})\n    # Test independent category controls,")
+if options := os.environ.get("WORLD_TEST_RANDOMIZER_MASK"):
+    if os.environ.get("ADVENTURE_TEST_MODE") != "0" or options not in {"1", "2", "4"} or disabled or full:
+        raise ValueError("The individual randomizer fixtures use Classic mode")
+    mask = int(options)
+    presses = (["m.press(8)"] if mask & 1 else []) + ["m.press(5)"]
+    presses += (["m.press(7)"] if mask & 2 else []) + ["m.press(5)"]
+    presses += ["m.press(7)"] if mask & 4 else []
+    source = source.replace("m.press(8); m.press(5); m.press(7); m.press(5); m.press(7)", "; ".join(presses))
+    source = source.replace("== 23", f"== {16 | mask}").replace("else 23", f"else {16 | mask}")
+if os.environ.get("WORLD_TEST_NUZLOCKE_OFF") == "1":
+    source = source.replace("m.press(5); m.press(6); m.press(5); m.press(7)",
+                            "m.press(5); m.press(6); m.press(5)")
+    expected = {16: 0, 80: 64, 23: 7, 87: 71, 119: 103}
+    import re
+
+    source = re.sub(r"(?<= == )(16|80|23|87|119)(?=\n)|"
+                    r"(?<= = )(16|80|23|87|119)(?= if mode == 1 else )|"
+                    r"(?<=else )(16|80|23|87|119)(?=\n)",
+                    lambda match: str(expected[int(match[0])]), source)
 env = {"__file__": str(fixture)}
 exec(compile(source, str(fixture), "exec"), env)
 m = env["m"]

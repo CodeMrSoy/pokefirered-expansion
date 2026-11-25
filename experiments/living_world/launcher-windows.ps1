@@ -58,11 +58,24 @@ function Read-SharedText($path) {
 }
 
 $script:monitor = $false
+$script:monitorProfile = $profile
 $script:lastSnapshot = ''
 $intro = "Choose Play Pokemon Quantum for your main save, or Living World Demo for the Pewter scenario.`r`n`r`nUse Settings and controls to change keyboard bindings. Diagnostics runs the sandbox and local model checks."
 
-Add-MenuButton 'Play Pokemon Quantum' { Start-Host }
-Add-MenuButton 'Living World Demo' { Start-Host '--phase13-demo' }
+Add-MenuButton 'Play Pokemon Quantum' { $script:monitorProfile = $profile; Start-Host }
+Add-MenuButton 'Living World Demo' { $script:monitorProfile = $profile; Start-Host '--phase13-demo' }
+if (Test-Path (Join-Path $root 'projection-demo/sammy/PokemonQuantum.sav')) {
+    Add-MenuButton 'Sammy native battle demo' {
+        $script:monitorProfile = "$profile-Phase21-sammy"
+        Start-Host @('--phase21-demo', 'sammy')
+    }
+}
+if (Test-Path (Join-Path $root 'projection-demo/route24/PokemonQuantum.sav')) {
+    Add-MenuButton 'Route 24 ecology demo' {
+        $script:monitorProfile = "$profile-Phase21-route24"
+        Start-Host @('--phase21-demo', 'route24')
+    }
+}
 Add-MenuButton 'Living World Monitor' {
     $script:monitor = $true
     $script:lastSnapshot = ''
@@ -91,7 +104,7 @@ $timer = New-Object Windows.Forms.Timer
 $timer.Interval = 1200
 $timer.Add_Tick({
     if (!$script:monitor) { return }
-    try { $snapshot = Read-SharedText (Join-Path $profile 'monitor.json') } catch { return }
+    try { $snapshot = Read-SharedText (Join-Path $script:monitorProfile 'monitor.json') } catch { return }
     try { $state = ConvertFrom-Json $snapshot } catch { return }
     $age = [DateTimeOffset]::UtcNow.ToUnixTimeSeconds() - $state.updated
     $status = if ($state.running -and $age -lt 8) { 'Live' } else { 'Last recorded session' }
@@ -103,6 +116,12 @@ $timer.Add_Tick({
                  "Habitats $(@($ecology.habitats).Count)   In transit $(@($ecology.migrations_in_transit).Count)   Notable $(@($ecology.notable_simulated).Count)`r`n" +
                  "Ecology counts are simulated. Native observations are listed separately below.`r`n"
         if ($ecology.health.failure) { $lines += "Ecology paused  $($ecology.health.failure)`r`n" }
+        if ($ecology.projection) {
+            $offer = $ecology.projection.offer
+            $projectionStatus = if ($offer) { "Revision $($offer.revision)  Native map $($offer.map -join ':')   Candidate rows $(@($offer.party).Count)" } else { "Authored fallback  $($ecology.projection.fallback)" }
+            $lines += "Native projection  $projectionStatus`r`n"
+            $lines += "Reservations $(@($ecology.projection.reservations).Count)   Outcomes $(@($ecology.projection.history).Count)   Native rejections $(@($ecology.projection.rejections).Count)`r`n"
+        }
         if ($ecology.trainers -and $ecology.trainers.actors) {
             $lines += "`r`nCompanion trainers  Day $($ecology.trainers.day)`r`n"
             foreach ($entry in $ecology.trainers.actors.PSObject.Properties) {

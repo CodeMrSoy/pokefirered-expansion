@@ -24,6 +24,7 @@ from platform_io import atomic_write
 from platform_scenario import scenario
 from world import WorldMemory
 from concurrent.futures import ThreadPoolExecutor
+from contextlib import closing
 
 
 def check_files(root):
@@ -189,6 +190,70 @@ def native_catalog_smoke(game, directory, rom, core):
                 ecology_habitats=habitat_count, companion_trainers=trainer_count)
 
 
+def native_projection_smoke(game, directory, rom, core, demo, area, kind):
+    from contextlib import closing
+    from live_world import LiveWorld
+    from play import install_projection_demo
+    from world_initialization import WorldStartup
+
+    directory.mkdir()
+    install_projection_demo(directory, demo)
+    flash = (directory / "PokemonQuantum.sav").read_bytes()
+    game.load_save(flash)
+    run_frames(game, 180)
+    for _ in range(12):
+        for key in (3, 8, 0):
+            tap(game, key)
+            hint = game.read_hint()
+            if hint and hint.area == area and not hint.busy:
+                break
+        else:
+            continue
+        break
+    else:
+        raise AssertionError(f"Packaged native demo did not Continue to {area}")
+    with (closing(WorldStartup(directory / "native-worlds", rom, core, ROOT / "world-catalog.json")) as startup,
+          closing(LiveWorld(startup)) as live):
+        startup.poll(game, flash)
+        assert startup.database is not None, "Packaged paired demonstration could not Continue"
+        for _ in range(180):
+            game.core.retro_run()
+            live.poll(game)
+            while live.future or live.queue:
+                live.pump(drain=True)
+            assert not live.failure, live.failure
+            if live.last_publication:
+                break
+        projection = live.ecology_monitor().get("projection", {})
+        offer = projection.get("offer")
+        assert live.last_publication and offer["kind"] == kind and offer["party"], projection
+        report = dict(revision=offer["revision"], candidate_rows=len(offer["party"]), kind=kind)
+        if kind == 2:
+            assert any(row.get("id") for row in offer["party"]), offer
+        else:
+            # From the adjacent verified save tile, face Sammy and
+            # press the native confirm button. No ScriptContext injection.
+            def step(button, count):
+                game.display.controls.buttons = {button} if button is not None else set()
+                for _ in range(count):
+                    game.core.retro_run()
+                    live.poll(game)
+                game.display.controls.buttons = set()
+
+            for key in (4, 8, 8, 8, 8, 8, 8, 8, 8, 8):
+                step(key, 2)
+                step(None, 38)
+                while live.future or live.queue:
+                    live.pump(drain=True)
+                if live.ecology_monitor()["projection"]["history"]:
+                    break
+            history = live.ecology_monitor()["projection"]["history"]
+            assert any(row["kind"] == 1 and row["individuals"] for row in history), history
+            report["native_battle_accepted"] = True
+        assert not live.failure
+        return report
+
+
 def runtime_smoke(directory, core):
     rom = ROOT / "PokemonQuantum.gba"
     manifest = json.loads((ROOT / "rom.json").read_text(encoding="utf-8"))
@@ -266,11 +331,21 @@ def runtime_smoke(directory, core):
             continue_to(game, "pallet")
         finally:
             game.close()
+        projection_report = {}
+        required = (ROOT / "projection-demo").is_dir()
+        for demo, area, kind in (("sammy", "viridian_forest", 1), ("route24", "route_24", 2)):
+            fixture = ROOT / "projection-demo" / demo
+            if required:
+                assert fixture.is_dir(), f"Missing native projection demo {demo}"
+            if fixture.is_dir():
+                with closing(open_game()) as game:
+                    projection_report[demo] = native_projection_smoke(
+                        game, directory / demo, rom, core, fixture, area, kind)
     finally:
         display.controls.close()
         display.sdl.SDL_Quit()
     return dict(checks="SDL, controller/remap, post-Brock demo, Watts mailbox, Flash save/reload, SQLite quest lifecycle",
-                native_world=native_report)
+                native_world=native_report, native_projection=projection_report)
 
 
 def worker_failure_smoke():

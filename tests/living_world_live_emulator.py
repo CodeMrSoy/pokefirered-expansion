@@ -159,10 +159,12 @@ def wild_capture():
     run(45)
 
 
-def trainer(trainer_id):
+def trainer(trainer_id, authored=None):
     none = m.symbols["gText_EmptyString3"]
     script = b"\x5c" + struct.pack("<BBHIIIBHIIIIIH", 0x34, 0, trainer_id,
                                     0, none, 0, 0, 0, 0, 0, 0, 0, 0, 0) + b"\x02"
+    if authored is not None:
+        script = b"\x05" + struct.pack("<I", m.symbols[authored])
     m.inject(script)
     assert choose_when_ready(), f"Trainer {trainer_id} did not start"
     for _ in range(100):
@@ -211,6 +213,37 @@ def checkpoint():
     while live.queue or live.future is not None:
         live.pump(drain=True)
     return player.save_bytes()
+
+
+def continue_projection(root, flash):
+    """Restore through the real native Continue flow and phase-17 attachment."""
+    m.lib.retro_reset()
+    m.run(360)
+    m.press(3)
+    env["env"]["wait"]("Task_HandleMenuInput")
+    m.press(8)
+    m.run(420)
+    with closing(WorldStartup(root, ROOT / "pokefirered.gba", Path(os.environ["MGBA_CORE"]), catalog_path)) as resumed:
+        for _ in range(30):
+            resumed.poll(player, flash)
+            if resumed.database is not None:
+                return resumed.database
+            m.press(0, 40)
+    raise AssertionError("Native Continue did not attach the projected world")
+
+
+def export_projection_demo(path):
+    """Copy a fresh paired native save into the package input fixture directory."""
+    if not (destination := os.environ.get("WORLD_PROJECTION_DEMO")):
+        return
+    destination = Path(destination)
+    destination.mkdir(parents=True, exist_ok=True)
+    flash = checkpoint()
+    (destination / "PokemonQuantum.sav").write_bytes(flash)
+    with closing(sqlite3.connect(path / "checkpoints.sqlite3")) as source:
+        with closing(sqlite3.connect(destination / "checkpoints.sqlite3")) as target:
+            source.backup(target)
+    run(1)
 
 
 with TemporaryDirectory() as temporary:

@@ -52,6 +52,7 @@ jobs:
           python -B tests/living_world_live.py
           python -B tests/living_world_ecology.py
           python -B tests/living_world_trainers.py
+          python -B tests/living_world_native_projection.py
           python -B tests/living_world_trainers_benchmark.py trainer-platform.json
           python -B tests/living_world_ecology_benchmark.py ecology-platform.json --copies 1 8 32
           python -B tests/living_world_release_scenario.py > release-scenario.json
@@ -100,6 +101,7 @@ jobs:
             build/living-world-ci/ecology-manifest.json
             build/living-world-ci/ecology-benchmark.json
             build/living-world-ci/trainer-*.json
+            build/living-world-ci/projection-*.json
             build/living-world-ci/rom-build.log
           if-no-files-found: error
   windows-package:

@@ -90,6 +90,18 @@ WORLD_TEST_NO_RANDOMIZER=1 WORLD_ECOLOGY_ORDINARY=1 WORLD_LIVE_EXTENDED_FRAMES=0
     QUANTUM_QA_OUTPUT="$work/live-ordinary" WORLD_LIVE_REPORT="$reports/live-ordinary.json" \
     python -B tests/living_world_live_emulator.py
 cp "$reports/ecology-quantum.json" "$reports/ecology-manifest.json"
+ADVENTURE_TEST_MODE=0 QUANTUM_QA_OUTPUT="$work/projection-sammy" \
+    WORLD_PROJECTION_REPORT="$reports/projection-sammy.json" \
+    WORLD_PROJECTION_DEMO="$inputs/projection-demo/sammy" python -B tests/living_world_projection_emulator.py
+ADVENTURE_TEST_MODE=0 WORLD_PROJECTION_BAD_PACKET=1 QUANTUM_QA_OUTPUT="$work/projection-rejected" \
+    python -B tests/living_world_projection_emulator.py
+ADVENTURE_TEST_MODE=1 WORLD_TEST_NO_RANDOMIZER=1 QUANTUM_QA_OUTPUT="$work/projection-authored" \
+    WORLD_PROJECTION_REPORT="$reports/projection-sammy-authored.json" python -B tests/living_world_projection_emulator.py
+ADVENTURE_TEST_MODE=0 QUANTUM_QA_OUTPUT="$work/projection-migrant" \
+    WORLD_PROJECTION_REPORT="$reports/projection-migrant.json" python -B tests/living_world_wild_projection_emulator.py
+ADVENTURE_TEST_MODE=0 WORLD_TEST_RARE_PROJECTION=1 QUANTUM_QA_OUTPUT="$work/projection-rare" \
+    WORLD_PROJECTION_REPORT="$reports/projection-rare.json" \
+    WORLD_PROJECTION_DEMO="$inputs/projection-demo/route24" python -B tests/living_world_wild_projection_emulator.py
 python -B tests/living_world_ecology_benchmark.py "$reports/ecology-benchmark.json" --manifest "$reports/ecology-manifest.json"
 export QUANTUM_QA_OUTPUT="$work/fixture-logs"
 LIVING_WORLD_TEST_SAVE="$inputs/PalletTest.sav" python -B tests/living_world_bridge_emulator.py
