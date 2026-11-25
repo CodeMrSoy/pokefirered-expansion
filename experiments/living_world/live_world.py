@@ -6,7 +6,7 @@ from dataclasses import dataclass
 import ctypes as c
 from hashlib import sha256
 import sqlite3
-from struct import Struct
+from struct import Struct, error as StructError
 from time import perf_counter_ns
 from uuid import uuid4
 
@@ -332,9 +332,14 @@ class LiveWorld:
         self.clear_projection()
 
     def clear_projection(self):
+        self.last_publication = None
         if self.game is not None and self.projection_address is not None:
-            native_projection.publish(self.game, self.projection_address, None, 0)
-            self.last_publication = None
+            try:
+                native_projection.publish(self.game, self.projection_address, None, 0)
+            except (ValueError, OSError, TypeError):
+                # An unavailable port cannot be cleared safely. The native
+                # heartbeat expires without further writes.
+                return
 
     def poll(self, game):
         context = self.startup.context
@@ -391,7 +396,7 @@ class LiveWorld:
                 raise ValueError("Live world queue overrun")
             self.pump()
             self.publish_projection(frame)
-        except (OSError, ValueError, RuntimeError, sqlite3.Error) as error:
+        except (OSError, ValueError, RuntimeError, KeyError, TypeError, StructError, sqlite3.Error) as error:
             self.quarantine(error)
 
     def pump(self, *, drain=False):
