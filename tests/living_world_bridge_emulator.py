@@ -358,7 +358,9 @@ def stub(context):
     return json.dumps({"action": "SAY_DIALOGUE", "text": "\n".join(PROFILES[context.npc]["greeting_lines"])})
 
 
-assert len(NPC_IDS) == len(PROFILES) == 11
+assert len(NPC_IDS) == len(set(NPC_IDS.values()))
+assert set(NPC_IDS.values()) == set(PROFILES)
+assert NPC_IDS[38] == "sammy"
 for profile in PROFILES.values():
     for type_ in ("greeting_lines", "seen_lines"):
         for line in profile.get(type_, ()):
