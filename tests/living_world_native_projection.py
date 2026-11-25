@@ -84,5 +84,30 @@ class ProjectionTests(unittest.TestCase):
             native_wild(state, dict(lease, status="captured", battle="after-continue:4"))
 
 
+    def test_verified_sammy_mailbox_keeps_facts_during_busy_script(self):
+        from concurrent.futures import ThreadPoolExecutor
+        from tempfile import TemporaryDirectory
+
+        from bridge import Conversation, validate
+        from hybrid import FieldHint, HybridDialogue, prepare
+        from knowledge import Fact, SCHEMA
+        from world import WorldMemory
+
+        fact = Fact("sammy:training", "rumor", "I trained my Pokemon.", "I trained my Pokemon.", "trainer")
+        with (TemporaryDirectory() as temporary, ThreadPoolExecutor() as executor,
+              closing(WorldMemory(Path(temporary) / "notes.sqlite3", "demo", b"flash")) as memory):
+            catalog = Path(temporary) / "knowledge.sqlite3"
+            with closing(sqlite3.connect(catalog)) as db:
+                db.executescript(SCHEMA)
+            model = SimpleNamespace(catalog=catalog, style="unavailable", species_names={})
+            dialogue = HybridDialogue(memory, model, executor, ecology_sighting=lambda npc: fact)
+            request = Conversation("sammy", None)
+            active = FieldHint(42, None, "viridian_forest", 0, None, True)
+            prepared, _ = prepare(model, dialogue.key(request, active).state)
+            self.assertIn(fact.line.encode(), validate(prepared.dialogue))
+            wrong_map = FieldHint(42, None, "pallet", 0, None, True)
+            self.assertIsNone(dialogue.key(request, wrong_map).state.encounter.ecology)
+
+
 if __name__ == "__main__":
     unittest.main()

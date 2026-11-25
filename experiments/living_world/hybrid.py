@@ -179,7 +179,10 @@ class HybridDialogue:
         stat = self.model.catalog.stat() if self.model.catalog else None
         version = (stat.st_dev, stat.st_ino, stat.st_mtime_ns, stat.st_size) if stat else ()
         state = npc_state(self.memory, conversation, hint)
-        if self.ecology_sighting and hint and hint.npc == conversation.npc and hint.area == state.area:
+        # Sammy's native post-battle script authenticates its mailbox
+        # speaker. Busy scripts intentionally suppress the proximity hint.
+        confirmed = hint and (hint.npc == conversation.npc or (conversation.npc == "sammy" and hint.busy))
+        if self.ecology_sighting and confirmed and hint.area == state.area:
             fact = self.ecology_sighting(conversation.npc)
             if fact is not None:
                 state = replace(state, encounter=replace(state.encounter, ecology=fact))
